@@ -10,8 +10,8 @@ def get_age(birth_date: str | datetime, timestamp: str | datetime = None):
     """Estimate age in months and days at some timestamp based on date of birth.
 
     Args:
-        birth_date (str | datetime): Date of birth as ``datetime`` object or str in the "Y-m-d" format. Defaults to current date (``datetime.today()``).
-        timestamp (str | datetime, optional): Time for which the age will be calculated. Defaults to None.
+        birth_date (str | datetime): Birthdate as ``datetime`` object or str in "Y-m-d" format. Defaults to current date (``datetime.today()``).
+        timestamp (str | datetime, optional): Time for which the age is calculated. Defaults to None.
 
     Returns:
         list[int]: Age in months and days.
