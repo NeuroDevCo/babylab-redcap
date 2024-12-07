@@ -19,5 +19,8 @@ install:
 test:
 	pytest
 
-docker:
+docker-build:
+	docker build --tag babylab-redcap . 
+
+docker-run:
 	docker run --rm -it -p 5000:5000 --name babylab-redcap-container babylab-redcap

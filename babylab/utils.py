@@ -5,7 +5,7 @@ Util functions for the app
 from collections import OrderedDict
 from datetime import datetime
 from pandas import DataFrame
-from babylab import api
+from babylab import models
 from babylab import calendar
 
 
@@ -48,11 +48,11 @@ def replace_labels(x: DataFrame | dict, data_dict: dict) -> DataFrame:
     return x
 
 
-def get_participants_table(records: api.Records, data_dict: dict = None) -> DataFrame:
+def get_participants_table(records: models.Records, data_dict: dict = None) -> DataFrame:
     """Get participants table
 
     Args:
-        records (api.Records): _description_
+        records (models.Records): _description_
 
     Returns:
         pd.DataFrame: Table of partcicipants.
@@ -80,12 +80,12 @@ def get_participants_table(records: api.Records, data_dict: dict = None) -> Data
 
 
 def get_appointments_table(
-    records: api.Records, data_dict: dict = None, ppt_id: str = None, study: str = None
+    records: models.Records, data_dict: dict = None, ppt_id: str = None, study: str = None
 ) -> DataFrame:
     """Get appointments table.
 
     Args:
-        records (api.Records): _description_
+        records (models.Records): _description_
 
     Returns:
         pd.DataFrame: Table of appointments.
@@ -155,7 +155,7 @@ def get_appointments_table(
 
 
 def get_questionnaires_table(
-    records: api.Records,
+    records: models.Records,
     data_dict: dict = None,
     ppt_id: str = None,
 ) -> DataFrame:
@@ -188,7 +188,7 @@ def get_questionnaires_table(
     return df
 
 
-def prepare_dashboard(records: api.Records = None, data_dict: dict = None):
+def prepare_dashboard(records: models.Records = None, data_dict: dict = None):
     """Prepare data for dashboard"""
     ppts = get_participants_table(records, data_dict=data_dict)
     apts = get_appointments_table(records, data_dict=data_dict)
@@ -239,7 +239,7 @@ def prepare_dashboard(records: api.Records = None, data_dict: dict = None):
     }
 
 
-def prepare_participants(records: api.Records = None, data_dict: dict = None):
+def prepare_participants(records: models.Records = None, data_dict: dict = None):
     """Prepare data for participants page"""
     df = get_participants_table(records, data_dict=data_dict)
     classes = "table table-hover"
@@ -275,7 +275,7 @@ def prepare_participants(records: api.Records = None, data_dict: dict = None):
     }
 
 
-def prepare_record_id(ppt_id: str, records: api.Records = None, data_dict: dict = None):
+def prepare_record_id(ppt_id: str, records: models.Records = None, data_dict: dict = None):
     """Prepare record ID page"""
     data = records.participants.records[ppt_id].data
     for k, v in data.items():
@@ -390,7 +390,7 @@ def prepare_record_id(ppt_id: str, records: api.Records = None, data_dict: dict 
 
 
 def prepare_appointments(
-    records: api.Records, data_dict: dict = None, study: str = None
+    records: models.Records, data_dict: dict = None, study: str = None
 ):
     """Prepare appointments page"""
     df = get_appointments_table(records, data_dict=data_dict, study=study)
@@ -439,7 +439,7 @@ def prepare_appointments(
     return {"table": table}
 
 
-def prepare_questionnaires(records: api.Records = None, data_dict: dict = None):
+def prepare_questionnaires(records: models.Records = None, data_dict: dict = None):
     """Prepare appointments page"""
     df = get_questionnaires_table(records, data_dict=data_dict)
     classes = "table table-hover"
@@ -492,7 +492,7 @@ def prepare_questionnaires(records: api.Records = None, data_dict: dict = None):
 
 
 def prepare_studies(
-    records: api.Records = None, data_dict: dict = None, study: str = None
+    records: models.Records = None, data_dict: dict = None, study: str = None
 ):
     """Prepare appointments page"""
     df = get_appointments_table(records, data_dict=data_dict, study=study)

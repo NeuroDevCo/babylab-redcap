@@ -3,18 +3,17 @@ Babylab database Fask application
 """
 
 import os
-from functools import wraps
 import datetime
+from functools import wraps
 import requests
 from flask import Flask, render_template, request, redirect, url_for, flash
-from babylab import api
+from babylab import models
 from babylab import utils
 
 app = Flask(__name__, template_folder="templates")
 app.secret_key = os.urandom(24)
 app.permanent_session_lifetime = datetime.timedelta(minutes=10)
 
-app.config["API_URL"] = "https://apps.sjdhospitalbarcelona.org/redcap/api/"
 app.config["API_KEY"] = "TOKEN"
 
 
@@ -23,7 +22,7 @@ def token_required(f):
 
     @wraps(f)
     def decorated(*args, **kwargs):
-        redcap_version = api.get_redcap_version(token=app.config["API_KEY"])
+        redcap_version = models.get_redcap_version(token=app.config["API_KEY"])
         if redcap_version:
             return f(*args, **kwargs)
         flash("Access restricted. Please, log in", "error")
@@ -37,11 +36,11 @@ def token_required(f):
 def index(redcap_version: str = None):
     """Index page"""
     if not redcap_version:
-        redcap_version = api.get_redcap_version(token=app.config["API_KEY"])
+        redcap_version = models.get_redcap_version(token=app.config["API_KEY"])
     if request.method == "POST":
         finput = request.form
         app.config["API_KEY"] = finput["apiToken"]
-        redcap_version = api.get_redcap_version(token=app.config["API_KEY"])
+        redcap_version = models.get_redcap_version(token=app.config["API_KEY"])
         if redcap_version:
             flash("Logged in", "success")
             return render_template("index.html", redcap_version=redcap_version)
@@ -51,40 +50,42 @@ def index(redcap_version: str = None):
 
 @app.route("/dashboard")
 @token_required
-def dashboard(records: api.Records = None, data: dict = None):
+def dashboard(records: models.Records = None, data: dict = None):
     """Dashboard page"""
-    redcap_version = api.get_redcap_version(token=app.config["API_KEY"])
+    redcap_version = models.get_redcap_version(token=app.config["API_KEY"])
     if records is None:
         try:
-            records = api.Records(token=app.config["API_KEY"])
+            records = models.Records(token=app.config["API_KEY"])
         except Exception:  # pylint: disable=broad-exception-caught
             return redirect(url_for("index", redcap_version=redcap_version))
-    data_dict = api.get_data_dict(token=app.config["API_KEY"])
+    data_dict = models.get_data_dict(token=app.config["API_KEY"])
     data = utils.prepare_dashboard(records, data_dict)
     return render_template("dashboard.html", data=data)
 
 
 @app.route("/participants/")
 @token_required
-def participants(records: api.Records = None, data_dict: dict = None):
+def participants(records: models.Records = None, data_dict: dict = None):
     """Participants database"""
     if records is None:
-        records = api.Records(token=app.config["API_KEY"])
-    data_dict = api.get_data_dict(token=app.config["API_KEY"])
+        records = models.Records(token=app.config["API_KEY"])
+    data_dict = models.get_data_dict(token=app.config["API_KEY"])
     data = utils.prepare_participants(records, data_dict=data_dict)
     return render_template("participants.html", data=data, data_dict=data_dict)
 
 
 @app.route("/participants/<string:ppt_id>")
 @token_required
-def record_id(records: api.Records = None, ppt_id: str = None, data_dict: dict = None):
+def record_id(
+    records: models.Records = None, ppt_id: str = None, data_dict: dict = None
+):
     """Show the record_id for that participant"""
     if data_dict is None:
-        data_dict = api.get_data_dict(token=app.config["API_KEY"])
-    redcap_version = api.get_redcap_version(token=app.config["API_KEY"])
+        data_dict = models.get_data_dict(token=app.config["API_KEY"])
+    redcap_version = models.get_redcap_version(token=app.config["API_KEY"])
     if records is None:
         try:
-            records = api.Records(token=app.config["API_KEY"])
+            records = models.Records(token=app.config["API_KEY"])
         except Exception:  # pylint: disable=broad-exception-caught
             return redirect(url_for("index", redcap_version=redcap_version))
     data = utils.prepare_record_id(ppt_id, records, data_dict)
@@ -100,7 +101,7 @@ def record_id(records: api.Records = None, ppt_id: str = None, data_dict: dict =
 def participant_new(data_dict: dict = None):
     """New participant page"""
     if data_dict is None:
-        data_dict = api.get_data_dict(token=app.config["API_KEY"])
+        data_dict = models.get_data_dict(token=app.config["API_KEY"])
     if request.method == "POST":
         finput = request.form
         date_now = datetime.datetime.strftime(datetime.datetime.now(), "%Y-%m-%d %H:%M")
@@ -135,10 +136,9 @@ def participant_new(data_dict: dict = None):
             "participant_comments": finput["inputComments"],
             "participants_complete": "2",
         }
-        api.add_participant(
+        models.add_participant(
             data,
             modifying=False,
-            url=app.config["API_URL"],
             token=app.config["API_KEY"],
         )
         try:
@@ -153,14 +153,19 @@ def participant_new(data_dict: dict = None):
 @app.route("/participants/<string:ppt_id>/participant_modify", methods=["GET", "POST"])
 @token_required
 def participant_modify(
-    ppt_id: str, records: api.Records = None, data: dict = None, data_dict: dict = None
+    ppt_id: str,
+    records: models.Records = None,
+    data: dict = None,
+    data_dict: dict = None,
 ):
     """Modify participant page"""
     if data_dict is None:
-        data_dict = api.get_data_dict(token=app.config["API_KEY"])
+        data_dict = models.get_data_dict(token=app.config["API_KEY"])
     if records is None:
         data = (
-            api.Records(token=app.config["API_KEY"]).participants.records[ppt_id].data
+            models.Records(token=app.config["API_KEY"])
+            .participants.records[ppt_id]
+            .data
         )
     if request.method == "POST":
         finput = request.form
@@ -197,10 +202,9 @@ def participant_modify(
             "participants_complete": "2",
         }
         try:
-            api.add_participant(
+            models.add_participant(
                 data,
                 modifying=True,
-                url=app.config["API_URL"],
                 token=app.config["API_KEY"],
             )
         except requests.exceptions.HTTPError as e:
@@ -215,11 +219,11 @@ def participant_modify(
 
 @app.route("/appointments/")
 @token_required
-def appointments(records: api.Records = None, data_dict: dict = None):
+def appointments(records: models.Records = None, data_dict: dict = None):
     """Appointments database"""
     if records is None:
-        records = api.Records(token=app.config["API_KEY"])
-    data_dict = api.get_data_dict(token=app.config["API_KEY"])
+        records = models.Records(token=app.config["API_KEY"])
+    data_dict = models.get_data_dict(token=app.config["API_KEY"])
     data = utils.prepare_appointments(records, data_dict=data_dict)
     return render_template("appointments.html", data=data)
 
@@ -227,14 +231,14 @@ def appointments(records: api.Records = None, data_dict: dict = None):
 @app.route("/appointments/<string:appt_id>")
 @token_required
 def appointment_id(
-    records: api.Records = None, appt_id: str = None, data_dict: dict = None
+    records: models.Records = None, appt_id: str = None, data_dict: dict = None
 ):
     """Show the record_id for that appointment"""
     if data_dict is None:
-        data_dict = api.get_data_dict(token=app.config["API_KEY"])
+        data_dict = models.get_data_dict(token=app.config["API_KEY"])
     if records is None:
         try:
-            records = api.Records(token=app.config["API_KEY"])
+            records = models.Records(token=app.config["API_KEY"])
         except Exception:  # pylint: disable=broad-exception-caught
             return render_template("index.html", login_status="incorrect")
     data = records.appointments.records[appt_id].data
@@ -259,7 +263,7 @@ def appointment_id(
 def appointment_new(ppt_id: str, data_dict: dict = None):
     """New appointment page"""
     if data_dict is None:
-        data_dict = api.get_data_dict(token=app.config["API_KEY"])
+        data_dict = models.get_data_dict(token=app.config["API_KEY"])
     if request.method == "POST":
         finput = request.form
         date_now = datetime.datetime.strftime(datetime.datetime.now(), "%Y-%m-%d %H:%M")
@@ -279,9 +283,9 @@ def appointment_new(ppt_id: str, data_dict: dict = None):
             "appointments_complete": "2",
         }
         try:
-            api.add_appointment(data, token=app.config["API_KEY"])
+            models.add_appointment(data, token=app.config["API_KEY"])
             flash("Appointment added!", "success")
-            records = api.Records(token=app.config["API_KEY"])
+            records = models.Records(token=app.config["API_KEY"])
             return redirect(url_for("appointments", records=records))
         except requests.exceptions.HTTPError as e:
             flash(f"Something went wrong! {e}", "error")
@@ -299,15 +303,17 @@ def appointment_new(ppt_id: str, data_dict: dict = None):
 def appointment_modify(
     appt_id: str,
     ppt_id: str,
-    records: api.Records = None,
+    records: models.Records = None,
     data_dict: dict = None,
 ):
     """Modify appointment page"""
     if data_dict is None:
-        data_dict = api.get_data_dict(token=app.config["API_KEY"])
+        data_dict = models.get_data_dict(token=app.config["API_KEY"])
     if records is None:
         data = (
-            api.Records(token=app.config["API_KEY"]).appointments.records[appt_id].data
+            models.Records(token=app.config["API_KEY"])
+            .appointments.records[appt_id]
+            .data
         )
         for k, v in data.items():
             dict_key = "appointment_" + k
@@ -332,9 +338,8 @@ def appointment_modify(
             "appointments_complete": "2",
         }
         try:
-            api.add_appointment(
+            models.add_appointment(
                 data,
-                url=app.config["API_URL"],
                 token=app.config["API_KEY"],
             )
             flash("Appointment modified!", "success")
@@ -354,20 +359,20 @@ def appointment_modify(
 @app.route("/studies", methods=["GET", "POST"])
 @token_required
 def studies(
-    records: api.Records = None,
+    records: models.Records = None,
     selected_study: str = None,
     data: dict = None,
 ):
     """Studies page"""
-    data_dict = api.get_data_dict(token=app.config["API_KEY"])
+    data_dict = models.get_data_dict(token=app.config["API_KEY"])
 
     if request.method == "POST":
         finput = request.form
         selected_study = finput["inputStudy"]
-        redcap_version = api.get_redcap_version(token=app.config["API_KEY"])
+        redcap_version = models.get_redcap_version(token=app.config["API_KEY"])
         if records is None:
             try:
-                records = api.Records(token=app.config["API_KEY"])
+                records = models.Records(token=app.config["API_KEY"])
             except Exception:  # pylint: disable=broad-exception-caught
                 return redirect(url_for("index", redcap_version=redcap_version))
 
@@ -384,11 +389,11 @@ def studies(
 
 @app.route("/questionnaires/")
 @token_required
-def questionnaires(records: api.Records = None, data_dict: dict = None):
+def questionnaires(records: models.Records = None, data_dict: dict = None):
     """Participants database"""
     if records is None:
-        records = api.Records(token=app.config["API_KEY"])
-    data_dict = api.get_data_dict(token=app.config["API_KEY"])
+        records = models.Records(token=app.config["API_KEY"])
+    data_dict = models.get_data_dict(token=app.config["API_KEY"])
     data = utils.prepare_questionnaires(records, data_dict=data_dict)
     return render_template("questionnaires.html", data=data, data_dict=data_dict)
 
@@ -396,16 +401,16 @@ def questionnaires(records: api.Records = None, data_dict: dict = None):
 @app.route("/participants/<string:ppt_id>/questionnaires/<string:quest_id>")
 @token_required
 def questionnaire_id(
-    records: api.Records = None,
+    records: models.Records = None,
     ppt_id: str = None,
     quest_id: str = None,
     data: dict = None,
 ):
     """Show a language questionnaire"""
-    data_dict = api.get_data_dict(token=app.config["API_KEY"])
+    data_dict = models.get_data_dict(token=app.config["API_KEY"])
     if records is None:
         try:
-            records = api.Records(token=app.config["API_KEY"])
+            records = models.Records(token=app.config["API_KEY"])
         except Exception:  # pylint: disable=broad-exception-caught
             return render_template("index.html", login_status="incorrect")
     data = records.questionnaires.records[quest_id].data
@@ -430,7 +435,7 @@ def questionnaire_id(
 def questionnaire_new(ppt_id: str, data_dict: dict = None):
     """New langage questionnaire page"""
     if data_dict is None:
-        data_dict = api.get_data_dict(token=app.config["API_KEY"])
+        data_dict = models.get_data_dict(token=app.config["API_KEY"])
     if request.method == "POST":
         finput = request.form
         date_now = datetime.datetime.strftime(datetime.datetime.now(), "%Y-%m-%d %H:%M")
@@ -458,9 +463,8 @@ def questionnaire_new(ppt_id: str, data_dict: dict = None):
             "language_comments": finput["inputComments"],
             "language_complete": "2",
         }
-        api.add_questionnaire(
+        models.add_questionnaire(
             data,
-            url=app.config["API_URL"],
             token=app.config["API_KEY"],
         )
         try:
@@ -484,9 +488,11 @@ def questionnaire_modify(
 ):
     """Modify language questionnaire page"""
     if data_dict is None:
-        data_dict = api.get_data_dict(token=app.config["API_KEY"])
+        data_dict = models.get_data_dict(token=app.config["API_KEY"])
     data = (
-        api.Records(token=app.config["API_KEY"]).questionnaires.records[quest_id].data
+        models.Records(token=app.config["API_KEY"])
+        .questionnaires.records[quest_id]
+        .data
     )
     for k, v in data.items():
         if "exp" in k:
@@ -511,9 +517,8 @@ def questionnaire_modify(
             "language_complete": "2",
         }
         try:
-            api.add_questionnaire(
+            models.add_questionnaire(
                 data,
-                url=app.config["API_URL"],
                 token=app.config["API_KEY"],
             )
             flash("Questionnaire modified!", "success")
