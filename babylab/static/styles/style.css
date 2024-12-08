@@ -1,5 +1,44 @@
 @import url('https://fonts.googleapis.com/css2?family=Fira+Mono:wght@400;500;700&family=Fira+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
 
+@font-face {
+    font-family: "Ciutadella";
+    src: url('/static/fonts/Ciutadella-Regular.ttf') format('truetype'),
+        url('/static/fonts/Ciutadella-Regular-Italic.ttf') format('truetype'),
+        url('/static/fonts/Ciutadella-SemiBold.ttf') format('truetype');
+}
+
+p,
+.card-body,
+button,
+input,
+select,
+a {
+    font-family: Ciutadella;
+}
+
+label {
+    font-family: Ciutadella Italic;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+th,
+.card-header,
+.input-group-text,
+b {
+    font-family: Ciutadella Semibold;
+}
+
+nav {
+    font-size: larger;
+    background-color: lightgray;
+}
+
+
 .form-label {
     margin-top: 0.5em;
 }
@@ -14,4 +53,8 @@
 
 .button {
     margin: 1em
+}
+
+div#content {
+    display: none;
 }

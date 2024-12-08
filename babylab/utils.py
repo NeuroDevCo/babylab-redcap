@@ -4,6 +4,7 @@ Util functions for the app
 
 from collections import OrderedDict
 from datetime import datetime
+import pandas as pd
 from pandas import DataFrame
 from babylab import models
 from babylab import calendar
@@ -48,7 +49,9 @@ def replace_labels(x: DataFrame | dict, data_dict: dict) -> DataFrame:
     return x
 
 
-def get_participants_table(records: models.Records, data_dict: dict = None) -> DataFrame:
+def get_participants_table(
+    records: models.Records, data_dict: dict = None
+) -> DataFrame:
     """Get participants table
 
     Args:
@@ -80,7 +83,10 @@ def get_participants_table(records: models.Records, data_dict: dict = None) -> D
 
 
 def get_appointments_table(
-    records: models.Records, data_dict: dict = None, ppt_id: str = None, study: str = None
+    records: models.Records,
+    data_dict: dict = None,
+    ppt_id: str = None,
+    study: str = None,
 ) -> DataFrame:
     """Get appointments table.
 
@@ -194,12 +200,16 @@ def prepare_dashboard(records: models.Records = None, data_dict: dict = None):
     apts = get_appointments_table(records, data_dict=data_dict)
     quest = get_questionnaires_table(records, data_dict=data_dict)
 
-    age_dist = (
-        (ppts["age_now_days"] + (ppts["age_now_months"] * 30.437))
-        .astype(int)
-        .value_counts()
-        .to_dict()
+    ppts["age_days"] = round(
+        ppts["age_now_days"] + (ppts["age_now_months"] * 30.437), None
+    ).astype(int)
+    age_bins = list(range(0, max(ppts["age_days"]), 15))
+    labels = [f"{int(a // 30)}:{int(a % 30)}" for a in age_bins]
+    ppts["age_days_binned"] = pd.cut(
+        ppts["age_days"], bins=age_bins, labels=labels[:-1]
     )
+    age_dist = ppts["age_days_binned"].value_counts().to_dict()
+    age_dist = OrderedDict(sorted(age_dist.items()))
     age_dist = {"Missing" if not k else k: v for k, v in age_dist.items()}
 
     sex_dist = ppts["sex"].value_counts().to_dict()
@@ -275,7 +285,9 @@ def prepare_participants(records: models.Records = None, data_dict: dict = None)
     }
 
 
-def prepare_record_id(ppt_id: str, records: models.Records = None, data_dict: dict = None):
+def prepare_record_id(
+    ppt_id: str, records: models.Records = None, data_dict: dict = None
+):
     """Prepare record ID page"""
     data = records.participants.records[ppt_id].data
     for k, v in data.items():
