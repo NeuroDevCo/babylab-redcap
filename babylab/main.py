@@ -31,6 +31,12 @@ def token_required(f):
     return decorated
 
 
+@app.errorhandler(404)
+def error_404(error):
+    """Error 404 page."""
+    return render_template("404.html", error=error)
+
+
 @app.route("/", methods=["GET", "POST"])
 @app.route("/index", methods=["GET", "POST"])
 def index(redcap_version: str = None):
