@@ -11,10 +11,9 @@ from babylab import models
 from babylab import utils
 
 app = Flask(__name__, template_folder="templates")
+app.config["API_KEY"] = "TOKEN"
 app.secret_key = os.urandom(24)
 app.permanent_session_lifetime = datetime.timedelta(minutes=10)
-
-app.config["API_KEY"] = "TOKEN"
 
 
 def token_required(f):
