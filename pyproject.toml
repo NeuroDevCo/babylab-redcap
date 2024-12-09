@@ -13,6 +13,7 @@ keywords = []
 authors = [
   { name = "gongcastro", email = "gongarciacastro@gmail.com" },
 ]
+
 classifiers = [
   "Development Status :: 4 - Beta",
   "Programming Language :: Python",
@@ -26,7 +27,6 @@ classifiers = [
 dependencies = [
   "pandas",
   "requests",
-  "python-dotenv",
 ]
 
 [project.urls]
