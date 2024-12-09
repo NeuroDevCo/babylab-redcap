@@ -193,6 +193,35 @@ def get_questionnaires_table(
     df = replace_labels(df, data_dict)
     return df
 
+def count_col(
+        x: DataFrame,
+        col: str,
+        values_sort: bool = False,
+        cumulative: bool = False,
+        missing_label: str = "Missing"
+    ) -> dict:
+    """Count frequencies of column in DataFrame.
+
+    Args:
+        x (DataFrame): DataFrame containing the target column.
+        col (str): Name of the column.
+        values_sort (str, optional): Should the resulting dict be ordered by values? Defaults to False.
+        cumulative (bool, optional): Should the counts be cumulative? Defaults to False.
+        missing_label (str, optional): Label to associate with missing values. Defaults to "Missing".
+
+    Returns:
+        dict: Counts of each category, sorted in descending order.
+    """ # pylint: disable=line-too-long
+    counts = x[col].value_counts().to_dict()
+    counts = {missing_label if not k else k: v for k, v in counts.items()}
+    counts = dict(sorted(counts.items()))
+    if values_sort:
+        counts = dict(sorted(counts.items(), key=lambda item: item[1], reverse=True))
+    if cumulative:
+        for idx, (k, v) in enumerate(counts.items()):
+            if idx > 0:
+                counts[k] = v + list(counts.values())[idx - 1]
+    return counts
 
 def prepare_dashboard(records: models.Records = None, data_dict: dict = None):
     """Prepare data for dashboard"""
@@ -208,29 +237,13 @@ def prepare_dashboard(records: models.Records = None, data_dict: dict = None):
     ppts["age_days_binned"] = pd.cut(
         ppts["age_days"], bins=age_bins, labels=labels[:-1]
     )
-    age_dist = ppts["age_days_binned"].value_counts().to_dict()
-    age_dist = OrderedDict(sorted(age_dist.items()))
-    age_dist = {"Missing" if not k else k: v for k, v in age_dist.items()}
 
-    sex_dist = ppts["sex"].value_counts().to_dict()
-    sex_dist = {"Missing" if not k else k: v for k, v in sex_dist.items()}
-
-    lang1_dist = quest["lang1"].value_counts().to_dict()
-    lang1_dist = {"None" if not k else k: v for k, v in lang1_dist.items()}
-    lang2_dist = quest["lang2"].value_counts().to_dict()
-    lang2_dist = {"None" if not k else k: v for k, v in lang2_dist.items()}
-
-    date_added = ppts["date_added"].value_counts().to_dict()
-    date_added = OrderedDict(sorted(date_added.items()))
-    for idx, (k, v) in enumerate(date_added.items()):
-        if idx > 0:
-            date_added[k] = v + list(date_added.values())[idx - 1]
-
-    date_made = apts["date_made"].value_counts().to_dict()
-    date_made = OrderedDict(sorted(date_made.items()))
-    for idx, (k, v) in enumerate(date_made.items()):
-        if idx > 0:
-            date_made[k] = v + list(date_made.values())[idx - 1]
+    age_dist = count_col(ppts, "age_days_binned")
+    sex_dist = count_col(ppts, "sex", values_sort = True)
+    date_added = count_col(ppts, "date_added", cumulative=True)
+    date_made = count_col(apts, "date_made", cumulative=True)
+    lang1_dist = count_col(quest, "lang1", values_sort = True, missing_label="None")
+    lang2_dist = count_col(quest, "lang2", values_sort = True, missing_label="None")
     return {
         "n_ppts": ppts.shape[0],
         "n_apts": apts.shape[0],
@@ -305,7 +318,6 @@ def prepare_record_id(
 
     # prepare participants table
     df_appt = get_appointments_table(records, data_dict=data_dict, ppt_id=ppt_id)
-
     df_appt["record_id"] = [f"<a href=/participants/{i}>{i}</a>" for i in df_appt.index]
     df_appt["appointment_id"] = [
         f"<a href=/appointments/{i}>{i}</a>" for i in df_appt["appointment_id"]

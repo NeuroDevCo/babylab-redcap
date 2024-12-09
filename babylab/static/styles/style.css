@@ -162,6 +162,13 @@ nav {
     color: black
 }
 
+card {
+    width: 200px; 
+    height: 400px;
+    margin: 1em;
+    background-color: transparent;
+}
+
 .error-container {
     text-align: center;
     font-size: 180px;

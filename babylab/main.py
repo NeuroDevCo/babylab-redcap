@@ -74,7 +74,13 @@ def dashboard(records: models.Records = None, data: dict = None):
 
 @app.route("/participants/", methods=["GET", "POST"])
 @token_required
-def participants(records: models.Records = None, data_dict: dict = None, ppt_id: str = None, ppt_options: list[str] = None, data_ppt: dict = None):
+def participants(
+        records: models.Records = None,
+        data_dict: dict = None,
+        ppt_id: str = None,
+        ppt_options: list[str] = None,
+        data_ppt: dict = None
+    ):
     """Participants database"""
     if records is None:
         records = models.Records(token=app.config["API_KEY"])
@@ -88,8 +94,21 @@ def participants(records: models.Records = None, data_dict: dict = None, ppt_id:
     if request.method == "POST":
         ppt_id = request.form["inputPptId"]
         data_ppt = records.participants.records[ppt_id]
-        return render_template("participants.html", data=data, ppt_options=ppt_options, data_dict=data_dict, ppt_id=ppt_id, data_ppt=data_ppt)
-    return render_template("participants.html", ppt_options = ppt_options, data=data, data_dict=data_dict, ppt_id=ppt_id, data_ppt=data_ppt)
+        return render_template(
+            "participants.html", 
+            data=data,
+            ppt_options=ppt_options,
+            data_dict=data_dict,
+            ppt_id=ppt_id,
+            data_ppt=data_ppt
+        )
+    return render_template(
+        "participants.html",
+        ppt_options = ppt_options,
+        data=data, data_dict=data_dict,
+        ppt_id=ppt_id,
+        data_ppt=data_ppt
+    )
 
 
 @app.route("/participants/<string:ppt_id>")
