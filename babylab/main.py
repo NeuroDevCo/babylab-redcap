@@ -452,10 +452,6 @@ def questionnaire_id(
             return render_template("index.html", login_status="incorrect")
     data = records.questionnaires.records[quest_id].data
     data = utils.replace_labels(data, data_dict=data_dict)
-    # for k, v in data.items():
-    #     dict_key = "language_" + k
-    #     if dict_key in data_dict and v:
-    #         data[k] = data_dict[dict_key][v]
     return render_template(
         "questionnaire_id.html",
         ppt_id=ppt_id,
@@ -533,7 +529,7 @@ def questionnaire_modify(
     )
     for k, v in data.items():
         if "exp" in k:
-            data[k] = str(round(v, None) * 100)
+            data[k] = str(round(v * 100, None))
     if request.method == "POST":
         finput = request.form
         date_now = datetime.datetime.strftime(datetime.datetime.now(), "%Y-%m-%d %H:%M")

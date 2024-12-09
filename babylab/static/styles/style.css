@@ -129,12 +129,17 @@ select,
 option,
 ul,
 li,
+input,
 a {
     font-family: "Ciutadella Regular";
 }
 
 label, .list-group-item {
     font-family: Ciutadella Italic;
+}
+
+button {
+    margin: 1em;
 }
 
 .nav-link, .lead, button, .btn {
@@ -330,16 +335,31 @@ body {
 
 html,
 button,
-input,
 select,
 textarea {
-    font-family: 'Ciutadella';
+    font-family: 'Ciutadella Regular';
     color: lightgrey;
 }
 
+.itemgroup {
+    float: left;
+    margin: 0.1em;
+  }
+
 .jumbotron {
     text-align: center;
+    padding-top: 2em;
 }
+
+.card-body {
+    float: left;
+    margin: 1em;
+}
+
+#participantstable {
+    float: none;
+}
+
 
 .zoom-area {
     max-width: 490px;

@@ -132,8 +132,8 @@ def add_questionnaire(data: dict, **kwargs):
         "forceAutoNumber": "false",
         "data": f"[{json.dumps(data)}]",
     }
-    return post_request(fields=fields, **kwargs)
 
+    return post_request(fields=fields, **kwargs)
 
 def get_data_dict(**kwargs):
     """Get data dictionaries for categorical variables
@@ -271,7 +271,7 @@ class Questionnaire:
 
     def __repr__(self):
         return (
-            f" Language questionnaire {self.language_id} from participant {self.record_id}"  # pylint: disable=no-member
+            f" Language questionnaire {self.questionnaire_id} from participant {self.record_id}"  # pylint: disable=no-member
             + f"\n- L1 ({self.data['lang1']}) = {self.data['lang1_exp']}%"
             + f"\n- L2 ({self.data['lang2']}) = {self.data['lang2_exp']}%"
             + f"\n- L3 ({self.data['lang3']}) = {self.data['lang3_exp']}%"
@@ -280,7 +280,7 @@ class Questionnaire:
 
     def __str__(self):
         return (
-            f" Language questionnaire {self.language_id} from participant {self.record_id}"  # pylint: disable=no-member
+            f" Language questionnaire {self.questionnaire_id} from participant {self.record_id}"  # pylint: disable=no-member
             + f"\n- L1 ({self.data['lang1']}) = {self.data['lang1_exp']}%"
             + f"\n- L2 ({self.data['lang2']}) = {self.data['lang2_exp']}%"
             + f"\n- L3 ({self.data['lang3']}) = {self.data['lang3_exp']}%"

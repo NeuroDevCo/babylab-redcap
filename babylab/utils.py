@@ -34,7 +34,7 @@ def replace_labels(x: DataFrame | dict, data_dict: dict) -> DataFrame:
                 x[col_name] = ["" if v == "None" else v for v in x[col_name]]
             if "exp" in col_name:
                 x[col_name] = [
-                    "" if v == 0 else round(float(v), None) * 100 for v in col_values
+                    "" if v == 0 else round(float(v) * 100, None) for v in col_values
                 ]
 
     if isinstance(x, dict):
@@ -42,10 +42,8 @@ def replace_labels(x: DataFrame | dict, data_dict: dict) -> DataFrame:
             kdict = "language_" + k
             if kdict in data_dict and v:
                 x[k] = data_dict[kdict][v]
-            if "lang" in k:
-                x[k] = "" if v == "0" else x[k]
             if "exp" in k:
-                x[k] = "" if v == 0 else round(float(v), None) * 100
+                x[k] = "" if v == 0 else round(float(v) * 100, None)
     return x
 
 

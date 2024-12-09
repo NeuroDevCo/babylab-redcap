@@ -1,129 +1,143 @@
-{% extends 'base.html' %}
-
+{% extends "base.html" %}
 {% block header %}
-{% endblock %}
-
+{% endblock header %}
 {% block content %}
-<header>
-
-</header>
-<div class="jumbotron jumbotron-fluid">
-    <div class="container">
+  <header>
+    <div class="jumbotron jumbotron-fluid">
+      <div class="container">
         <h1 class="display-4">Language questionnaires</h1>
         <p class="lead">Adding a new language questionnaire for participant {{ ppt_id }}</p>
+      </div>
     </div>
-</div>
-<hr class="my-4">
-</header>
-
-<body>
-    <form name="questionnaireInput" name="questionnaireInput" class="form-inline needs-validation" method="POST"
-        onsubmit="return validateForm()" novalidate>
-        <div class="row"></div>
+    <hr class="my-4">
+  </header>
+  <body>
+    <form name="questionnaire-input"
+          class="form-inline needs-validation"
+          method="post"
+          onsubmit="return validateForm()"
+          novalidate>
+      <div class="row">
         <div class="col">
-            <div class="btn-group" role="group" aria-label="Basic example">
-                <button type="submit" class="btn btn-warning" style="float: left; margin: 0.5em;"><i
-                        class="fa fa-pen"></i>&nbsp&nbspSubmit</button>
+          <div class="btn-group" role="group" aria-label="Basic example">
+            <button type="submit" class="btn btn-warning">
+              <i class="fa fa-pen"></i>&nbsp&nbspSubmit
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <h5 class="card-header">Language information</h5>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-8">
+              <b>Language</b>
             </div>
-        </div>
-        </div>
-        <div class="card" style="width: 50%; float: left; margin-right: 2em;">
-            <h5 class="card-header">Language information</h5>
-            <div class="card-body">
-                <div class="row" style="margin-bottom: 1em;">
-                    <div class="col-8">
-                        <b>Language</b>
-                    </div>
-                    <div class="col-4">
-                        <b>Exposure (%)</b>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-8">
-                        <div class="input-group">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text" id="lang1addon">L1</span>
-                            </div>
-                            <select class="form-select" name="inputLang1" aria-describedby="lang1addon" required>
-                                <option selected value="0"> -- Select one -- </option>
-                                {% for k, v in data_dict["language_lang1"].items() %}
-                                {% if k!="0" %}
-                                <option value="{{ k }}">{{ v }}</option>
-                                {% endif %} {% endfor %}
-                            </select>
-                        </div>
-                    </div>
-                    <div class="col-4">
-                        <input type="number" name="inputLang1Exp" class="form-control" min="0" max="100" value="0"
-                            placeholder="%  " style="text-align: right;" required>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-8">
-                        <div class="input-group">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text" id="lang2addon">L2</span>
-                            </div>
-                            <select class="form-select" name="inputLang2">
-                                <option selected value="0"> -- Select one -- </option>
-                                {% for k, v in data_dict["language_lang1"].items() %}
-                                {% if k!="0" %}
-                                <option value="{{ k }}">{{ v }}</option>
-                                {% endif %} {% endfor %}
-                            </select>
-                        </div>
-                    </div>
-                    <div class="col-4">
-                        <input type="number" name="inputLang2Exp" class="form-control" min="0" max="100" value="0"
-                            placeholder="%  " style="text-align: right;">
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-8">
-                        <div class="input-group">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text" id="lang2addon">L3</span>
-                            </div>
-                            <select class="form-select" name="inputLang3">
-                                <option selected value="0"> -- Select one -- </option>
-                                {% for k, v in data_dict["language_lang1"].items() %}
-                                {% if k!="0" %}
-                                <option value="{{ k }}">{{ v }}</option>
-                                {% endif %}
-                                {% endfor %}
-                            </select>
-                        </div>
-                    </div>
-                    <div class="col-4">
-                        <input type="number" name="inputLang3Exp" class="form-control" min="0" max="100" value="0"
-                            placeholder="%  " style="text-align: right;">
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-8">
-                        <div class="input-group">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text" id="lang2addon">L4</span>
-                            </div>
-                            <select class="form-select" name="inputLang4">
-                                <option selected value="0"> -- Select one -- </option>
-                                {% for k, v in data_dict["language_lang1"].items() %}
-                                {% if k!="0" %}
-                                <option value="{{ k }}">{{ v }}</option>
-                                {% endif %}
-                                {% endfor %}
-                            </select>
-                        </div>
-                    </div>
-                    <div class="col-4">
-                        <input type="number" name="inputLang4Exp" class="form-control" min="0" max="100" value="0"
-                            placeholder="%  " style="text-align: right;">
-                    </div>
-                </div>
-                <label for="inputComments" class="form-label">Comments</label>
-                <textarea class="form-control" name="inputComments" rows="3"></textarea>
+            <div class="col-4">
+              <b>Exposure (%)</b>
             </div>
+          </div>
+          <div class="row">
+            <div class="col-8">
+              <div class="input-group">
+                <div class="input-group-prepend">
+                  <span class="input-group-text" id="lang1addon">L1</span>
+                </div>
+                <select class="form-select"
+                        name="inputLang1"
+                        aria-describedby="lang1addon"
+                        required>
+                  <option selected value="0">-- Select one --</option>
+                  {% for k, v in data_dict["language_lang1"].items() %}
+                    {% if k!="0" %}<option value="{{ k }}">{{ v }}</option>{% endif %}
+                  {% endfor %}
+                </select>
+              </div>
+            </div>
+            <div class="col-4">
+              <input type="number"
+                     name="inputLang1Exp"
+                     class="form-control"
+                     min="0"
+                     max="100"
+                     value="0"
+                     required>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-8">
+              <div class="input-group">
+                <div class="input-group-prepend">
+                  <span class="input-group-text" id="lang2addon">L2</span>
+                </div>
+                <select class="form-select" name="inputLang2">
+                  <option selected value="0">-- Select one --</option>
+                  {% for k, v in data_dict["language_lang1"].items() %}
+                    {% if k!="0" %}<option value="{{ k }}">{{ v }}</option>{% endif %}
+                  {% endfor %}
+                </select>
+              </div>
+            </div>
+            <div class="col-4">
+              <input type="number"
+                     name="inputLang2Exp"
+                     id="inputLang2Exp"
+                     class="form-control"
+                     min="0"
+                     max="100"
+                     value="0">
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-8">
+              <div class="input-group">
+                <div class="input-group-prepend">
+                  <span class="input-group-text" id="lang2addon">L3</span>
+                </div>
+                <select class="form-select" name="inputLang3">
+                  <option selected value="0">-- Select one --</option>
+                  {% for k, v in data_dict["language_lang1"].items() %}
+                    {% if k!="0" %}<option value="{{ k }}">{{ v }}</option>{% endif %}
+                  {% endfor %}
+                </select>
+              </div>
+            </div>
+            <div class="col-4">
+              <input type="number"
+                     name="inputLang3Exp"
+                     class="form-control"
+                     min="0"
+                     max="100"
+                     value="0">
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-8">
+              <div class="input-group">
+                <div class="input-group-prepend">
+                  <span class="input-group-text" id="lang2addon">L4</span>
+                </div>
+                <select class="form-select" name="inputLang4">
+                  <option selected value="0">-- Select one --</option>
+                  {% for k, v in data_dict["language_lang1"].items() %}
+                    {% if k!="0" %}<option value="{{ k }}">{{ v }}</option>{% endif %}
+                  {% endfor %}
+                </select>
+              </div>
+            </div>
+            <div class="col-4">
+              <input type="number"
+                     name="inputLang4Exp"
+                     class="form-control"
+                     min="0"
+                     max="100"
+                     value="0">
+            </div>
+          </div>
+          <label for="inputComments" class="form-label">Comments</label>
+          <textarea class="form-control" name="inputComments" rows="3"></textarea>
         </div>
+      </div>
     </form>
     <script>
         // Example starter JavaScript for disabling form submissions if there are invalid fields
@@ -147,14 +161,14 @@
     </script>
     <script>
         function validateForm() {
-            let l1 = document.forms["questionnaireInput"]["inputLang1"].value;
-            let l2 = document.forms["questionnaireInput"]["inputLang2"].value;
-            let l3 = document.forms["questionnaireInput"]["inputLang3"].value;
-            let l4 = document.forms["questionnaireInput"]["inputLang4"].value;
-            let e1 = parseFloat(document.forms["questionnaireInput"]["inputLang1Exp"].value);
-            let e2 = parseFloat(document.forms["questionnaireInput"]["inputLang2Exp"].value);
-            let e3 = parseFloat(document.forms["questionnaireInput"]["inputLang3Exp"].value);
-            let e4 = parseFloat(document.forms["questionnaireInput"]["inputLang4Exp"].value);
+            let l1 = document.forms["questionnaire-input"]["inputLang1"].value;
+            let l2 = document.forms["questionnaire-input"]["inputLang2"].value;
+            let l3 = document.forms["questionnaire-input"]["inputLang3"].value;
+            let l4 = document.forms["questionnaire-input"]["inputLang4"].value;
+            let e1 = parseFloat(document.forms["questionnaire-input"]["inputLang1Exp"].value);
+            let e2 = parseFloat(document.forms["questionnaire-input"]["inputLang2Exp"].value);
+            let e3 = parseFloat(document.forms["questionnaire-input"]["inputLang3Exp"].value);
+            let e4 = parseFloat(document.forms["questionnaire-input"]["inputLang4Exp"].value);
             let array = [l1, l2, l3, l4]
             let duplicates = array.filter((item, index) => array.indexOf(item) !== index);
             let duplicates_filtered = duplicates.filter(i => i !== "0");
@@ -199,9 +213,7 @@
                 alert("Language 4 is selected but exposure is 0%.");
                 return false;
             }
-
-
         }
     </script>
-</body>
-{% endblock %}
+  </body>
+{% endblock content %}
