@@ -1,10 +1,123 @@
 @import url('https://fonts.googleapis.com/css2?family=Fira+Mono:wght@400;500;700&family=Fira+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
 
 @font-face {
-    font-family: "Ciutadella";
-    src: url('/static/fonts/Ciutadella-Regular.ttf') format('truetype'),
-        url('/static/fonts/Ciutadella-Regular-Italic.ttf') format('truetype'),
-        url('/static/fonts/Ciutadella-SemiBold.ttf') format('truetype');
+    font-family: 'Ciutadella Italic';
+    src: url('/static/fonts/Ciutadella/Ciutadella-RegularItalic.eot');
+    src: local('Ciutadella Italic'), local('Ciutadella-RegularItalic'),
+        url('/static/fonts/Ciutadella/Ciutadella-RegularItalic.eot?#iefix') format('embedded-opentype'),
+        url('/static/fonts/Ciutadella/Ciutadella-RegularItalic.woff2') format('woff2'),
+        url('/static/fonts/Ciutadella/Ciutadella-RegularItalic.woff') format('woff'),
+        url('/static/fonts/Ciutadella/Ciutadella-RegularItalic.ttf') format('truetype');
+    font-weight: normal;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'Ciutadella Bold';
+    src: url('/static/fonts/Ciutadella/Ciutadella-Bold.eot');
+    src: local('Ciutadella Bold'), local('Ciutadella-Bold'),
+        url('/static/fonts/Ciutadella/Ciutadella-Bold.eot?#iefix') format('embedded-opentype'),
+        url('/static/fonts/Ciutadella/Ciutadella-Bold.woff2') format('woff2'),
+        url('/static/fonts/Ciutadella/Ciutadella-Bold.woff') format('woff'),
+        url('/static/fonts/Ciutadella/Ciutadella-Bold.ttf') format('truetype');
+    font-weight: bold;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Ciutadella Bold Italic';
+    src: url('/static/fonts/Ciutadella/Ciutadella-BoldItalic.eot');
+    src: local('Ciutadella Bold Italic'), local('Ciutadella-BoldItalic'),
+        url('/static/fonts/Ciutadella/Ciutadella-BoldItalic.eot?#iefix') format('embedded-opentype'),
+        url('/static/fonts/Ciutadella/Ciutadella-BoldItalic.woff2') format('woff2'),
+        url('/static/fonts/Ciutadella/Ciutadella-BoldItalic.woff') format('woff'),
+        url('/static/fonts/Ciutadella/Ciutadella-BoldItalic.ttf') format('truetype');
+    font-weight: bold;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'Ciutadella Medium Italic';
+    src: url('/static/fonts/Ciutadella/Ciutadella-MediumItalic.eot');
+    src: local('Ciutadella Medium Italic'), local('Ciutadella-MediumItalic'),
+        url('/static/fonts/Ciutadella/Ciutadella-MediumItalic.eot?#iefix') format('embedded-opentype'),
+        url('/static/fonts/Ciutadella/Ciutadella-MediumItalic.woff2') format('woff2'),
+        url('/static/fonts/Ciutadella/Ciutadella-MediumItalic.woff') format('woff'),
+        url('/static/fonts/Ciutadella/Ciutadella-MediumItalic.ttf') format('truetype');
+    font-weight: 500;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'Ciutadella Regular';
+    src: url('/static/fonts/Ciutadella/Ciutadella-Regular.eot');
+    src: local('Ciutadella'), local('Ciutadella-Regular'),
+        url('/static/fonts/Ciutadella/Ciutadella-Regular.eot?#iefix') format('embedded-opentype'),
+        url('/static/fonts/Ciutadella/Ciutadella-Regular.woff2') format('woff2'),
+        url('/static/fonts/Ciutadella/Ciutadella-Regular.woff') format('woff'),
+        url('/static/fonts/Ciutadella/Ciutadella-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Ciutadella Medium';
+    src: url('/static/fonts/Ciutadella/Ciutadella-Medium.eot');
+    src: local('Ciutadella Medium'), local('Ciutadella-Medium'),
+        url('/static/fonts/Ciutadella/Ciutadella-Medium.eot?#iefix') format('embedded-opentype'),
+        url('/static/fonts/Ciutadella/Ciutadella-Medium.woff2') format('woff2'),
+        url('/static/fonts/Ciutadella/Ciutadella-Medium.woff') format('woff'),
+        url('/static/fonts/Ciutadella/Ciutadella-Medium.ttf') format('truetype');
+    font-weight: 500;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Ciutadella SemiBold Italic';
+    src: url('/static/fonts/Ciutadella/Ciutadella-SemiBoldItalic.eot');
+    src: local('Ciutadella SemiBold Italic'), local('Ciutadella-SemiBoldItalic'),
+        url('/static/fonts/Ciutadella/Ciutadella-SemiBoldItalic.eot?#iefix') format('embedded-opentype'),
+        url('/static/fonts/Ciutadella/Ciutadella-SemiBoldItalic.woff2') format('woff2'),
+        url('/static/fonts/Ciutadella/Ciutadella-SemiBoldItalic.woff') format('woff'),
+        url('/static/fonts/Ciutadella/Ciutadella-SemiBoldItalic.ttf') format('truetype');
+    font-weight: 600;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'Ciutadella SemiBold';
+    src: url('/static/fonts/Ciutadella/Ciutadella-SemiBold.eot');
+    src: local('Ciutadella SemiBold'), local('Ciutadella-SemiBold'),
+        url('/static/fonts/Ciutadella/Ciutadella-SemiBold.eot?#iefix') format('embedded-opentype'),
+        url('/static/fonts/Ciutadella/Ciutadella-SemiBold.woff2') format('woff2'),
+        url('/static/fonts/Ciutadella/Ciutadella-SemiBold.woff') format('woff'),
+        url('/static/fonts/Ciutadella/Ciutadella-SemiBold.ttf') format('truetype');
+    font-weight: 600;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Ciutadella Light';
+    src: url('/static/fonts/Ciutadella/Ciutadella-Light.eot');
+    src: local('Ciutadella Light'), local('Ciutadella-Light'),
+        url('/static/fonts/Ciutadella/Ciutadella-Light.eot?#iefix') format('embedded-opentype'),
+        url('/static/fonts/Ciutadella/Ciutadella-Light.woff2') format('woff2'),
+        url('/static/fonts/Ciutadella/Ciutadella-Light.woff') format('woff'),
+        url('/static/fonts/Ciutadella/Ciutadella-Light.ttf') format('truetype');
+    font-weight: 300;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Ciutadella Light Italic';
+    src: url('/static/fonts/Ciutadella/Ciutadella-LightItalic.eot');
+    src: local('Ciutadella Light Italic'), local('Ciutadella-LightItalic'),
+        url('/static/fonts/Ciutadella/Ciutadella-LightItalic.eot?#iefix') format('embedded-opentype'),
+        url('/static/fonts/Ciutadella/Ciutadella-LightItalic.woff2') format('woff2'),
+        url('/static/fonts/Ciutadella/Ciutadella-LightItalic.woff') format('woff'),
+        url('/static/fonts/Ciutadella/Ciutadella-LightItalic.ttf') format('truetype');
+    font-weight: 300;
+    font-style: italic;
 }
 
 p,
@@ -15,11 +128,18 @@ select,
 ul,
 li,
 a {
-    font-family: Ciutadella;
+    font-family: "Ciutadella Regular";
 }
 
 label {
     font-family: Ciutadella Italic;
+}
+
+.nav-link, .lead {
+    font-family: "Ciutadella Medium";
+}
+.navbar-brand:h3 {
+    font-family: "Ciutadella";
 }
 
 h1,
@@ -33,7 +153,7 @@ option,
 .card-header,
 .input-group-text,
 b {
-    font-family: Ciutadella Semibold;
+    font-family: "Ciutadella Bold";
 }
 
 nav {
@@ -41,9 +161,6 @@ nav {
     background-color: lightgray;
     color: black
 }
-
-@import url('https://fonts.googleapis.com/css?family=Montserrat:400,600,700');
-@import url('https://fonts.googleapis.com/css?family=Catamaran:400,800');
 
 .error-container {
     text-align: center;
