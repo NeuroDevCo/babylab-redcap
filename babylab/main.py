@@ -35,6 +35,10 @@ def error_404(error):
     """Error 404 page."""
     return render_template("404.html", error=error)
 
+@app.errorhandler(requests.exceptions.ReadTimeout)
+def error_443(error):
+    """Error 403 page."""
+    return render_template("443.html", error=error)
 
 @app.route("/", methods=["GET", "POST"])
 @app.route("/index", methods=["GET", "POST"])

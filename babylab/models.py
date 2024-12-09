@@ -14,7 +14,7 @@ import pandas as pd
 def post_request(
     fields: dict,
     token: str,
-    timeout: int = (3.05, 5),
+    timeout: int = (5, 10),
 ) -> dict:
     """Make a POST request to the REDCap database.
 
