@@ -122,20 +122,22 @@
 
 p,
 .card-body,
-button,
 input,
 select,
+.form-control,
+.form-select,
+option,
 ul,
 li,
 a {
     font-family: "Ciutadella Regular";
 }
 
-label {
+label, .list-group-item {
     font-family: Ciutadella Italic;
 }
 
-.nav-link, .lead {
+.nav-link, .lead, button, .btn {
     font-family: "Ciutadella Medium";
 }
 .navbar-brand:h3 {
@@ -149,9 +151,7 @@ h4,
 h5,
 h6,
 th,
-option,
 .card-header,
-.input-group-text,
 b {
     font-family: "Ciutadella Bold";
 }
