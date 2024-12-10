@@ -5,7 +5,6 @@ Functions to interact with the RedCAP API
 """
 import re
 import json
-import shutil
 import zipfile
 import os
 from collections import OrderedDict
