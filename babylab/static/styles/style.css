@@ -132,9 +132,50 @@ input,
 a,
 .form-control,
 .form-select,
-.navbar-brand:h3,
+.navbar-brand:h3 {
+    font-family: "Ciutadella Regular";
+}
+
+.card-header {
+    font-family: "Ciutadella SemiBold";
+    background-color: rgb(227, 227, 227);
+}
+
+.card-title {
+    font-family: "Ciutadella Regular";
+}
+
 .card-body {
     font-family: "Ciutadella Regular";
+}
+
+.card-img-top {
+    padding: 2em;
+}
+
+
+.card-plot {
+    width: 60%;
+    height: 50%;
+    left: 20%;
+    align-self: center;
+    margin: 1em;
+    background-color: transparent;
+}
+
+.nav-link {
+    font-family: "Ciutadella Regular";
+    color: white;
+    margin-left: 0.5em;
+}
+
+
+#pills-participants-tab,
+#pills-appointments-tab,
+#pills-questionnaires-tab {
+    font-family: "Ciutadella Regular";
+    color: rgb(115, 115, 115);
+    margin-left: 0.5em;
 }
 
 .option {
@@ -148,11 +189,10 @@ label,
 
 button {
     margin: 1em;
+    font-family: "Ciutadella Regular";
 }
 
-.nav-link,
 .lead,
-button,
 .btn {
     font-family: "Ciutadella Medium";
 }
@@ -165,7 +205,6 @@ h4,
 h5,
 h6,
 th,
-.card-header,
 b {
     font-family: "Ciutadella Bold";
 }
@@ -175,9 +214,7 @@ b {
     top: 50%;
 }
 
-.card-img-top {
-    padding: 2em;
-}
+
 
 nav {
     font-size: larger;
@@ -185,14 +222,7 @@ nav {
     color: black
 }
 
-.card-plot {
-    width: 60%;
-    height: 50%;
-    left: 20%;
-    align-self: center;
-    margin: 1em;
-    background-color: transparent;
-}
+
 
 .error-container {
     text-align: center;
@@ -354,7 +384,6 @@ body {
 }
 
 html,
-button,
 select,
 textarea {
     font-family: 'Ciutadella Regular';
