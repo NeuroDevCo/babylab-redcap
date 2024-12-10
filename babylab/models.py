@@ -5,6 +5,8 @@ Functions to interact with the RedCAP API
 """
 import re
 import json
+import zipfile
+import os
 from collections import OrderedDict
 from dataclasses import dataclass
 import requests
@@ -135,6 +137,7 @@ def add_questionnaire(data: dict, **kwargs):
 
     return post_request(fields=fields, **kwargs)
 
+
 def get_data_dict(**kwargs):
     """Get data dictionaries for categorical variables
 
@@ -172,7 +175,7 @@ def get_data_dict(**kwargs):
     return dicts
 
 
-def redcap_backup(file: str = None, **kwargs) -> dict:
+def redcap_backup(file: str = "tmp/backup.zip", **kwargs) -> dict:
     """Download a backup of the REDCap database
 
     Args:
@@ -213,13 +216,19 @@ def redcap_backup(file: str = None, **kwargs) -> dict:
         "fields": fields,
         "records": records,
     }
-    if file:
-        if file.endswith(".json"):
-            with open(file, "w", encoding="utf-8") as f:
-                json.dump(backup, f)
-            return backup
-        raise ValueError("Output `file` must have .json extension")
-    return backup
+    dname = os.path.dirname(file)
+    if not os.path.exists(dname):
+        os.makedirs(dname)
+    for k, v in backup.items():
+        fpath = dname + "/" + k + ".json"
+        with open(fpath, "w", encoding="utf-8") as f:
+            json.dump(v, f)
+    for root, _, files in os.walk(dname, topdown=False):
+        with zipfile.ZipFile(file, "w", zipfile.ZIP_DEFLATED) as z:
+            for f in files:
+                if f.endswith(".json"):
+                    z.write(root + "/" + f)
+    return file
 
 
 class Participant:
