@@ -35,10 +35,12 @@ def error_404(error):
     """Error 404 page."""
     return render_template("404.html", error=error)
 
+
 @app.errorhandler(requests.exceptions.ReadTimeout)
 def error_443(error):
     """Error 403 page."""
     return render_template("443.html", error=error)
+
 
 @app.route("/", methods=["GET", "POST"])
 @app.route("/index", methods=["GET", "POST"])
@@ -75,12 +77,12 @@ def dashboard(records: models.Records = None, data: dict = None):
 @app.route("/participants/", methods=["GET", "POST"])
 @token_required
 def participants(
-        records: models.Records = None,
-        data_dict: dict = None,
-        ppt_id: str = None,
-        ppt_options: list[str] = None,
-        data_ppt: dict = None
-    ):
+    records: models.Records = None,
+    data_dict: dict = None,
+    ppt_id: str = None,
+    ppt_options: list[str] = None,
+    data_ppt: dict = None,
+):
     """Participants database"""
     if records is None:
         records = models.Records(token=app.config["API_KEY"])
@@ -95,19 +97,20 @@ def participants(
         ppt_id = request.form["inputPptId"]
         data_ppt = records.participants.records[ppt_id]
         return render_template(
-            "participants.html", 
+            "participants.html",
             data=data,
             ppt_options=ppt_options,
             data_dict=data_dict,
             ppt_id=ppt_id,
-            data_ppt=data_ppt
+            data_ppt=data_ppt,
         )
     return render_template(
         "participants.html",
-        ppt_options = ppt_options,
-        data=data, data_dict=data_dict,
+        ppt_options=ppt_options,
+        data=data,
+        data_dict=data_dict,
         ppt_id=ppt_id,
-        data_ppt=data_ppt
+        data_ppt=data_ppt,
     )
 
 
