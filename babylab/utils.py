@@ -2,8 +2,10 @@
 Util functions for the app
 """
 
+import os
 from collections import OrderedDict
 from datetime import datetime
+import shutil
 import pandas as pd
 from pandas import DataFrame
 from babylab import models
@@ -191,13 +193,14 @@ def get_questionnaires_table(
     df = replace_labels(df, data_dict)
     return df
 
+
 def count_col(
-        x: DataFrame,
-        col: str,
-        values_sort: bool = False,
-        cumulative: bool = False,
-        missing_label: str = "Missing"
-    ) -> dict:
+    x: DataFrame,
+    col: str,
+    values_sort: bool = False,
+    cumulative: bool = False,
+    missing_label: str = "Missing",
+) -> dict:
     """Count frequencies of column in DataFrame.
 
     Args:
@@ -209,7 +212,7 @@ def count_col(
 
     Returns:
         dict: Counts of each category, sorted in descending order.
-    """ # pylint: disable=line-too-long
+    """  # pylint: disable=line-too-long
     counts = x[col].value_counts().to_dict()
     counts = {missing_label if not k else k: v for k, v in counts.items()}
     counts = dict(sorted(counts.items()))
@@ -220,6 +223,7 @@ def count_col(
             if idx > 0:
                 counts[k] = v + list(counts.values())[idx - 1]
     return counts
+
 
 def prepare_dashboard(records: models.Records = None, data_dict: dict = None):
     """Prepare data for dashboard"""
@@ -237,11 +241,11 @@ def prepare_dashboard(records: models.Records = None, data_dict: dict = None):
     )
 
     age_dist = count_col(ppts, "age_days_binned")
-    sex_dist = count_col(ppts, "sex", values_sort = True)
+    sex_dist = count_col(ppts, "sex", values_sort=True)
     date_added = count_col(ppts, "date_added", cumulative=True)
     date_made = count_col(apts, "date_made", cumulative=True)
-    lang1_dist = count_col(quest, "lang1", values_sort = True, missing_label="None")
-    lang2_dist = count_col(quest, "lang2", values_sort = True, missing_label="None")
+    lang1_dist = count_col(quest, "lang1", values_sort=True, missing_label="None")
+    lang2_dist = count_col(quest, "lang2", values_sort=True, missing_label="None")
     return {
         "n_ppts": ppts.shape[0],
         "n_apts": apts.shape[0],
@@ -572,3 +576,9 @@ def prepare_studies(
         "date_values": list(date.values()),
         "table": table,
     }
+
+
+def clean_tmp(path: str = "tmp"):
+    """Clean temporal directory"""
+    if os.path.exists(path):
+        shutil.rmtree(path)

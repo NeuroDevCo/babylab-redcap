@@ -6,7 +6,15 @@ import os
 import datetime
 from functools import wraps
 import requests
-from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import (
+    Flask,
+    render_template,
+    request,
+    redirect,
+    url_for,
+    flash,
+    send_file,
+)
 from babylab import models
 from babylab import utils
 
@@ -14,6 +22,9 @@ app = Flask(__name__, template_folder="templates")
 app.config["API_KEY"] = "TOKEN"
 app.secret_key = os.urandom(24)
 app.permanent_session_lifetime = datetime.timedelta(minutes=10)
+
+utils.clean_tmp("tmp")
+utils.clean_tmp("../tmp")
 
 
 def token_required(f):
@@ -568,4 +579,57 @@ def questionnaire_modify(
         quest_id=quest_id,
         data=data,
         data_dict=data_dict,
+    )
+
+
+@app.route(
+    "/other",
+    methods=["GET", "POST"],
+)
+@token_required
+def other(records: models.Records = None):
+    """Other pages"""
+    redcap_version = models.get_redcap_version(token=app.config["API_KEY"])
+    if records is None:
+        try:
+            records = models.Records(token=app.config["API_KEY"])
+        except Exception:  # pylint: disable=broad-exception-caught
+            return redirect(url_for("index", redcap_version=redcap_version))
+    fname = datetime.datetime.strftime(
+        datetime.datetime.now(), "backup_%Y-%m-%d-%H-%M.zip"
+    )
+    if request.method == "post":
+        backup_file = models.redcap_backup(
+            file=os.path.join("temp", fname), token=app.config["API_KEY"]
+        )
+        return send_file(
+            backup_file,
+            as_attachment=True,
+        )
+        # shutil.rmtree(os.path.dirname(backup_file))
+
+    return render_template(
+        "other.html",
+    )
+
+
+@app.route(
+    "/download_backup",
+    methods=["GET", "POST"],
+)
+@token_required
+def download_backup():
+    """Download backup"""
+    utils.clean_tmp("tmp")
+    utils.clean_tmp("../tmp")
+
+    fname = datetime.datetime.strftime(
+        datetime.datetime.now(), "backup_%Y-%m-%d-%H-%M.zip"
+    )
+    backup_file = models.redcap_backup(
+        file=f"temp/{fname}", token=app.config["API_KEY"]
+    )
+    return send_file(
+        "../" + backup_file,
+        as_attachment=False,
     )
