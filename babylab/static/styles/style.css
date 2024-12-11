@@ -160,7 +160,7 @@ a,
     left: 20%;
     align-self: center;
     margin: 1em;
-    background-color: transparent;
+    background-color: white;
 }
 
 .nav-link {
@@ -211,9 +211,23 @@ b {
 
 #indexCardMain,
 #indexCardLogin {
-    top: 50%;
+    top: 4%;
+    padding: 1%;
 }
 
+#img-ndc-logo {
+    display: block;
+    margin: auto;
+    margin-top: 10%;
+    margin-bottom: 5%;
+    border-radius: 100%;
+    width: 60%;
+    overflow: hidden;
+    padding: 0%;
+    border: 5px solid white;
+    background-color: white;
+
+}
 
 
 nav {
