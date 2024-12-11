@@ -38,6 +38,14 @@ def replace_labels(x: DataFrame | dict, data_dict: dict) -> DataFrame:
                 x[col_name] = [
                     "" if v == 0 else round(float(v) * 100, None) for v in col_values
                 ]
+            if "taxi_isbooked" in col_name:
+                for idx, (a, i) in enumerate(zip(x["taxi_address"], x[col_name])):
+                    if a and i=="1":
+                        x[col_name][idx] = "<p style='color: green;'>Yes<p>"
+                    if a and i=="0":
+                        x[col_name][idx] = "<p style='color: red;'>No<p>"
+                    if not a:
+                        x[col_name][idx] = ""
 
     if isinstance(x, dict):
         for k, v in x.items():
@@ -96,10 +104,7 @@ def get_appointments_table(
     Returns:
         pd.DataFrame: Table of appointments.
     """
-    if ppt_id is None:
-        apts = records.appointments
-    else:
-        apts = records.participants.records[ppt_id].appointments
+    apts = records.participants.records[ppt_id].appointments if ppt_id else records.appointments
 
     if study:
         apts.records = {
@@ -157,13 +162,6 @@ def get_appointments_table(
     df["age_apt_months"] = new_age_apt_months
     df["age_apt_days"] = new_age_apt_days
 
-    for idx, (a, i) in enumerate(zip(df["taxi_address"], df["taxi_isbooked"])):
-        if a and i=="1":
-            df["taxi_isbooked"][idx] = "<p style='color: green;'>Yes<p>"
-        if a and i=="0":
-            df["taxi_isbooked"][idx] = "<p style='color: red;'>No<p>"
-        if not a:
-            df["taxi_isbooked"][idx] = ""
 
     df = replace_labels(df, data_dict)
     return df
