@@ -1,134 +1,204 @@
 {% extends "base.html" %}
 {% block content %}
-<header>
-  <div class="jumbotron jumbotron-fluid">
-    <div class="container">
-      <h1 class="display-4">Participants ({{ ppt_id }})</h1>
-      <p class="lead">Showing details from participant {{ ppt_id }}.</p>
-    </div>
-  </div>
-  <hr class="my-4">
-</header>
-
-<body>
-  <div class="row">
-    <div class="col">
-      <div class="btn-group" role="group" aria-label="Basic example">
-        <a href="{{ url_for('appointment_new', ppt_id = ppt_id) }}">
-          <button type="button" class="btn btn-primary">
-            <i class="fa fa-plus"></i>&nbsp;&nbsp;New
-            appointment
-          </button>
-        </a>
-        <a href="{{ url_for('participant_modify', ppt_id = ppt_id) }}">
-          <button type="button" class="btn btn-warning">
-            <i class="fa fa-pen"></i>&nbsp;&nbsp;Modify
-            participant
-          </button>
-        </a>
+  <header>
+    <div class="jumbotron jumbotron-fluid">
+      <div class="container">
+        <h1 class="display-4">Participants ({{ ppt_id }})</h1>
+        <p class="lead">Showing details from participant {{ ppt_id }}.</p>
       </div>
     </div>
-  </div>
-  <br>
-  <h4>Participant information</h4>
-  <ul class="list-group list-group-horizontal-md">
-    <li class="list-group-item list-group-item-secondary col-4">Name</li>
-    <li class="list-group-item list-group-item-action user-select-all">{{ data["data"]["name"] }}</li>
-  </ul>
-  <ul class="list-group list-group-horizontal-md">
-    <li class="list-group-item list-group-item-secondary col-4">Added</li>
-    <li class="list-group-item list-group-item-action user-select-all ">{{ data["data"]["date_added"] }}</li>
-  </ul>
-  <ul class="list-group list-group-horizontal">
-    <li class="list-group-item list-group-item-secondary col-4">Age</li>
-    <li class="list-group-item list-group-item-action user-select-all ">
-      {{ data["data"]["age_now_months"] + ":" +
-      data["data"]["age_now_days"] }}
-    </li>
-  </ul>
-  <ul class="list-group list-group-horizontal">
-    <li class="list-group-item list-group-item-secondary col-4">Sex</li>
-    <li class="list-group-item list-group-item-action user-select-all ">{{ data["data"]["sex"] }}</li>
-  </ul>
-  <ul class="list-group list-group-horizontal">
-    <li class="list-group-item list-group-item-secondary col-4">Comments</li>
-    <li class="list-group-item list-group-item-action user-select-all ">{{ data["data"]["comments"] }}</li>
-  </ul>
-  <h4>Contact details</h4>
-  <ul class="list-group list-group-horizontal">
-    <li class="list-group-item list-group-item-secondary col-4">Phone</li>
-    <li class="list-group-item list-group-item-action user-select-all">{{ data["data"]["phone1"] }}</li>
-  </ul>
-  <ul class="list-group list-group-horizontal">
-    <li class="list-group-item list-group-item-secondary col-4">E-mail</li>
-    <li class="list-group-item list-group-item-action user-select-all">{{ data["data"]["email1"] }}</li>
-  </ul>
-  <ul class="list-group list-group-horizontal">
-    <li class="list-group-item list-group-item-secondary col-4">Phone 2</li>
-    <li class="list-group-item list-group-item-action user-select-all">{{ data["data"]["phone2"] }}</li>
-  </ul>
-  <ul class="list-group list-group-horizontal">
-    <li class="list-group-item list-group-item-secondary col-4">E-mail 2</li>
-    <li class="list-group-item list-group-item-action user-select-all">{{ data["data"]["email2"] }}</li>
-  </ul>
-  <ul class="list-group list-group-horizontal">
-    <li class="list-group-item list-group-item-secondary col-4">Address</li>
-    <li class="list-group-item list-group-item-action user-select-all">{{ data["data"]["address"] }}</li>
-  </ul>
-  <ul class="list-group list-group-horizontal">
-    <li class="list-group-item list-group-item-secondary col-4">Postcode</li>
-    <li class="list-group-item list-group-item-action user-select-all">{{ data["data"]["postcode"] }}</li>
-  </ul>
-  <ul class="list-group list-group-horizontal">
-    <li class="list-group-item list-group-item-secondary col-4">City</li>
-    <li class="list-group-item list-group-item-action user-select-all">{{ data["data"]["City"] }}</li>
-  </ul>
-  <h4>Birth information</h4>
-  <ul class="list-group list-group-horizontal">
-    <li class="list-group-item list-group-item-secondary col-7">Delivery type</li>
-    <li class="list-group-item list-group-item-action user-select-all">{{ data["data"]["birth_type"] }}</li>
-  </ul>
-  <ul class="list-group list-group-horizontal">
-    <li class="list-group-item list-group-item-secondary col-7">Gestational weeks</li>
-    <li class="list-group-item list-group-item-action user-select-all">{{ data["data"]["gest_weeks"] }}</li>
-  </ul>
-  <ul class="list-group list-group-horizontal">
-    <li class="list-group-item list-group-item-secondary col-7">Weight (g)</li>
-    <li class="list-group-item list-group-item-action user-select-all">{{ data["data"]["birth_weight"] }}</li>
-  </ul>
-  <ul class="list-group list-group-horizontal">
-    <li class="list-group-item list-group-item-secondary col-7">Head circunference (cm)</li>
-    <li class="list-group-item list-group-item-action user-select-all">{{ data["data"]["head_circumference"] }}</li>
-  </ul>
-  <ul class="list-group list-group-horizontal">
-    <li class=" list-group-item list-group-item-secondary col-7">Apgar</li>
-    <li class="list-group-item list-group-item-action user-select-all">{{ data["data"]["apgar1"] }}</li>
-    <li class="list-group-item list-group-item-action user-select-all">{{ data["data"]["apgar2"] }}</li>
-    <li class="list-group-item list-group-item-action user-select-all">{{ data["data"]["apgar3"] }}</li>
-  </ul>
-  <ul class="list-group list-group-horizontal">
-    <li class="list-group-item list-group-item-secondary col-7">Hearing</li>
-    <li class="list-group-item list-group-item-action user-select-all">{{ data["data"]["hearing"] }}</li>
-  </ul>
-  <ul class="list-group list-group-horizontal">
-    <li class="list-group-item list-group-item-secondary col-7">Diagnoses</li>
-    <li class="list-group-item list-group-item-action user-select-all">{{ data["data"]["diagnoses"] }}</li>
-  </ul>
-  <br>
-  <br>
-  <div class="card">
-    <h5 class="card-header">Appointments</h5>
-    <div class="card-body">
-      <h6 class="card-subtitle mb-2 text-muted">Click appointment IDs to see appointment details.</h6>
-      <div width="10%">{{ data["table_appointments"] | safe }}</div>
+    <hr class="my-4">
+  </header>
+  <body>
+    <div class="row">
+      <div class="col">
+        <div class="btn-group" role="group" aria-label="Basic example">
+          <a href="{{ url_for('appointment_new', ppt_id = ppt_id) }}">
+            <button type="button" class="btn btn-primary">
+              <i class="fa fa-plus"></i>&nbsp;&nbsp;&nbsp;&nbsp;New
+              appointment
+            </button>
+          </a>
+          <a href="{{ url_for('participant_modify', ppt_id = ppt_id) }}">
+            <button type="button" class="btn btn-warning">
+              <i class="fa fa-pen"></i>&nbsp;&nbsp;&nbsp;&nbsp;Modify
+              participant
+            </button>
+          </a>
+        </div>
+      </div>
     </div>
-  </div>
-  <div class="card">
-    <h5 class="card-header">Language questionnaires</h5>
-    <div class="card-body">
-      <h6 class="card-subtitle mb-2 text-muted">Click questionnaire IDs to see questionnaire details.</h6>
-      <div width="10%">{{ data["table_questionnaires"] | safe }}</div>
+    <br>
+    <div class="card card-info">
+      <div class="card-header">Participant information</div>
+      <div class="card-body">
+        <table class="table table-hover table-borderless table-responsive">
+          <tbody>
+            <tr>
+              <th>
+                Name&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-person"></i>
+              </th>
+              <td user-select-all>{{ data["data"]["name"] }}</td>
+            </tr>
+            <tr>
+              <th>
+                Added&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-calendar"></i>
+              </th>
+              <td>{{ data["data"]["date_added"] }}</td>
+            </tr>
+            <tr>
+              <th>
+                Age&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-hourglass-start"></i>
+              </th>
+              <td>
+                {{ data["data"]["age_now_months"] + ":" +
+                data["data"]["age_now_days"] }}
+              </td>
+            </tr>
+            <tr>
+              <th>
+                Sex&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-venus-mars"></i>
+              </th>
+              <td>{{ data["data"]["sex"] }}</td>
+            </tr>
+            <tr>
+              <th>
+                Comments&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-comments"></i>
+              </th>
+              <td>{{ data["data"]["comments"] }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
-  </div>
-</body>
+    <div class="card card-info">
+      <div class="card-header">Contact details</div>
+      <div class="card-body">
+        <div class="card-text">
+          <table class="table table-hover table-borderless table-responsive">
+            <tbody>
+              <tr>
+                <th>
+                  Phone&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-phone"></i>
+                </th>
+                <td>{{ data["data"]["phone1"] }}</td>
+              </tr>
+              <tr>
+                <th>
+                  E-mail&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-envelope"></i>
+                </th>
+                <td>{{ data["data"]["email1"] }}</td>
+              </tr>
+              <tr>
+                <th>
+                  Phone 2&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-phone"></i>
+                </th>
+                <td>{{ data["data"]["phone2"] }}</td>
+              </tr>
+              <tr>
+                <th>
+                  E-mail 2&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-envelope"></i>
+                </th>
+                <td>{{ data["data"]["email2"] }}</td>
+              </tr>
+              <tr>
+                <th>
+                  Address&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-house"></i>
+                </th>
+                <td>{{ data["data"]["address"] }}</td>
+              </tr>
+              <tr>
+                <th>
+                  Postcode&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-city"></i>
+                </th>
+                <td>{{ data["data"]["postcode"] }}</td>
+              </tr>
+              <tr>
+                <th>
+                  City&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-city"></i>
+                </th>
+                <td>{{ data["data"]["city"] }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="card card-info">
+      <div class="card-header">Birth information</div>
+      <div class="card-body">
+        <table class="table table-hover table-borderless table-responsive">
+          <tbody>
+            <tr>
+              <th>
+                Delivery type&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-hospital"></i>
+              </th>
+              <td user-select-all>{{ data["data"]["birth_type"] }}</td>
+            </tr>
+            <tr>
+              <th>
+                Gestational weeks&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-clock"></i>
+              </th>
+              <td>{{ data["data"]["gest_weeks"] }}</td>
+            </tr>
+            <tr>
+              <th>
+                Birth weight (g)&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-weight-scale"></i>
+              </th>
+              <td>{{ data["data"]["birth_weight"] }}</td>
+            </tr>
+            <tr>
+              <th>
+                Head circumference (cm)&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-ruler"></i>
+              </th>
+              <td>{{ data["data"]["head_cincumference"] }}</td>
+            </tr>
+            <tr>
+              <th>
+                Apgar&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-check"></i>
+              </th>
+              <td>
+                {{ data["data"]["apgar1"] }} |
+                {{ data["data"]["apgar2"] }} | {{ data["data"]["apgar3"] }}
+              </td>
+            </tr>
+            <tr>
+              <th>
+                Hearing&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-headphones"></i>
+              </th>
+              <td>{{ data["data"]["hearing"] }}</td>
+            </tr>
+            <tr>
+              <th>
+                Diagnoses&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-user-doctor"></i>
+              </th>
+              <td>{{ data["data"]["diagnoses"] }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="container">
+      <div class="row">
+        <div class="card card-table">
+          <div class="card-body">
+            <h2 class="card-title">Appointments</h2>
+            <h6 class="card-subtitle mb-2 text-muted">Click appointment IDs to see appointment details.</h6>
+            {{ data["table_appointments"] | safe }}
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="container">
+      <div class="row">
+        <div class="card card-table">
+          <div class="card-body">
+            <h2 class="card-title">Language questionnaires</h2>
+            <h6 class="card-subtitle mb-2 text-muted">Click questionnaire IDs to see questionnaire details.</h6>
+            {{ data["table_questionnaires"] | safe }}
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
 {% endblock content %}
