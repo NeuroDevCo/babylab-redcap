@@ -136,6 +136,12 @@ a,
     font-family: "Ciutadella Regular";
 }
 
+
+i {
+    color: lightgrey;
+}
+
+
 .card-header {
     font-family: "Ciutadella SemiBold";
     background-color: rgb(227, 227, 227);
@@ -147,6 +153,7 @@ a,
 
 .card-body {
     font-family: "Ciutadella Regular";
+    padding: 0%;
 }
 
 .card-img-top {
@@ -161,6 +168,17 @@ a,
     align-self: center;
     margin: 1em;
     background-color: white;
+}
+
+.card-info {
+    float: left;
+    width: 30%;
+    margin: 1em;
+}
+
+.card-table {
+    margin: 1em;
+    float: left;
 }
 
 .nav-link {
@@ -206,7 +224,7 @@ h5,
 h6,
 th,
 b {
-    font-family: "Ciutadella Bold";
+    font-family: "Ciutadella Medium";
 }
 
 #indexCardMain,

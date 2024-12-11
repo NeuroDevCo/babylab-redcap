@@ -40,11 +40,13 @@ def format_df(x: DataFrame, data_dict: dict)-> DataFrame:
             if "taxi_isbooked" in col_name:
                 for idx, (a, i) in enumerate(zip(x["taxi_address"], x[col_name])):
                     if a and i=="1":
-                        x[col_name][idx] = "<p style='color: green;'>Yes<p>"
+                        x[col_name][idx] = "<p style='color: green;'>Yes</p>"
                     if a and i=="0":
-                        x[col_name][idx] = "<p style='color: red;'>No<p>"
+                        x[col_name][idx] = "<p style='color: red;'>No</p>"
                     if not a:
                         x[col_name][idx] = ""
+
+
     return x
 
 def format_dict(x: dict, data_dict = dict) -> dict:
@@ -88,7 +90,7 @@ def get_participants_table(
     """Get participants table
 
     Args:
-        records (models.Records): _description_
+        records (models.Records): REDCap records, as returned by ``api.Records``.
 
     Returns:
         pd.DataFrame: Table of partcicipants.
@@ -143,11 +145,11 @@ def get_appointments_table(
                 "appointment_id",
                 "record_id",
                 "study",
+                "status",
                 "date",
                 "date_made",
                 "taxi_address",
                 "taxi_isbooked",
-                "status",
                 "comments",
             ],
         )
@@ -224,8 +226,8 @@ def get_questionnaires_table(
     df = quest.to_df()
     df = replace_labels(df, data_dict)
     df["isestimated"] = [
-        "<p style='color: red;'>Estimated<p>" 
-        if i=="1" else "<p style='color: green;'>Calculated<p>"
+        "<p style='color: red;'>Estimated</p>" 
+        if i=="1" else "<p style='color: green;'>Calculated</p>"
         for i in df["isestimated"]
     ]
     return df
@@ -304,7 +306,7 @@ def prepare_dashboard(records: models.Records = None, data_dict: dict = None):
 def prepare_participants(records: models.Records = None, data_dict: dict = None):
     """Prepare data for participants page"""
     df = get_participants_table(records, data_dict=data_dict)
-    classes = "table table-hover"
+    classes = "table table-hover table-responsive"
     df["record_id"] = [f"<a href=/participants/{str(i)}>{str(i)}</a>" for i in df.index]
     df.index = df.index.astype(int)
     df = df.sort_index(ascending=False)
@@ -353,7 +355,7 @@ def prepare_record_id(
     data["parent1"] = data["parent1_name"] + " " + data["parent1_surname"]
     data["parent2"] = data["parent2_name"] + " " + data["parent2_surname"]
 
-    classes = "table table-hover"
+    classes = "table table-hover table-responsive"
 
     # prepare participants table
     df_appt = get_appointments_table(records, data_dict=data_dict, ppt_id=ppt_id)
@@ -457,21 +459,29 @@ def prepare_appointments(
 ):
     """Prepare appointments page"""
     df = get_appointments_table(records, data_dict=data_dict, study=study)
-    classes = "table table-hover"
+    classes = "table table-hover table-responsive"
     df["appointment_id"] = [
         f"<a href=/appointments/{i}>{i}</a>" for i in df["appointment_id"]
     ]
     df["record_id"] = [f"<a href=/participants/{i}>{i}</a>" for i in df.index]
+    status_color_map = {
+        "Scheduled": "black",
+        "Confirmed": "orange",
+        "Successful": "green",
+        "Cancelled - Drop": "grey",
+        "Cancelled - Reschedule": "red"
+    }
+    df["status"] = [f"<p style='color: {status_color_map[s]};'>{s}</p>" for s in df["status"]]
     df = df[
         [
             "appointment_id",
             "record_id",
             "study",
+            "status",
             "date",
             "date_made",
             "taxi_address",
             "taxi_isbooked",
-            "status",
             "comments",
         ]
     ]
@@ -482,11 +492,11 @@ def prepare_appointments(
             "appointment_id": "Appointment ID",
             "record_id": "Participant ID",
             "study": "Study",
+            "status": "Appointment status",
             "date": "Date",
             "date_made": "Made on the",
             "taxi_address": "Taxi address",
             "taxi_isbooked": "Taxi booked",
-            "status": "Appointment status",
             "comments": "Comments",
         }
     )
@@ -561,7 +571,7 @@ def prepare_studies(
 ):
     """Prepare appointments page"""
     df = get_appointments_table(records, data_dict=data_dict, study=study)
-    classes = "table table-hover"
+    classes = "table table-hover table-responsives"
     df["appointment_id"] = [
         f"<a href=/appointments/{i}>{i}</a>" for i in df["appointment_id"]
     ]
