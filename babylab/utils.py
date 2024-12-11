@@ -12,26 +12,25 @@ from babylab import models
 from babylab import calendar
 
 
-def replace_labels(x: DataFrame | dict, data_dict: dict) -> DataFrame:
-    """Replace field values with labels.
+def format_df(x: DataFrame, data_dict: dict)-> DataFrame:
+    """Reformat dataframe.
 
     Args:
-        x (pd.DataFrame): Pandas DataFrame in which to replace values with labels.
-        data_dict (dict, optional): Data dictionary as returned by ``get_data_dictionary``. Defaults to None.
+        x (DataFrame): Dataframe to reformat.
+        data_dict (dict): Data dictionary to labels to use, as returned by ``models.get_data_dict``.
 
     Returns:
-        pd.DataFrame: _description_
-    """  # pylint: disable=line-too-long
-    if isinstance(x, DataFrame):
-        for col_name, col_values in x.items():
-            kdict = [
-                "participant_" + col_name,
-                "appointment_" + col_name,
-                "language_" + col_name,
-            ]
-            for k in kdict:
-                if k in data_dict:
-                    x[col_name] = [data_dict[k][v] if v else "" for v in col_values]
+        DataFrame: A reformatted Dataframe.
+    """
+    for col_name, col_values in x.items():
+        kdict = [
+            "participant_" + col_name,
+            "appointment_" + col_name,
+            "language_" + col_name,
+        ]
+        for k in kdict:
+            if k in data_dict:
+                x[col_name] = [data_dict[k][v] if v else "" for v in col_values]
             if "lang" in col_name:
                 x[col_name] = ["" if v == "None" else v for v in x[col_name]]
             if "exp" in col_name:
@@ -46,14 +45,40 @@ def replace_labels(x: DataFrame | dict, data_dict: dict) -> DataFrame:
                         x[col_name][idx] = "<p style='color: red;'>No<p>"
                     if not a:
                         x[col_name][idx] = ""
+    return x
 
+def format_dict(x: dict, data_dict = dict) -> dict:
+    """Reformat dictionary.
+
+    Args:
+        x (dict): dictionary to reformat.
+        data_dict (dict): Data dictionary to labels to use, as returned by ``models.get_data_dict``.
+
+    Returns:
+        dict: A reformatted dictionary.
+    """
+    for k, v in x.items():
+        kdict = "language_" + k
+        if kdict in data_dict and v:
+            x[k] = data_dict[kdict][v]
+        if "exp" in k:
+            x[k] = "" if v == 0 else round(float(v) * 100, None)
+    return x
+
+def replace_labels(x: DataFrame | dict, data_dict: dict) -> DataFrame:
+    """Replace field values with labels.
+
+    Args:
+        x (pd.DataFrame): Pandas DataFrame in which to replace values with labels.
+        data_dict (dict, optional): Data dictionary as returned by ``get_data_dictionary``. Defaults to None.
+
+    Returns:
+        pd.DataFrame: _description_
+    """  # pylint: disable=line-too-long
+    if isinstance(x, DataFrame):
+        x = format_df(x, data_dict)
     if isinstance(x, dict):
-        for k, v in x.items():
-            kdict = "language_" + k
-            if kdict in data_dict and v:
-                x[k] = data_dict[kdict][v]
-            if "exp" in k:
-                x[k] = "" if v == 0 else round(float(v) * 100, None)
+        x = format_dict(x, data_dict)
     return x
 
 
