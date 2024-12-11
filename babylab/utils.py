@@ -156,6 +156,15 @@ def get_appointments_table(
     df["age_now_days"] = new_age_now_days
     df["age_apt_months"] = new_age_apt_months
     df["age_apt_days"] = new_age_apt_days
+
+    for idx, (a, i) in enumerate(zip(df["taxi_address"], df["taxi_isbooked"])):
+        if a and i=="1":
+            df["taxi_isbooked"][idx] = "<p style='color: green;'>Yes<p>"
+        if a and i=="0":
+            df["taxi_isbooked"][idx] = "<p style='color: red;'>No<p>"
+        if not a:
+            df["taxi_isbooked"][idx] = ""
+   
     df = replace_labels(df, data_dict)
     return df
 
@@ -170,13 +179,13 @@ def get_questionnaires_table(
         quest = records.questionnaires
     else:
         quest = records.participants.records[ppt_id].questionnaires
-
     if not quest.records:
         return DataFrame(
             [],
             columns=[
                 "record_id",
                 "questionnaire_id",
+                "isestimated",
                 "updated",
                 "lang1",
                 "lang1_exp",
@@ -191,6 +200,11 @@ def get_questionnaires_table(
         )
     df = quest.to_df()
     df = replace_labels(df, data_dict)
+    df["isestimated"] = [
+        "<p style='color: red;'>Estimated<p>" 
+        if i=="1" else "<p style='color: green;'>Calculated<p>" 
+        for i in df["isestimated"]
+    ]
     return df
 
 
@@ -478,6 +492,7 @@ def prepare_questionnaires(records: models.Records = None, data_dict: dict = Non
         [
             "questionnaire_id",
             "record_id",
+            "isestimated",
             "lang1",
             "lang1_exp",
             "lang2",
@@ -494,6 +509,7 @@ def prepare_questionnaires(records: models.Records = None, data_dict: dict = Non
         columns={
             "record_id": "Participant ID",
             "questionnaire_id": "Questionnaire ID",
+            "isestimated": "Status",
             "updated": "Updated",
             "lang1": "L1",
             "lang1_exp": "%",
