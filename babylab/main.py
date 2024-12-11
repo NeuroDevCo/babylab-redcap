@@ -297,6 +297,8 @@ def appointment_id(
         dict_key = "appointment_" + k
         if dict_key in data_dict and v:
             data[k] = data_dict[dict_key][v]
+        if dict_key=="appointment_taxi_isbooked":
+            data[k] = "Yes" if v=="1" else "No"
     participant = records.participants.records[data["record_id"]].data
     participant["age_now_months"] = str(participant["age_now_months"])
     participant["age_now_days"] = str(participant["age_now_days"])
@@ -466,6 +468,11 @@ def questionnaire_id(
             return render_template("index.html", login_status="incorrect")
     data = records.questionnaires.records[quest_id].data
     data = utils.replace_labels(data, data_dict=data_dict)
+    data["isestimated"] = (
+        "<div style='color: red'>Estimated</div>" 
+        if data["isestimated"]=="1"
+        else "<div style='color: green'>Calculated</div>"
+    )
     return render_template(
         "questionnaire_id.html",
         ppt_id=ppt_id,
@@ -491,6 +498,9 @@ def questionnaire_new(ppt_id: str, data_dict: dict = None):
             "redcap_repeat_instance": "new",
             "redcap_repeat_instrument": "language",
             "language_updated": date_now,
+            "language_isestimated": (
+                "1" if "inputIsEstimated" in finput.keys() else "0"
+            ),
             "language_lang1": (
                 finput["inputLang1"] if "inputLang1" in finput.keys() else "0"
             ),
@@ -550,6 +560,9 @@ def questionnaire_modify(
         data = {
             "record_id": ppt_id,
             "redcap_repeat_instance": quest_id.split(":")[1],
+            "language_isestimated": (
+                "1" if "inputIsEstimated" in finput.keys() else "0"
+            ),
             "redcap_repeat_instrument": "language",
             "language_updated": date_now,
             "language_lang1": finput["inputLang1"],

@@ -70,16 +70,17 @@
                    type="checkbox"
                    name="inputTaxiIsbooked"
                    id="inputTaxiIsbooked"
-                   placeholder="{{ data['taxi_isbooked'] }}"
-                   value="{{ data['taxi_isbooked'] }}">
+                   {% if data['taxi_isbooked']=='1' %}checked{% endif %}>
             <label class="form-check-label" for="inputTaxiIsbooked">Is the taxi booked</label>
           </div>
-          <label for="inputComments" class="form-label">Comments</label>
-          <textarea class="form-control"
-                    name="inputComments"
-                    rows="3"
-                    placeholder="{{ data['comments'] }}"
-                    value="{{ data['comments'] }}"></textarea>
+          <div class="form-group">
+            <label for="inputComments" class="form-label">Comments</label>
+            <textarea class="form-control"
+                      name="inputComments"
+                      rows="3"
+                      placeholder="{{ data['comments'] }}"
+                      value="{{ data['comments'] }}"></textarea>
+          </div>
         </div>
       </div>
     </form>

@@ -12,6 +12,59 @@ from babylab import models
 from babylab import calendar
 
 
+def format_df(x: DataFrame, data_dict: dict)-> DataFrame:
+    """Reformat dataframe.
+
+    Args:
+        x (DataFrame): Dataframe to reformat.
+        data_dict (dict): Data dictionary to labels to use, as returned by ``models.get_data_dict``.
+
+    Returns:
+        DataFrame: A reformatted Dataframe.
+    """
+    for col_name, col_values in x.items():
+        kdict = [
+            "participant_" + col_name,
+            "appointment_" + col_name,
+            "language_" + col_name,
+        ]
+        for k in kdict:
+            if k in data_dict:
+                x[col_name] = [data_dict[k][v] if v else "" for v in col_values]
+            if "lang" in col_name:
+                x[col_name] = ["" if v == "None" else v for v in x[col_name]]
+            if "exp" in col_name:
+                x[col_name] = [
+                    "" if v == 0 else round(float(v) * 100, None) for v in col_values
+                ]
+            if "taxi_isbooked" in col_name:
+                for idx, (a, i) in enumerate(zip(x["taxi_address"], x[col_name])):
+                    if a and i=="1":
+                        x[col_name][idx] = "<p style='color: green;'>Yes<p>"
+                    if a and i=="0":
+                        x[col_name][idx] = "<p style='color: red;'>No<p>"
+                    if not a:
+                        x[col_name][idx] = ""
+    return x
+
+def format_dict(x: dict, data_dict = dict) -> dict:
+    """Reformat dictionary.
+
+    Args:
+        x (dict): dictionary to reformat.
+        data_dict (dict): Data dictionary to labels to use, as returned by ``models.get_data_dict``.
+
+    Returns:
+        dict: A reformatted dictionary.
+    """
+    for k, v in x.items():
+        kdict = "language_" + k
+        if kdict in data_dict and v:
+            x[k] = data_dict[kdict][v]
+        if "exp" in k:
+            x[k] = "" if v == 0 else round(float(v) * 100, None)
+    return x
+
 def replace_labels(x: DataFrame | dict, data_dict: dict) -> DataFrame:
     """Replace field values with labels.
 
@@ -23,29 +76,9 @@ def replace_labels(x: DataFrame | dict, data_dict: dict) -> DataFrame:
         pd.DataFrame: _description_
     """  # pylint: disable=line-too-long
     if isinstance(x, DataFrame):
-        for col_name, col_values in x.items():
-            kdict = [
-                "participant_" + col_name,
-                "appointment_" + col_name,
-                "language_" + col_name,
-            ]
-            for k in kdict:
-                if k in data_dict:
-                    x[col_name] = [data_dict[k][v] if v else "" for v in col_values]
-            if "lang" in col_name:
-                x[col_name] = ["" if v == "None" else v for v in x[col_name]]
-            if "exp" in col_name:
-                x[col_name] = [
-                    "" if v == 0 else round(float(v) * 100, None) for v in col_values
-                ]
-
+        x = format_df(x, data_dict)
     if isinstance(x, dict):
-        for k, v in x.items():
-            kdict = "language_" + k
-            if kdict in data_dict and v:
-                x[k] = data_dict[kdict][v]
-            if "exp" in k:
-                x[k] = "" if v == 0 else round(float(v) * 100, None)
+        x = format_dict(x, data_dict)
     return x
 
 
@@ -96,10 +129,7 @@ def get_appointments_table(
     Returns:
         pd.DataFrame: Table of appointments.
     """
-    if ppt_id is None:
-        apts = records.appointments
-    else:
-        apts = records.participants.records[ppt_id].appointments
+    apts = records.participants.records[ppt_id].appointments if ppt_id else records.appointments
 
     if study:
         apts.records = {
@@ -156,6 +186,8 @@ def get_appointments_table(
     df["age_now_days"] = new_age_now_days
     df["age_apt_months"] = new_age_apt_months
     df["age_apt_days"] = new_age_apt_days
+
+
     df = replace_labels(df, data_dict)
     return df
 
@@ -170,13 +202,13 @@ def get_questionnaires_table(
         quest = records.questionnaires
     else:
         quest = records.participants.records[ppt_id].questionnaires
-
     if not quest.records:
         return DataFrame(
             [],
             columns=[
                 "record_id",
                 "questionnaire_id",
+                "isestimated",
                 "updated",
                 "lang1",
                 "lang1_exp",
@@ -191,6 +223,11 @@ def get_questionnaires_table(
         )
     df = quest.to_df()
     df = replace_labels(df, data_dict)
+    df["isestimated"] = [
+        "<p style='color: red;'>Estimated<p>" 
+        if i=="1" else "<p style='color: green;'>Calculated<p>"
+        for i in df["isestimated"]
+    ]
     return df
 
 
@@ -478,6 +515,7 @@ def prepare_questionnaires(records: models.Records = None, data_dict: dict = Non
         [
             "questionnaire_id",
             "record_id",
+            "isestimated",
             "lang1",
             "lang1_exp",
             "lang2",
@@ -494,6 +532,7 @@ def prepare_questionnaires(records: models.Records = None, data_dict: dict = Non
         columns={
             "record_id": "Participant ID",
             "questionnaire_id": "Questionnaire ID",
+            "isestimated": "Status",
             "updated": "Updated",
             "lang1": "L1",
             "lang1_exp": "%",
