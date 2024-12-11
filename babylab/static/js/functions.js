@@ -8,13 +8,15 @@ function colPlot(labels, values, canvas, color, label) {
         label: label,
         data: values,
         backgroundColor: color,
-        borderColor: color,
       }]
     },
     options: {
       plugins: {
         legend: {
-          display: false
+          display: false,
+          font: {
+            family: "Ciutadella Regular"
+          }
         }
       },
       scales: {
@@ -22,6 +24,10 @@ function colPlot(labels, values, canvas, color, label) {
           title: {
             display: true,
             text: label,
+            font: {
+              family: 'Ciutadella Medium',
+              size: 16
+            }
           },
           grid: {
             display: false,
@@ -29,19 +35,31 @@ function colPlot(labels, values, canvas, color, label) {
           ticks: {
             beginAtZero: false,
             suggestedMin: 'min-int-value',
-            suggestedMax: 'max-int-value'
+            suggestedMax: 'max-int-value',
+            font: {
+              family: 'Ciutadella Regular',
+              size: 16
+            }
           }
         },
         y: {
           title: {
             display: true,
             text: "# participants",
+            font: {
+              family: 'Ciutadella Medium',
+              size: 16
+            }
           },
           ticks: {
             beginAtZero: true,
             stepSize: 1,
             suggestedMin: 'min-int-value',
-            suggestedMax: 'max-int-value'
+            suggestedMax: 'max-int-value',
+            font: {
+              family: 'Ciutadella Regular',
+              size: 16
+            }
           }
         }
       }
@@ -68,6 +86,12 @@ function circlePlot(labels, values, canvas, color, label) {
       plugins: {
         legend: {
           position: 'top',
+          labels: {
+            font: {
+              family: 'Ciutadella Regular',
+              size: 18
+            }
+         }
         },
       },
       rotation: -90,
@@ -97,20 +121,34 @@ function dateLinePlot(labels, values, canvas, color, label) {
     options: {
       plugins: {
         legend: {
-          display: true
+          display: true,
+          labels: {
+            font: {
+              family: 'Ciutadella Regular',
+              size: 18
+            }
+          }
         }
       },
       scales: {
         y: {
           title: {
             display: true,
-            text: '# participants'
+            text: '# participants',
+            font: {
+              family: 'Ciutadella Medium',
+              size: 18
+            }
           },
           ticks: {
             beginAtZero: true,
             stepSize: 1,
             suggestedMin: 'min-int-value',
-            suggestedMax: 'max-int-value'
+            suggestedMax: 'max-int-value',
+            font: {
+              family: 'Ciutadella Regular',
+              size: 16
+            }
           }
         },
         x: {
@@ -120,7 +158,17 @@ function dateLinePlot(labels, values, canvas, color, label) {
           },
           title: {
             display: true,
-            text: label
+            text: label,
+            font: {
+              family: 'Ciutadella Medium',
+              size: 16
+            }
+          },
+          ticks: {
+            font: {
+              family: 'Ciutadella Regular',
+              size: 16
+            }
           }
         },
       }
