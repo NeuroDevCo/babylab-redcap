@@ -470,7 +470,7 @@ def questionnaire_id(
     data = utils.replace_labels(data, data_dict=data_dict)
     data["isestimated"] = (
         "<div style='color: red'>Estimated</div>" 
-        if data["isestimated"]=="1" 
+        if data["isestimated"]=="1"
         else "<div style='color: green'>Calculated</div>"
     )
     return render_template(
@@ -500,7 +500,7 @@ def questionnaire_new(ppt_id: str, data_dict: dict = None):
             "language_updated": date_now,
             "language_isestimated": (
                 "1" if "inputIsEstimated" in finput.keys() else "0"
-            ),           
+            ),
             "language_lang1": (
                 finput["inputLang1"] if "inputLang1" in finput.keys() else "0"
             ),

@@ -164,7 +164,7 @@ def get_appointments_table(
             df["taxi_isbooked"][idx] = "<p style='color: red;'>No<p>"
         if not a:
             df["taxi_isbooked"][idx] = ""
-   
+
     df = replace_labels(df, data_dict)
     return df
 
@@ -202,7 +202,7 @@ def get_questionnaires_table(
     df = replace_labels(df, data_dict)
     df["isestimated"] = [
         "<p style='color: red;'>Estimated<p>" 
-        if i=="1" else "<p style='color: green;'>Calculated<p>" 
+        if i=="1" else "<p style='color: green;'>Calculated<p>"
         for i in df["isestimated"]
     ]
     return df
