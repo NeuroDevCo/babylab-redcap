@@ -273,6 +273,7 @@ class Questionnaire:
         self.questionnaire_id = (
             data["record_id"] + ":" + str(data["redcap_repeat_instance"])
         )
+        self.isestimated = data["isestimated"]
         self.data = data
         for i in range(1, 5):
             l = f"lang{i}_exp"
