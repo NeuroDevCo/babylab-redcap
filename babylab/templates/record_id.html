@@ -164,8 +164,11 @@
                 Apgar&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-check"></i>
               </th>
               <td>
-                {{ data["data"]["apgar1"] }} |
-                {{ data["data"]["apgar2"] }} | {{ data["data"]["apgar3"] }}
+                {{ data["data"]["apgar1"] }}
+                {% if data["data"]["apgar1"] and data["data"]["apgar2"] %}|{% endif %}
+                {{ data["data"]["apgar2"] }}
+                {% if data["data"]["apgar2"] and data["data"]["apgar3"] %}|{% endif %}
+                {{ data["data"]["apgar3"] }}
               </td>
             </tr>
             <tr>

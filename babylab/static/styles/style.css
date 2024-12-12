@@ -170,7 +170,7 @@ i {
     background-color: white;
 }
 
-.card-info {
+.card-info, .card-input {
     float: left;
     width: 30%;
     margin: 1em;
@@ -181,6 +181,8 @@ i {
     float: left;
     vertical-align: middle;
 }
+
+
 
 td {
     vertical-align: text-bottom; 
@@ -207,7 +209,9 @@ td {
 
 label,
 .list-group-item {
-    font-family: "Ciutadella Italic";
+    font-family: "Ciutadella Medium";
+    margin-top: 0.5em;
+
 }
 
 button {
