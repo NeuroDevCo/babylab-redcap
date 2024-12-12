@@ -159,6 +159,7 @@ def participant_new(data_dict: dict = None):
         data = {
             "record_id": "0",
             "participant_date_added": date_now,
+            "participant_date_updated": date_now,
             "participant_name": finput["inputName"],
             "participant_age_now_months": finput["inputAgeMonths"],
             "participant_age_now_days": finput["inputAgeDays"],
@@ -223,7 +224,8 @@ def participant_modify(
         date_now = datetime.datetime.strftime(datetime.datetime.now(), "%Y-%m-%d %H:%M")
         data = {
             "record_id": ppt_id,
-            "participant_date_added": date_now,
+            # "participant_date_added": date_now,
+            "participant_date_updated": date_now,
             "participant_name": finput["inputName"],
             "participant_age_now_months": finput["inputAgeMonths"],
             "participant_age_now_days": finput["inputAgeDays"],
@@ -258,6 +260,7 @@ def participant_modify(
                 modifying=True,
                 token=app.config["API_KEY"],
             )
+            return redirect(url_for("record_id", ppt_id=ppt_id))
         except requests.exceptions.HTTPError as e:
             flash(f"Something went wrong! {e}", "error")
             return render_template(
@@ -326,6 +329,7 @@ def appointment_new(ppt_id: str, data_dict: dict = None):
             "redcap_repeat_instrument": "appointments",
             "appointment_study": finput["inputStudy"],
             "appointment_date_made": date_now,
+            "appointment_date_created": date_now,
             "appointment_date": finput["inputDate"],
             "appointment_taxi_address": finput["inputTaxiAddress"],
             "appointment_taxi_isbooked": (
@@ -380,7 +384,8 @@ def appointment_modify(
             "redcap_repeat_instance": appt_id.split(":")[1],
             "redcap_repeat_instrument": "appointments",
             "appointment_study": finput["inputStudy"],
-            "appointment_date_made": date_now,
+            # "appointment_date_made": date_now,
+            "appointment_date_updated": date_now,
             "appointment_date": finput["inputDate"],
             "appointment_taxi_address": finput["inputTaxiAddress"],
             "appointment_taxi_isbooked": (
@@ -497,6 +502,7 @@ def questionnaire_new(ppt_id: str, data_dict: dict = None):
             "record_id": ppt_id,
             "redcap_repeat_instance": "new",
             "redcap_repeat_instrument": "language",
+            "language_date_created": date_now, 
             "language_updated": date_now,
             "language_isestimated": (
                 "1" if "inputIsEstimated" in finput.keys() else "0"

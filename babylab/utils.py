@@ -95,7 +95,15 @@ def get_participants_table(
     Returns:
         pd.DataFrame: Table of partcicipants.
     """
-    cols = ["name", "age_now_months", "age_now_days", "sex", "comments", "date_added"]
+    cols = [
+        "name",
+        "age_now_months",
+        "age_now_days",
+        "sex",
+        "comments",
+        "date_added",
+        "date_updated"
+    ]
     if not records.participants.records:
         return DataFrame([], columns=cols)
 
@@ -148,6 +156,7 @@ def get_appointments_table(
                 "status",
                 "date",
                 "date_made",
+                "date_updated",
                 "taxi_address",
                 "taxi_isbooked",
                 "comments",
@@ -211,6 +220,7 @@ def get_questionnaires_table(
                 "record_id",
                 "questionnaire_id",
                 "isestimated",
+                "date_created",
                 "updated",
                 "lang1",
                 "lang1_exp",
@@ -323,6 +333,7 @@ def prepare_participants(records: models.Records = None, data_dict: dict = None)
             "sex",
             "comments",
             "date_added",
+            "date_updated",
             "modify_button"
         ]
     ]
@@ -335,6 +346,7 @@ def prepare_participants(records: models.Records = None, data_dict: dict = None)
             "sex": "Sex",
             "comments": "Comments",
             "date_added": "Added on",
+            "date_updated": "Last updated",
             "modify_button": ""
         }
     )
@@ -377,6 +389,7 @@ def prepare_record_id(
             "study",
             "date",
             "date_made",
+            "date_updated",
             "taxi_address",
             "taxi_isbooked",
             "status",
@@ -390,6 +403,7 @@ def prepare_record_id(
             "study": "Study",
             "date": "Date",
             "date_made": "Made on the",
+            "date_updated": "Last update",
             "taxi_address": "Taxi address",
             "taxi_isbooked": "Taxi booked",
             "status": "Status",
@@ -425,6 +439,7 @@ def prepare_record_id(
             "lang3_exp",
             "lang4",
             "lang4_exp",
+            "date_created",
             "updated",
         ]
     ]
@@ -434,6 +449,7 @@ def prepare_record_id(
             "record_id": "Participant ID",
             "questionnaire_id": "Questionnaire ID",
             "updated": "Updated",
+            "date_created": "Created on the:",
             "lang1": "L1",
             "lang1_exp": "%",
             "lang2": "L2",
@@ -492,6 +508,7 @@ def prepare_appointments(
             "status",
             "date",
             "date_made",
+            "date_updated",
             "taxi_address",
             "taxi_isbooked",
             "comments",
@@ -508,6 +525,7 @@ def prepare_appointments(
             "status": "Appointment status",
             "date": "Date",
             "date_made": "Made on the",
+            "date_updated": "Last updated",
             "taxi_address": "Taxi address",
             "taxi_isbooked": "Taxi booked",
             "comments": "Comments",
@@ -553,6 +571,7 @@ def prepare_questionnaires(records: models.Records = None, data_dict: dict = Non
             "lang4",
             "lang4_exp",
             "updated",
+            "date_created",
             "modify_button"
         ]
     ]
@@ -563,6 +582,7 @@ def prepare_questionnaires(records: models.Records = None, data_dict: dict = Non
             "questionnaire_id": "Questionnaire ID",
             "isestimated": "Status",
             "updated": "Updated",
+            "date_created": "Added on the:",
             "lang1": "L1",
             "lang1_exp": "%",
             "lang2": "L2",
@@ -603,6 +623,7 @@ def prepare_studies(
             "study",
             "date",
             "date_made",
+            "date_updated",
             "taxi_address",
             "taxi_isbooked",
             "status",
@@ -618,6 +639,7 @@ def prepare_studies(
             "study": "Study",
             "date": "Date",
             "date_made": "Made on the",
+            "date_updated": "Last updated",
             "taxi_address": "Taxi address",
             "taxi_isbooked": "Taxi booked",
             "status": "Appointment status",
