@@ -179,7 +179,12 @@ i {
 .card-table {
     margin: 1em;
     float: left;
+    vertical-align: middle;
 }
+
+td {
+    vertical-align: text-bottom; 
+  }
 
 .nav-link {
     font-family: "Ciutadella Regular";
@@ -207,6 +212,7 @@ label,
 
 button {
     margin: 1em;
+    padding: 0em;
     font-family: "Ciutadella Regular";
 }
 
