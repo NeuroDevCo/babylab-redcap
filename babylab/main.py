@@ -503,7 +503,7 @@ def questionnaire_new(ppt_id: str, data_dict: dict = None):
             "redcap_repeat_instance": "new",
             "redcap_repeat_instrument": "language",
             "language_date_created": date_now, 
-            "language_updated": date_now,
+            "language_date_updated": date_now,
             "language_isestimated": (
                 "1" if "inputIsEstimated" in finput.keys() else "0"
             ),
@@ -570,7 +570,7 @@ def questionnaire_modify(
                 "1" if "inputIsEstimated" in finput.keys() else "0"
             ),
             "redcap_repeat_instrument": "language",
-            "language_updated": date_now,
+            "language_date_updated": date_now,
             "language_lang1": finput["inputLang1"],
             "language_lang1_exp": finput["inputLang1Exp"],
             "language_lang2": finput["inputLang2"],

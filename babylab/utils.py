@@ -221,7 +221,7 @@ def get_questionnaires_table(
                 "questionnaire_id",
                 "isestimated",
                 "date_created",
-                "updated",
+                "date_updated",
                 "lang1",
                 "lang1_exp",
                 "lang2",
@@ -440,15 +440,15 @@ def prepare_record_id(
             "lang4",
             "lang4_exp",
             "date_created",
-            "updated",
+            "date_updated",
         ]
     ]
-    df_quest = df_quest.sort_values("updated", ascending=False)
+    df_quest = df_quest.sort_values("date_created", ascending=False)
     df_quest = df_quest.rename(
         columns={
             "record_id": "Participant ID",
             "questionnaire_id": "Questionnaire ID",
-            "updated": "Updated",
+            "date_updated": "Last updated",
             "date_created": "Created on the:",
             "lang1": "L1",
             "lang1_exp": "%",
@@ -570,18 +570,18 @@ def prepare_questionnaires(records: models.Records = None, data_dict: dict = Non
             "lang3_exp",
             "lang4",
             "lang4_exp",
-            "updated",
+            "date_updated",
             "date_created",
             "modify_button"
         ]
     ]
-    df = df.sort_values("updated", ascending=False)
+    df = df.sort_values("date_created", ascending=False)
     df = df.rename(
         columns={
             "record_id": "Participant ID",
             "questionnaire_id": "Questionnaire ID",
             "isestimated": "Status",
-            "updated": "Updated",
+            "date_updated": "Last updated",
             "date_created": "Added on the:",
             "lang1": "L1",
             "lang1_exp": "%",
