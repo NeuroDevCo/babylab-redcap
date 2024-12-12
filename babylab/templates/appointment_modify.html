@@ -29,11 +29,13 @@
           </div>
         </div>
       </div>
-      <div class="card">
+      <div class="card card-input">
         <h5 class="card-header">Appointment information</h5>
         <div class="card-body">
           <div class="col">
-            <label for="inputStudy" class="form-label">Study</label>
+            <label for="inputStudy" class="form-label">
+              Study&nbsp;&nbsp;<i class="fa  fa-flask"></i>
+            </label>
             <select class="form-select" name="inputStudy" required>
               <option disabled selected value>-- Select one --</option>
               {% for k, v in data_dict["appointment_study"].items() %}
@@ -41,8 +43,9 @@
                 value="{{ k }}">{{ v }}
               {% endfor %}
             </select>
-            <div class="valid-feedback">Looks good!</div>
-            <label for="inputStatus" class="form-label">Appointment status</label>
+            <label for="inputStatus" class="form-label">
+              Appointment status&nbsp;&nbsp;<i class="fa  fa-check"></i>
+            </label>
             <select class="form-select" name="inputStatus" required>
               <option disabled selected value>-- Select one --</option>
               {% for k, v in data_dict["appointment_status"].items() %}
@@ -51,14 +54,18 @@
             </select>
           </div>
           <div class="form-group">
-            <label class="form-label" for="inputDate">Appointment date</label>
+            <label class="form-label" for="inputDate">
+              Appointment date&nbsp;&nbsp;<i class="fa  fa-calendar"></i>
+            </label>
             <input type="datetime-local"
                    name="inputDate"
                    placeholder="{{ data['date'] }}"
                    value="{{ data['date'] }}"
                    required>
           </div>
-          <label for="inputTaxiAddress" class="form-label">Taxi address</label>
+          <label for="inputTaxiAddress" class="form-label">
+            Taxi address&nbsp;&nbsp;<i class="fa fa-car"></i>
+          </label>
           <input type="text"
                  class="form-control"
                  name="inputTaxiAddress"
@@ -74,7 +81,9 @@
             <label class="form-check-label" for="inputTaxiIsbooked">Is the taxi booked</label>
           </div>
           <div class="form-group">
-            <label for="inputComments" class="form-label">Comments</label>
+            <label for="inputComments" class="form-label">
+              Comments&nbsp;&nbsp;<i class="fa  fa-comment"></i>
+            </label>
             <textarea class="form-control"
                       name="inputComments"
                       rows="3"

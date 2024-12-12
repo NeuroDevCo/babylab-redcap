@@ -101,7 +101,7 @@ def get_participants_table(
         "age_now_days",
         "sex",
         "comments",
-        "date_added",
+        "date_created",
         "date_updated"
     ]
     if not records.participants.records:
@@ -155,18 +155,18 @@ def get_appointments_table(
                 "study",
                 "status",
                 "date",
-                "date_made",
+                "date_created",
                 "date_updated",
                 "taxi_address",
                 "taxi_isbooked",
                 "comments",
             ],
         )
+
     new_age_now_months = []
     new_age_now_days = []
     new_age_apt_months = []
     new_age_apt_days = []
-
     for v in apts.records.values():
         age_now_months = records.participants.records[v.record_id].data[
             "age_now_months"
@@ -175,7 +175,7 @@ def get_appointments_table(
         age_now = calendar.get_age(
             birth_date=calendar.get_birth_date(age=f"{age_now_months}:{age_now_days}"),
             timestamp=datetime.strptime(
-                records.participants.records[v.record_id].data["date_added"],
+                records.participants.records[v.record_id].data["date_created"],
                 "%Y-%m-%d %H:%M:%S",
             ),
         )
@@ -279,7 +279,6 @@ def prepare_dashboard(records: models.Records = None, data_dict: dict = None):
     ppts = get_participants_table(records, data_dict=data_dict)
     apts = get_appointments_table(records, data_dict=data_dict)
     quest = get_questionnaires_table(records, data_dict=data_dict)
-
     ppts["age_days"] = round(
         ppts["age_now_days"] + (ppts["age_now_months"] * 30.437), None
     ).astype(int)
@@ -291,8 +290,8 @@ def prepare_dashboard(records: models.Records = None, data_dict: dict = None):
 
     age_dist = count_col(ppts, "age_days_binned")
     sex_dist = count_col(ppts, "sex", values_sort=True)
-    date_added = count_col(ppts, "date_added", cumulative=True)
-    date_made = count_col(apts, "date_made", cumulative=True)
+    ppts_date_created = count_col(ppts, "date_created", cumulative=True)
+    apts_date_created = count_col(apts, "date_created", cumulative=True)
     lang1_dist = count_col(quest, "lang1", values_sort=True, missing_label="None")
     lang2_dist = count_col(quest, "lang2", values_sort=True, missing_label="None")
     return {
@@ -302,10 +301,10 @@ def prepare_dashboard(records: models.Records = None, data_dict: dict = None):
         "age_dist_values": list(age_dist.values()),
         "sex_dist_labels": list(sex_dist.keys()),
         "sex_dist_values": list(sex_dist.values()),
-        "date_made_labels": list(date_made.keys()),
-        "date_made_values": list(date_made.values()),
-        "date_added_labels": list(date_added.keys()),
-        "date_added_values": list(date_added.values()),
+        "ppts_date_created_labels": list(ppts_date_created.keys()),
+        "ppts_date_created_values": list(ppts_date_created.values()),
+        "apts_date_created_labels": list(apts_date_created.keys()),
+        "apts_date_created_values": list(apts_date_created.values()),
         "lang1_dist_labels": list(lang1_dist.keys()),
         "lang1_dist_values": list(lang1_dist.values()),
         "lang2_dist_labels": list(lang2_dist.keys()),
@@ -332,7 +331,7 @@ def prepare_participants(records: models.Records = None, data_dict: dict = None)
             "age_now_days",
             "sex",
             "comments",
-            "date_added",
+            "date_created",
             "date_updated",
             "modify_button"
         ]
@@ -345,7 +344,7 @@ def prepare_participants(records: models.Records = None, data_dict: dict = None)
             "age_now_days": "Age (days)",
             "sex": "Sex",
             "comments": "Comments",
-            "date_added": "Added on",
+            "date_created": "Added on",
             "date_updated": "Last updated",
             "modify_button": ""
         }
@@ -388,7 +387,7 @@ def prepare_record_id(
             "appointment_id",
             "study",
             "date",
-            "date_made",
+            "date_created",
             "date_updated",
             "taxi_address",
             "taxi_isbooked",
@@ -402,7 +401,7 @@ def prepare_record_id(
             "appointment_id": "Appointment ID",
             "study": "Study",
             "date": "Date",
-            "date_made": "Made on the",
+            "date_created": "Made on the",
             "date_updated": "Last update",
             "taxi_address": "Taxi address",
             "taxi_isbooked": "Taxi booked",
@@ -507,7 +506,7 @@ def prepare_appointments(
             "study",
             "status",
             "date",
-            "date_made",
+            "date_created",
             "date_updated",
             "taxi_address",
             "taxi_isbooked",
@@ -524,7 +523,7 @@ def prepare_appointments(
             "study": "Study",
             "status": "Appointment status",
             "date": "Date",
-            "date_made": "Made on the",
+            "date_created": "Made on the",
             "date_updated": "Last updated",
             "taxi_address": "Taxi address",
             "taxi_isbooked": "Taxi booked",
@@ -622,7 +621,7 @@ def prepare_studies(
             "record_id",
             "study",
             "date",
-            "date_made",
+            "date_created",
             "date_updated",
             "taxi_address",
             "taxi_isbooked",
@@ -638,7 +637,7 @@ def prepare_studies(
             "record_id": "Participant ID",
             "study": "Study",
             "date": "Date",
-            "date_made": "Made on the",
+            "date_created": "Made on the",
             "date_updated": "Last updated",
             "taxi_address": "Taxi address",
             "taxi_isbooked": "Taxi booked",

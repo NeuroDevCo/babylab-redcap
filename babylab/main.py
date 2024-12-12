@@ -158,7 +158,7 @@ def participant_new(data_dict: dict = None):
         date_now = datetime.datetime.strftime(datetime.datetime.now(), "%Y-%m-%d %H:%M")
         data = {
             "record_id": "0",
-            "participant_date_added": date_now,
+            "participant_date_created": date_now,
             "participant_date_updated": date_now,
             "participant_name": finput["inputName"],
             "participant_age_now_months": finput["inputAgeMonths"],
@@ -328,8 +328,8 @@ def appointment_new(ppt_id: str, data_dict: dict = None):
             "redcap_repeat_instance": "new",
             "redcap_repeat_instrument": "appointments",
             "appointment_study": finput["inputStudy"],
-            "appointment_date_made": date_now,
             "appointment_date_created": date_now,
+            "appointment_date_updated": date_now,
             "appointment_date": finput["inputDate"],
             "appointment_taxi_address": finput["inputTaxiAddress"],
             "appointment_taxi_isbooked": (
@@ -384,7 +384,6 @@ def appointment_modify(
             "redcap_repeat_instance": appt_id.split(":")[1],
             "redcap_repeat_instrument": "appointments",
             "appointment_study": finput["inputStudy"],
-            # "appointment_date_made": date_now,
             "appointment_date_updated": date_now,
             "appointment_date": finput["inputDate"],
             "appointment_taxi_address": finput["inputTaxiAddress"],
