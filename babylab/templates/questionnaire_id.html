@@ -33,8 +33,11 @@
     <div class="card">
       <div class="card-header">Linguistic information</div>
       <div class="card-body">
+        <h3>
+          <b>Status:</b> {{ data["isestimated"] | safe }}
+        </h3>
         <table class="table table-hover table-responsive">
-          <caption>Updated on the {{ data["updated"] }}</caption>
+          <caption>Created on the  {{ date["date_created"] }}, last updated on the {{ data["date_updated"] }}.</caption>
           <thead>
             <tr>
               <th scope="col"></th>

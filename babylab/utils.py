@@ -12,6 +12,61 @@ from babylab import models
 from babylab import calendar
 
 
+def format_df(x: DataFrame, data_dict: dict)-> DataFrame:
+    """Reformat dataframe.
+
+    Args:
+        x (DataFrame): Dataframe to reformat.
+        data_dict (dict): Data dictionary to labels to use, as returned by ``models.get_data_dict``.
+
+    Returns:
+        DataFrame: A reformatted Dataframe.
+    """
+    for col_name, col_values in x.items():
+        kdict = [
+            "participant_" + col_name,
+            "appointment_" + col_name,
+            "language_" + col_name,
+        ]
+        for k in kdict:
+            if k in data_dict:
+                x[col_name] = [data_dict[k][v] if v else "" for v in col_values]
+            if "lang" in col_name:
+                x[col_name] = ["" if v == "None" else v for v in x[col_name]]
+            if "exp" in col_name:
+                x[col_name] = [
+                    "" if v == 0 else round(float(v) * 100, None) for v in col_values
+                ]
+            if "taxi_isbooked" in col_name:
+                for idx, (a, i) in enumerate(zip(x["taxi_address"], x[col_name])):
+                    if a and i=="1":
+                        x[col_name][idx] = "<p style='color: green;'>Yes</p>"
+                    if a and i=="0":
+                        x[col_name][idx] = "<p style='color: red;'>No</p>"
+                    if not a:
+                        x[col_name][idx] = ""
+
+
+    return x
+
+def format_dict(x: dict, data_dict = dict) -> dict:
+    """Reformat dictionary.
+
+    Args:
+        x (dict): dictionary to reformat.
+        data_dict (dict): Data dictionary to labels to use, as returned by ``models.get_data_dict``.
+
+    Returns:
+        dict: A reformatted dictionary.
+    """
+    for k, v in x.items():
+        kdict = "language_" + k
+        if kdict in data_dict and v:
+            x[k] = data_dict[kdict][v]
+        if "exp" in k:
+            x[k] = "" if v == 0 else round(float(v) * 100, None)
+    return x
+
 def replace_labels(x: DataFrame | dict, data_dict: dict) -> DataFrame:
     """Replace field values with labels.
 
@@ -23,29 +78,9 @@ def replace_labels(x: DataFrame | dict, data_dict: dict) -> DataFrame:
         pd.DataFrame: _description_
     """  # pylint: disable=line-too-long
     if isinstance(x, DataFrame):
-        for col_name, col_values in x.items():
-            kdict = [
-                "participant_" + col_name,
-                "appointment_" + col_name,
-                "language_" + col_name,
-            ]
-            for k in kdict:
-                if k in data_dict:
-                    x[col_name] = [data_dict[k][v] if v else "" for v in col_values]
-            if "lang" in col_name:
-                x[col_name] = ["" if v == "None" else v for v in x[col_name]]
-            if "exp" in col_name:
-                x[col_name] = [
-                    "" if v == 0 else round(float(v) * 100, None) for v in col_values
-                ]
-
+        x = format_df(x, data_dict)
     if isinstance(x, dict):
-        for k, v in x.items():
-            kdict = "language_" + k
-            if kdict in data_dict and v:
-                x[k] = data_dict[kdict][v]
-            if "exp" in k:
-                x[k] = "" if v == 0 else round(float(v) * 100, None)
+        x = format_dict(x, data_dict)
     return x
 
 
@@ -55,12 +90,20 @@ def get_participants_table(
     """Get participants table
 
     Args:
-        records (models.Records): _description_
+        records (models.Records): REDCap records, as returned by ``api.Records``.
 
     Returns:
         pd.DataFrame: Table of partcicipants.
     """
-    cols = ["name", "age_now_months", "age_now_days", "sex", "comments", "date_added"]
+    cols = [
+        "name",
+        "age_now_months",
+        "age_now_days",
+        "sex",
+        "comments",
+        "date_created",
+        "date_updated"
+    ]
     if not records.participants.records:
         return DataFrame([], columns=cols)
 
@@ -96,10 +139,7 @@ def get_appointments_table(
     Returns:
         pd.DataFrame: Table of appointments.
     """
-    if ppt_id is None:
-        apts = records.appointments
-    else:
-        apts = records.participants.records[ppt_id].appointments
+    apts = records.participants.records[ppt_id].appointments if ppt_id else records.appointments
 
     if study:
         apts.records = {
@@ -113,19 +153,20 @@ def get_appointments_table(
                 "appointment_id",
                 "record_id",
                 "study",
+                "status",
                 "date",
-                "date_made",
+                "date_created",
+                "date_updated",
                 "taxi_address",
                 "taxi_isbooked",
-                "status",
                 "comments",
             ],
         )
+
     new_age_now_months = []
     new_age_now_days = []
     new_age_apt_months = []
     new_age_apt_days = []
-
     for v in apts.records.values():
         age_now_months = records.participants.records[v.record_id].data[
             "age_now_months"
@@ -134,7 +175,7 @@ def get_appointments_table(
         age_now = calendar.get_age(
             birth_date=calendar.get_birth_date(age=f"{age_now_months}:{age_now_days}"),
             timestamp=datetime.strptime(
-                records.participants.records[v.record_id].data["date_added"],
+                records.participants.records[v.record_id].data["date_created"],
                 "%Y-%m-%d %H:%M:%S",
             ),
         )
@@ -156,6 +197,8 @@ def get_appointments_table(
     df["age_now_days"] = new_age_now_days
     df["age_apt_months"] = new_age_apt_months
     df["age_apt_days"] = new_age_apt_days
+
+
     df = replace_labels(df, data_dict)
     return df
 
@@ -170,14 +213,15 @@ def get_questionnaires_table(
         quest = records.questionnaires
     else:
         quest = records.participants.records[ppt_id].questionnaires
-
     if not quest.records:
         return DataFrame(
             [],
             columns=[
                 "record_id",
                 "questionnaire_id",
-                "updated",
+                "isestimated",
+                "date_created",
+                "date_updated",
                 "lang1",
                 "lang1_exp",
                 "lang2",
@@ -191,6 +235,11 @@ def get_questionnaires_table(
         )
     df = quest.to_df()
     df = replace_labels(df, data_dict)
+    df["isestimated"] = [
+        "<p style='color: red;'>Estimated</p>" 
+        if i=="1" else "<p style='color: green;'>Calculated</p>"
+        for i in df["isestimated"]
+    ]
     return df
 
 
@@ -230,7 +279,6 @@ def prepare_dashboard(records: models.Records = None, data_dict: dict = None):
     ppts = get_participants_table(records, data_dict=data_dict)
     apts = get_appointments_table(records, data_dict=data_dict)
     quest = get_questionnaires_table(records, data_dict=data_dict)
-
     ppts["age_days"] = round(
         ppts["age_now_days"] + (ppts["age_now_months"] * 30.437), None
     ).astype(int)
@@ -242,8 +290,8 @@ def prepare_dashboard(records: models.Records = None, data_dict: dict = None):
 
     age_dist = count_col(ppts, "age_days_binned")
     sex_dist = count_col(ppts, "sex", values_sort=True)
-    date_added = count_col(ppts, "date_added", cumulative=True)
-    date_made = count_col(apts, "date_made", cumulative=True)
+    ppts_date_created = count_col(ppts, "date_created", cumulative=True)
+    apts_date_created = count_col(apts, "date_created", cumulative=True)
     lang1_dist = count_col(quest, "lang1", values_sort=True, missing_label="None")
     lang2_dist = count_col(quest, "lang2", values_sort=True, missing_label="None")
     return {
@@ -253,10 +301,10 @@ def prepare_dashboard(records: models.Records = None, data_dict: dict = None):
         "age_dist_values": list(age_dist.values()),
         "sex_dist_labels": list(sex_dist.keys()),
         "sex_dist_values": list(sex_dist.values()),
-        "date_made_labels": list(date_made.keys()),
-        "date_made_values": list(date_made.values()),
-        "date_added_labels": list(date_added.keys()),
-        "date_added_values": list(date_added.values()),
+        "ppts_date_created_labels": list(ppts_date_created.keys()),
+        "ppts_date_created_values": list(ppts_date_created.values()),
+        "apts_date_created_labels": list(apts_date_created.keys()),
+        "apts_date_created_values": list(apts_date_created.values()),
         "lang1_dist_labels": list(lang1_dist.keys()),
         "lang1_dist_values": list(lang1_dist.values()),
         "lang2_dist_labels": list(lang2_dist.keys()),
@@ -267,10 +315,14 @@ def prepare_dashboard(records: models.Records = None, data_dict: dict = None):
 def prepare_participants(records: models.Records = None, data_dict: dict = None):
     """Prepare data for participants page"""
     df = get_participants_table(records, data_dict=data_dict)
-    classes = "table table-hover"
+    classes = "table table-hover table-responsive"
     df["record_id"] = [f"<a href=/participants/{str(i)}>{str(i)}</a>" for i in df.index]
     df.index = df.index.astype(int)
     df = df.sort_index(ascending=False)
+    df["modify_button"] = [
+        f'<a href="/participants/{p}/participant_modify"><button type="button" class="btn btn-warning">Modify</button></a>' # pylint: disable=line-too-long
+        for p in df.index
+    ]
     df = df[
         [
             "record_id",
@@ -279,7 +331,9 @@ def prepare_participants(records: models.Records = None, data_dict: dict = None)
             "age_now_days",
             "sex",
             "comments",
-            "date_added",
+            "date_created",
+            "date_updated",
+            "modify_button"
         ]
     ]
     df = df.rename(
@@ -290,7 +344,9 @@ def prepare_participants(records: models.Records = None, data_dict: dict = None)
             "age_now_days": "Age (days)",
             "sex": "Sex",
             "comments": "Comments",
-            "date_added": "Added on",
+            "date_created": "Added on",
+            "date_updated": "Last updated",
+            "modify_button": ""
         }
     )
     return {
@@ -316,7 +372,7 @@ def prepare_record_id(
     data["parent1"] = data["parent1_name"] + " " + data["parent1_surname"]
     data["parent2"] = data["parent2_name"] + " " + data["parent2_surname"]
 
-    classes = "table table-hover"
+    classes = "table table-hover table-responsive"
 
     # prepare participants table
     df_appt = get_appointments_table(records, data_dict=data_dict, ppt_id=ppt_id)
@@ -331,7 +387,8 @@ def prepare_record_id(
             "appointment_id",
             "study",
             "date",
-            "date_made",
+            "date_created",
+            "date_updated",
             "taxi_address",
             "taxi_isbooked",
             "status",
@@ -344,7 +401,8 @@ def prepare_record_id(
             "appointment_id": "Appointment ID",
             "study": "Study",
             "date": "Date",
-            "date_made": "Made on the",
+            "date_created": "Made on the",
+            "date_updated": "Last update",
             "taxi_address": "Taxi address",
             "taxi_isbooked": "Taxi booked",
             "status": "Status",
@@ -380,15 +438,17 @@ def prepare_record_id(
             "lang3_exp",
             "lang4",
             "lang4_exp",
-            "updated",
+            "date_created",
+            "date_updated",
         ]
     ]
-    df_quest = df_quest.sort_values("updated", ascending=False)
+    df_quest = df_quest.sort_values("date_created", ascending=False)
     df_quest = df_quest.rename(
         columns={
             "record_id": "Participant ID",
             "questionnaire_id": "Questionnaire ID",
-            "updated": "Updated",
+            "date_updated": "Last updated",
+            "date_created": "Created on the:",
             "lang1": "L1",
             "lang1_exp": "%",
             "lang2": "L2",
@@ -420,22 +480,38 @@ def prepare_appointments(
 ):
     """Prepare appointments page"""
     df = get_appointments_table(records, data_dict=data_dict, study=study)
-    classes = "table table-hover"
+    classes = "table table-hover table-responsive"
+    df["record_id"] = [f"<a href=/participants/{i}>{i}</a>" for i in df.index]
+    df["modify_button"] = [
+        f'<a href="/participants/{p}/{a}/appointment_modify"><button type="button" class="btn btn-warning">Modify</button></a>' # pylint: disable=line-too-long
+        for p, a in zip(df.index, df["appointment_id"])
+    ]
     df["appointment_id"] = [
         f"<a href=/appointments/{i}>{i}</a>" for i in df["appointment_id"]
     ]
-    df["record_id"] = [f"<a href=/participants/{i}>{i}</a>" for i in df.index]
+    status_color_map = {
+        "Scheduled": "black",
+        "Confirmed": "orange",
+        "Successful": "green",
+        "Cancelled - Drop": "grey",
+        "Cancelled - Reschedule": "red"
+    }
+    df["status"] = [f"<p style='color: {status_color_map[s]};'>{s}</p>" for s in df["status"]]
+
+
     df = df[
         [
             "appointment_id",
             "record_id",
             "study",
+            "status",
             "date",
-            "date_made",
+            "date_created",
+            "date_updated",
             "taxi_address",
             "taxi_isbooked",
-            "status",
             "comments",
+            "modify_button"
         ]
     ]
     df = df.sort_values("date", ascending=False)
@@ -445,12 +521,14 @@ def prepare_appointments(
             "appointment_id": "Appointment ID",
             "record_id": "Participant ID",
             "study": "Study",
+            "status": "Appointment status",
             "date": "Date",
-            "date_made": "Made on the",
+            "date_created": "Made on the",
+            "date_updated": "Last updated",
             "taxi_address": "Taxi address",
             "taxi_isbooked": "Taxi booked",
-            "status": "Appointment status",
             "comments": "Comments",
+            "modify_button": "",
         }
     )
 
@@ -469,6 +547,10 @@ def prepare_questionnaires(records: models.Records = None, data_dict: dict = Non
     """Prepare appointments page"""
     df = get_questionnaires_table(records, data_dict=data_dict)
     classes = "table table-hover"
+    df["modify_button"] = [
+        f'<a href="/participants/{p}/questionnaires/{q}/questionnaire_modify"><button type="button" class="btn btn-warning">Modify</button></a>' # pylint: disable=line-too-long
+        for p, q in zip(df.index, df["questionnaire_id"])
+    ]
     df["questionnaire_id"] = [
         f"<a href=/participants/{index}/questionnaires/{i}>{i}</a>"
         for index, i in zip(df.index, df["questionnaire_id"])
@@ -478,6 +560,7 @@ def prepare_questionnaires(records: models.Records = None, data_dict: dict = Non
         [
             "questionnaire_id",
             "record_id",
+            "isestimated",
             "lang1",
             "lang1_exp",
             "lang2",
@@ -486,15 +569,19 @@ def prepare_questionnaires(records: models.Records = None, data_dict: dict = Non
             "lang3_exp",
             "lang4",
             "lang4_exp",
-            "updated",
+            "date_updated",
+            "date_created",
+            "modify_button"
         ]
     ]
-    df = df.sort_values("updated", ascending=False)
+    df = df.sort_values("date_created", ascending=False)
     df = df.rename(
         columns={
             "record_id": "Participant ID",
             "questionnaire_id": "Questionnaire ID",
-            "updated": "Updated",
+            "isestimated": "Status",
+            "date_updated": "Last updated",
+            "date_created": "Added on the:",
             "lang1": "L1",
             "lang1_exp": "%",
             "lang2": "L2",
@@ -503,6 +590,7 @@ def prepare_questionnaires(records: models.Records = None, data_dict: dict = Non
             "lang3_exp": "%",
             "lang4": "L4",
             "lang4_exp": "%",
+            "modify_button": "",
         }
     )
 
@@ -522,7 +610,7 @@ def prepare_studies(
 ):
     """Prepare appointments page"""
     df = get_appointments_table(records, data_dict=data_dict, study=study)
-    classes = "table table-hover"
+    classes = "table table-hover table-responsives"
     df["appointment_id"] = [
         f"<a href=/appointments/{i}>{i}</a>" for i in df["appointment_id"]
     ]
@@ -533,7 +621,8 @@ def prepare_studies(
             "record_id",
             "study",
             "date",
-            "date_made",
+            "date_created",
+            "date_updated",
             "taxi_address",
             "taxi_isbooked",
             "status",
@@ -548,7 +637,8 @@ def prepare_studies(
             "record_id": "Participant ID",
             "study": "Study",
             "date": "Date",
-            "date_made": "Made on the",
+            "date_created": "Made on the",
+            "date_updated": "Last updated",
             "taxi_address": "Taxi address",
             "taxi_isbooked": "Taxi booked",
             "status": "Appointment status",

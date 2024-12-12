@@ -44,6 +44,7 @@ def post_request(
     return r
 
 
+
 def get_redcap_version(**kwargs) -> str:
     """Get REDCap version.
     Args:
@@ -57,8 +58,8 @@ def get_redcap_version(**kwargs) -> str:
     try:
         r = post_request(fields=fields, **kwargs)
         return r.content.decode("utf-8")
-    except requests.exceptions.HTTPError:
-        return ""
+    except requests.exceptions.HTTPError as e:
+        return print(e)
 
 
 def get_records(**kwargs):
@@ -273,6 +274,7 @@ class Questionnaire:
         self.questionnaire_id = (
             data["record_id"] + ":" + str(data["redcap_repeat_instance"])
         )
+        self.isestimated = data["isestimated"]
         self.data = data
         for i in range(1, 5):
             l = f"lang{i}_exp"

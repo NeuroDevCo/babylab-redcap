@@ -22,12 +22,14 @@
           </div>
         </div>
       </div>
-      <div class="card">
+      <div class="card card-input">
         <h5 class="card-header">Participant information</h5>
         <div class="card-body">
           <div class="row">
             <div class="col">
-              <label for="inputName" class="form-label">Participant first name</label>
+              <label for="inputName" class="form-label">
+                Participant first name&nbsp;&nbsp;<i class="fa  fa-user"></i>
+              </label>
               <input type="text"
                      name="inputName"
                      class="form-control"
@@ -36,14 +38,13 @@
             </div>
             <div class="col">
               <label for="inputSex" class="form-label">
-                Sex&nbsp&nbsp <i class="fa  fa-venus-mars"></i>
+                Sex&nbsp;&nbsp;<i class="fa fa-venus-mars"></i>
               </label>
               <select class="form-select" name="inputSex" required>
                 {% for k, v in data_dict["participant_sex"].items() %}
                   <option value="{{ k }}" {% if data["sex"]==k %}selected{% endif %}>{{ v }}</option>
                 {% endfor %}
               </select>
-              <div class="valid-feedback">Looks good!</div>
             </div>
           </div>
           <div class="row">
@@ -112,7 +113,9 @@
             </div>
           </div>
           <div class="col">
-            <label class="form-label" for="inputNormalHearing">Hearing test</label>
+            <label class="form-label" for="inputNormalHearing">
+              Hearing test&nbsp;&nbsp;<i class="fa  fa-headphones"></i>
+            </label>
             <select class="form-select" name="inputNormalHearing">
               {% for k, v in data_dict["participant_hearing"].items() %}
                 <option value="{{ k }}" {% if v=="Not available" %}selected{% endif %}>{{ v }}</option>
@@ -125,15 +128,17 @@
                     rows="1"
                     placeholder="{{ data['twin'] }}"
                     value="{{ data['twin'] }}"></textarea>
-          <label for="inputComments" class="form-label">Comments</label>
+          <label for="inputComments" class="form-label">
+            Comments&nbsp;&nbsp;<i class="fa  fa-comment"></i>
+          </label>
           <textarea class="form-control" name="inputComments" rows="3"></textarea>
         </div>
       </div>
-      <div class="card">
+      <div class="card card-input">
         <h5 class="card-header">Contact information</h5>
         <div class="card-body">
           <label for="inputEmail1" class="form-label">
-            E-mail 1&nbsp&nbsp<i class="fa  fa-envelope"></i>
+            E-mail 1&nbsp;&nbsp;<i class="fa  fa-envelope"></i>
           </label>
           <input type="email"
                  class="form-control"
@@ -153,7 +158,7 @@
                  value="{{ data['phone1'] }}"
                  required>
           <label for="inputEmail2" class="form-label">
-            E-mail 2&nbsp&nbsp<i class="fa  fa-envelope"></i>
+            E-mail 2&nbsp;&nbsp;<i class="fa  fa-envelope"></i>
           </label>
           <input type="email"
                  class="form-control"
@@ -162,7 +167,7 @@
                  value="{{ data['email2'] }}"
                  pattern="/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$">
           <label for="inputPhone1" class="form-label">
-            Phone 2&nbsp&nbsp<i class="fa fa-phone fa-rotate-180"></i>
+            Phone 2&nbsp;&nbsp;<i class="fa fa-phone fa-rotate-180"></i>
           </label>
           <input type="tel"
                  class="form-control"
@@ -171,7 +176,7 @@
                  value="{{ data['phone2'] }}">
           <div class="form-group">
             <label for="inputAddress" class="form-label">
-              Home address&nbsp&nbsp<i class="fa fa-house"></i>
+              Home address&nbsp;&nbsp;<i class="fa fa-house"></i>
             </label>
             <textarea class="form-control"
                       name="inputAddress"
@@ -179,13 +184,17 @@
                       placeholder="e.g., Tristan 1089, 1D"
                       placeholder="{{ data['address'] }}"
                       value="{{ data['address'] }}"></textarea>
-            <label for="inputCity" class="form-label">City/place of residence</label>
+            <label for="inputCity" class="form-label">
+              City/place of residence&nbsp;&nbsp;<i class="fa  fa-city"></i>
+            </label>
             <textarea class="form-control"
                       name="inputCity"
                       rows="1"
                       placeholder="{{ data['city'] }}"
                       value="{{ data['city'] }}"></textarea>
-            <label for="inputPostcode" class="form-label">Postcode</label>
+            <label for="inputPostcode" class="form-label">
+              Postcode&nbsp;&nbsp;<i class="fa  fa-city"></i>
+            </label>
             <input type="text"
                    class="form-control"
                    name="inputPostcode"
@@ -196,12 +205,14 @@
           </div>
         </div>
       </div>
-      <div class="card">
+      <div class="card card-input">
         <h5 class="card-header">Birth information</h5>
         <div class="card-body">
           <div class="row">
             <div class="col">
-              <label class="form-label" for="inputBirthWeight">Birth weight (g)</label>
+              <label class="form-label" for="inputBirthWeight">
+                Birth weight (g)&nbsp;&nbsp;<i class="fa  fa-weight-scale"></i>
+              </label>
               <input type="number"
                      name="inputBirthWeight"
                      class="form-control"
@@ -210,7 +221,9 @@
                      value="{{ data['birth_weight'] }}">
             </div>
             <div class="col">
-              <label class="form-label" for="inputGestationalWeeks">Gestational weeks</label>
+              <label class="form-label" for="inputGestationalWeeks">
+                Gestational weeks&nbsp;&nbsp;<i class="fa  fa-clock"></i>
+              </label>
               <input type="number"
                      name="inputGestationalWeeks"
                      class="form-control"
@@ -220,14 +233,18 @@
                      value="{{ data['gest_weeks'] }}">
             </div>
           </div>
-          <label for="inputDeliveryType" class="form-label">Delivery type</label>
+          <label for="inputDeliveryType" class="form-label">
+            Delivery type&nbsp;&nbsp;<i class="fa  fa-hospital"></i>
+          </label>
           <select class="form-select" name="inputDeliveryType">
             {% for k, v in data_dict["participant_birth_type"].items() %}
               <option value="{{ k }}" {% if data["birth_type"]=="v" %}selected{% endif %}>{{ v }}</option>
             {% endfor %}
           </select>
           <div class="col">
-            <label class="form-label" for="inputBirthCircumference">Head circunference (cm)</label>
+            <label class="form-label" for="inputBirthCircumference">
+              Head circumference (cm)&nbsp;&nbsp;<i class="fa  fa-ruler"></i>
+            </label>
             <input type="number"
                    name="inputHeadCircumference"
                    class="form-control"
@@ -268,7 +285,9 @@
                      value="{{ data['apgar3'] }}">
             </div>
           </div>
-          <label for="inputDiagnoses" class="form-label">Diagnoses</label>
+          <label for="inputDiagnoses" class="form-label">
+            Diagnoses&nbsp;&nbsp;<i class="fa  fa-user-doctor"></i>
+          </label>
           <textarea class="form-control"
                     name="inputDiagnoses"
                     rows="3"
