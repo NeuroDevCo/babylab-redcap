@@ -310,6 +310,10 @@ def prepare_participants(records: models.Records = None, data_dict: dict = None)
     df["record_id"] = [f"<a href=/participants/{str(i)}>{str(i)}</a>" for i in df.index]
     df.index = df.index.astype(int)
     df = df.sort_index(ascending=False)
+    df["modify_button"] = [
+        f'<a href="/participants/{p}/participant_modify"><button type="button" class="btn btn-warning">Modify</button></a>' # pylint: disable=line-too-long
+        for p in df.index
+    ]
     df = df[
         [
             "record_id",
@@ -319,6 +323,7 @@ def prepare_participants(records: models.Records = None, data_dict: dict = None)
             "sex",
             "comments",
             "date_added",
+            "modify_button"
         ]
     ]
     df = df.rename(
@@ -330,6 +335,7 @@ def prepare_participants(records: models.Records = None, data_dict: dict = None)
             "sex": "Sex",
             "comments": "Comments",
             "date_added": "Added on",
+            "modify_button": ""
         }
     )
     return {
@@ -460,10 +466,14 @@ def prepare_appointments(
     """Prepare appointments page"""
     df = get_appointments_table(records, data_dict=data_dict, study=study)
     classes = "table table-hover table-responsive"
+    df["record_id"] = [f"<a href=/participants/{i}>{i}</a>" for i in df.index]
+    df["modify_button"] = [
+        f'<a href="/participants/{p}/{a}/appointment_modify"><button type="button" class="btn btn-warning">Modify</button></a>' # pylint: disable=line-too-long
+        for p, a in zip(df.index, df["appointment_id"])
+    ]
     df["appointment_id"] = [
         f"<a href=/appointments/{i}>{i}</a>" for i in df["appointment_id"]
     ]
-    df["record_id"] = [f"<a href=/participants/{i}>{i}</a>" for i in df.index]
     status_color_map = {
         "Scheduled": "black",
         "Confirmed": "orange",
@@ -472,6 +482,8 @@ def prepare_appointments(
         "Cancelled - Reschedule": "red"
     }
     df["status"] = [f"<p style='color: {status_color_map[s]};'>{s}</p>" for s in df["status"]]
+
+
     df = df[
         [
             "appointment_id",
@@ -483,6 +495,7 @@ def prepare_appointments(
             "taxi_address",
             "taxi_isbooked",
             "comments",
+            "modify_button"
         ]
     ]
     df = df.sort_values("date", ascending=False)
@@ -498,6 +511,7 @@ def prepare_appointments(
             "taxi_address": "Taxi address",
             "taxi_isbooked": "Taxi booked",
             "comments": "Comments",
+            "modify_button": "",
         }
     )
 
@@ -516,6 +530,10 @@ def prepare_questionnaires(records: models.Records = None, data_dict: dict = Non
     """Prepare appointments page"""
     df = get_questionnaires_table(records, data_dict=data_dict)
     classes = "table table-hover"
+    df["modify_button"] = [
+        f'<a href="/participants/{p}/questionnaires/{q}/questionnaire_modify"><button type="button" class="btn btn-warning">Modify</button></a>' # pylint: disable=line-too-long
+        for p, q in zip(df.index, df["questionnaire_id"])
+    ]
     df["questionnaire_id"] = [
         f"<a href=/participants/{index}/questionnaires/{i}>{i}</a>"
         for index, i in zip(df.index, df["questionnaire_id"])
@@ -535,6 +553,7 @@ def prepare_questionnaires(records: models.Records = None, data_dict: dict = Non
             "lang4",
             "lang4_exp",
             "updated",
+            "modify_button"
         ]
     ]
     df = df.sort_values("updated", ascending=False)
@@ -552,6 +571,7 @@ def prepare_questionnaires(records: models.Records = None, data_dict: dict = Non
             "lang3_exp": "%",
             "lang4": "L4",
             "lang4_exp": "%",
+            "modify_button": "",
         }
     )
 
