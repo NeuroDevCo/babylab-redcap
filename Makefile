@@ -24,3 +24,12 @@ docker-build:
 
 docker-run:
 	docker run --rm -it -p 5000:5000 --name babylab-redcap-container babylab-redcap
+
+version-patch:
+	git add babylab/__about__.py
+	$VERSION = hatch version
+	$TAG = "v$VERSION"
+	git commit -m $TAG
+	git tag $TAG main
+	git push
+	git push --tags
