@@ -28,15 +28,20 @@ utils.clean_tmp("../tmp")
 
 
 def token_required(f):
-    """Require login"""
+    """Require login
+
+    If REDCap version cannot be retrieved, the provided token is considered incorrect and the user is redirected to the index page with a flash message.
+    """  # pylint: disable=line-too-long
 
     @wraps(f)
     def decorated(*args, **kwargs):
-        redcap_version = models.get_redcap_version(token=app.config["API_KEY"])
-        if redcap_version:
+        redcap_version = ""
+        try:
+            redcap_version = models.get_redcap_version(token=app.config["API_KEY"])
             return f(*args, **kwargs)
-        flash("Access restricted. Please, log in", "error")
-        return redirect(url_for("index", redcap_version=redcap_version))
+        except (requests.HTTPError, ValueError) as e:
+            flash("Something went wrong: " + str(e))
+            return redirect(url_for("index", redcap_version=redcap_version))
 
     return decorated
 
@@ -57,16 +62,15 @@ def error_443(error):
 @app.route("/index", methods=["GET", "POST"])
 def index(redcap_version: str = None):
     """Index page"""
-    if not redcap_version:
-        redcap_version = models.get_redcap_version(token=app.config["API_KEY"])
     if request.method == "POST":
         finput = request.form
         app.config["API_KEY"] = finput["apiToken"]
-        redcap_version = models.get_redcap_version(token=app.config["API_KEY"])
-        if redcap_version:
-            flash("Logged in", "success")
-            return render_template("index.html", redcap_version=redcap_version)
-        flash("Incorrect token", "error")
+        try:
+            redcap_version = models.get_redcap_version(token=app.config["API_KEY"])
+            flash("You are logged in!", "success")
+        except (requests.exceptions.HTTPError, ValueError) as e:
+            flash("Something went wrong: " + str(e), "error")
+            redcap_version = ""
     return render_template("index.html", redcap_version=redcap_version)
 
 
@@ -300,8 +304,8 @@ def appointment_id(
         dict_key = "appointment_" + k
         if dict_key in data_dict and v:
             data[k] = data_dict[dict_key][v]
-        if dict_key=="appointment_taxi_isbooked":
-            data[k] = "Yes" if v=="1" else "No"
+        if dict_key == "appointment_taxi_isbooked":
+            data[k] = "Yes" if v == "1" else "No"
     participant = records.participants.records[data["record_id"]].data
     participant["age_now_months"] = str(participant["age_now_months"])
     participant["age_now_days"] = str(participant["age_now_days"])
@@ -473,8 +477,8 @@ def questionnaire_id(
     data = records.questionnaires.records[quest_id].data
     data = utils.replace_labels(data, data_dict=data_dict)
     data["isestimated"] = (
-        "<div style='color: red'>Estimated</div>" 
-        if data["isestimated"]=="1"
+        "<div style='color: red'>Estimated</div>"
+        if data["isestimated"] == "1"
         else "<div style='color: green'>Calculated</div>"
     )
     return render_template(
@@ -501,7 +505,7 @@ def questionnaire_new(ppt_id: str, data_dict: dict = None):
             "record_id": ppt_id,
             "redcap_repeat_instance": "new",
             "redcap_repeat_instrument": "language",
-            "language_date_created": date_now, 
+            "language_date_created": date_now,
             "language_date_updated": date_now,
             "language_isestimated": (
                 "1" if "inputIsEstimated" in finput.keys() else "0"

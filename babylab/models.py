@@ -44,8 +44,7 @@ def post_request(
     return r
 
 
-
-def get_redcap_version(**kwargs) -> str:
+def get_redcap_version(**kwargs):
     """Get REDCap version.
     Args:
         **kwargs: Arguments passed to ``post_request``.
@@ -55,11 +54,8 @@ def get_redcap_version(**kwargs) -> str:
     fields = {
         "content": "version",
     }
-    try:
-        r = post_request(fields=fields, **kwargs)
-        return r.content.decode("utf-8")
-    except requests.exceptions.HTTPError as e:
-        return print(e)
+    r = post_request(fields=fields, **kwargs)
+    return r.content.decode("utf-8")
 
 
 def get_records(**kwargs):
