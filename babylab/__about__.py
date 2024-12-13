@@ -6,4 +6,4 @@
 About the package.
 """
 
-__version__ = "0.0.15.0"
+__version__ = "0.0.16.0"
