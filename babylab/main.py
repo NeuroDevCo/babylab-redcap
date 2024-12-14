@@ -21,6 +21,7 @@ from babylab import email
 
 app = Flask(__name__, template_folder="templates")
 app.config["API_KEY"] = "TOKEN"
+app.config["EMAIL"] = "EMAIL"
 app.secret_key = os.urandom(24)
 app.permanent_session_lifetime = datetime.timedelta(minutes=10)
 
@@ -63,6 +64,7 @@ def index(redcap_version: str = None):
     if request.method == "POST":
         finput = request.form
         app.config["API_KEY"] = finput["apiToken"]
+        app.config["EMAIL"] = finput["email"]
         redcap_version = models.get_redcap_version(token=app.config["API_KEY"])
         if redcap_version:
             flash("Logged in", "success")
@@ -361,10 +363,27 @@ def appointment_new(ppt_id: str, data_dict: dict = None):
                 "comments": data["appointment_comments"],
             }
             data = utils.replace_labels(email_data, data_dict)
-            email.send_email(data=email_data)
+            if app.config["EMAIL"]:
+                email.send_email(data=email_data, email_from=app.config["EMAIL"])
             return redirect(url_for("appointments", records=records))
         except requests.exceptions.HTTPError as e:
             flash(f"Something went wrong! {e}", "error")
+            return render_template(
+                "appointment_new.html", ppt_id=ppt_id, data_dict=data_dict
+            )
+        except email.MailDomainException as e:
+            flash(
+                f"Appointment modified successfully, but e-mail was not sent: {e}",
+                "warning",
+            )
+            return render_template(
+                "appointment_new.html", ppt_id=ppt_id, data_dict=data_dict
+            )
+        except email.MailAddressException as e:
+            flash(
+                f"Appointment modified successfully, but e-mail was not sent: {e}",
+                "warning",
+            )
             return render_template(
                 "appointment_new.html", ppt_id=ppt_id, data_dict=data_dict
             )
@@ -431,12 +450,31 @@ def appointment_modify(
                 "comments": data["appointment_comments"],
             }
             data = utils.replace_labels(email_data, data_dict)
-            email.send_email(data=email_data)
+            if app.config["EMAIL"]:
+                email.send_email(data=email_data, email_from=app.config["EMAIL"])
             flash("Appointment modified!", "success")
             return redirect(url_for("appointments"))
         except requests.exceptions.HTTPError as e:
             flash(f"Something went wrong! {e}", "error")
-            return render_template("appointments.html", ppt_id=ppt_id, appt_id=appt_id)
+            return render_template(
+                "appointment_new.html", ppt_id=ppt_id, data_dict=data_dict
+            )
+        except email.MailDomainException as e:
+            flash(
+                f"Appointment modified successfully, but e-mail was not sent: {e}",
+                "warning",
+            )
+            return render_template(
+                "appointment_new.html", ppt_id=ppt_id, data_dict=data_dict
+            )
+        except email.MailAddressException as e:
+            flash(
+                f"Appointment modified successfully, but e-mail was not sent: {e}",
+                "warning",
+            )
+            return render_template(
+                "appointment_new.html", ppt_id=ppt_id, data_dict=data_dict
+            )
     return render_template(
         "appointment_modify.html",
         ppt_id=ppt_id,

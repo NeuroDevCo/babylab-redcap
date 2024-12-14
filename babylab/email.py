@@ -13,6 +13,32 @@ class MailDomainException(Exception):
         super().__init__(msg)
 
 
+class MailAddressException(win32.pywintypes.com_error):  # pylint: disable=no-member
+    """If e-mail address is not authorized in local Outlook app."""
+
+    def __init__(self, email):
+        msg = f"E-mail provided '{email}' is not authorized in local Outlook app'"
+        super().__init__(msg)
+
+
+def check_email_address(email: str):
+    """Check if e-mail address is authorized in local Outlook app.
+
+    Args:
+        email (str): Email address to check.
+    """  # pylint: disable=line-too-long
+    pythoncom.CoInitialize()  # pylint: disable=no-member
+    ol_app = win32.Dispatch("Outlook.Application")
+    ol_ns = ol_app.GetNameSpace("MAPI")
+    mail_item = ol_app.CreateItem(0)
+    try:
+        mail_item._oleobj_.Invoke(  # pylint: disable=protected-access
+            *(64209, 0, 8, 0, ol_ns.Accounts.Item(email))
+        )
+    except win32.pywintypes.com_error as e:  # pylint: disable=no-member
+        raise MailAddressException(email) from e
+
+
 def check_email_domain(email: str, target_domain: str = "sjd.es"):
     """Assert that provided email has certain domain.
 
