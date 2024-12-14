@@ -17,6 +17,7 @@ from flask import (
 )
 from babylab import models
 from babylab import utils
+from babylab import email
 
 app = Flask(__name__, template_folder="templates")
 app.config["API_KEY"] = "TOKEN"
@@ -300,8 +301,8 @@ def appointment_id(
         dict_key = "appointment_" + k
         if dict_key in data_dict and v:
             data[k] = data_dict[dict_key][v]
-        if dict_key=="appointment_taxi_isbooked":
-            data[k] = "Yes" if v=="1" else "No"
+        if dict_key == "appointment_taxi_isbooked":
+            data[k] = "Yes" if v == "1" else "No"
     participant = records.participants.records[data["record_id"]].data
     participant["age_now_months"] = str(participant["age_now_months"])
     participant["age_now_days"] = str(participant["age_now_days"])
@@ -339,10 +340,28 @@ def appointment_new(ppt_id: str, data_dict: dict = None):
             "appointment_comments": finput["inputComments"],
             "appointments_complete": "2",
         }
+
         try:
             models.add_appointment(data, token=app.config["API_KEY"])
             flash("Appointment added!", "success")
             records = models.Records(token=app.config["API_KEY"])
+            appt_id = list(records.participants.records[ppt_id].appointments.records)[
+                -1
+            ]
+            email_data = {
+                "record_id": ppt_id,
+                "appointment_id": appt_id,
+                "status": data["appointment_status"],
+                "date": datetime.datetime.strptime(
+                    data["appointment_date"], "%Y-%m-%dT%H:%M"
+                ).isoformat(),
+                "study": data["appointment_study"],
+                "taxi_address": data["appointment_taxi_address"],
+                "taxi_isbooked": data["appointment_taxi_isbooked"],
+                "comments": data["appointment_comments"],
+            }
+            data = utils.replace_labels(email_data, data_dict)
+            email.send_email(data=email_data)
             return redirect(url_for("appointments", records=records))
         except requests.exceptions.HTTPError as e:
             flash(f"Something went wrong! {e}", "error")
@@ -399,6 +418,20 @@ def appointment_modify(
                 data,
                 token=app.config["API_KEY"],
             )
+            email_data = {
+                "record_id": ppt_id,
+                "appointment_id": appt_id,
+                "status": data["appointment_status"],
+                "date": datetime.datetime.strptime(
+                    data["appointment_date"], "%Y-%m-%dT%H:%M"
+                ).isoformat(),
+                "study": data["appointment_study"],
+                "taxi_address": data["appointment_taxi_address"],
+                "taxi_isbooked": data["appointment_taxi_isbooked"],
+                "comments": data["appointment_comments"],
+            }
+            data = utils.replace_labels(email_data, data_dict)
+            email.send_email(data=email_data)
             flash("Appointment modified!", "success")
             return redirect(url_for("appointments"))
         except requests.exceptions.HTTPError as e:
@@ -473,8 +506,8 @@ def questionnaire_id(
     data = records.questionnaires.records[quest_id].data
     data = utils.replace_labels(data, data_dict=data_dict)
     data["isestimated"] = (
-        "<div style='color: red'>Estimated</div>" 
-        if data["isestimated"]=="1"
+        "<div style='color: red'>Estimated</div>"
+        if data["isestimated"] == "1"
         else "<div style='color: green'>Calculated</div>"
     )
     return render_template(
@@ -501,7 +534,7 @@ def questionnaire_new(ppt_id: str, data_dict: dict = None):
             "record_id": ppt_id,
             "redcap_repeat_instance": "new",
             "redcap_repeat_instrument": "language",
-            "language_date_created": date_now, 
+            "language_date_created": date_now,
             "language_date_updated": date_now,
             "language_isestimated": (
                 "1" if "inputIsEstimated" in finput.keys() else "0"
