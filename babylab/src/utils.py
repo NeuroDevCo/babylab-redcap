@@ -346,10 +346,10 @@ def prepare_dashboard(records: api.Records = None, data_dict: dict = None):
         "apts_date_created_values": list(apts_date_created.values()),
         "status_dist_labels": list(status_dist.keys()),
         "status_dist_values": list(status_dist.values()),
-        "lang1_dist_labels": list(lang1_dist.keys()),
-        "lang1_dist_values": list(lang1_dist.values()),
-        "lang2_dist_labels": list(lang2_dist.keys()),
-        "lang2_dist_values": list(lang2_dist.values()),
+        "lang1_dist_labels": list(lang1_dist.keys())[:24],
+        "lang1_dist_values": list(lang1_dist.values())[:24],
+        "lang2_dist_labels": list(lang2_dist.keys())[:24],
+        "lang2_dist_values": list(lang2_dist.values())[:24],
     }
 
 
