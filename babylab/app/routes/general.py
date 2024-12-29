@@ -1,28 +1,15 @@
 """Genera routes."""
 
 import os
-from functools import wraps
 import datetime
 import requests
 from flask import redirect, flash, render_template, url_for, request, send_file
 from babylab.src import api, utils
+from babylab.app import config as conf
 
 
 def general_routes(app):
     """General routes."""
-
-    def token_required(f):
-        """Require login"""
-
-        @wraps(f)
-        def decorated(*args, **kwargs):
-            redcap_version = api.get_redcap_version(token=app.config["API_KEY"])
-            if redcap_version:
-                return f(*args, **kwargs)
-            flash("Access restricted. Please, log in.", "error")
-            return redirect(url_for("index", redcap_version=redcap_version))
-
-        return decorated
 
     @app.errorhandler(404)
     def error_404(error):
@@ -53,32 +40,28 @@ def general_routes(app):
         return render_template("index.html", redcap_version=redcap_version)
 
     @app.route("/dashboard")
-    @token_required
+    @conf.token_required
     def dashboard():
         """Dashboard page"""
-        records = utils.get_records_or_index(token=app.config["API_KEY"])
+        records = conf.get_records_or_index(token=app.config["API_KEY"])
         data_dict = api.get_data_dict(token=app.config["API_KEY"])
         data = utils.prepare_dashboard(records, data_dict)
         return render_template("dashboard.html", data=data)
 
     @app.route("/studies", methods=["GET", "POST"])
-    @token_required
+    @conf.token_required
     def studies(
         selected_study: str = None,
         data: dict = None,
     ):
         """Studies page"""
-        data_dict = api.get_data_dict(token=app.config["API_KEY"])
+        token = app.config["API_KEY"]
+        data_dict = api.get_data_dict(token=token)
 
         if request.method == "POST":
             finput = request.form
             selected_study = finput["inputStudy"]
-            redcap_version = api.get_redcap_version(token=app.config["API_KEY"])
-            try:
-                records = api.Records(token=app.config["API_KEY"])
-            except Exception:  # pylint: disable=broad-exception-caught
-                return redirect(url_for("index", redcap_version=redcap_version))
-
+            records = conf.get_records_or_index(token)
             data = utils.prepare_studies(
                 records, data_dict=data_dict, study=selected_study
             )
@@ -92,7 +75,7 @@ def general_routes(app):
         return render_template("studies.html", data_dict=data_dict, data=data)
 
     @app.route("/other", methods=["GET", "POST"])
-    @token_required
+    @conf.token_required
     def other():
         """Other pages"""
         fname = datetime.datetime.strftime(
@@ -111,7 +94,7 @@ def general_routes(app):
         )
 
     @app.route("/download_backup", methods=["GET", "POST"])
-    @token_required
+    @conf.token_required
     def download_backup():
         """Download backup"""
         utils.clean_tmp("tmp")
@@ -123,7 +106,7 @@ def general_routes(app):
         )
 
     @app.route("/logout", methods=["GET", "POST"])
-    @token_required
+    @conf.token_required
     def logout():
         """Log out."""
         app.config["API_KEY"] = "BADTOKEN"

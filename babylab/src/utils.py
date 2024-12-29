@@ -8,18 +8,7 @@ from datetime import datetime
 import shutil
 import pandas as pd
 from pandas import DataFrame
-from flask import render_template
 from babylab.src import api
-
-
-def get_records_or_index(token: str):
-    """Try to get REDCap records, redirect to index if failure."""
-    redcap_version = api.get_redcap_version(token=token)
-    try:
-        records = api.Records(token=token)
-    except Exception:  # pylint: disable=broad-exception-caught
-        return render_template("index.html", redcap_version=redcap_version)
-    return records
 
 
 def format_percentage(x: float | int) -> str:

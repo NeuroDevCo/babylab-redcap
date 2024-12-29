@@ -1,30 +1,17 @@
 """Appointments routes."""
 
-from functools import wraps
 import datetime
 import requests
 from flask import flash, redirect, render_template, url_for, request
 from babylab.src import api, utils
+from babylab.app import config as conf
 
 
 def appointments_routes(app):
     """Appointments routes."""
 
-    def token_required(f):
-        """Require login"""
-
-        @wraps(f)
-        def decorated(*args, **kwargs):
-            redcap_version = api.get_redcap_version(token=app.config["API_KEY"])
-            if redcap_version:
-                return f(*args, **kwargs)
-            flash("Access restricted. Please, log in", "error")
-            return redirect(url_for("index", redcap_version=redcap_version))
-
-        return decorated
-
     @app.route("/appointments/")
-    @token_required
+    @conf.token_required
     def apt_all():
         """Appointments database"""
         records = api.Records(token=app.config["API_KEY"])
@@ -33,14 +20,11 @@ def appointments_routes(app):
         return render_template("apt_all.html", data=data)
 
     @app.route("/appointments/<string:appt_id>")
-    @token_required
+    @conf.token_required
     def apt(appt_id: str = None):
         """Show the record_id for that appointment"""
         data_dict = api.get_data_dict(token=app.config["API_KEY"])
-        try:
-            records = api.Records(token=app.config["API_KEY"])
-        except Exception:  # pylint: disable=broad-exception-caught
-            return render_template("index.html", login_status="incorrect")
+        records = conf.get_records_or_index(token=app.config["API_KEY"])
         data = records.appointments.records[appt_id].data
         for k, v in data.items():
             dict_key = "appointment_" + k
@@ -60,7 +44,7 @@ def appointments_routes(app):
         )
 
     @app.route("/participants/<string:ppt_id>/appointment_new", methods=["GET", "POST"])
-    @token_required
+    @conf.token_required
     def apt_new(ppt_id: str):
         """New appointment page"""
         data_dict = api.get_data_dict(token=app.config["API_KEY"])
@@ -136,7 +120,7 @@ def appointments_routes(app):
         "/participants/<string:ppt_id>/<string:appt_id>/appointment_modify",
         methods=["GET", "POST"],
     )
-    @token_required
+    @conf.token_required
     def apt_modify(
         appt_id: str,
         ppt_id: str,

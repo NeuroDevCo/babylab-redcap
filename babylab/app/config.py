@@ -2,7 +2,10 @@
 
 import os
 from dataclasses import dataclass
+from functools import wraps
 from dotenv import load_dotenv
+from flask import flash, redirect, url_for, current_app, render_template
+from babylab.src import api
 
 
 class MissingEnvException(Exception):
@@ -74,3 +77,27 @@ configs = {
     "prod": ProdConfig,
     "test": TestConfig,
 }
+
+
+def token_required(f):
+    """Require login"""
+
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        redcap_version = api.get_redcap_version(token=current_app.config["API_KEY"])
+        if redcap_version:
+            return f(*args, **kwargs)
+        flash("Access restricted. Please, log in.", "error")
+        return redirect(url_for("index", redcap_version=redcap_version))
+
+    return decorated
+
+
+def get_records_or_index(token: str):
+    """Try to get REDCap records, redirect to index if failure."""
+    redcap_version = api.get_redcap_version(token=token)
+    try:
+        records = api.Records(token=token)
+    except Exception:  # pylint: disable=broad-exception-caught
+        return render_template("index.html", redcap_version=redcap_version)
+    return records

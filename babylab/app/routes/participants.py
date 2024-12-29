@@ -1,38 +1,26 @@
 """Participants routes."""
 
-from functools import wraps
 import datetime
 import requests
 from flask import flash, redirect, render_template, url_for, request
 from babylab.src import api, utils
+from babylab.app import config as conf
 
 
 def participants_routes(app):
     """Participants routes."""
 
-    def token_required(f):
-        """Require login"""
-
-        @wraps(f)
-        def decorated(*args, **kwargs):
-            redcap_version = api.get_redcap_version(token=app.config["API_KEY"])
-            if redcap_version:
-                return f(*args, **kwargs)
-            flash("Access restricted. Please, log in", "error")
-            return redirect(url_for("index", redcap_version=redcap_version))
-
-        return decorated
-
     @app.route("/participants/", methods=["GET", "POST"])
-    @token_required
+    @conf.token_required
     def ppt_all(
         ppt_id: str = None,
         ppt_options: list[str] = None,
         data_ppt: dict = None,
     ):
         """Participants database"""
-        records = api.Records(token=app.config["API_KEY"])
-        data_dict = api.get_data_dict(token=app.config["API_KEY"])
+        token = app.config["API_KEY"]
+        records = conf.get_records_or_index(token=token)
+        data_dict = api.get_data_dict(token=token)
         data = utils.prepare_participants(records, data_dict=data_dict)
         if ppt_options is None:
             ppt_options = list(records.participants.to_df().index)
@@ -61,11 +49,12 @@ def participants_routes(app):
         )
 
     @app.route("/participants/<string:ppt_id>")
-    @token_required
+    @conf.token_required
     def ppt(ppt_id: str = None):
         """Show the ppt_id for that participant"""
-        data_dict = api.get_data_dict(token=app.config["API_KEY"])
-        records = utils.get_records_or_index(token=app.config["API_KEY"])
+        token = app.config["API_KEY"]
+        data_dict = api.get_data_dict(token=token)
+        records = conf.get_records_or_index(token=token)
         data = utils.prepare_record_id(ppt_id, records, data_dict)
         return render_template(
             "ppt.html",
@@ -74,7 +63,7 @@ def participants_routes(app):
         )
 
     @app.route("/participant_new", methods=["GET", "POST"])
-    @token_required
+    @conf.token_required
     def ppt_new():
         """New participant page"""
         data_dict = api.get_data_dict(token=app.config["API_KEY"])
@@ -131,7 +120,7 @@ def participants_routes(app):
     @app.route(
         "/participants/<string:ppt_id>/participant_modify", methods=["GET", "POST"]
     )
-    @token_required
+    @conf.token_required
     def ppt_modify(
         ppt_id: str,
         data: dict = None,

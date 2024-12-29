@@ -1,30 +1,17 @@
 """Questionnaires routes."""
 
-from functools import wraps
 import datetime
 import requests
 from flask import flash, redirect, render_template, url_for, request
 from babylab.src import api, utils
+from babylab.app import config as conf
 
 
 def questionnaires_routes(app):
-    """Questionnaires routes."""
-
-    def token_required(f):
-        """Require login"""
-
-        @wraps(f)
-        def decorated(*args, **kwargs):
-            redcap_version = api.get_redcap_version(token=app.config["API_KEY"])
-            if redcap_version:
-                return f(*args, **kwargs)
-            flash("Access restricted. Please, log in", "error")
-            return redirect(url_for("index", redcap_version=redcap_version))
-
-        return decorated
+    """Questionnaire routes."""
 
     @app.route("/questionnaires/")
-    @token_required
+    @conf.token_required
     def que_all():
         """Participants database"""
         records = api.Records(token=app.config["API_KEY"])
@@ -33,7 +20,7 @@ def questionnaires_routes(app):
         return render_template("que_all.html", data=data, data_dict=data_dict)
 
     @app.route("/participants/<string:ppt_id>/questionnaires/<string:quest_id>")
-    @token_required
+    @conf.token_required
     def que(
         ppt_id: str = None,
         quest_id: str = None,
@@ -63,7 +50,7 @@ def questionnaires_routes(app):
         "/participants/<string:ppt_id>/questionnaires/questionnaire_new",
         methods=["GET", "POST"],
     )
-    @token_required
+    @conf.token_required
     def que_new(ppt_id: str):
         """New langage questionnaire page"""
         data_dict = api.get_data_dict(token=app.config["API_KEY"])
@@ -116,7 +103,7 @@ def questionnaires_routes(app):
         "/participants/<string:ppt_id>/questionnaires/<string:quest_id>/questionnaire_modify",
         methods=["GET", "POST"],
     )
-    @token_required
+    @conf.token_required
     def que_modify(
         quest_id: str,
         ppt_id: str,
