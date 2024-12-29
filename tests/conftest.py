@@ -10,7 +10,7 @@ import datetime
 from dotenv import load_dotenv
 import pytest
 
-sys.path.append("../")
+sys.path.append("../../")
 
 from babylab.src import api
 from babylab.app import create_app
