@@ -7,6 +7,8 @@
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/babylab)
 ![GitHub Tag](https://img.shields.io/github/v/tag/NeuroDevComp/babylab-redcap)
 ![PyPI - Version](https://img.shields.io/pypi/v/babylab)
+<!-- Pytest Coverage Comment:Begin -->
+<!-- Pytest Coverage Comment:End -->
 
 --------
 

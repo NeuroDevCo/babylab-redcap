@@ -26,8 +26,10 @@ share/python-wheels/
 *.egg
 MANIFEST
 babylab/temp/
+babylab/tmp/
 temp/
-
+tmp/
+token*
 
 # PyInstaller
 #  Usually these files are written by a python script from a template

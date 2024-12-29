@@ -1,0 +1,497 @@
+@font-face {
+    font-family: 'Ciutadella Italic';
+    font-style: italic;
+    font-weight: normal;
+    src: url('/static/fonts/Ciutadella/Ciutadella-RegularItalic.eot');
+    src: local('Ciutadella Italic'), local('Ciutadella-RegularItalic'),
+        url('/static/fonts/Ciutadella/Ciutadella-RegularItalic.eot?#iefix') format('embedded-opentype'),
+        url('/static/fonts/Ciutadella/Ciutadella-RegularItalic.woff2') format('woff2'),
+        url('/static/fonts/Ciutadella/Ciutadella-RegularItalic.woff') format('woff'),
+        url('/static/fonts/Ciutadella/Ciutadella-RegularItalic.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Ciutadella Bold';
+    font-style: normal;
+    font-weight: bold;
+    src: url('/static/fonts/Ciutadella/Ciutadella-Bold.eot');
+    src: local('Ciutadella Bold'), local('Ciutadella-Bold'),
+        url('/static/fonts/Ciutadella/Ciutadella-Bold.eot?#iefix') format('embedded-opentype'),
+        url('/static/fonts/Ciutadella/Ciutadella-Bold.woff2') format('woff2'),
+        url('/static/fonts/Ciutadella/Ciutadella-Bold.woff') format('woff'),
+        url('/static/fonts/Ciutadella/Ciutadella-Bold.ttf') format('truetype');
+
+}
+
+@font-face {
+    font-family: 'Ciutadella Bold Italic';
+    font-style: italic;
+    font-weight: bold;
+    src: url('/static/fonts/Ciutadella/Ciutadella-BoldItalic.eot');
+    src: local('Ciutadella Bold Italic'), local('Ciutadella-BoldItalic'),
+        url('/static/fonts/Ciutadella/Ciutadella-BoldItalic.eot?#iefix') format('embedded-opentype'),
+        url('/static/fonts/Ciutadella/Ciutadella-BoldItalic.woff2') format('woff2'),
+        url('/static/fonts/Ciutadella/Ciutadella-BoldItalic.woff') format('woff'),
+        url('/static/fonts/Ciutadella/Ciutadella-BoldItalic.ttf') format('truetype');
+
+}
+
+@font-face {
+    font-family: 'Ciutadella Medium Italic';
+    font-style: italic;
+    font-weight: 500;
+    src: url('/static/fonts/Ciutadella/Ciutadella-MediumItalic.eot');
+    src: local('Ciutadella Medium Italic'), local('Ciutadella-MediumItalic'),
+        url('/static/fonts/Ciutadella/Ciutadella-MediumItalic.eot?#iefix') format('embedded-opentype'),
+        url('/static/fonts/Ciutadella/Ciutadella-MediumItalic.woff2') format('woff2'),
+        url('/static/fonts/Ciutadella/Ciutadella-MediumItalic.woff') format('woff'),
+        url('/static/fonts/Ciutadella/Ciutadella-MediumItalic.ttf') format('truetype');
+
+}
+
+@font-face {
+    font-family: 'Ciutadella Regular';
+    font-style: normal;
+    font-weight: normal;
+    src: url('/static/fonts/Ciutadella/Ciutadella-Regular.eot');
+    src: local('Ciutadella'), local('Ciutadella-Regular'),
+        url('/static/fonts/Ciutadella/Ciutadella-Regular.eot?#iefix') format('embedded-opentype'),
+        url('/static/fonts/Ciutadella/Ciutadella-Regular.woff2') format('woff2'),
+        url('/static/fonts/Ciutadella/Ciutadella-Regular.woff') format('woff'),
+        url('/static/fonts/Ciutadella/Ciutadella-Regular.ttf') format('truetype');
+
+}
+
+@font-face {
+    font-family: 'Ciutadella Medium';
+    font-style: normal;
+    font-weight: 500;
+    src: url('/static/fonts/Ciutadella/Ciutadella-Medium.eot');
+    src: local('Ciutadella Medium'), local('Ciutadella-Medium'),
+        url('/static/fonts/Ciutadella/Ciutadella-Medium.eot?#iefix') format('embedded-opentype'),
+        url('/static/fonts/Ciutadella/Ciutadella-Medium.woff2') format('woff2'),
+        url('/static/fonts/Ciutadella/Ciutadella-Medium.woff') format('woff'),
+        url('/static/fonts/Ciutadella/Ciutadella-Medium.ttf') format('truetype');
+
+}
+
+@font-face {
+    font-family: 'Ciutadella SemiBold Italic';
+    font-style: italic;
+    font-weight: 600;
+    src: url('/static/fonts/Ciutadella/Ciutadella-SemiBoldItalic.eot');
+    src: local('Ciutadella SemiBold Italic'), local('Ciutadella-SemiBoldItalic'),
+        url('/static/fonts/Ciutadella/Ciutadella-SemiBoldItalic.eot?#iefix') format('embedded-opentype'),
+        url('/static/fonts/Ciutadella/Ciutadella-SemiBoldItalic.woff2') format('woff2'),
+        url('/static/fonts/Ciutadella/Ciutadella-SemiBoldItalic.woff') format('woff'),
+        url('/static/fonts/Ciutadella/Ciutadella-SemiBoldItalic.ttf') format('truetype');
+
+}
+
+@font-face {
+    font-family: 'Ciutadella SemiBold';
+    font-style: normal;
+    font-weight: 600;
+    src: url('/static/fonts/Ciutadella/Ciutadella-SemiBold.eot');
+    src: local('Ciutadella SemiBold'), local('Ciutadella-SemiBold'),
+        url('/static/fonts/Ciutadella/Ciutadella-SemiBold.eot?#iefix') format('embedded-opentype'),
+        url('/static/fonts/Ciutadella/Ciutadella-SemiBold.woff2') format('woff2'),
+        url('/static/fonts/Ciutadella/Ciutadella-SemiBold.woff') format('woff'),
+        url('/static/fonts/Ciutadella/Ciutadella-SemiBold.ttf') format('truetype');
+
+}
+
+@font-face {
+    font-family: 'Ciutadella Light';
+    font-style: normal;
+    font-weight: 300;
+    src: url('/static/fonts/Ciutadella/Ciutadella-Light.eot');
+    src: local('Ciutadella Light'), local('Ciutadella-Light'),
+        url('/static/fonts/Ciutadella/Ciutadella-Light.eot?#iefix') format('embedded-opentype'),
+        url('/static/fonts/Ciutadella/Ciutadella-Light.woff2') format('woff2'),
+        url('/static/fonts/Ciutadella/Ciutadella-Light.woff') format('woff'),
+        url('/static/fonts/Ciutadella/Ciutadella-Light.ttf') format('truetype');
+
+}
+
+@font-face {
+    font-family: 'Ciutadella Light Italic';
+    font-style: italic;
+    font-weight: 300;
+    src: url('/static/fonts/Ciutadella/Ciutadella-LightItalic.eot');
+    src: local('Ciutadella Light Italic'), local('Ciutadella-LightItalic'),
+        url('/static/fonts/Ciutadella/Ciutadella-LightItalic.eot?#iefix') format('embedded-opentype'),
+        url('/static/fonts/Ciutadella/Ciutadella-LightItalic.woff2') format('woff2'),
+        url('/static/fonts/Ciutadella/Ciutadella-LightItalic.woff') format('woff'),
+        url('/static/fonts/Ciutadella/Ciutadella-LightItalic.ttf') format('truetype');
+
+}
+
+
+p,
+input,
+select,
+option,
+ul,
+li,
+input,
+a,
+.form-control,
+.form-select,
+.navbar-brand:h3 {
+    font-family: "Ciutadella Regular";
+}
+
+i {
+    color: lightgrey;
+}
+
+.card-header {
+    background-color: rgb(227, 227, 227);
+    font-family: "Ciutadella SemiBold";
+}
+
+.card-title {
+    font-family: "Ciutadella Semibold";
+    font-size: larger;
+    padding-top: 1em;
+    text-align: center;
+}
+
+.card-body {
+    float: left;
+    font-family: "Ciutadella Regular";
+    margin: 1em;
+    padding: 0%;
+}
+
+.card-img-top {
+    padding: 2em;
+}
+
+
+.card-plot {
+    align-self: center;
+    background-color: white;
+    height: 50%;
+    left: 20%;
+    margin: 1em;
+    width: 60%;
+
+}
+
+.card-info,
+.card-input {
+    float: left;
+    margin: 0.5em;
+    text-wrap: pretty;
+    width: 30%;
+    word-break: break-all;
+}
+
+.card-table {
+    float: left;
+    margin: 1em;
+    text-wrap: pretty;
+    vertical-align: middle;
+    word-break: normal;
+}
+
+.tdbreak {
+    word-break: break-all
+}
+
+td {
+    vertical-align: text-bottom;
+    word-wrap: break-word;
+}
+
+
+.nav-link {
+    color: white;
+    font-family: "Ciutadella Regular";
+    margin-left: 0.5em;
+}
+
+
+#pills-participants-tab,
+#pills-appointments-tab,
+#pills-questionnaires-tab {
+    color: rgb(115, 115, 115);
+    font-family: "Ciutadella Regular";
+    margin-left: 0.5em;
+}
+
+.input-group-text {
+    background-color: lightgrey;
+}
+
+.option {
+    font-family: "Ciutadella Regular";
+}
+
+label,
+.list-group-item {
+    font-family: "Ciutadella Semibold";
+    margin-top: 0.5em;
+
+}
+
+button,
+.btn {
+    font-family: "Ciutadella Semibold";
+    margin: 1em;
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+}
+
+.btn,
+.lead {
+    font-family: "Ciutadella Medium";
+}
+
+b,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+th {
+    font-family: "Ciutadella Semibold";
+}
+
+#indexCardLogin,
+#indexCardMain {
+    padding: 5%;
+    top: 4%;
+}
+
+#img-ndc-logo {
+    background-color: white;
+    border: 5px solid white;
+    border-radius: 100%;
+    display: block;
+    margin: auto;
+    margin-bottom: 5%;
+    margin-top: 10%;
+    overflow: hidden;
+    padding: 0%;
+    width: 60%;
+
+}
+
+nav {
+    background-color: lightgray;
+    color: black;
+    font-size: larger;
+}
+
+
+
+.error-container {
+    font-family: 'Ciutadella Regular', sans-serif;
+    font-size: 180px;
+    font-weight: 800;
+    margin: 20px 15px;
+    text-align: center;
+}
+
+.error-container>span {
+    color: #FFB485;
+    display: inline-block;
+    line-height: 0.7;
+    position: relative;
+}
+
+.error-container>span {
+    display: inline-block;
+    position: relative;
+    vertical-align: middle;
+}
+
+.error-container>span:nth-of-type(1) {
+    animation: colordancing 4s infinite;
+    color: #D1F2A5;
+}
+
+.error-container>span:nth-of-type(3) {
+    animation: colordancing2 4s infinite;
+    color: #F56991;
+}
+
+.error-container>span:nth-of-type(2) {
+    border-radius: 999px;
+    height: 120px;
+    width: 120px;
+}
+
+.error-container>span:nth-of-type(2):before,
+.error-container>span:nth-of-type(2):after {
+    animation: shadowsdancing 4s infinite;
+    border-radius: 0%;
+    box-shadow: inset 30px 0 0 rgba(209, 242, 165, 0.4),
+        inset 0 30px 0 rgba(239, 250, 180, 0.4),
+        inset -30px 0 0 rgba(255, 196, 140, 0.4),
+        inset 0 -30px 0 rgba(245, 105, 145, 0.4);
+    content: "";
+    height: inherit;
+    left: 0;
+    position: absolute;
+    top: 0;
+    width: inherit;
+}
+
+.error-container>span:nth-of-type(2):before {
+    -moz-transform: rotate(45deg);
+    -webkit-transform: rotate(45deg);
+    transform: rotate(45deg);
+}
+
+.screen-reader-text {
+    left: -9999em;
+    position: absolute;
+    top: -9999em;
+}
+
+@keyframes shadowsdancing {
+    0% {
+        box-shadow: inset 30px 0 0 rgba(209, 242, 165, 0.4),
+            inset 0 30px 0 rgba(239, 250, 180, 0.4),
+            inset -30px 0 0 rgba(255, 196, 140, 0.4),
+            inset 0 -30px 0 rgba(245, 105, 145, 0.4);
+    }
+
+    25% {
+        box-shadow: inset 30px 0 0 rgba(245, 105, 145, 0.4),
+            inset 0 30px 0 rgba(209, 242, 165, 0.4),
+            inset -30px 0 0 rgba(239, 250, 180, 0.4),
+            inset 0 -30px 0 rgba(255, 196, 140, 0.4);
+    }
+
+    50% {
+        box-shadow: inset 30px 0 0 rgba(255, 196, 140, 0.4),
+            inset 0 30px 0 rgba(245, 105, 145, 0.4),
+            inset -30px 0 0 rgba(209, 242, 165, 0.4),
+            inset 0 -30px 0 rgba(239, 250, 180, 0.4);
+    }
+
+    75% {
+        box-shadow: inset 30px 0 0 rgba(239, 250, 180, 0.4),
+            inset 0 30px 0 rgba(255, 196, 140, 0.4),
+            inset -30px 0 0 rgba(245, 105, 145, 0.4),
+            inset 0 -30px 0 rgba(209, 242, 165, 0.4);
+    }
+
+    100% {
+        box-shadow: inset 30px 0 0 rgba(209, 242, 165, 0.4),
+            inset 0 30px 0 rgba(239, 250, 180, 0.4),
+            inset -30px 0 0 rgba(255, 196, 140, 0.4),
+            inset 0 -30px 0 rgba(245, 105, 145, 0.4);
+    }
+}
+
+@keyframes colordancing {
+    0% {
+        color: #ff001e;
+    }
+
+    25% {
+        color: #781478;
+    }
+
+    50% {
+        color: #ea6212;
+    }
+
+    75% {
+        color: #ff001e;
+    }
+
+    100% {
+        color: #781478;
+    }
+}
+
+@keyframes colordancing2 {
+    0% {
+        color: #781478;
+    }
+
+    25% {
+        color: #ff001e;
+    }
+
+    50% {
+        color: #ea6212;
+    }
+
+    75% {
+        color: #781478;
+    }
+
+    100% {
+        color: #ea6212;
+    }
+}
+
+/* demo stuff */
+* {
+    box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+}
+
+body {
+    background-color: #f1f1f9;
+    margin-bottom: 50px;
+}
+
+html,
+select,
+textarea {
+    color: lightgrey;
+    font-family: 'Ciutadella Regular';
+}
+
+.itemgroup {
+    float: left;
+    margin: 0.1em;
+}
+
+.jumbotron {
+    padding-top: 2em;
+    text-align: center;
+}
+
+
+#participantstable {
+    float: none;
+}
+
+
+.zoom-area {
+    font-size: 19px;
+    max-width: 490px;
+    margin: 30px auto 30px;
+    text-align: center;
+}
+
+.link-container {
+    text-align: center;
+}
+
+a.more-link {
+    background-color: lightgray;
+    border-radius: 0;
+    display: inline-block;
+    font-size: 13px;
+    letter-spacing: 1px;
+    line-height: 1.5;
+    margin-bottom: 5px;
+    margin-right: 5px;
+    margin-top: 50px;    
+    padding: 10px 15px;
+    text-decoration: none;
+    text-transform: uppercase;
+}
