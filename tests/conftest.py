@@ -12,6 +12,18 @@ from babylab.app import config as conf
 
 
 @pytest.fixture
+def app():
+    """App factory for testing."""
+    yield create_app(env="test")
+
+
+@pytest.fixture
+def client(app):  # pylint: disable=redefined-outer-name
+    """Testing client."""
+    return app.test_client()
+
+
+@pytest.fixture
 def token():
     """API test token.
 
@@ -426,15 +438,3 @@ def questionnaire_record_mod() -> dict:
         dict: A REDCap record fixture.
     """
     return create_record_questionnaire(is_new=False)
-
-
-@pytest.fixture
-def app():
-    """App factory for testing."""
-    yield create_app(env="test")
-
-
-@pytest.fixture
-def client(app):  # pylint: disable=redefined-outer-name
-    """Testing client."""
-    return app.test_client()
