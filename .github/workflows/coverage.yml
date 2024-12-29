@@ -42,7 +42,8 @@ jobs:
         uses: MishaKav/pytest-coverage-comment@main
         id: coverageComment
         with:
-          pytest-xml-coverage-path: coverage.xml
+          pytest-coverage-path: ./path-to-file/pytest-coverage.txt
+          pytest-xml-coverage-path: ./path-to-file/coverage.xml
           title: Coverage report
           badge-title: Coverage
           hide-badge: false
@@ -52,7 +53,7 @@ jobs:
           report-only-changed-files: false
           remove-link-from-badge: false
           unique-id-for-comment: python3.12
-          junitxml-path: pytest.xml
+          junitxml-path: ./path-to-file/pytest.xml
           junitxml-title: Coverage report
 
       - name: Update Readme with Coverage Html

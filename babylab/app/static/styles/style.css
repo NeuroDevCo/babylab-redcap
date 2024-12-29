@@ -142,11 +142,9 @@ a,
     font-family: "Ciutadella Regular";
 }
 
-
 i {
     color: lightgrey;
 }
-
 
 .card-header {
     background-color: rgb(227, 227, 227);
@@ -161,7 +159,9 @@ i {
 }
 
 .card-body {
+    float: left;
     font-family: "Ciutadella Regular";
+    margin: 1em;
     padding: 0%;
 }
 
@@ -245,24 +245,24 @@ button,
     padding-right: 0.5em;
 }
 
-.lead,
-.btn {
+.btn,
+.lead {
     font-family: "Ciutadella Medium";
 }
 
+b,
 h1,
 h2,
 h3,
 h4,
 h5,
 h6,
-th,
-b {
+th {
     font-family: "Ciutadella Semibold";
 }
 
-#indexCardMain,
-#indexCardLogin {
+#indexCardLogin,
+#indexCardMain {
     padding: 5%;
     top: 4%;
 }
@@ -280,7 +280,6 @@ b {
     width: 60%;
 
 }
-
 
 nav {
     background-color: lightgray;
@@ -465,10 +464,6 @@ textarea {
     text-align: center;
 }
 
-.card-body {
-    float: left;
-    margin: 1em;
-}
 
 #participantstable {
     float: none;
