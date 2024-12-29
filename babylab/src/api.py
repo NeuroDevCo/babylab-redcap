@@ -59,6 +59,7 @@ def post_request(
         print(f"{e}:\n{re.sub('<.*?>', '', r.text)}")
     except BadTokenException:
         print("Token contains non-alphanumeric characters")
+    return None
 
 
 def get_redcap_version(**kwargs) -> str:
