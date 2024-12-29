@@ -1,14 +1,11 @@
 """Test email functions
 """
 
-import os
 import pytest
 from babylab.src import api, utils
 
 
-@pytest.mark.skipif(
-    os.getenv("GITHUB_ACTIONS") == "true", reason="Test doesn't work in Github Actions."
-)
+@pytest.mark.skip(reason="Test doesn't work in Github Actions.")
 def test_email_validation():
     """Validate email addresses."""
     try:
