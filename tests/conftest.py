@@ -2,37 +2,13 @@
 Fixtures for testing
 """
 
-import os
 from string import digits, ascii_lowercase
 from random import choice, choices
 import datetime
-from dotenv import load_dotenv
 import pytest
 from babylab.src import api
 from babylab.app import create_app
-from babylab.app import config
-
-
-def get_api_key():
-    """Retrieve API credentials.
-
-    If running on GitHub Actions, retrieve API token from repository secrets. If running locally, try to load API token from .env file in home directory.
-
-    Raises:
-        MissingEnvException: If .en file is not located in ~/.env.
-
-    Returns:
-        str: API token.
-    """  # pylint: disable=line-too-long
-    if os.getenv("GITHUB_ACTIONS") != "true":
-        envpath = os.path.expanduser(os.path.join("~", ".env"))
-        if not os.path.exists(envpath):
-            raise config.MissingEnvException(envpath)
-        load_dotenv(envpath)
-    t = os.getenv("API_TEST_KEY")
-    if not t:
-        raise config.MissingEnvToken
-    return t
+from babylab.app import config as conf
 
 
 @pytest.fixture
@@ -42,13 +18,13 @@ def token():
     Returns:
         str: API test token.
     """
-    return get_api_key()
+    return conf.get_api_key()
 
 
 @pytest.fixture
 def records():
     """REDCap records database."""
-    return api.Records(token=get_api_key())
+    return api.Records(token=conf.get_api_key())
 
 
 def generate_str(n: str = 7) -> str:
@@ -102,7 +78,7 @@ def get_data_dict() -> dict:
     Returns:
         dict: A REDcap record fixture.
     """
-    return api.get_data_dict(token=get_api_key())
+    return api.get_data_dict(token=conf.get_api_key())
 
 
 def create_finput_participant(is_new: bool = True) -> dict:
@@ -114,7 +90,7 @@ def create_finput_participant(is_new: bool = True) -> dict:
     Returns:
         dict: Simulated form input.
     """
-    recs = api.Records(token=get_api_key())
+    recs = api.Records(token=conf.get_api_key())
     ppt_id = choice(list(recs.participants.records.keys()))
     data = {
         "record_id": "new" if is_new else choice(ppt_id),
@@ -158,8 +134,8 @@ def create_finput_appointment(is_new: bool = True) -> dict:
     Returns:
         dict: Simulated form input.
     """
-    recs = api.Records(token=get_api_key())
-    data_dict = api.get_data_dict(token=get_api_key())
+    recs = api.Records(token=conf.get_api_key())
+    data_dict = api.get_data_dict(token=conf.get_api_key())
     ppt_id = choice(list(recs.participants.records.keys()))
     apt_choices = list(recs.participants.records[ppt_id].appointments.records.keys())
     if apt_choices:
@@ -189,8 +165,8 @@ def create_finput_questionnaire(is_new: bool = True) -> dict:
     Returns:
         dict: Simulated form input.
     """
-    recs = api.Records(token=get_api_key())
-    data_dict = api.get_data_dict(token=get_api_key())
+    recs = api.Records(token=conf.get_api_key())
+    data_dict = api.get_data_dict(token=conf.get_api_key())
     lang_exp = generate_lang_exp()
     ppt_id = choice(list(recs.participants.records.keys()))
     que_choices = list(recs.participants.records[ppt_id].questionnaires.records.keys())
@@ -229,7 +205,7 @@ def create_record_participant(is_new: bool = True) -> dict:
     Returns:
         dict: A REDCap record.
     """
-    recs = api.Records(token=get_api_key())
+    recs = api.Records(token=conf.get_api_key())
     ppt_id = choice(list(recs.participants.records.keys()))
     return {
         "record_id": "0" if is_new else ppt_id,
@@ -280,7 +256,7 @@ def create_record_appointment(is_new: bool = True) -> dict:
         dict: A REDCap record.
     """
     data_dict = get_data_dict()
-    recs = api.Records(token=get_api_key())
+    recs = api.Records(token=conf.get_api_key())
     ppt_id = choice(list(recs.participants.records.keys()))
     apt_choices = list(recs.participants.records[ppt_id].appointments.records.keys())
     if apt_choices:
@@ -321,7 +297,7 @@ def create_record_questionnaire(is_new: bool = True) -> dict:
         dict: A REDCap record.
     """
     data_dict = get_data_dict()
-    recs = api.Records(token=get_api_key())
+    recs = api.Records(token=conf.get_api_key())
     ppt_id = choice(list(recs.participants.records.keys()))
     lang_exp = generate_lang_exp()
     que_choices = list(recs.participants.records[ppt_id].questionnaires.records.keys())

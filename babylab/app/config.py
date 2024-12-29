@@ -34,7 +34,7 @@ def get_api_key():
         envpath = os.path.expanduser(os.path.join("~", ".env"))
         if not os.path.exists(envpath):
             raise MissingEnvException(envpath)
-    load_dotenv(envpath)
+        load_dotenv(envpath)
     t = os.getenv("API_TEST_KEY")
     if not t:
         raise MissingEnvToken
