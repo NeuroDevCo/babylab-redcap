@@ -56,7 +56,7 @@ def post_request(
         r.raise_for_status()
         return r
     except requests.exceptions.HTTPError as e:
-        print(f"{e}:\n{re.sub("<.*?>", "", r.text)}")
+        print(f"{e}:\n{re.sub('<.*?>', '', r.text)}")
     except BadTokenException:
         print("Token contains non-alphanumeric characters")
 
