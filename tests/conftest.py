@@ -103,9 +103,8 @@ def create_finput_participant(is_new: bool = True) -> dict:
         dict: Simulated form input.
     """
     recs = api.Records(token=conf.get_api_key())
-    ppt_id = choice(list(recs.participants.records.keys()))
     data = {
-        "record_id": "new" if is_new else choice(ppt_id),
+        "record_id": "new" if is_new else "1",
         "inputName": generate_str(),
         "inputParent1Name": generate_str(),
         "inputSex": choice(range(1, 6)),
