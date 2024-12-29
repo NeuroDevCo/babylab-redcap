@@ -18,7 +18,7 @@ jobs:
         uses: softprops/action-gh-release@v2
         if: startsWith(github.ref, 'refs/tags/')
         with:
-          repository: NeuroDevComp/template-repo-py
+          repository: NeuroDevComp/babylab-redcap
           prerelease: true
           generate_release_notes: true
         env:
