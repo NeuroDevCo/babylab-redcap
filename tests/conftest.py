@@ -10,22 +10,7 @@ from dotenv import load_dotenv
 import pytest
 from babylab.src import api
 from babylab.app import create_app
-
-
-class MissingEnvException(Exception):
-    """If .env file is not found in user folder"""
-
-    def __init__(self, envpath):
-        msg = f".env file not found. Please, make sure to save your credentials in {envpath}"  # pylint: disable=line-too-long
-        super().__init__(msg)
-
-
-class MissingEnvToken(Exception):
-    """If token is not provided under 'API_TEST_TOKEN' key."""
-
-    def __init__(self):
-        msg = "No token was found under the 'API_TEST_TOKEN' key in your .env file."  # pylint: disable=line-too-long
-        super().__init__(msg)
+from babylab.app import config
 
 
 def get_api_key():
@@ -42,11 +27,11 @@ def get_api_key():
     if os.getenv("GITHUB_ACTIONS") != "true":
         envpath = os.path.expanduser(os.path.join("~", ".env"))
         if not os.path.exists(envpath):
-            raise MissingEnvException(envpath)
+            raise config.MissingEnvException(envpath)
     load_dotenv(envpath)
     t = os.getenv("API_TEST_KEY")
     if not t:
-        raise MissingEnvToken
+        raise config.MissingEnvToken
     return t
 
 

@@ -88,7 +88,7 @@ def appointments_routes(app):
 
             try:
                 api.add_appointment(data, token=app.config["API_KEY"])
-                flash(f"Appointment added! {finput["inputDate"]}", "success")
+                flash(f"Appointment added! {finput['inputDate']}", "success")
                 records = api.Records(token=app.config["API_KEY"])
                 appt_id = list(
                     records.participants.records[ppt_id].appointments.records
