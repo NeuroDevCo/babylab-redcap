@@ -35,7 +35,7 @@ def test_ppt_new_post(client, participant_finput):
 def test_ppt_mod(client, participant_finput_mod):
     """Test ppt_all endpoint."""
     response = client.get(
-        f"participants/{participant_finput_mod["record_id"]}/participant_modify"
+        f"participants/{participant_finput_mod['record_id']}/participant_modify"
     )
     assert response.status_code == 200
 
@@ -44,7 +44,7 @@ def test_ppt_mod_post(client, participant_finput_mod):
     """Test ppt_all endpoint."""
 
     response = client.post(
-        f"/participants/{participant_finput_mod["record_id"]}/participant_modify",
+        f"/participants/{participant_finput_mod['record_id']}/participant_modify",
         data=participant_finput_mod,
     )
     assert response.status_code == 302
