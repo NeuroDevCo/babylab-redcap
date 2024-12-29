@@ -10,8 +10,7 @@ import datetime
 from dotenv import load_dotenv
 import pytest
 
-SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-sys.path.append(os.path.dirname(SCRIPT_DIR))
+sys.path.append("../")
 
 from babylab.src import api
 from babylab.app import create_app
