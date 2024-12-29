@@ -1,7 +1,5 @@
 """Test appointments endpoints."""
 
-import datetime
-
 
 def test_apt_all(client):
     """Test apt_all endpoint."""
