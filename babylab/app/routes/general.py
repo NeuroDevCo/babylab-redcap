@@ -99,24 +99,17 @@ def general_routes(app):
     @token_required
     def other():
         """Other pages"""
-        redcap_version = api.get_redcap_version(token=app.config["API_KEY"])
-        try:
-            records = api.Records(token=app.config["API_KEY"])
-        except Exception:  # pylint: disable=broad-exception-caught
-            return redirect(url_for("index", redcap_version=redcap_version))
         fname = datetime.datetime.strftime(
             datetime.datetime.now(), "backup_%Y-%m-%d-%H-%M.zip"
         )
         if request.method == "post":
             backup_file = api.redcap_backup(
-                file=os.path.join("temp", fname), token=app.config["API_KEY"]
+                dirpath=os.path.join("temp", fname), token=app.config["API_KEY"]
             )
             return send_file(
                 backup_file,
                 as_attachment=True,
             )
-            # shutil.rmtree(os.path.dirname(backup_file))
-
         return render_template(
             "other.html",
         )
@@ -127,15 +120,9 @@ def general_routes(app):
         """Download backup"""
         utils.clean_tmp("tmp")
         utils.clean_tmp("../tmp")
-
-        fname = datetime.datetime.strftime(
-            datetime.datetime.now(), "backup_%Y-%m-%d-%H-%M.zip"
-        )
-        backup_file = api.redcap_backup(
-            file=f"temp/{fname}", token=app.config["API_KEY"]
-        )
+        backup_file = api.redcap_backup(dirpath="/tmp", token=app.config["API_KEY"])
         return send_file(
-            "../" + backup_file,
+            backup_file,
             as_attachment=False,
         )
 

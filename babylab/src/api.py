@@ -250,7 +250,8 @@ def redcap_backup(dirpath: str = "tmp", **kwargs) -> dict:
         "fields": fields,
         "records": records,
     }
-    os.mkdir(dirpath)
+    if not os.path.exists(dirpath):
+        os.mkdir(dirpath)
     for k, v in backup.items():
         fpath = os.path.join(dirpath, k + ".json")
         with open(fpath, "w", encoding="utf-8") as f:
