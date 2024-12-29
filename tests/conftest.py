@@ -102,7 +102,6 @@ def create_finput_participant(is_new: bool = True) -> dict:
     Returns:
         dict: Simulated form input.
     """
-    recs = api.Records(token=conf.get_api_key())
     data = {
         "record_id": "new" if is_new else "1",
         "inputName": generate_str(),
