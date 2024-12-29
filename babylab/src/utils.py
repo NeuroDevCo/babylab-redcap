@@ -8,8 +8,8 @@ from datetime import datetime
 import shutil
 import pandas as pd
 from pandas import DataFrame
-from babylab.src import api
 from flask import render_template
+from babylab.src import api
 
 
 def get_records_or_index(token: str):
