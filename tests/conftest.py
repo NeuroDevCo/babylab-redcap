@@ -3,14 +3,19 @@ Fixtures for testing
 """
 
 import os
+import sys
 from string import digits, ascii_lowercase
 from random import choice, choices
 import datetime
 from dotenv import load_dotenv
 import pytest
-from ..babylab.src import api
-from ..babylab.app import create_app
-from ..babylab.app import config
+
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(os.path.dirname(SCRIPT_DIR))
+
+from babylab.src import api
+from babylab.app import create_app
+from babylab.app import config
 
 
 def get_api_key():
