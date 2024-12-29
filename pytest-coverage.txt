@@ -1,0 +1,40 @@
+============================= test session starts =============================
+platform win32 -- Python 3.12.8, pytest-8.3.4, pluggy-1.5.0
+rootdir: D:\a\babylab-redcap\babylab-redcap
+configfile: pyproject.toml
+plugins: cov-6.0.0
+collected 54 items
+
+tests\functional\test_appointments.py ......                             [ 11%]
+tests\functional\test_general.py .......                                 [ 24%]
+tests\functional\test_participants.py .......                            [ 37%]
+tests\functional\test_questionnaires.py ......                           [ 48%]
+tests\unit\test_api.py ............                                      [ 70%]
+tests\unit\test_calendar.py ..                                           [ 74%]
+tests\unit\test_email.py s.                                              [ 77%]
+tests\unit\test_models.py ..........                                     [ 96%]
+tests\unit\test_utils.py ..                                              [100%]
+
+------ generated xml file: D:\a\babylab-redcap\babylab-redcap\pytest.xml ------
+
+---------- coverage: platform win32, python 3.12.8-final-0 -----------
+Name                                   Stmts   Miss Branch BrPart  Cover   Missing
+----------------------------------------------------------------------------------
+babylab\app\__about__.py                   1      1      0      0     0%   9
+babylab\app\__init__.py                   18      1      2      1    90%   13
+babylab\app\config.py                     57     13      8      3    72%   15-16, 23-24, 34-37, 40, 90-91, 101-102
+babylab\app\routes\appointments.py        88     22     18      2    77%   81-94, 96-114, 176, 179-197
+babylab\app\routes\general.py             69     13      8      1    82%   17, 22, 38-39, 85-88, 100-103, 112-114
+babylab\app\routes\participants.py        64      6     10      2    89%   25->30, 32->42, 115-117, 177-179
+babylab\app\routes\questionnaires.py      61      8      8      0    88%   33-34, 97-99, 152-154
+babylab\src\api.py                       220     28     50      1    89%   254->256, 474-475, 482-483, 492-501, 514-516, 611-626
+babylab\src\utils.py                     207      6     66      5    95%   67->69, 119, 140, 185, 250, 706-707
+tests\conftest.py                        125      3     10      3    96%   152, 273, 316
+tests\unit\test_calendar.py               27      4      0      0    85%   36-39
+tests\unit\test_email.py                  22      8      0      0    64%   11-18
+----------------------------------------------------------------------------------
+TOTAL                                   1217    113    180     18    90%
+
+12 files skipped due to complete coverage.
+
+================== 53 passed, 1 skipped in 207.45s (0:03:27) ==================
