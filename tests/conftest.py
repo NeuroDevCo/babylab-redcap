@@ -3,7 +3,6 @@ Fixtures for testing
 """
 
 import os
-import sys
 from string import digits, ascii_lowercase
 from random import choice, choices
 import datetime
@@ -29,7 +28,7 @@ def get_api_key():
         envpath = os.path.expanduser(os.path.join("~", ".env"))
         if not os.path.exists(envpath):
             raise config.MissingEnvException(envpath)
-    load_dotenv(envpath)
+        load_dotenv(envpath)
     t = os.getenv("API_TEST_KEY")
     if not t:
         raise config.MissingEnvToken
