@@ -56,11 +56,7 @@ def general_routes(app):
     @token_required
     def dashboard():
         """Dashboard page"""
-        redcap_version = api.get_redcap_version(token=app.config["API_KEY"])
-        try:
-            records = api.Records(token=app.config["API_KEY"])
-        except Exception:  # pylint: disable=broad-exception-caught
-            return render_template("index.html", redcap_version=redcap_version)
+        records = utils.get_records_or_index(token=app.config["API_KEY"])
         data_dict = api.get_data_dict(token=app.config["API_KEY"])
         data = utils.prepare_dashboard(records, data_dict)
         return render_template("dashboard.html", data=data)

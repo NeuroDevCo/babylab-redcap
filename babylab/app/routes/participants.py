@@ -65,11 +65,7 @@ def participants_routes(app):
     def ppt(ppt_id: str = None):
         """Show the ppt_id for that participant"""
         data_dict = api.get_data_dict(token=app.config["API_KEY"])
-        redcap_version = api.get_redcap_version(token=app.config["API_KEY"])
-        try:
-            records = api.Records(token=app.config["API_KEY"])
-        except Exception:  # pylint: disable=broad-exception-caught
-            return redirect(url_for("index", redcap_version=redcap_version))
+        records = utils.get_records_or_index(token=app.config["API_KEY"])
         data = utils.prepare_record_id(ppt_id, records, data_dict)
         return render_template(
             "ppt.html",
