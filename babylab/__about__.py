@@ -1,9 +1,5 @@
-# SPDX-FileCopyrightText: 2024-present gongcastro <gongarciacastro@gmail.com>
-#
-# SPDX-License-Identifier: MIT
-
 """
 About the package.
 """
 
-__version__ = "0.0.16.0"
+__version__ = "0.1.0"  # no cov
