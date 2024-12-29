@@ -8,9 +8,9 @@ from random import choice, choices
 import datetime
 from dotenv import load_dotenv
 import pytest
-from babylab.src import api
-from babylab.app import create_app
-from babylab.app import config
+from ..babylab.src import api
+from ..babylab.app import create_app
+from ..babylab.app import config
 
 
 def get_api_key():
