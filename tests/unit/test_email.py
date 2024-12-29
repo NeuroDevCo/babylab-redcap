@@ -1,11 +1,15 @@
 """Test email functions
 """
 
+import os
 import pytest
 from babylab.src import api, utils
 
 
-def test_validation():
+@pytest.mark.skipif(
+    os.getenv("GITHUB_ACTIONS") == "true", reason="Test doesn't work in Github Actions."
+)
+def test_email_validation():
     """Validate email addresses."""
     try:
         api.check_email_domain("iodsf@sjd.es")
