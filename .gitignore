@@ -26,6 +26,7 @@ share/python-wheels/
 *.egg
 MANIFEST
 babylab/temp/
+babylab/tmp/
 temp/
 tmp/
 token*
