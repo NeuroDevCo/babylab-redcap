@@ -29,12 +29,12 @@ babylab\app\routes\participants.py        64      6     10      2    89%   25->3
 babylab\app\routes\questionnaires.py      61      8      8      0    88%   33-34, 97-99, 152-154
 babylab\src\api.py                       220     28     50      1    89%   254->256, 474-475, 482-483, 492-501, 514-516, 611-626
 babylab\src\utils.py                     207      6     66      5    95%   67->69, 119, 140, 185, 250, 706-707
-tests\conftest.py                        125      3     10      3    96%   152, 273, 316
+tests\conftest.py                        125      4     10      4    94%   152, 185, 273, 316
 tests\unit\test_calendar.py               27      4      0      0    85%   36-39
 tests\unit\test_email.py                  22      8      0      0    64%   11-18
 ----------------------------------------------------------------------------------
-TOTAL                                   1217    113    180     18    90%
+TOTAL                                   1217    114    180     19    90%
 
 12 files skipped due to complete coverage.
 
-================== 53 passed, 1 skipped in 207.45s (0:03:27) ==================
+================== 53 passed, 1 skipped in 135.36s (0:02:15) ==================
