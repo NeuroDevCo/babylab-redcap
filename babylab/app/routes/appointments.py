@@ -19,13 +19,13 @@ def appointments_routes(app):
         data = utils.prepare_appointments(records, data_dict=data_dict)
         return render_template("apt_all.html", data=data)
 
-    @app.route("/appointments/<string:appt_id>")
+    @app.route("/appointments/<string:apt_id>")
     @conf.token_required
-    def apt(appt_id: str = None):
+    def apt(apt_id: str = None):
         """Show the record_id for that appointment"""
         data_dict = api.get_data_dict(token=app.config["API_KEY"])
         records = conf.get_records_or_index(token=app.config["API_KEY"])
-        data = records.appointments.records[appt_id].data
+        data = records.appointments.records[apt_id].data
         for k, v in data.items():
             dict_key = "appointment_" + k
             if dict_key in data_dict and v:
@@ -37,7 +37,7 @@ def appointments_routes(app):
         participant["age_now_days"] = str(participant["age_now_days"])
         return render_template(
             "apt.html",
-            appt_id=appt_id,
+            apt_id=apt_id,
             ppt_id=data["record_id"],
             data=data,
             participant=participant,
@@ -74,13 +74,13 @@ def appointments_routes(app):
                 api.add_appointment(data, token=app.config["API_KEY"])
                 flash(f"Appointment added! {finput['inputDate']}", "success")
                 records = api.Records(token=app.config["API_KEY"])
-                appt_id = list(
+                apt_id = list(
                     records.participants.records[ppt_id].appointments.records
                 )[-1]
                 if "EMAIL" in app.config and app.config["EMAIL"]:
                     email_data = {
                         "record_id": ppt_id,
-                        "appointment_id": appt_id,
+                        "appointment_id": apt_id,
                         "status": data["appointment_status"],
                         "date": datetime.datetime.strptime(
                             data["appointment_date"], "%Y-%m-%dT%H:%M"
@@ -117,18 +117,18 @@ def appointments_routes(app):
         return render_template("apt_new.html", ppt_id=ppt_id, data_dict=data_dict)
 
     @app.route(
-        "/participants/<string:ppt_id>/<string:appt_id>/appointment_modify",
+        "/participants/<string:ppt_id>/<string:apt_id>/appointment_modify",
         methods=["GET", "POST"],
     )
     @conf.token_required
     def apt_modify(
-        appt_id: str,
+        apt_id: str,
         ppt_id: str,
     ):
         """Modify appointment page"""
         data_dict = api.get_data_dict(token=app.config["API_KEY"])
         data = (
-            api.Records(token=app.config["API_KEY"]).appointments.records[appt_id].data
+            api.Records(token=app.config["API_KEY"]).appointments.records[apt_id].data
         )
         for k, v in data.items():
             dict_key = "appointment_" + k
@@ -200,7 +200,7 @@ def appointments_routes(app):
         return render_template(
             "apt_modify.html",
             ppt_id=ppt_id,
-            appt_id=appt_id,
+            apt_id=apt_id,
             data=data,
             data_dict=data_dict,
         )
