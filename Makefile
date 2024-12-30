@@ -1,5 +1,8 @@
-main:
-	python -m main
+.PHONY: update-changelog
+
+# Target to update the changelog with the latest commit message
+update-changelog:
+    powershell.exe -Command "git log -1 --pretty=format:'%s' | Out-File -Append -FilePath ./CHANGELOG.md"
 
 venv:
 	python -m venv .venv
