@@ -11,6 +11,43 @@ from pandas import DataFrame
 from babylab.src import api
 
 
+def format_ppt_id(ppt_id: str) -> str:
+    """Format appointment ID.
+
+    Args:
+        ppt_id (str): Participant ID.
+
+    Returns:
+        str: Formated participant ID.
+    """
+    return f"<a href=/participants/{ppt_id}>{ppt_id}</a>"
+
+
+def format_apt_id(apt_id: str) -> str:
+    """Format appointment ID.
+
+    Args:
+        apt_id (str): Appointment ID.
+
+    Returns:
+        str: Formated appointment ID.
+    """
+    return f"<a href=/appointments/{apt_id}>{apt_id}</a>"
+
+
+def format_que_id(que_id: str, ppt_id: str) -> str:
+    """Format questionnaire ID.
+
+    Args:
+        apt_id (str): Questionnaire ID.
+        ppt_id (str): Participant ID.
+
+    Returns:
+        str: Formated questionnaire ID.
+    """
+    return f"<a href=/participants/{ppt_id}/questionnaires/{que_id}>{que_id}</a>"
+
+
 def format_percentage(x: float | int) -> str:
     """Format number into percentage.
 
@@ -21,7 +58,7 @@ def format_percentage(x: float | int) -> str:
         ValueError: If number is not higher than or equal to zero, and lower than or equal to one.
 
     Returns:
-        str: Formatted percentage
+        str: Formatted percentage.
     """  # pylint: disable=line-too-long
     if x > 100 or x < 0:
         raise ValueError(
@@ -30,12 +67,35 @@ def format_percentage(x: float | int) -> str:
     return str(int(float(x))) if x else ""
 
 
+def format_status(status: str) -> str:
+    """Format appointment status.
+
+    Args:
+        status (str): Appointment status value.
+
+    Returns:
+        str: Formated status value.
+    """
+    color_map = {
+        "Scheduled": "black",
+        "Confirmed": "orange",
+        "Successful": "green",
+        "Cancelled - Drop": "grey",
+        "Cancelled - Reschedule": "red",
+        "No show": "red",
+    }
+    return f"<p style='color: {color_map[status]};'>{status}</p>"
+
+
 def format_taxi_isbooked(address: str, isbooked: str) -> str:
     """Format ``taxi_isbooked`` variable to HTML.
 
     Args:
         address (str): ``taxi_address`` value.
         isbooked (str): ``taxi_isbooked`` value.
+
+    Raises:
+        ValueError: If ``isbooked`` is not "0" or "1".
 
     Returns:
         str: Formatted HTML string.
@@ -49,6 +109,42 @@ def format_taxi_isbooked(address: str, isbooked: str) -> str:
     return "<p style='color: red;'>No</p>"
 
 
+def format_modify_button(ppt_id: str, apt_id: str = None, ques_id: str = None):
+    """Add modify button.
+
+    Args:
+        ppt_id (str): Participant ID.
+        apt_id (str, optional): Appointment ID. Defaults to None.
+        ques_id (str, optional): Questionnaire ID. Defaults to None.
+
+    Returns:
+        str: Formatted HTML string.
+    """  # pylint: disable=line-too-long
+    if apt_id:
+        return f'<a href="/participants/{ppt_id}/{apt_id}/appointment_modify"><button type="button" class="btn btn-warning">Modify</button></a>'  # pylint: disable=line-too-long
+
+    if ques_id:
+        return f'<a href="/participants/{ppt_id}/questionnaires/{ques_id}/questionnaire_modify"><button type="button" class="btn btn-warning">Modify</button></a>'  # pylint: disable=line-too-long
+
+    return f'<a href="/participants/{ppt_id}/participant_modify"><button type="button" class="btn btn-warning">Modify</button></a>'  # pylint: disable=line-too-long
+
+
+def format_isestimated(isestimated: str) -> str:
+    """Format ``isestimated`` variable.
+
+    Args:
+        isestimated (str): Value of ``isestimated`` variable.
+
+    Returns:
+        str: Formatted ``isestimated`` value.
+    """
+    return (
+        "<p style='color: red;'>Estimated</p>"
+        if isestimated == "1"
+        else "<p style='color: green;'>Calculated</p>"
+    )
+
+
 def format_df(
     x: DataFrame,
     data_dict: dict,
@@ -58,8 +154,8 @@ def format_df(
 
     Args:
         x (DataFrame): Dataframe to reformat.
-        data_dict (dict): Data dictionary to labels to use, as returned by ``models.get_data_dict``.
-        prefixes (list[str]): List of `refixes to look for in variable names.
+        data_dict (dict): Data dictionary to labels to use, as returned by ``api.get_data_dict``.
+        prefixes (list[str]): List of prefixes to look for in variable names.
 
     Returns:
         DataFrame: A reformated Dataframe.
@@ -78,15 +174,17 @@ def format_df(
         if "taxi_isbooked" in col_name:
             pairs = zip(x["taxi_address"], x[col_name])
             x[col_name] = [format_taxi_isbooked(a, i) for a, i in pairs]
+        if "isestimated" in col_name:
+            x[col_name] = [format_isestimated(x) for x in x[col_name]]
     return x
 
 
-def format_dict(x: dict, data_dict=dict) -> dict:
+def format_dict(x: dict, data_dict: dict) -> dict:
     """Reformat dictionary.
 
     Args:
         x (dict): dictionary to reformat.
-        data_dict (dict): Data dictionary to labels to use, as returned by ``models.get_data_dict``.
+        data_dict (dict): Data dictionary to labels to use, as returned by ``api.get_data_dict``.
 
     Returns:
         dict: A reformatted dictionary.
@@ -106,11 +204,11 @@ def replace_labels(x: DataFrame | dict, data_dict: dict) -> DataFrame:
     """Replace field values with labels.
 
     Args:
-        x (pd.DataFrame): Pandas DataFrame in which to replace values with labels.
-        data_dict (dict, optional): Data dictionary as returned by ``get_data_dictionary``. Defaults to None.
+        x (DataFrame): Pandas DataFrame in which to replace values with labels.
+        data_dict (dict): Data dictionary as returned by ``get_data_dictionary``.
 
     Returns:
-        pd.DataFrame: _description_
+        DataFrame: A Pandas DataFrame with replaced labels.
     """  # pylint: disable=line-too-long
     if isinstance(x, DataFrame):
         return format_df(x, data_dict)
@@ -119,15 +217,16 @@ def replace_labels(x: DataFrame | dict, data_dict: dict) -> DataFrame:
     return None
 
 
-def get_participants_table(records: api.Records, data_dict: dict = None) -> DataFrame:
+def get_participants_table(records: api.Records, data_dict: dict) -> DataFrame:
     """Get participants table
 
     Args:
         records (api.Records): REDCap records, as returned by ``api.Records``.
+        data_dict (dict, optional): Data dictionary as returned by ``api.get_data_dictionary``.
 
     Returns:
-        pd.DataFrame: Table of partcicipants.
-    """
+        DataFrame: Table of partcicipants.
+    """  # pylint: disable=line-too-long
     cols = [
         "name",
         "age_now_months",
@@ -156,6 +255,49 @@ def get_participants_table(records: api.Records, data_dict: dict = None) -> Data
     return replace_labels(df, data_dict)
 
 
+def get_age_timestamp(
+    apt_records: dict, ppt_records: dict, timestamp: str = "date"
+) -> tuple[str, str]:
+    """Get age at timestamp in months and days.
+
+    Args:
+        apt_records (dict): Appointment records.
+        ppt_records (dict): Participant records.
+        timestamp (str, optional): Timestamp at which to calculate age. Defaults to "date".
+
+    Raises:
+        ValueError: If tiemstamp is not "date" or "date_created".
+
+    Returns:
+        tuple[str, str]: Age at timestamp in months and days.
+    """
+    if timestamp not in ["date", "date_created"]:
+        raise ValueError("timestamp must be 'date' or 'date_created'")
+    date_format = "%Y-%m-%d %H:%M" if timestamp == "date" else "%Y-%m-%d %H:%M:%S"
+    months_new = []
+    days_new = []
+    for v in apt_records.values():
+        if timestamp == "date_created":
+            t = datetime.strptime(
+                ppt_records[v.record_id].data[timestamp],
+                date_format,
+            )
+        else:
+            t = datetime.strptime(
+                v.data["date"],
+                "%Y-%m-%d %H:%M",
+            )
+        months = ppt_records[v.record_id].data["age_now_months"]
+        days = ppt_records[v.record_id].data["age_now_days"]
+        age_now = api.get_age(
+            birth_date=api.get_birth_date(age=f"{months}:{days}"),
+            timestamp=t,
+        )
+        months_new.append(int(age_now[0]))
+        days_new.append(int(age_now[1]))
+    return months_new, days_new
+
+
 def get_appointments_table(
     records: api.Records,
     data_dict: dict = None,
@@ -165,11 +307,14 @@ def get_appointments_table(
     """Get appointments table.
 
     Args:
-        records (api.Records): _description_
+        records (api.Records): REDCap records, as returned by ``api.Records``.
+        data_dict (dict): Data dictionary as returned by ``api.get_data_dictionary``.
+        ppt_id (str, optional): Participant ID. Defaults to None.
+        study (str, optional): Study to filter for. Defaults to None.
 
     Returns:
-        pd.DataFrame: Table of appointments.
-    """
+        DataFrame: Table of appointments.
+    """  # pylint: disable=line-too-long
     apts = (
         records.participants.records[ppt_id].appointments
         if ppt_id
@@ -196,56 +341,46 @@ def get_appointments_table(
                 "taxi_isbooked",
             ],
         )
+    apt_records = apts.records
+    ppt_records = records.participants.records
 
-    new_age_now_months = []
-    new_age_now_days = []
-    new_age_apt_months = []
-    new_age_apt_days = []
-    for v in apts.records.values():
-        age_now_months = records.participants.records[v.record_id].data[
-            "age_now_months"
-        ]
-        age_now_days = records.participants.records[v.record_id].data["age_now_days"]
-        age_now = api.get_age(
-            birth_date=api.get_birth_date(age=f"{age_now_months}:{age_now_days}"),
-            timestamp=datetime.strptime(
-                records.participants.records[v.record_id].data["date_created"],
-                "%Y-%m-%d %H:%M:%S",
-            ),
-        )
-        age_apt = api.get_age(
-            birth_date=api.get_birth_date(
-                age=f"{age_now_months}:{age_now_days}",
-                timestamp=datetime.strptime(
-                    v.data["date"],
-                    "%Y-%m-%d %H:%M",
-                ),
-            )
-        )
-        new_age_now_months.append(int(age_now[0]))
-        new_age_now_days.append(int(age_now[1]))
-        new_age_apt_months.append(int(age_apt[0]))
-        new_age_apt_days.append(int(age_apt[1]))
     df = apts.to_df()
     df["appointment_id"] = df["id"]
-    df["age_now_months"] = new_age_now_months
-    df["age_now_days"] = new_age_now_days
-    df["age_apt_months"] = new_age_apt_months
-    df["age_apt_days"] = new_age_apt_days
+
+    # get current age
+    age_now = get_age_timestamp(apt_records, ppt_records, "date_created")
+    df["age_now_months"] = age_now[0]
+    df["age_now_days"] = age_now[1]
+
+    # get age at appointment
+    age_apt = get_age_timestamp(apt_records, ppt_records, "date")
+    df["age_apt_months"] = age_apt[0]
+    df["age_apt_days"] = age_apt[1]
 
     return replace_labels(df, data_dict)
 
 
 def get_questionnaires_table(
     records: api.Records,
-    data_dict: dict = None,
+    data_dict: dict,
     ppt_id: str = None,
 ) -> DataFrame:
-    """Get questionnaires table."""
+    """Get questionnaires table.
+
+    Args:
+        records (api.Records): REDCap records, as returned by ``api.Records``.
+        data_dict (dict): Data dictionary as returned by ``api.get_data_dictionary``.
+        ppt_id (str, optional): Participant ID. Defaults to None.
+        study (str, optional): Study to filter for. Defaults to None.
+
+    Returns:
+        DataFrame: A formated Pandas DataFrame.
+    """  # pylint: disable=line-too-long
     if ppt_id is None:
         quest = records.questionnaires
     else:
         quest = records.participants.records[ppt_id].questionnaires
+
     if not quest.records:
         return DataFrame(
             [],
@@ -270,14 +405,7 @@ def get_questionnaires_table(
         str(r) + ":" + str(q) for r, q in zip(df.index, df["redcap_repeat_instance"])
     ]
     df = replace_labels(df, data_dict)
-    df["isestimated"] = [
-        (
-            "<p style='color: red;'>Estimated</p>"
-            if i == "1"
-            else "<p style='color: green;'>Calculated</p>"
-        )
-        for i in df["isestimated"]
-    ]
+
     return df
 
 
@@ -312,8 +440,16 @@ def count_col(
     return counts
 
 
-def prepare_dashboard(records: api.Records = None, data_dict: dict = None):
-    """Prepare data for dashboard"""
+def prepare_dashboard(records: api.Records = None, data_dict: dict = None) -> dict:
+    """Prepare data for dashboard.
+
+    Args:
+        records (api.Records): REDCap records, as returned by ``api.Records``.
+        data_dict (dict, optional): Data dictionary as returned by ``api.get_data_dictionary``. Defaults to None.
+
+    Returns:
+        dict: Parameters for the dashboard endpoint.
+    """  # pylint: disable=line-too-long
     ppts = get_participants_table(records, data_dict=data_dict)
     apts = get_appointments_table(records, data_dict=data_dict)
     quest = get_questionnaires_table(records, data_dict=data_dict)
@@ -353,17 +489,22 @@ def prepare_dashboard(records: api.Records = None, data_dict: dict = None):
     }
 
 
-def prepare_participants(records: api.Records = None, data_dict: dict = None):
-    """Prepare data for participants page"""
+def prepare_participants(records: api.Records, data_dict: dict) -> dict:
+    """Prepare data for participants page.
+
+    Args:
+        records (api.Records): REDCap records, as returned by ``api.Records``.
+        data_dict (dict): Data dictionary as returned by ``api.get_data_dictionary``.
+
+    Returns:
+        dict: Parameters for the participants endpoint.
+    """  # pylint: disable=line-too-long
     df = get_participants_table(records, data_dict=data_dict)
     classes = "table table-hover table-responsive"
-    df["record_id"] = [f"<a href=/participants/{str(i)}>{str(i)}</a>" for i in df.index]
+    df["record_id"] = [format_ppt_id(i) for i in df.index]
     df.index = df.index.astype(int)
     df = df.sort_index(ascending=False)
-    df["modify_button"] = [
-        f'<a href="/participants/{p}/participant_modify"><button type="button" class="btn btn-warning">Modify</button></a>'  # pylint: disable=line-too-long
-        for p in df.index
-    ]
+    df["modify_button"] = [format_modify_button(p) for p in df.index]
     df = df[
         [
             "record_id",
@@ -395,8 +536,17 @@ def prepare_participants(records: api.Records = None, data_dict: dict = None):
     }
 
 
-def prepare_record_id(ppt_id: str, records: api.Records = None, data_dict: dict = None):
-    """Prepare record ID page"""
+def prepare_record_id(records: api.Records, data_dict: dict, ppt_id: str) -> dict:
+    """Prepare record ID page.
+
+    Args:
+        records (api.Records): REDCap records, as returned by ``api.Records``.
+        data_dict (dict): Data dictionary as returned by ``api.get_data_dictionary``.
+        ppt_id (str, optional): Participant ID. Defaults to None.
+
+    Returns:
+        dict: Parameters for the participants endpoint.
+    """  # pylint: disable=line-too-long
     data = records.participants.records[ppt_id].data
     for k, v in data.items():
         kdict = "participant_" + k
@@ -413,10 +563,8 @@ def prepare_record_id(ppt_id: str, records: api.Records = None, data_dict: dict 
 
     # prepare participants table
     df_appt = get_appointments_table(records, data_dict=data_dict, ppt_id=ppt_id)
-    df_appt["record_id"] = [f"<a href=/participants/{i}>{i}</a>" for i in df_appt.index]
-    df_appt["appointment_id"] = [
-        f"<a href=/appointments/{i}>{i}</a>" for i in df_appt["appointment_id"]
-    ]
+    df_appt["record_id"] = [format_ppt_id(i) for i in df_appt.index]
+    df_appt["appointment_id"] = [format_apt_id(i) for i in df_appt["appointment_id"]]
     df_appt = df_appt.sort_values(by="date", ascending=False)
     df_appt = df_appt[
         [
@@ -455,12 +603,10 @@ def prepare_record_id(ppt_id: str, records: api.Records = None, data_dict: dict 
     # prepare language questionnaires table
     df_quest = get_questionnaires_table(records, data_dict=data_dict, ppt_id=ppt_id)
     df_quest["questionnaire_id"] = [
-        f"<a href=/participants/{index}/questionnaires/{i}>{i}</a>"
-        for index, i in zip(df_quest.index, df_quest["questionnaire_id"])
+        format_que_id(p, q)
+        for p, q in zip(df_quest.index, df_quest["questionnaire_id"])
     ]
-    df_quest["record_id"] = [
-        f"<a href=/participants/{i}>{i}</a>" for i in df_quest.index
-    ]
+    df_quest["record_id"] = [format_ppt_id(i) for i in df_quest.index]
     df_quest = df_quest[
         [
             "questionnaire_id",
@@ -513,28 +659,24 @@ def prepare_record_id(ppt_id: str, records: api.Records = None, data_dict: dict 
 def prepare_appointments(
     records: api.Records, data_dict: dict = None, study: str = None
 ):
-    """Prepare appointments page"""
+    """Prepare record ID page.
+
+    Args:
+        records (api.Records): REDCap records, as returned by ``api.Records``.
+        data_dict (dict): Data dictionary as returned by ``api.get_data_dictionary``.
+        study (str, optional): Study to filter for. Defaults to None.
+
+    Returns:
+        dict: Parameters for the participants endpoint.
+    """  # pylint: disable=line-too-long
     df = get_appointments_table(records, data_dict=data_dict, study=study)
     classes = "table table-hover table-responsive"
-    df["record_id"] = [f"<a href=/participants/{i}>{i}</a>" for i in df.index]
+    df["record_id"] = [format_ppt_id(i) for i in df.index]
     df["modify_button"] = [
-        f'<a href="/participants/{p}/{a}/appointment_modify"><button type="button" class="btn btn-warning">Modify</button></a>'  # pylint: disable=line-too-long
-        for p, a in zip(df.index, df["appointment_id"])
+        format_modify_button(p, a) for p, a in zip(df.index, df["appointment_id"])
     ]
-    df["appointment_id"] = [
-        f"<a href=/appointments/{i}>{i}</a>" for i in df["appointment_id"]
-    ]
-    status_color_map = {
-        "Scheduled": "black",
-        "Confirmed": "orange",
-        "Successful": "green",
-        "Cancelled - Drop": "grey",
-        "Cancelled - Reschedule": "red",
-        "No show": "red",
-    }
-    df["status"] = [
-        f"<p style='color: {status_color_map[s]};'>{s}</p>" for s in df["status"]
-    ]
+    df["appointment_id"] = [format_apt_id(i) for i in df["appointment_id"]]
+    df["status"] = [format_status(s) for s in df["status"]]
 
     df = df[
         [
@@ -578,19 +720,26 @@ def prepare_appointments(
     return {"table": table}
 
 
-def prepare_questionnaires(records: api.Records = None, data_dict: dict = None):
-    """Prepare appointments page"""
+def prepare_questionnaires(records: api.Records, data_dict: dict):
+    """Prepare appointments page.
+
+    Args:
+        records (api.Records): REDCap records, as returned by ``api.Records``.
+        data_dict (dict): Data dictionary as returned by ``api.get_data_dictionary``.
+
+    Returns:
+        dict: Parameters for the participants endpoint.
+    """  # pylint: disable=line-too-long
     df = get_questionnaires_table(records, data_dict=data_dict)
     classes = "table table-hover"
     df["modify_button"] = [
-        f'<a href="/participants/{p}/questionnaires/{q}/questionnaire_modify"><button type="button" class="btn btn-warning">Modify</button></a>'  # pylint: disable=line-too-long
+        format_modify_button(p, ques_id=q)  # pylint: disable=line-too-long
         for p, q in zip(df.index, df["questionnaire_id"])
     ]
     df["questionnaire_id"] = [
-        f"<a href=/participants/{index}/questionnaires/{i}>{i}</a>"
-        for index, i in zip(df.index, df["questionnaire_id"])
+        format_que_id(p, q) for p, q in zip(df.index, df["questionnaire_id"])
     ]
-    df["record_id"] = [f"<a href=/participants/{i}>{i}</a>" for i in df.index]
+    df["record_id"] = [format_ppt_id(i) for i in df.index]
     df = df[
         [
             "questionnaire_id",
@@ -640,16 +789,21 @@ def prepare_questionnaires(records: api.Records = None, data_dict: dict = None):
     return {"table": table}
 
 
-def prepare_studies(
-    records: api.Records = None, data_dict: dict = None, study: str = None
-):
-    """Prepare appointments page"""
+def prepare_studies(records: api.Records, data_dict: dict, study: str = None):
+    """Prepare appointments page.
+
+    Args:
+        records (api.Records): REDCap records, as returned by ``api.Records``.
+        data_dict (dict): Data dictionary as returned by ``api.get_data_dictionary``.
+        study (str, optional): Study to filter for. Defaults to None.
+
+    Returns:
+        dict: Parameters for the participants endpoint.
+    """  # pylint: disable=line-too-long
     df = get_appointments_table(records, data_dict=data_dict, study=study)
     classes = "table table-hover table-responsives"
-    df["appointment_id"] = [
-        f"<a href=/appointments/{i}>{i}</a>" for i in df["appointment_id"]
-    ]
-    df["record_id"] = [f"<a href=/participants/{i}>{i}</a>" for i in df.index]
+    df["appointment_id"] = [format_apt_id(i) for i in df["appointment_id"]]
+    df["record_id"] = [format_ppt_id(i) for i in df.index]
     df = df[
         [
             "appointment_id",
@@ -702,6 +856,10 @@ def prepare_studies(
 
 
 def clean_tmp(path: str = "tmp"):
-    """Clean temporal directory"""
+    """Clean temporal directory
+
+    Args:
+        path (str, optional): Path to the temporal directory. Defaults to "tmp".
+    """
     if os.path.exists(path):
         shutil.rmtree(path)
