@@ -4,8 +4,8 @@
 import os
 import time
 import pytest
-import win32com
 from babylab.src import api, utils
+from tests import utils as tutils
 
 IS_GIHTUB_ACTIONS = os.getenv("GITHUB_ACTIONS") == "true"
 
@@ -21,29 +21,6 @@ def test_email_validation():
         api.check_email_domain("iodsf@sjd.com")
     with pytest.raises(api.MailAddressException):
         api.check_email_address("iodsf@opdofsn.com")
-
-
-def check_email_received(account_name: str = "gonzalo.garcia@sjd.es"):
-    """Check that an email has been received."""
-    # create an instance of the Outlook application
-    outlook = win32com.client.Dispatch("Outlook.Application").GetNamespace("MAPI")
-
-    # iterate through all accounts to find the specified one
-    for account in outlook.Folders:
-        if account.Name == account_name:
-            inbox = account.Folders["Inbox"]
-            messages = inbox.Items
-            # sort messages by received time in descending order
-            messages.Sort("[ReceivedTime]", True)
-            latest_message = messages.GetFirst()
-            if latest_message:
-                return {
-                    "sender": latest_message.SenderName,
-                    "subject": latest_message.Subject,
-                    "timestamp": latest_message.ReceivedTime,
-                }
-            return False
-    return False
 
 
 def test_compose_email(appointment_record, data_dict: dict):
@@ -99,7 +76,7 @@ def test_send_email(data_dict: dict):
         data_dict=data_dict,
     )
     api.send_email(data=email_data)
-    time.sleep(10)
-    email = check_email_received()
+    time.sleep(20)
+    email = tutils.check_email_received()
     assert email
     assert email["subject"] == email_data["subject"]

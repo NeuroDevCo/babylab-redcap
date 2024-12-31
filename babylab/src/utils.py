@@ -4,10 +4,11 @@ Util functions for the app.
 
 import os
 from collections import OrderedDict
-from datetime import datetime
+import datetime
 import shutil
 import pandas as pd
 from pandas import DataFrame
+from flask import flash, render_template
 from babylab.src import api
 
 
@@ -190,13 +191,16 @@ def format_dict(x: dict, data_dict: dict) -> dict:
         dict: A reformatted dictionary.
     """
     fields = ["participant_", "appointment_", "language_"]
-    for f in fields:
-        for k, v in x.items():
+    for k, v in x.items():
+        for f in fields:
             kdict = f + k
             if kdict in data_dict and v:
                 x[k] = data_dict[kdict][v]
-            if "exp" in k:
-                x[k] = round(float(v), None) if v else ""
+        if "exp" in k:
+            x[k] = round(float(v), None) if v else ""
+        if "taxi_isbooked" in k:
+            x[k] = format_taxi_isbooked(x["taxi_address"], x[k])
+
     return x
 
 
@@ -278,12 +282,12 @@ def get_age_timestamp(
     days_new = []
     for v in apt_records.values():
         if timestamp == "date_created":
-            t = datetime.strptime(
+            t = datetime.datetime.strptime(
                 ppt_records[v.record_id].data[timestamp],
                 date_format,
             )
         else:
-            t = datetime.strptime(
+            t = datetime.datetime.strptime(
                 v.data["date"],
                 "%Y-%m-%d %H:%M",
             )
@@ -863,3 +867,47 @@ def clean_tmp(path: str = "tmp"):
     """
     if os.path.exists(path):
         shutil.rmtree(path)
+
+
+def prepare_email(ppt_id: str, apt_id: str, data: dict, data_dict: dict) -> dict:
+    """Prepare email to send.
+
+    Args:
+        ppt_id (str): Participant ID.
+        apt_id (str): Appointment ID.
+        data (dict): Appointment data.
+
+    Returns:
+        dict: Email data.
+    """
+    email = {
+        "record_id": ppt_id,
+        "appointment_id": apt_id,
+        "status": data["appointment_status"],
+        "date": datetime.datetime.strptime(
+            data["appointment_date"], "%Y-%m-%dT%H:%M"
+        ).isoformat(),
+        "study": data["appointment_study"],
+        "taxi_address": data["appointment_taxi_address"],
+        "taxi_isbooked": data["appointment_taxi_isbooked"],
+        "comments": data["appointment_comments"],
+    }
+    return replace_labels(email, data_dict)
+
+
+def send_email_or_exception(email_from: str, **kwargs) -> None:
+    """Try sending an email or catch the exception.
+
+    Args:
+        **kwargs: Arguments passed to ``prepare_email``.
+    """
+    try:
+        email_data = prepare_email(**kwargs)
+        api.send_email(data=email_data, email_from=email_from)
+    except api.MailDomainException as e:
+        flash(f"Appointment modified, but e-mail was not sent: {e}", "warning")
+        return render_template("apt_new.html", **kwargs)
+    except api.MailAddressException as e:
+        flash(f"Appointment modified, but e-mail was not sent: {e}", "warning")
+        return render_template("apt_new.html", **kwargs)
+    return None
