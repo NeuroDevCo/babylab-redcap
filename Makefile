@@ -1,4 +1,4 @@
-.PHONY: changelog
+.PHONY: changelog, version-patch
 
 changelog:
 	powershell.exe -Command 'git log -1 --pretty=format:"- %s" | Out-File -Append -FilePath ./CHANGELOG.md -Encoding utf8'
@@ -24,8 +24,10 @@ test:
 cov:
 	python -m pytest -p no:cacheprovider --cov-report html --cov=babylab tests/
 
-docker-build:
-	docker build --tag babylab-redcap . 
-
-docker-run:
-	docker run --rm -it -p 5000:5000 --name babylab-redcap-container babylab-redcap
+version-patch:
+	hatch version patch
+	$version = hatch version
+	$versionWithV = "v" + $version
+	git add babylab/app/__about__.py
+	git commit -m $versionWithV
+	git push
