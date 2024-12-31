@@ -39,6 +39,12 @@ def records():
     return api.Records(token=conf.get_api_key())
 
 
+@pytest.fixture
+def data_dict():
+    """REDCap data dictionary.."""
+    return api.get_data_dict(token=conf.get_api_key())
+
+
 def generate_str(n: str = 7) -> str:
     """Generate random string of ASCII characters.
 
@@ -145,7 +151,7 @@ def create_finput_appointment(is_new: bool = True) -> dict:
         dict: Simulated form input.
     """
     recs = api.Records(token=conf.get_api_key())
-    data_dict = api.get_data_dict(token=conf.get_api_key())
+    ddict = api.get_data_dict(token=conf.get_api_key())
     ppt_id = choice(list(recs.participants.records.keys()))
     apt_choices = list(recs.participants.records[ppt_id].appointments.records.keys())
     if apt_choices:
@@ -156,8 +162,8 @@ def create_finput_appointment(is_new: bool = True) -> dict:
     data = {
         "inputId": ppt_id,
         "inputAptId": "new" if is_new else apt_id,
-        "inputStudy": choice(list(data_dict["appointment_study"].keys())),
-        "inputStatus": choice(list(data_dict["appointment_status"].keys())),
+        "inputStudy": choice(list(ddict["appointment_study"].keys())),
+        "inputStatus": choice(list(ddict["appointment_status"].keys())),
         "inputDate": "2024-12-31T14:09",
         "inputTaxiAddress": generate_str(),
         "inputComments": ". ".join([generate_str(25) for _ in range(3)]),
@@ -176,7 +182,7 @@ def create_finput_questionnaire(is_new: bool = True) -> dict:
         dict: Simulated form input.
     """
     recs = api.Records(token=conf.get_api_key())
-    data_dict = api.get_data_dict(token=conf.get_api_key())
+    ddict = api.get_data_dict(token=conf.get_api_key())
     lang_exp = generate_lang_exp()
     ppt_id = choice(list(recs.participants.records.keys()))
     que_choices = list(recs.participants.records[ppt_id].questionnaires.records.keys())
@@ -191,13 +197,13 @@ def create_finput_questionnaire(is_new: bool = True) -> dict:
         "inputId": ppt_id,
         "inputQueId": "new" if is_new else que_id,
         "inputIsEstimated": choice(["0", "1"]),
-        "inputLang1": choice(list(data_dict["language_lang1"].keys())),
+        "inputLang1": choice(list(ddict["language_lang1"].keys())),
         "inputLang1Exp": lang_exp[0],
-        "inputLang2": choice(list(data_dict["language_lang1"].keys())),
+        "inputLang2": choice(list(ddict["language_lang1"].keys())),
         "inputLang2Exp": lang_exp[1],
-        "inputLang3": choice(list(data_dict["language_lang1"].keys())),
+        "inputLang3": choice(list(ddict["language_lang1"].keys())),
         "inputLang3Exp": lang_exp[2],
-        "inputLang4": choice(list(data_dict["language_lang1"].keys())),
+        "inputLang4": choice(list(ddict["language_lang1"].keys())),
         "inputLang4Exp": lang_exp[3],
         "inputComments": ". ".join([generate_str(25) for _ in range(3)]),
     }
@@ -265,7 +271,7 @@ def create_record_appointment(is_new: bool = True) -> dict:
     Returns:
         dict: A REDCap record.
     """
-    data_dict = get_data_dict()
+    ddict = get_data_dict()
     recs = api.Records(token=conf.get_api_key())
     ppt_id = choice(list(recs.participants.records.keys()))
     apt_choices = list(recs.participants.records[ppt_id].appointments.records.keys())
@@ -279,7 +285,7 @@ def create_record_appointment(is_new: bool = True) -> dict:
         "record_id": ppt_id,
         "redcap_repeat_instrument": "appointments",
         "redcap_repeat_instance": "new" if is_new else apt_id.split(":")[1],
-        "appointment_study": choice(list(data_dict["appointment_study"].keys())),
+        "appointment_study": choice(list(ddict["appointment_study"].keys())),
         "appointment_date_created": datetime.datetime.strptime(
             "2024-12-12 14:09:00", "%Y-%m-%d %H:%M:%S"
         ),
@@ -291,7 +297,7 @@ def create_record_appointment(is_new: bool = True) -> dict:
         ),
         "appointment_taxi_address": generate_str(),
         "appointment_taxi_isbooked": choice(["0", "1"]),
-        "appointment_status": choice(list(data_dict["appointment_status"].keys())),
+        "appointment_status": choice(list(ddict["appointment_status"].keys())),
         "appointment_comments": ". ".join([generate_str(25) for _ in range(3)]),
         "appointments_complete": "2",
     }
@@ -306,7 +312,7 @@ def create_record_questionnaire(is_new: bool = True) -> dict:
     Returns:
         dict: A REDCap record.
     """
-    data_dict = get_data_dict()
+    ddict = get_data_dict()
     recs = api.Records(token=conf.get_api_key())
     ppt_id = choice(list(recs.participants.records.keys()))
     lang_exp = generate_lang_exp()
@@ -329,13 +335,13 @@ def create_record_questionnaire(is_new: bool = True) -> dict:
             "2024-12-12 14:24:00", "%Y-%m-%d %H:%M:%S"
         ),
         "language_isestimated": choice(["0", "1"]),
-        "language_lang1": choice(list(data_dict["language_lang1"].keys())),
+        "language_lang1": choice(list(ddict["language_lang1"].keys())),
         "language_lang1_exp": lang_exp[0],
-        "language_lang2": choice(list(data_dict["language_lang2"].keys())),
+        "language_lang2": choice(list(ddict["language_lang2"].keys())),
         "language_lang2_exp": lang_exp[1],
-        "language_lang3": choice(list(data_dict["language_lang3"].keys())),
+        "language_lang3": choice(list(ddict["language_lang3"].keys())),
         "language_lang3_exp": lang_exp[2],
-        "language_lang4": choice(list(data_dict["language_lang4"].keys())),
+        "language_lang4": choice(list(ddict["language_lang4"].keys())),
         "language_lang4_exp": lang_exp[3],
         "language_comments": "",
         "language_complete": "2",
