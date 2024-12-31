@@ -5,8 +5,8 @@
 <header>
   <div class="jumbotron jumbotron-fluid">
     <div class="container">
-      <h1 class="display-4">Appointments ({{ appt_id }})</h1>
-      <p class="lead">Showing details about appointmenmt {{ appt_id }}. To modify, hit the "Modify appointment" button.
+      <h1 class="display-4">Appointments ({{ apt_id }})</h1>
+      <p class="lead">Showing details about appointmenmt {{ apt_id }}. To modify, hit the "Modify appointment" button.
       </p>
     </div>
   </div>
@@ -17,7 +17,7 @@
   <div class="row">
     <div class="col">
       <div class="btn-group" role="group" aria-label="Basic example">
-        <a href="{{ url_for('apt_modify', appt_id = appt_id, ppt_id = ppt_id) }}">
+        <a href="{{ url_for('apt_modify', apt_id = apt_id, ppt_id = ppt_id) }}">
           <button type="button" class="btn btn-warning">
             <i class="fa fa-pen"></i>&nbsp;&nbsp;Modify
             appointment
@@ -47,7 +47,7 @@
             <th>
               Appointment&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-calendar"></i>
             </th>
-            <td>{{ appt_id }}</td>
+            <td>{{ apt_id }}</td>
           </tr>
           <tr>
             <th>
@@ -83,7 +83,7 @@
             <th>
               Is taxi booked?&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-check"></i>
             </th>
-            <td>{{ data["taxi_isbooked"] }}</td>
+            <td>{{ data["taxi_isbooked"] | safe }}</td>
           </tr>
           <tr>
             <th>

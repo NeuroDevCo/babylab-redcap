@@ -55,7 +55,7 @@ def participants_routes(app):
         token = app.config["API_KEY"]
         data_dict = api.get_data_dict(token=token)
         records = conf.get_records_or_index(token=token)
-        data = utils.prepare_record_id(ppt_id, records, data_dict)
+        data = utils.prepare_record_id(records, data_dict, ppt_id)
         return render_template(
             "ppt.html",
             ppt_id=ppt_id,

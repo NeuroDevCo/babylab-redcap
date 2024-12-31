@@ -14,30 +14,27 @@ def appointments_routes(app):
     @conf.token_required
     def apt_all():
         """Appointments database"""
-        records = api.Records(token=app.config["API_KEY"])
-        data_dict = api.get_data_dict(token=app.config["API_KEY"])
+        token = app.config["API_KEY"]
+        records = api.Records(token=token)
+        data_dict = api.get_data_dict(token=token)
         data = utils.prepare_appointments(records, data_dict=data_dict)
         return render_template("apt_all.html", data=data)
 
-    @app.route("/appointments/<string:appt_id>")
+    @app.route("/appointments/<string:apt_id>")
     @conf.token_required
-    def apt(appt_id: str = None):
+    def apt(apt_id: str = None):
         """Show the record_id for that appointment"""
-        data_dict = api.get_data_dict(token=app.config["API_KEY"])
-        records = conf.get_records_or_index(token=app.config["API_KEY"])
-        data = records.appointments.records[appt_id].data
-        for k, v in data.items():
-            dict_key = "appointment_" + k
-            if dict_key in data_dict and v:
-                data[k] = data_dict[dict_key][v]
-            if dict_key == "appointment_taxi_isbooked":
-                data[k] = "Yes" if v == "1" else "No"
+        token = app.config["API_KEY"]
+        data_dict = api.get_data_dict(token=token)
+        records = conf.get_records_or_index(token=token)
+        data = records.appointments.records[apt_id].data
+        data = utils.replace_labels(data, data_dict)
         participant = records.participants.records[data["record_id"]].data
         participant["age_now_months"] = str(participant["age_now_months"])
         participant["age_now_days"] = str(participant["age_now_days"])
         return render_template(
             "apt.html",
-            appt_id=appt_id,
+            apt_id=apt_id,
             ppt_id=data["record_id"],
             data=data,
             participant=participant,
@@ -47,7 +44,9 @@ def appointments_routes(app):
     @conf.token_required
     def apt_new(ppt_id: str):
         """New appointment page"""
-        data_dict = api.get_data_dict(token=app.config["API_KEY"])
+        token = app.config["API_KEY"]
+        records = conf.get_records_or_index(token=token)
+        data_dict = api.get_data_dict(token=token)
         if request.method == "POST":
             finput = request.form
             date_now = datetime.datetime.strftime(
@@ -70,70 +69,41 @@ def appointments_routes(app):
                 "appointments_complete": "2",
             }
 
+            # try to add appointment: if success try to send email
             try:
-                api.add_appointment(data, token=app.config["API_KEY"])
-                flash(f"Appointment added! {finput['inputDate']}", "success")
-                records = api.Records(token=app.config["API_KEY"])
-                appt_id = list(
-                    records.participants.records[ppt_id].appointments.records
-                )[-1]
+                api.add_appointment(data, token=token)
+                flash("Appointment added!", "success")
                 if "EMAIL" in app.config and app.config["EMAIL"]:
-                    email_data = {
-                        "record_id": ppt_id,
-                        "appointment_id": appt_id,
-                        "status": data["appointment_status"],
-                        "date": datetime.datetime.strptime(
-                            data["appointment_date"], "%Y-%m-%dT%H:%M"
-                        ).isoformat(),
-                        "study": data["appointment_study"],
-                        "taxi_address": data["appointment_taxi_address"],
-                        "taxi_isbooked": data["appointment_taxi_isbooked"],
-                        "comments": data["appointment_comments"],
-                    }
-                    data = utils.replace_labels(email_data, data_dict)
-                    api.send_email(data=email_data, email_from=app.config["EMAIL"])
+                    ppt_records = records.participants.records[ppt_id]
+                    apt_id = list(ppt_records.appointments.records)[-1]
+                    utils.send_email_or_exception(
+                        email_from=app.config["EMAIL"],
+                        ppt_id=ppt_id,
+                        apt_id=apt_id,
+                        data=data,
+                        data_dict=data_dict,
+                    )
                 return redirect(url_for("apt_all", records=records))
             except requests.exceptions.HTTPError as e:
                 flash(f"Something went wrong! {e}", "error")
                 return render_template(
                     "apt_new.html", ppt_id=ppt_id, data_dict=data_dict
                 )
-            except api.MailDomainException as e:
-                flash(
-                    f"Appointment modified successfully, but e-mail was not sent: {e}",
-                    "warning",
-                )
-                return render_template(
-                    "apt_new.html", ppt_id=ppt_id, data_dict=data_dict
-                )
-            except api.MailAddressException as e:
-                flash(
-                    f"Appointment modified successfully, but e-mail was not sent: {e}",
-                    "warning",
-                )
-                return render_template(
-                    "apt_new.html", ppt_id=ppt_id, data_dict=data_dict
-                )
+
         return render_template("apt_new.html", ppt_id=ppt_id, data_dict=data_dict)
 
     @app.route(
-        "/participants/<string:ppt_id>/<string:appt_id>/appointment_modify",
+        "/participants/<string:ppt_id>/<string:apt_id>/appointment_modify",
         methods=["GET", "POST"],
     )
     @conf.token_required
-    def apt_modify(
-        appt_id: str,
-        ppt_id: str,
-    ):
+    def apt_modify(apt_id: str, ppt_id: str):
         """Modify appointment page"""
-        data_dict = api.get_data_dict(token=app.config["API_KEY"])
-        data = (
-            api.Records(token=app.config["API_KEY"]).appointments.records[appt_id].data
-        )
-        for k, v in data.items():
-            dict_key = "appointment_" + k
-            if dict_key in data_dict and v:
-                data[k] = data_dict[dict_key][v]
+        token = app.config["API_KEY"]
+        data_dict = api.get_data_dict(token=token)
+        records = conf.get_records_or_index(token=token)
+        data = api.Records(token=token).appointments.records[apt_id].data
+        data = utils.replace_labels(data, data_dict)
         if request.method == "POST":
             finput = request.form
             date_now = datetime.datetime.strftime(
@@ -154,53 +124,33 @@ def appointments_routes(app):
                 "appointment_comments": finput["inputComments"],
                 "appointments_complete": "2",
             }
+
+            # try to add appointment: if success try to send email
             try:
-                api.add_appointment(
-                    data,
-                    token=app.config["API_KEY"],
-                )
-                email_data = {
-                    "record_id": finput["inputId"],
-                    "appointment_id": finput["inputAptId"],
-                    "status": data["appointment_status"],
-                    "date": datetime.datetime.strptime(
-                        data["appointment_date"], "%Y-%m-%dT%H:%M"
-                    ).isoformat(),
-                    "study": data["appointment_study"],
-                    "taxi_address": data["appointment_taxi_address"],
-                    "taxi_isbooked": data["appointment_taxi_isbooked"],
-                    "comments": data["appointment_comments"],
-                }
-                data = utils.replace_labels(email_data, data_dict)
-                if "EMAIL" in app.config and app.config["EMAIL"]:
-                    api.send_email(data=email_data, email_from=app.config["EMAIL"])
+                api.add_appointment(data, token=token)
                 flash("Appointment modified!", "success")
-                return redirect(url_for("apt_all"))
+                if "EMAIL" in app.config and app.config["EMAIL"]:
+                    records = conf.get_records_or_index(token=token)
+                    ppt_records = records.participants.records[ppt_id]
+                    apt_id = list(ppt_records.appointments.records)[-1]
+                    utils.send_email_or_exception(
+                        email_from=app.config["EMAIL"],
+                        ppt_id=ppt_id,
+                        apt_id=apt_id,
+                        data=data,
+                        data_dict=data_dict,
+                    )
+                return redirect(url_for("apt_all", records=records))
             except requests.exceptions.HTTPError as e:
                 flash(f"Something went wrong! {e}", "error")
                 return render_template(
-                    "appointment_new.html", ppt_id=ppt_id, data_dict=data_dict
-                )
-            except api.MailDomainException as e:
-                flash(
-                    f"Appointment modified successfully, but e-mail was not sent: {e}",
-                    "warning",
-                )
-                return render_template(
                     "apt_new.html", ppt_id=ppt_id, data_dict=data_dict
                 )
-            except api.MailAddressException as e:
-                flash(
-                    f"Appointment modified successfully, but e-mail was not sent: {e}",
-                    "warning",
-                )
-                return render_template(
-                    "apt_new.html", ppt_id=ppt_id, data_dict=data_dict
-                )
+
         return render_template(
             "apt_modify.html",
             ppt_id=ppt_id,
-            appt_id=appt_id,
+            apt_id=apt_id,
             data=data,
             data_dict=data_dict,
         )
