@@ -1,8 +1,7 @@
-.PHONY: update-changelog
+.PHONY: changelog
 
-# Target to update the changelog with the latest commit message
-update-changelog:
-    powershell.exe -Command "git log -1 --pretty=format:'%s' | Out-File -Append -FilePath ./CHANGELOG.md"
+changelog:
+	powershell.exe -Command 'git log -1 --pretty=format:"- %s" | Out-File -Append -FilePath ./CHANGELOG.md -Encoding utf8'
 
 venv:
 	python -m venv .venv
@@ -21,6 +20,8 @@ install:
 
 test:
 	python -m pytest -v -p no:cacheprovider
+
+cov:
 	python -m pytest -p no:cacheprovider --cov-report html --cov=babylab tests/
 
 docker-build:
