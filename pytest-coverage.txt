@@ -32,10 +32,10 @@ babylab\src\utils.py                      248     19     78      6    92%   164-
 tests\functional\test_appointments.py      49     18      0      0    63%   38-45, 70-82
 tests\unit\test_calendar.py                27      4      0      0    85%   36-39
 tests\unit\test_email.py                   34     15      0      0    56%   16-23, 56-82
-tests\utils.py                             88     15     16      4    76%   44-61, 144, 177, 265, 308
+tests\utils.py                             88     14     16      3    78%   44-61, 144, 177, 308
 -----------------------------------------------------------------------------------
-TOTAL                                    1301    154    188     20    88%
+TOTAL                                    1301    153    188     19    88%
 
 12 files skipped due to complete coverage.
 
-================== 53 passed, 4 skipped in 191.69s (0:03:11) ==================
+================== 53 passed, 4 skipped in 188.24s (0:03:08) ==================
