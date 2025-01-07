@@ -33,7 +33,7 @@ def get_api_key():
     if os.getenv("GITHUB_ACTIONS") != "true":
         envpath = os.path.expanduser(os.path.join("~", ".env"))
         if not os.path.exists(envpath):
-            raise MissingEnvException(envpath)
+            return "BADTOKEN"
         load_dotenv(envpath)
     t = os.getenv("API_TEST_KEY")
     if not t:
