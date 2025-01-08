@@ -35,6 +35,10 @@ def get_api_key():
         if not os.path.exists(envpath):
             return "BADTOKEN"
         load_dotenv(envpath)
+        t = os.getenv("API_TEST_KEY")
+        if t:
+            return t
+        return "BADTOKEN"
     t = os.getenv("API_TEST_KEY")
     if not t:
         raise MissingEnvToken
