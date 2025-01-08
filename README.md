@@ -28,7 +28,7 @@ winget install -e --id Python.Python.3.12
 Once Python is installed, [open your terminal](https://www.youtube.com/watch?v=8Iyldhkrh7E) and run this command:
 
 ```bash
-python -m pip install flask babylab
+python -m pip install flask pywin32 python-dotenv babylab
 ```
 
 ## Usage
