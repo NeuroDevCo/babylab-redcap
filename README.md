@@ -36,7 +36,7 @@ python -m pip install flask pywin32 python-dotenv babylab
 To run the app in your browser, run the following command in your terminal:
 
 ```bash
-flask --app babylab.main run
+python -m flask --app babylab.app run
 ```
 
 Open your browser and go to [http://127.0.0.1:5000](http://127.0.0.1:5000). Log in with your API authentication token, and you should be ready to go!
