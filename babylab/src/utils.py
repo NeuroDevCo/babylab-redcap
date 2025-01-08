@@ -406,7 +406,7 @@ def get_questionnaires_table(
         )
     df = quest.to_df()
     df["questionnaire_id"] = [
-        str(r) + ":" + str(q) for r, q in zip(df.index, df["redcap_repeat_instance"])
+        str(p) + ":" + str(q) for p, q in zip(df.index, df["redcap_repeat_instance"])
     ]
     df = replace_labels(df, data_dict)
 
@@ -741,7 +741,7 @@ def prepare_questionnaires(records: api.Records, data_dict: dict):
         for p, q in zip(df.index, df["questionnaire_id"])
     ]
     df["questionnaire_id"] = [
-        format_que_id(p, q) for p, q in zip(df.index, df["questionnaire_id"])
+        format_que_id(p, q) for p, q in zip(df["questionnaire_id"], df.index)
     ]
     df["record_id"] = [format_ppt_id(i) for i in df.index]
     df = df[
