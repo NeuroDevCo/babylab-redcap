@@ -41,11 +41,11 @@ def test_compose_email(appointment_record, data_dict: dict):
     assert "<table" in email["body"]
     assert "</table" in email["body"]
     assert (
-        "The appointment 1:2 (ID: 1) from study mop-newborns has been created or modified. Here are the details:"  # pylint: disable=line-too-long
+        "The appointment 1:2 (ID: 1) from study mop_newborns_1_nirs has been created or modified. Here are the details:"  # pylint: disable=line-too-long
         in email["body"]
     )
     assert (
-        "Appointment 1:2 (Scheduled) | mop-newborns (ID: 1) - 2024-12-31T14:09:00"
+        "Appointment 1:2 (Scheduled) | mop_newborns_1_nirs (ID: 1) - 2024-12-31T14:09:00"
         in email["subject"]
     )
 
