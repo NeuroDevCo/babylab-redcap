@@ -28,7 +28,7 @@ winget install -e --id Python.Python.3.12
 Once Python is installed, [open your terminal](https://www.youtube.com/watch?v=8Iyldhkrh7E) and run this command:
 
 ```bash
-python -m pip install flask babylab
+python -m pip install flask pywin32 python-dotenv babylab
 ```
 
 ## Usage
@@ -36,7 +36,7 @@ python -m pip install flask babylab
 To run the app in your browser, run the following command in your terminal:
 
 ```bash
-flask --app babylab.main run
+python -m flask --app babylab.app run
 ```
 
 Open your browser and go to [http://127.0.0.1:5000](http://127.0.0.1:5000). Log in with your API authentication token, and you should be ready to go!
