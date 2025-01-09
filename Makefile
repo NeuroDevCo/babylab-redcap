@@ -28,7 +28,7 @@ version-patch:
 	hatch version patch
 	$version = hatch version
 	$versionWithV = "v" + $version
-	git add babylab/app/__about__.py
+	git add babylab/__about__.py
 	git commit -m $versionWithV
 	git tag -l "$versionWithV"
 	git push
@@ -37,7 +37,7 @@ version-minor:
 	hatch version minor
 	$version = hatch version
 	$versionWithV = "v" + $version
-	git add babylab/app/__about__.py
+	git add babylab/__about__.py
 	git commit -m $versionWithV
 	git tag -l "$versionWithV"
 	git push
@@ -46,13 +46,7 @@ version-major:
 	hatch version major
 	$version = hatch version
 	$versionWithV = "v" + $version
-	git add babylab/app/__about__.py
+	git add babylab/__about__.py
 	git commit -m $versionWithV
 	git tag -l "$versionWithV"
 	git push
-
-docker-build:
-	docker build --tag babylab-redcap . 
-
-docker-run:
-	docker run --rm -it -p 5000:5000 --name babylab-redcap-container babylab-redcap

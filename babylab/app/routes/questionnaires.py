@@ -19,11 +19,11 @@ def questionnaires_routes(app):
         data = utils.prepare_questionnaires(records, data_dict=data_dict)
         return render_template("que_all.html", data=data, data_dict=data_dict)
 
-    @app.route("/participants/<string:ppt_id>/questionnaires/<string:quest_id>")
+    @app.route("/participants/<string:ppt_id>/questionnaires/<string:que_id>")
     @conf.token_required
     def que(
         ppt_id: str = None,
-        quest_id: str = None,
+        que_id: str = None,
         data: dict = None,
     ):
         """Show a language questionnaire"""
@@ -32,7 +32,7 @@ def questionnaires_routes(app):
             records = api.Records(token=app.config["API_KEY"])
         except Exception:  # pylint: disable=broad-exception-caught
             return render_template("index.html", login_status="incorrect")
-        data = records.questionnaires.records[quest_id].data
+        data = records.questionnaires.records[que_id].data
         data = utils.replace_labels(data, data_dict=data_dict)
         data["isestimated"] = (
             "<div style='color: red'>Estimated</div>"
@@ -42,7 +42,7 @@ def questionnaires_routes(app):
         return render_template(
             "que.html",
             ppt_id=ppt_id,
-            quest_id=quest_id,
+            que_id=que_id,
             data=data,
         )
 
@@ -100,20 +100,18 @@ def questionnaires_routes(app):
         return render_template("que_new.html", ppt_id=ppt_id, data_dict=data_dict)
 
     @app.route(
-        "/participants/<string:ppt_id>/questionnaires/<string:quest_id>/questionnaire_modify",
+        "/participants/<string:ppt_id>/questionnaires/<string:que_id>/questionnaire_modify",
         methods=["GET", "POST"],
     )
     @conf.token_required
     def que_modify(
-        quest_id: str,
+        que_id: str,
         ppt_id: str,
     ):
         """Modify language questionnaire page"""
         data_dict = api.get_data_dict(token=app.config["API_KEY"])
         data = (
-            api.Records(token=app.config["API_KEY"])
-            .questionnaires.records[quest_id]
-            .data
+            api.Records(token=app.config["API_KEY"]).questionnaires.records[que_id].data
         )
         for k, v in data.items():
             if "exp" in k:
@@ -125,7 +123,7 @@ def questionnaires_routes(app):
             )
             data = {
                 "record_id": ppt_id,
-                "redcap_repeat_instance": quest_id.split(":")[1],
+                "redcap_repeat_instance": que_id.split(":")[1],
                 "language_isestimated": (
                     "1" if "inputIsEstimated" in finput.keys() else "0"
                 ),
@@ -155,7 +153,7 @@ def questionnaires_routes(app):
         return render_template(
             "que_modify.html",
             ppt_id=ppt_id,
-            quest_id=quest_id,
+            que_id=que_id,
             data=data,
             data_dict=data_dict,
         )
