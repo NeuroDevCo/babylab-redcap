@@ -21,11 +21,11 @@ tests\unit\test_utils.py ..                                              [100%]
 Name                                    Stmts   Miss Branch BrPart  Cover   Missing
 -----------------------------------------------------------------------------------
 babylab\app\__init__.py                    18      1      2      1    90%   13
-babylab\app\config.py                      57     13      8      3    72%   15-16, 23-24, 34-37, 40, 90-91, 101-102
+babylab\app\config.py                      61     17     10      3    66%   15-16, 23-24, 34-41, 44, 94-95, 105-106
 babylab\app\routes\appointments.py         73     13      8      2    81%   77-79, 87-89, 133-136, 144-146
 babylab\app\routes\general.py              69     13      8      1    82%   17, 22, 38-39, 85-88, 100-103, 112-114
 babylab\app\routes\participants.py         64      6     10      2    89%   25->30, 32->42, 115-117, 177-179
-babylab\app\routes\questionnaires.py       61      8      8      0    88%   33-34, 97-99, 152-154
+babylab\app\routes\questionnaires.py       61      8      8      0    88%   33-34, 97-99, 150-152
 babylab\src\api.py                        220     28     50      1    89%   254->256, 474-475, 482-483, 492-501, 514-516, 611-626
 babylab\src\utils.py                      248     19     78      6    92%   164->166, 221, 243, 279, 334, 389, 868-869, 883-895, 904-913
 tests\functional\test_appointments.py      49     18      0      0    63%   38-45, 70-82
@@ -33,8 +33,8 @@ tests\unit\test_calendar.py                27      4      0      0    85%   36-3
 tests\unit\test_email.py                   34     15      0      0    56%   16-23, 56-82
 tests\utils.py                             88     15     16      4    76%   44-61, 144, 177, 265, 308
 -----------------------------------------------------------------------------------
-TOTAL                                    1300    153    188     20    88%
+TOTAL                                    1304    157    190     20    87%
 
 12 files skipped due to complete coverage.
 
-================== 53 passed, 4 skipped in 233.58s (0:03:53) ==================
+================== 53 passed, 4 skipped in 330.28s (0:05:30) ==================
