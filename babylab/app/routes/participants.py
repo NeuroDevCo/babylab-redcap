@@ -111,7 +111,7 @@ def participants_routes(app):
                     token=app.config["API_KEY"],
                 )
                 flash("Participant added!", "success")
-                return redirect(url_for("ppt"))
+                return redirect(url_for("ppt_all"))
             except requests.exceptions.HTTPError as e:
                 flash(f"Something went wrong! {e}", "error")
                 return redirect(url_for("ppt_new", data_dict=data_dict))
