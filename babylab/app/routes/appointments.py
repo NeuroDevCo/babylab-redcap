@@ -74,13 +74,21 @@ def appointments_routes(app):
                 api.add_appointment(data, token=token)
                 flash("Appointment added!", "success")
                 if "EMAIL" in app.config and app.config["EMAIL"]:
+                    records = conf.get_records_or_index(token=token)
                     ppt_records = records.participants.records[ppt_id]
                     apt_id = list(ppt_records.appointments.records)[-1]
                     utils.send_email_or_exception(
                         email_from=app.config["EMAIL"],
                         ppt_id=ppt_id,
                         apt_id=apt_id,
-                        data=data,
+                        data=records.appointments.records[apt_id].data,
+                        data_dict=data_dict,
+                    )
+                    utils.create_event_or_exception(
+                        account=app.config["EMAIL"],
+                        ppt_id=ppt_id,
+                        apt_id=apt_id,
+                        data=records.appointments.records[apt_id].data,
                         data_dict=data_dict,
                     )
                 return redirect(url_for("apt_all", records=records))
@@ -101,7 +109,6 @@ def appointments_routes(app):
         """Modify appointment page"""
         token = app.config["API_KEY"]
         data_dict = api.get_data_dict(token=token)
-        records = conf.get_records_or_index(token=token)
         data = api.Records(token=token).appointments.records[apt_id].data
         data = utils.replace_labels(data, data_dict)
         if request.method == "POST":
@@ -137,7 +144,14 @@ def appointments_routes(app):
                         email_from=app.config["EMAIL"],
                         ppt_id=ppt_id,
                         apt_id=apt_id,
-                        data=data,
+                        data=records.appointments.records[apt_id].data,
+                        data_dict=data_dict,
+                    )
+                    utils.modify_event_or_exception(
+                        account=app.config["EMAIL"],
+                        ppt_id=ppt_id,
+                        apt_id=apt_id,
+                        data=records.appointments.records[apt_id].data,
                         data_dict=data_dict,
                     )
                 return redirect(url_for("apt_all", records=records))
