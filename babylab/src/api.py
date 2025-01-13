@@ -516,8 +516,8 @@ def check_email_domain(email: str, target_domain: str = "sjd.es"):
         raise MailDomainException(email, target_domain)
 
 
-def compose_email(data: dict) -> dict:
-    """Compose e-mail subject and body based on data dictionary
+def compose_outlook(data: dict) -> dict:
+    """Compose e-mail or event subject and body based on data dictionary
 
     Args:
         data (dict): Appointment and participant data to fill in the subject and body.
@@ -527,79 +527,42 @@ def compose_email(data: dict) -> dict:
     """  # pylint: disable=line-too-long
 
     data["subject"] = (
-        f"Appointment { data['appointment_id'] } ({ data['status'] }) | { data['study'] } (ID: { data['record_id'] }) - { data['date'] }"  # pylint: disable=line-too-long
+        f"Appointment { data['id'] } ({ data['status'] }) | { data['study'] } (ID: { data['record_id'] }) - { data['date'] }"  # pylint: disable=line-too-long
     )
-    data[
-        "body"
-    ] = f"""
-The appointment { data['appointment_id'] } (ID: { data['record_id'] }) from study { data['study'] } has been created or modified. Here are the details:
-<br><br>
-<table style="width:50%">
-    <tbody>
-        <tr>
-            <td>
-                <b>Appointment ID</b>
-            </td>
-            <td>
-                { data['appointment_id'] }
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <b>Appointment date</b>
-            </td>
-            <td>
-                { data['date'] }
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <b>Participant ID</b>
-            </td>
-            <td>
-                { data['record_id'] }
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <b>Current status</b>
-            </td>
-            <td>
-                { data['status'] }
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <b>Taxi</b>
-            </td>
-            <td>
-                { data['taxi_address'] }
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <b>Taxi booked?</b>
-            </td>
-            <td>
-                { data['taxi_isbooked'] }
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <b>Notes</b>
-            </td>
-            <td>
-                { data['comments'] }
-            </td>
-        </tr>
-    </tbody>
-    </table>
-"""  # pylint: disable="line-too-long"
+    data["body"] = (
+        f"The appointment {data['id']} (ID: {data['record_id']}) from study {data['study']} has been created or modified. "
+        f"Here are the details:\n\n"
+        f"- Appointment ID: {data['id']}\n"
+        f"- Appointment date: {data['date']}\n"
+        f"- Participant ID: {data['record_id']}\n"
+        f"- Current status: {data['status']}\n"
+        f"- Taxi: {data['taxi_address']}\n"
+        f"- Taxi booked?: {data['taxi_isbooked']}\n"
+        f"- Notes: {data['comments']}\n"
+    )
+
+    data["body_html"] = (
+        f"The appointment {data['id']} (ID: {data['record_id']}) from study {data['study']} has been created or modified."
+        f"Here are the details:<br><br>"
+        f"<table style='width:50%'>"
+        f"<tbody>"
+        f"<tr><td><b>Appointment ID</b></td><td>{data['id']}</td></tr>"
+        f"<tr><td><b>Appointment date</b></td><td>{data['date']}</td></tr>"
+        f"<tr><td><b>Participant ID</b></td><td>{data['record_id']}</td></tr>"
+        f"<tr><td><b>Current status</b></td><td>{data['status']}</td></tr>"
+        f"<tr><td><b>Taxi</b></td><td>{data['taxi_address']}</td></tr>"
+        f"<tr><td><b>Taxi booked?</b></td><td>{data['taxi_isbooked']}</td></tr>"
+        f"<tr><td><b>Notes</b></td><td>{data['comments']}</td></tr>"
+        f"</tbody>"
+        f"</table>"
+    )
     return data
 
 
 def send_email(
-    data: dict, email_from="gonzalo.garcia@sjd.es", email_to="gonzalo.garcia@sjd.es"
+    data: dict,
+    email_from: str = "gonzalo.garcia@sjd.es",
+    email_to: str = "gonzalo.garcia@sjd.es",
 ):
     """Send e-mail using Outlook.
 
@@ -610,7 +573,7 @@ def send_email(
     """  # pylint: disable=line-too-long
     check_email_domain(email_from)
     check_email_domain(email_to)
-    composed = compose_email(data)
+    composed = compose_outlook(data)
     pythoncom.CoInitialize()  # pylint: disable=no-member
 
     ol_app = win32.Dispatch("Outlook.Application")
@@ -618,9 +581,67 @@ def send_email(
     mail_item = ol_app.CreateItem(0)
     mail_item.Subject = composed["subject"]
     mail_item.BodyFormat = 1
-    mail_item.HTMLBody = composed["body"]
+    mail_item.HTMLBody = composed["body_html"]
     mail_item.To = email_to
     mail_item._oleobj_.Invoke(  # pylint: disable=protected-access
         *(64209, 0, 8, 0, ol_ns.Accounts.Item(email_from))
     )
     mail_item.Send()
+
+
+def create_event(data: dict, account: str = "gonzalo.garcia@sjd.es") -> None:
+    """Create a calendar event on Outlook.
+
+    Args:
+        data (dict): Dictionary with the subject, body, and other properties of the event.
+        account (str, optional): E-mail address from which the event will be created. Defaults to "gonzalo.garcia@sjd.es".
+
+    """  # pylint: disable="line-too-long"
+    check_email_domain(account)
+    composed = compose_outlook(data)
+
+    ol_app = win32.Dispatch("Outlook.Application")
+    namespace = ol_app.GetNamespace("MAPI")
+
+    recipient = namespace.createRecipient(account)
+    shared_cal = namespace.GetSharedDefaultFolder(recipient, 9).Folders("Appointments")
+
+    apt = shared_cal.Items.Add(1)
+    apt.Start = " ".join(composed["date"].split("T"))
+    apt.Subject = composed["subject"]
+    apt.Duration = 60
+    apt.BodyFormat = 1
+    apt.Body = composed["body"]
+    apt.MeetingStatus = "5" if "Cancelled" in data["status"] else "1"
+    apt.Location = "Barcelona, Spain"
+    apt.ResponseRequested = "true"
+    apt.Save()
+
+
+def modify_event(data: dict, account: str = "gonzalo.garcia@sjd.es") -> None:
+    """Create a calendar event on Outlook.
+
+    Args:
+        data (dict): Dictionary with the subject, body, and other properties of the event.
+        account (str, optional): E-mail address from which the event will be created. Defaults to "gonzalo.garcia@sjd.es".
+
+    """  # pylint: disable="line-too-long"
+    check_email_domain(account)
+    composed = compose_outlook(data)
+
+    ol_app = win32.Dispatch("Outlook.Application")
+    namespace = ol_app.GetNamespace("MAPI")
+
+    recipient = namespace.createRecipient(account)
+    shared_cal = namespace.GetSharedDefaultFolder(recipient, 9).Folders("Appointments")
+
+    for apt in shared_cal.Items:
+        detected = composed["id"] in apt.Subject
+        if detected:
+            apt.Start = " ".join(composed["date"].split("T"))
+            apt.Subject = composed["subject"]
+            apt.Duration = 60
+            apt.BodyFormat = 2
+            apt.Body = composed["body"]
+            apt.MeetingStatus = "5" if "Cancelled" in data["status"] else "1"
+            apt.Save()
