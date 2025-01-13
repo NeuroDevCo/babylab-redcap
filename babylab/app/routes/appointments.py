@@ -84,8 +84,14 @@ def appointments_routes(app):
                         data=records.appointments.records[apt_id].data,
                         data_dict=data_dict,
                     )
+                    calname = (
+                        "Appointments - Test"
+                        if app.config["TESTING"]
+                        else "Appointments"
+                    )
                     utils.create_event_or_exception(
                         account=app.config["EMAIL"],
+                        calendar_name=calname,
                         ppt_id=ppt_id,
                         apt_id=apt_id,
                         data=records.appointments.records[apt_id].data,
@@ -135,11 +141,16 @@ def appointments_routes(app):
             # try to add appointment: if success try to send email
             try:
                 api.add_appointment(data, token=token)
+                records = conf.get_records_or_index(token=token)
                 flash("Appointment modified!", "success")
                 if "EMAIL" in app.config and app.config["EMAIL"]:
-                    records = conf.get_records_or_index(token=token)
                     ppt_records = records.participants.records[ppt_id]
                     apt_id = list(ppt_records.appointments.records)[-1]
+                    calname = (
+                        "Appointments - Test"
+                        if app.config["TESTING"]
+                        else "Appointments"
+                    )
                     utils.send_email_or_exception(
                         email_from=app.config["EMAIL"],
                         ppt_id=ppt_id,
@@ -149,6 +160,7 @@ def appointments_routes(app):
                     )
                     utils.modify_event_or_exception(
                         account=app.config["EMAIL"],
+                        calendar_name=calname,
                         ppt_id=ppt_id,
                         apt_id=apt_id,
                         data=records.appointments.records[apt_id].data,
