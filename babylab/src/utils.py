@@ -911,7 +911,7 @@ def send_email_or_exception(email_from: str, **kwargs) -> None:
     return None
 
 
-def create_event_or_exception(account: str, **kwargs) -> None:
+def create_event_or_exception(account: str, calendar_name: str, **kwargs) -> None:
     """Try creating and email or catch the exception.
 
     Args:
@@ -919,7 +919,7 @@ def create_event_or_exception(account: str, **kwargs) -> None:
     """
     try:
         data = prepare_email(**kwargs)
-        api.create_event(data=data, account=account)
+        api.create_event(data=data, account=account, calendar_name=calendar_name)
     except api.MailDomainException as e:
         flash(f"Appointment created, but event was not created: {e}", "warning")
         return render_template("apt_new.html", **kwargs)
@@ -929,7 +929,7 @@ def create_event_or_exception(account: str, **kwargs) -> None:
     return None
 
 
-def modify_event_or_exception(account: str, **kwargs) -> None:
+def modify_event_or_exception(account: str, calendar_name: str, **kwargs) -> None:
     """Try modifying and email or catch the exception.
 
     Args:
@@ -937,7 +937,7 @@ def modify_event_or_exception(account: str, **kwargs) -> None:
     """
     try:
         data = prepare_email(**kwargs)
-        api.modify_event(data=data, account=account)
+        api.modify_event(data=data, account=account, calendar_name=calendar_name)
     except api.MailDomainException as e:
         flash(f"Appointment modified, but event was not created: {e}", "warning")
         return render_template("apt_new.html", **kwargs)

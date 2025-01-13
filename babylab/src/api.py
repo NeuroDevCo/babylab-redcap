@@ -523,7 +523,7 @@ def compose_outlook(data: dict) -> dict:
         data (dict): Appointment and participant data to fill in the subject and body.
 
     Returns:
-        dict: Dictionary with composed HTML subject and body.
+        dict: Dictionary with composed subject and body.
     """  # pylint: disable=line-too-long
 
     data["subject"] = (
@@ -539,22 +539,6 @@ def compose_outlook(data: dict) -> dict:
         f"- Taxi: {data['taxi_address']}\n"
         f"- Taxi booked?: {data['taxi_isbooked']}\n"
         f"- Notes: {data['comments']}\n"
-    )
-
-    data["body_html"] = (
-        f"The appointment {data['id']} (ID: {data['record_id']}) from study {data['study']} has been created or modified."
-        f"Here are the details:<br><br>"
-        f"<table style='width:50%'>"
-        f"<tbody>"
-        f"<tr><td><b>Appointment ID</b></td><td>{data['id']}</td></tr>"
-        f"<tr><td><b>Appointment date</b></td><td>{data['date']}</td></tr>"
-        f"<tr><td><b>Participant ID</b></td><td>{data['record_id']}</td></tr>"
-        f"<tr><td><b>Current status</b></td><td>{data['status']}</td></tr>"
-        f"<tr><td><b>Taxi</b></td><td>{data['taxi_address']}</td></tr>"
-        f"<tr><td><b>Taxi booked?</b></td><td>{data['taxi_isbooked']}</td></tr>"
-        f"<tr><td><b>Notes</b></td><td>{data['comments']}</td></tr>"
-        f"</tbody>"
-        f"</table>"
     )
     return data
 
@@ -580,8 +564,7 @@ def send_email(
     ol_ns = ol_app.GetNameSpace("MAPI")
     mail_item = ol_app.CreateItem(0)
     mail_item.Subject = composed["subject"]
-    mail_item.BodyFormat = 1
-    mail_item.HTMLBody = composed["body_html"]
+    mail_item.Body = composed["body"]
     mail_item.To = email_to
     mail_item._oleobj_.Invoke(  # pylint: disable=protected-access
         *(64209, 0, 8, 0, ol_ns.Accounts.Item(email_from))
@@ -589,12 +572,17 @@ def send_email(
     mail_item.Send()
 
 
-def create_event(data: dict, account: str = "gonzalo.garcia@sjd.es") -> None:
+def create_event(
+    data: dict,
+    account: str = "gonzalo.garcia@sjd.es",
+    calendar_name: str = "Appointments",
+) -> None:
     """Create a calendar event on Outlook.
 
     Args:
         data (dict): Dictionary with the subject, body, and other properties of the event.
         account (str, optional): E-mail address from which the event will be created. Defaults to "gonzalo.garcia@sjd.es".
+        calendar_name (str, optional): Calendar name. Defaults to "Appointments".
 
     """  # pylint: disable="line-too-long"
     check_email_domain(account)
@@ -604,7 +592,7 @@ def create_event(data: dict, account: str = "gonzalo.garcia@sjd.es") -> None:
     namespace = ol_app.GetNamespace("MAPI")
 
     recipient = namespace.createRecipient(account)
-    shared_cal = namespace.GetSharedDefaultFolder(recipient, 9).Folders("Appointments")
+    shared_cal = namespace.GetSharedDefaultFolder(recipient, 9).Folders(calendar_name)
 
     apt = shared_cal.Items.Add(1)
     apt.Start = " ".join(composed["date"].split("T"))
@@ -618,13 +606,17 @@ def create_event(data: dict, account: str = "gonzalo.garcia@sjd.es") -> None:
     apt.Save()
 
 
-def modify_event(data: dict, account: str = "gonzalo.garcia@sjd.es") -> None:
+def modify_event(
+    data: dict,
+    account: str = "gonzalo.garcia@sjd.es",
+    calendar_name: str = "Appointments",
+) -> None:
     """Create a calendar event on Outlook.
 
     Args:
         data (dict): Dictionary with the subject, body, and other properties of the event.
         account (str, optional): E-mail address from which the event will be created. Defaults to "gonzalo.garcia@sjd.es".
-
+        calendar_name (str, optional): Calendar name. Defaults to "Appointments".
     """  # pylint: disable="line-too-long"
     check_email_domain(account)
     composed = compose_outlook(data)
@@ -633,7 +625,7 @@ def modify_event(data: dict, account: str = "gonzalo.garcia@sjd.es") -> None:
     namespace = ol_app.GetNamespace("MAPI")
 
     recipient = namespace.createRecipient(account)
-    shared_cal = namespace.GetSharedDefaultFolder(recipient, 9).Folders("Appointments")
+    shared_cal = namespace.GetSharedDefaultFolder(recipient, 9).Folders(calendar_name)
 
     for apt in shared_cal.Items:
         detected = composed["id"] in apt.Subject
