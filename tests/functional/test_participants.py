@@ -27,7 +27,6 @@ def test_ppt_new(client):
 
 def test_ppt_new_post(client, participant_finput):
     """Test ppt_all endpoint."""
-
     response = client.post("/participant_new", data=participant_finput)
     assert response.status_code == 302
 
