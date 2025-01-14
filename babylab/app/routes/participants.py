@@ -48,14 +48,25 @@ def participants_routes(app):
             data_ppt=data_ppt,
         )
 
-    @app.route("/participants/<string:ppt_id>")
+    @app.route("/participants/<string:ppt_id>", methods=["GET", "POST"])
     @conf.token_required
-    def ppt(ppt_id: str = None):
+    def ppt(ppt_id: str):
         """Show the ppt_id for that participant"""
         token = app.config["API_KEY"]
         data_dict = api.get_data_dict(token=token)
         records = conf.get_records_or_index(token=token)
         data = utils.prepare_record_id(records, data_dict, ppt_id)
+        if request.method == "POST":
+            try:
+                api.delete_participant(
+                    data={"record_id": ppt_id},
+                    token=app.config["API_KEY"],
+                )
+                flash("Participant deleted!", "success")
+                return redirect(url_for("ppt_all"))
+            except requests.exceptions.HTTPError as e:
+                flash(f"Something went wrong! {e}", "error")
+                return redirect(url_for("ppt_all"))
         return render_template(
             "ppt.html",
             ppt_id=ppt_id,

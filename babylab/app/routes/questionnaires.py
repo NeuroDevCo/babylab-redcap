@@ -19,7 +19,10 @@ def questionnaires_routes(app):
         data = utils.prepare_questionnaires(records, data_dict=data_dict)
         return render_template("que_all.html", data=data, data_dict=data_dict)
 
-    @app.route("/participants/<string:ppt_id>/questionnaires/<string:que_id>")
+    @app.route(
+        "/participants/<string:ppt_id>/questionnaires/<string:que_id>",
+        methods=["GET", "POST"],
+    )
     @conf.token_required
     def que(
         ppt_id: str = None,
@@ -34,6 +37,18 @@ def questionnaires_routes(app):
             return render_template("index.html", login_status="incorrect")
         data = records.questionnaires.records[que_id].data
         data = utils.replace_labels(data, data_dict=data_dict)
+        if request.method == "POST":
+            try:
+                ppt_id, que_id = que_id.split(":")
+                api.delete_questionnaire(
+                    data={"record_id": ppt_id, "redcap_repeat_instance": que_id},
+                    token=app.config["API_KEY"],
+                )
+                flash("Questionnaire deleted!", "success")
+                return redirect(url_for("apt_all"))
+            except requests.exceptions.HTTPError as e:
+                flash(f"Something went wrong! {e}", "error")
+                return redirect(url_for("apt_all"))
         data["isestimated"] = (
             "<div style='color: red'>Estimated</div>"
             if data["isestimated"] == "1"
