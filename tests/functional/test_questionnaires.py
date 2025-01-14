@@ -7,22 +7,28 @@ def test_ques_all(client):
     assert response.status_code == 200
 
 
-def test_que(client):
+def test_que(client, questionnaire_record_mod):
     """Test que endpoint."""
-    response = client.get("/participants/1/questionnaires/1:1")
+    ppt_id = questionnaire_record_mod["record_id"]
+    que_id = ppt_id + ":" + questionnaire_record_mod["redcap_repeat_instance"]
+    response = client.get(f"/appointments/{que_id}")
+    response = client.get(f"/participants/{ppt_id}/questionnaires/{que_id}")
     assert response.status_code == 200
 
 
-def test_que_new(client):
+def test_que_new(client, questionnaire_record_mod):
     """Test que_new endpoint."""
-    response = client.get("/participants/1/questionnaires/questionnaire_new")
+    ppt_id = questionnaire_record_mod["record_id"]
+    response = client.get(f"/participants/{ppt_id}/questionnaires/questionnaire_new")
     assert response.status_code == 200
 
 
 def test_que_new_post(client, questionnaire_finput):
     """Test que_new endpoint."""
+    ppt_id = questionnaire_finput["inputId"]
     response = client.post(
-        "/participants/1/questionnaires/questionnaire_new", data=questionnaire_finput
+        f"/participants/{ppt_id}/questionnaires/questionnaire_new",
+        data=questionnaire_finput,
     )
     assert response.status_code == 302
 

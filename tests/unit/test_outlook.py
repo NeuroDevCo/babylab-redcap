@@ -105,6 +105,6 @@ def test_create_event(data_dict: dict):
     )
     api.create_event(data=event_data, calendar_name="Appointments - Test")
     time.sleep(20)
-    event = tutils.check_event_created(apt_id=record["id"])
+    event = tutils.check_event_created(ppt_id=record["record_id"])
     assert event
     assert "1:1" in event["subject"]
