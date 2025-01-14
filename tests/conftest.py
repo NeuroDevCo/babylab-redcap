@@ -2,11 +2,15 @@
 Fixtures for testing
 """
 
+import os
 import pytest
+import win32com as win
 from babylab.src import api
 from babylab.app import create_app
 from babylab.app import config as conf
 from tests import utils as tutils
+
+IS_GIHTUB_ACTIONS = os.getenv("GITHUB_ACTIONS") == "true"
 
 
 @pytest.fixture
@@ -137,3 +141,19 @@ def questionnaire_record_mod() -> dict:
         dict: A REDCap record fixture.
     """
     return tutils.create_record_questionnaire(is_new=False)
+
+
+def pytest_sessionfinish(account: str = "gonzalo.garcia@sjd.es"):
+    """
+    Called after whole test run finished, right before
+    returning the exit status to the system.
+    """
+    if not IS_GIHTUB_ACTIONS:
+        api.check_email_address(account)
+        outlook = win.client.Dispatch("Outlook.Application").GetNamespace("MAPI")
+        recipient = outlook.createRecipient(account)
+        shared_cal = outlook.GetSharedDefaultFolder(recipient, 9).Folders(
+            "Appointments - Test"
+        )
+        for e in shared_cal.Items:
+            e.Delete()

@@ -3,7 +3,7 @@
 import datetime
 from string import digits, ascii_lowercase
 from random import choice, choices
-import win32com
+import win32com as win
 from babylab.src import api
 from babylab.app import config as conf
 
@@ -38,15 +38,15 @@ def generate_email() -> str:
     return generate_str() + "@" + generate_str() + ".com"
 
 
-def check_email_received(account_name: str = "gonzalo.garcia@sjd.es"):
+def check_email_received(account: str = "gonzalo.garcia@sjd.es"):
     """Check that an email has been received."""
     # create an instance of the Outlook application
-    outlook = win32com.client.Dispatch("Outlook.Application").GetNamespace("MAPI")
+    outlook = win.client.Dispatch("Outlook.Application").GetNamespace("MAPI")
 
     # iterate through all accounts to find the specified one
-    for account in outlook.Folders:
-        if account.Name == account_name:
-            inbox = account.Folders["Inbox"]
+    for acc in outlook.Folders:
+        if acc.Name == account:
+            inbox = acc.Folders["Inbox"]
             messages = inbox.Items
             # sort messages by received time in descending order
             messages.Sort("[ReceivedTime]", True)
@@ -58,6 +58,22 @@ def check_email_received(account_name: str = "gonzalo.garcia@sjd.es"):
                     "timestamp": latest_message.ReceivedTime,
                 }
             return False
+    return False
+
+
+def check_event_created(apt_id: str, account: str = "gonzalo.garcia@sjd.es"):
+    """Check that an email has been received."""
+    # create an instance of the Outlook application
+    outlook = win.client.Dispatch("Outlook.Application").GetNamespace("MAPI")
+    recipient = outlook.createRecipient(account)
+    shared_cal = outlook.GetSharedDefaultFolder(recipient, 9).Folders(
+        "Appointments - Test"
+    )
+    for apt in shared_cal.Items:
+        if apt_id in apt.Subject:
+            return {
+                "subject": apt.Subject,
+            }
     return False
 
 

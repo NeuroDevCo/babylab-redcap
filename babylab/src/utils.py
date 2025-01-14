@@ -882,15 +882,13 @@ def prepare_email(ppt_id: str, apt_id: str, data: dict, data_dict: dict) -> dict
     """
     email = {
         "record_id": ppt_id,
-        "appointment_id": apt_id,
-        "status": data["appointment_status"],
-        "date": datetime.datetime.strptime(
-            data["appointment_date"], "%Y-%m-%dT%H:%M"
-        ).isoformat(),
-        "study": data["appointment_study"],
-        "taxi_address": data["appointment_taxi_address"],
-        "taxi_isbooked": data["appointment_taxi_isbooked"],
-        "comments": data["appointment_comments"],
+        "id": apt_id,
+        "status": data["status"],
+        "date": datetime.datetime.strptime(data["date"], "%Y-%m-%d %H:%M").isoformat(),
+        "study": data["study"],
+        "taxi_address": data["taxi_address"],
+        "taxi_isbooked": data["taxi_isbooked"],
+        "comments": data["comments"],
     }
     return replace_labels(email, data_dict)
 
@@ -902,12 +900,48 @@ def send_email_or_exception(email_from: str, **kwargs) -> None:
         **kwargs: Arguments passed to ``prepare_email``.
     """
     try:
-        email_data = prepare_email(**kwargs)
-        api.send_email(data=email_data, email_from=email_from)
+        data = prepare_email(**kwargs)
+        api.send_email(data=data, email_from=email_from)
     except api.MailDomainException as e:
         flash(f"Appointment modified, but e-mail was not sent: {e}", "warning")
         return render_template("apt_new.html", **kwargs)
     except api.MailAddressException as e:
         flash(f"Appointment modified, but e-mail was not sent: {e}", "warning")
+        return render_template("apt_new.html", **kwargs)
+    return None
+
+
+def create_event_or_exception(account: str, calendar_name: str, **kwargs) -> None:
+    """Try creating and email or catch the exception.
+
+    Args:
+        **kwargs: Arguments passed to ``prepare_email``.
+    """
+    try:
+        data = prepare_email(**kwargs)
+        api.create_event(data=data, account=account, calendar_name=calendar_name)
+    except api.MailDomainException as e:
+        flash(f"Appointment created, but event was not created: {e}", "warning")
+        return render_template("apt_new.html", **kwargs)
+    except api.MailAddressException as e:
+        flash(f"Appointment created, but event was not created: {e}", "warning")
+        return render_template("apt_new.html", **kwargs)
+    return None
+
+
+def modify_event_or_exception(account: str, calendar_name: str, **kwargs) -> None:
+    """Try modifying and email or catch the exception.
+
+    Args:
+        **kwargs: Arguments passed to ``prepare_email``.
+    """
+    try:
+        data = prepare_email(**kwargs)
+        api.modify_event(data=data, account=account, calendar_name=calendar_name)
+    except api.MailDomainException as e:
+        flash(f"Appointment modified, but event was not created: {e}", "warning")
+        return render_template("apt_new.html", **kwargs)
+    except api.MailAddressException as e:
+        flash(f"Appointment modified, but event was not created: {e}", "warning")
         return render_template("apt_new.html", **kwargs)
     return None

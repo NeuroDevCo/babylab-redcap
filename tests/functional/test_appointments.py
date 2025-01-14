@@ -39,10 +39,17 @@ def test_apt_new_post_email(app, appointment_finput):
     client = app.test_client()
     response = client.post("/participants/1/appointment_new", data=appointment_finput)
     assert response.status_code == 302
+
+    # check that email has been sent
     time.sleep(20)
     email = tutils.check_email_received()
     assert email
     assert "Appointment 1:" in email["subject"]
+
+    # check that event has been created
+    event = tutils.check_event_created(apt_id="1:1")
+    assert event
+    assert "1:1" in event["subject"]
 
 
 def test_apt_mod(client, appointment_finput_mod):
@@ -76,7 +83,14 @@ def test_apt_mod_post_email(app, appointment_finput_mod):
         data=appointment_finput_mod,
     )
     assert response.status_code == 302
+
+    # check that email has been sent
     time.sleep(20)
     email = tutils.check_email_received()
     assert email
     assert "Appointment 1:" in email["subject"]
+
+    # check that event has been created
+    event = tutils.check_event_created(apt_id=apt_id)
+    assert event
+    assert apt_id in event["subject"]

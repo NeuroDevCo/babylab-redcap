@@ -19,6 +19,7 @@ def create_app(env: str = "prod"):
     app.secret_key = os.urandom(24)
     app.permanent_session_lifetime = datetime.timedelta(minutes=10)
     app.config["API_KEY"] = config.configs[env].api_key
+    app.config["TESTING"] = config.configs[env].testing
 
     # import routes
     participants.participants_routes(app)
