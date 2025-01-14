@@ -7,7 +7,6 @@ Functions to interact with the REDCap API.
 import json
 import zipfile
 import os
-import copy
 import re
 import datetime
 from dataclasses import dataclass
