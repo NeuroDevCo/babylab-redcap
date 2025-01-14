@@ -7,6 +7,7 @@ from babylab.src import api
 from babylab.app import create_app
 from babylab.app import config as conf
 from tests import utils as tutils
+import win32com as win32
 
 
 @pytest.fixture
@@ -137,3 +138,18 @@ def questionnaire_record_mod() -> dict:
         dict: A REDCap record fixture.
     """
     return tutils.create_record_questionnaire(is_new=False)
+
+
+def pytest_sessionfinish(account: str = "gonzalo.garcia@sjd.es"):
+    """
+    Called after whole test run finished, right before
+    returning the exit status to the system.
+    """
+    api.check_email_address(account)
+    outlook = win32.client.Dispatch("Outlook.Application").GetNamespace("MAPI")
+    recipient = outlook.createRecipient(account)
+    shared_cal = outlook.GetSharedDefaultFolder(recipient, 9).Folders(
+        "Appointments - Test"
+    )
+    for e in shared_cal.Items:
+        e.Delete()
