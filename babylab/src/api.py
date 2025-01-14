@@ -212,7 +212,7 @@ def add_appointment(data: dict, **kwargs):
 
 
 def delete_appointment(data: dict, **kwargs):
-    """Delete participant from REDCap database.
+    """Delete appointment from REDCap database.
 
     Args:
         data (dict): Participant data.
@@ -231,7 +231,7 @@ def delete_appointment(data: dict, **kwargs):
 
 
 def add_questionnaire(data: dict, **kwargs):
-    """Add new appointment to REDCap database.
+    """Add new questionnaire to REDCap database.
 
     Args:
         data (dict): Questionnaire data.
@@ -247,6 +247,25 @@ def add_questionnaire(data: dict, **kwargs):
         "data": f"[{json.dumps(datetimes_to_strings(data))}]",
     }
 
+    return post_request(fields=fields, **kwargs)
+
+
+def delete_questionnaire(data: dict, **kwargs):
+    """Delete questionnaire from REDCap database.
+
+    Args:
+        data (dict): Participant data.
+        modifying (bool, optional): Modifying existent participant?
+        *kwargs: Additional arguments passed to ``post_request``.
+    """
+    fields = {
+        "content": "record",
+        "action": "delete",
+        "returnFormat": "json",
+        "instrument": "language",
+        "repeat_instance": int(data["redcap_repeat_instance"]),
+        f"records[{data["record_id"]}]": f"{data["record_id"]}",
+    }
     return post_request(fields=fields, **kwargs)
 
 
