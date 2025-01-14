@@ -11,7 +11,7 @@ def test_que(client, questionnaire_record_mod):
     """Test que endpoint."""
     ppt_id = questionnaire_record_mod["record_id"]
     que_id = ppt_id + ":" + questionnaire_record_mod["redcap_repeat_instance"]
-    response = client.get(f"/appointments/{que_id}")
+    response = client.get(f"/questionnaires/{que_id}")
     response = client.get(f"/participants/{ppt_id}/questionnaires/{que_id}")
     assert response.status_code == 200
 
