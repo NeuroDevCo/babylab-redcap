@@ -122,14 +122,14 @@ def test_add_questionnaire(questionnaire_record, token):
 
 
 def test_add_questionnaire_mod(questionnaire_record_mod, token):
-    """Test ``add_appointment`` with ``modifying=True``."""
+    """Test ``add_questionaire`` with ``modifying=True``."""
     api.add_questionnaire(questionnaire_record_mod, token=token)
     with pytest.raises(TypeError):
         api.add_questionnaire(questionnaire_record_mod)
 
 
 def test_delete_questionnaire(questionnaire_record_mod, token):
-    """Test ``add_appointment``."""
+    """Test ``delete_questionnaire``."""
     que_id = (
         questionnaire_record_mod["record_id"]
         + ":"
@@ -137,7 +137,7 @@ def test_delete_questionnaire(questionnaire_record_mod, token):
     )
     api.delete_questionnaire(questionnaire_record_mod, token=token)
     recs = api.Records(token=token)
-    assert que_id not in recs.appointments.records
+    assert que_id not in recs.questionnaires.records
     with pytest.raises(TypeError):
         api.delete_questionnaire(questionnaire_record_mod)
 
