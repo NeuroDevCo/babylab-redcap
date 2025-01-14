@@ -173,6 +173,24 @@ def add_participant(data: dict, modifying: bool = False, **kwargs):
     return post_request(fields=fields, **kwargs)
 
 
+def delete_participant(data: dict, **kwargs):
+    """Delete participant from REDCap database.
+
+    Args:
+        data (dict): Participant data.
+        modifying (bool, optional): Modifying existent participant?
+        *kwargs: Additional arguments passed to ``post_request``.
+    """
+    fields = {
+        "content": "record",
+        "action": "delete",
+        "returnFormat": "json",
+        "instrument": "",
+        f"records[{data["record_id"]}]": f"{data["record_id"]}",
+    }
+    return post_request(fields=fields, **kwargs)
+
+
 def add_appointment(data: dict, **kwargs):
     """Add new appointment to REDCap database.
 
