@@ -264,7 +264,7 @@ def delete_questionnaire(data: dict, **kwargs):
         "returnFormat": "json",
         "instrument": "language",
         "repeat_instance": int(data["redcap_repeat_instance"]),
-        f"records[{data["record_id"]}]": f"{data["record_id"]}",
+        f"records[{data['record_id']}]": f"{data['record_id']}",
     }
     return post_request(fields=fields, **kwargs)
 
