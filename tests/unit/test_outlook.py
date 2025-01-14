@@ -23,27 +23,32 @@ def test_email_validation():
         api.check_email_address("iodsf@opdofsn.com")
 
 
-def test_compose_outlook(appointment_record, data_dict: dict):
+def test_compose_outlook(appointment_record_mod, data_dict: dict):
     """Validate composed outlook."""
+    apt_id = (
+        appointment_record_mod["record_id"]
+        + ":"
+        + appointment_record_mod["redcp_repeat_instance"]
+    )
     email_data = {
-        "record_id": "1",
-        "id": "1:2",
+        "record_id": appointment_record_mod["record_id"],
+        "id": apt_id,
         "status": "1",
-        "date": appointment_record["appointment_date"].isoformat(),
+        "date": appointment_record_mod["appointment_date"].isoformat(),
         "study": "1",
-        "taxi_address": appointment_record["appointment_taxi_address"],
-        "taxi_isbooked": appointment_record["appointment_taxi_isbooked"],
-        "comments": appointment_record["appointment_comments"],
+        "taxi_address": appointment_record_mod["appointment_taxi_address"],
+        "taxi_isbooked": appointment_record_mod["appointment_taxi_isbooked"],
+        "comments": appointment_record_mod["appointment_comments"],
     }
     data = utils.replace_labels(email_data, data_dict)
     email = api.compose_outlook(data)
     assert all(k in email for k in ["body", "subject"])
-    assert appointment_record["appointment_study"] in email["body"]
-    assert appointment_record["appointment_study"] in email["subject"]
-    assert appointment_record["appointment_status"] in email["body"]
-    assert appointment_record["appointment_status"] in email["subject"]
+    assert appointment_record_mod["appointment_study"] in email["body"]
+    assert appointment_record_mod["appointment_study"] in email["subject"]
+    assert appointment_record_mod["appointment_status"] in email["body"]
+    assert appointment_record_mod["appointment_status"] in email["subject"]
     assert "Here are the details:" in email["body"]
-    assert "Appointment " in email["subject"]
+    assert f"Appointment {apt_id}" in email["subject"]
 
 
 @pytest.mark.skipif(IS_GIHTUB_ACTIONS, reason="Test doesn't work in Github Actions.")
