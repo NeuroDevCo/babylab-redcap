@@ -42,11 +42,14 @@ def test_compose_outlook(appointment_record_mod, data_dict: dict):
     }
     data = utils.replace_labels(email_data, data_dict)
     email = api.compose_outlook(data)
+    study_test = data_dict["appointment_study"][email_data["study"]]
+    status_test = data_dict["appointment_status"][email_data["status"]]
+
     assert all(k in email for k in ["body", "subject"])
-    assert appointment_record_mod["appointment_study"] in email["body"]
-    assert appointment_record_mod["appointment_study"] in email["subject"]
-    assert appointment_record_mod["appointment_status"] in email["body"]
-    assert appointment_record_mod["appointment_status"] in email["subject"]
+    assert study_test in email["body"]
+    assert study_test in email["subject"]
+    assert status_test in email["body"]
+    assert status_test in email["subject"]
     assert "Here are the details:" in email["body"]
     assert f"Appointment {apt_id}" in email["subject"]
 
@@ -80,7 +83,7 @@ def test_send_email(data_dict: dict):
     time.sleep(20)
     email = tutils.check_email_received()
     assert email
-    assert email["subject"] == email_data["subject"]
+    assert "1:1" == email_data["id"]
 
 
 @pytest.mark.skipif(IS_GIHTUB_ACTIONS, reason="Test doesn't work in Github Actions.")

@@ -7,6 +7,7 @@ Functions to interact with the REDCap API.
 import json
 import zipfile
 import os
+import copy
 import re
 import datetime
 from dataclasses import dataclass
@@ -581,22 +582,22 @@ def compose_outlook(data: dict) -> dict:
     Returns:
         dict: Dictionary with composed subject and body.
     """  # pylint: disable=line-too-long
-
-    data["subject"] = (
-        f"Appointment { data['id'] } ({ data['status'] }) | { data['study'] } (ID: { data['record_id'] }) - { data['date'] }"  # pylint: disable=line-too-long
+    out = dict(data)
+    out["subject"] = (
+        f"Appointment { out['id'] } ({ out['status'] }) | { out['study'] } (ID: { out['record_id'] }) - { out['date'] }"  # pylint: disable=line-too-long
     )
-    data["body"] = (
-        f"The appointment {data['id']} (ID: {data['record_id']}) from study {data['study']} has been created or modified. "
+    out["body"] = (
+        f"The appointment {out['id']} (ID: {out['record_id']}) from study {out['study']} has been created or modified. "
         f"Here are the details:\n\n"
-        f"- Appointment ID: {data['id']}\n"
-        f"- Appointment date: {data['date']}\n"
-        f"- Participant ID: {data['record_id']}\n"
-        f"- Current status: {data['status']}\n"
-        f"- Taxi: {data['taxi_address']}\n"
-        f"- Taxi booked?: {data['taxi_isbooked']}\n"
-        f"- Notes: {data['comments']}\n"
+        f"- Appointment ID: {out['id']}\n"
+        f"- Appointment date: {out['date']}\n"
+        f"- Participant ID: {out['record_id']}\n"
+        f"- Current status: {out['status']}\n"
+        f"- Taxi: {out['taxi_address']}\n"
+        f"- Taxi booked?: {out['taxi_isbooked']}\n"
+        f"- Notes: {out['comments']}\n"
     )
-    return data
+    return out
 
 
 def send_email(

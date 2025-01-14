@@ -191,17 +191,18 @@ def format_dict(x: dict, data_dict: dict) -> dict:
         dict: A reformatted dictionary.
     """
     fields = ["participant_", "appointment_", "language_"]
-    for k, v in x.items():
+    y = dict(x)
+    for k, v in y.items():
         for f in fields:
             kdict = f + k
             if kdict in data_dict and v:
-                x[k] = data_dict[kdict][v]
+                y[k] = data_dict[kdict][v]
         if "exp" in k:
-            x[k] = round(float(v), None) if v else ""
+            y[k] = round(float(v), None) if v else ""
         if "taxi_isbooked" in k:
-            x[k] = format_taxi_isbooked(x["taxi_address"], x[k])
+            y[k] = format_taxi_isbooked(y["taxi_address"], y[k])
 
-    return x
+    return y
 
 
 def replace_labels(x: DataFrame | dict, data_dict: dict) -> DataFrame:
