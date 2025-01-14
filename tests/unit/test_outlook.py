@@ -28,7 +28,7 @@ def test_compose_outlook(appointment_record_mod, data_dict: dict):
     apt_id = (
         appointment_record_mod["record_id"]
         + ":"
-        + appointment_record_mod["redacp_repeat_instance"]
+        + appointment_record_mod["redcap_repeat_instance"]
     )
     email_data = {
         "record_id": appointment_record_mod["record_id"],
