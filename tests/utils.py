@@ -61,7 +61,7 @@ def check_email_received(account: str = "gonzalo.garcia@sjd.es"):
     return False
 
 
-def check_event_created(apt_id: str, account: str = "gonzalo.garcia@sjd.es"):
+def check_event_created(ppt_id: str, account: str = "gonzalo.garcia@sjd.es"):
     """Check that an email has been received."""
     # create an instance of the Outlook application
     outlook = win.client.Dispatch("Outlook.Application").GetNamespace("MAPI")
@@ -70,7 +70,7 @@ def check_event_created(apt_id: str, account: str = "gonzalo.garcia@sjd.es"):
         "Appointments - Test"
     )
     for apt in shared_cal.Items:
-        if apt_id in apt.Subject:
+        if ppt_id in apt.Subject:
             return {
                 "subject": apt.Subject,
             }
@@ -110,8 +110,10 @@ def create_finput_participant(is_new: bool = True) -> dict:
     Returns:
         dict: Simulated form input.
     """
+    recs = api.Records(token=conf.get_api_key())
+    ppt_id = choice(list(recs.participants.records.keys()))
     data = {
-        "record_id": "new" if is_new else "1",
+        "record_id": "new" if is_new else ppt_id,
         "inputName": generate_str(),
         "inputParent1Name": generate_str(),
         "inputSex": choice(range(1, 6)),
@@ -155,18 +157,15 @@ def create_finput_appointment(is_new: bool = True) -> dict:
     recs = api.Records(token=conf.get_api_key())
     ddict = api.get_data_dict(token=conf.get_api_key())
     ppt_id = choice(list(recs.participants.records.keys()))
-    apt_choices = list(recs.participants.records[ppt_id].appointments.records.keys())
-    if apt_choices:
-        apt_id = choice(apt_choices)
-    else:
-        ppt_id = "1"
-        apt_id = "1:1"
+    while not recs.participants.records[ppt_id].appointments.records:
+        ppt_id = choice(list(recs.participants.records.keys()))
+    apt_id = choice(list(recs.participants.records[ppt_id].appointments.records.keys()))
     data = {
         "inputId": ppt_id,
         "inputAptId": "new" if is_new else apt_id,
         "inputStudy": choice(list(ddict["appointment_study"].keys())),
         "inputStatus": choice(list(ddict["appointment_status"].keys())),
-        "inputDate": "2024-12-31T14:09",
+        "inputDate": "2024-12-31 14:09",
         "inputTaxiAddress": generate_str(),
         "inputComments": ". ".join([generate_str(25) for _ in range(3)]),
     }
@@ -187,14 +186,11 @@ def create_finput_questionnaire(is_new: bool = True) -> dict:
     ddict = api.get_data_dict(token=conf.get_api_key())
     lang_exp = generate_lang_exp()
     ppt_id = choice(list(recs.participants.records.keys()))
-    que_choices = list(recs.participants.records[ppt_id].questionnaires.records.keys())
-
-    if que_choices:
-        que_id = choice(que_choices)
-    else:
-        ppt_id = "1"
-        que_id = "1:1"
-
+    while not recs.participants.records[ppt_id].questionnaires.records:
+        ppt_id = choice(list(recs.participants.records.keys()))
+    que_id = choice(
+        list(recs.participants.records[ppt_id].questionnaires.records.keys())
+    )
     data = {
         "inputId": ppt_id,
         "inputQueId": "new" if is_new else que_id,
@@ -276,12 +272,9 @@ def create_record_appointment(is_new: bool = True) -> dict:
     ddict = get_data_dict()
     recs = api.Records(token=conf.get_api_key())
     ppt_id = choice(list(recs.participants.records.keys()))
-    apt_choices = list(recs.participants.records[ppt_id].appointments.records.keys())
-    if apt_choices:
-        apt_id = choice(apt_choices)
-    else:
-        ppt_id = "1"
-        apt_id = "1:1"
+    while not recs.participants.records[ppt_id].appointments.records:
+        ppt_id = choice(list(recs.participants.records.keys()))
+    apt_id = choice(list(recs.participants.records[ppt_id].appointments.records.keys()))
 
     return {
         "record_id": ppt_id,
@@ -316,15 +309,13 @@ def create_record_questionnaire(is_new: bool = True) -> dict:
     """
     ddict = get_data_dict()
     recs = api.Records(token=conf.get_api_key())
-    ppt_id = choice(list(recs.participants.records.keys()))
     lang_exp = generate_lang_exp()
-    que_choices = list(recs.participants.records[ppt_id].questionnaires.records.keys())
-
-    if que_choices:
-        que_id = choice(que_choices)
-    else:
-        ppt_id = "1"
-        que_id = "1:1"
+    ppt_id = choice(list(recs.participants.records.keys()))
+    while not recs.participants.records[ppt_id].questionnaires.records:
+        ppt_id = choice(list(recs.participants.records.keys()))
+    que_id = choice(
+        list(recs.participants.records[ppt_id].questionnaires.records.keys())
+    )
 
     return {
         "record_id": ppt_id,

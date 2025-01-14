@@ -75,6 +75,16 @@ def test_add_participant_modifying(participant_record_mod, token):
         api.add_participant(participant_record_mod)
 
 
+def test_delete_participant(participant_record_mod, token):
+    """Test ``add_participant``."""
+    api.delete_participant(participant_record_mod, token=token)
+    recs = api.Records(token=token)
+    assert participant_record_mod["record_id"] not in recs.appointments.records
+    api.delete_participant(participant_record_mod, token=token)
+    with pytest.raises(TypeError):
+        api.delete_participant(participant_record_mod)
+
+
 def test_add_appointment(appointment_record, token):
     """Test ``add_appointment`` ."""
     api.add_appointment(appointment_record, token=token)
@@ -89,6 +99,21 @@ def test_add_appointment_modifying(appointment_record_mod, token):
         api.add_participant(appointment_record_mod)
 
 
+def test_delete_appointment(appointment_record_mod, token):
+    """Test ``add_appointment`` ."""
+    apt_id = (
+        appointment_record_mod["record_id"]
+        + ":"
+        + appointment_record_mod["redcap_repeat_instance"]
+    )
+    api.delete_appointment(appointment_record_mod, token=token)
+    recs = api.Records(token=token)
+    assert apt_id not in recs.appointments.records
+    api.delete_appointment(appointment_record_mod, token=token)
+    with pytest.raises(TypeError):
+        api.delete_appointment(appointment_record_mod)
+
+
 def test_add_questionnaire(questionnaire_record, token):
     """Test ``add_appointment``."""
     api.add_questionnaire(questionnaire_record, token=token)
@@ -97,10 +122,24 @@ def test_add_questionnaire(questionnaire_record, token):
 
 
 def test_add_questionnaire_mod(questionnaire_record_mod, token):
-    """Test ``add_appointment`` with ``modifying=True``."""
+    """Test ``add_questionaire`` with ``modifying=True``."""
     api.add_questionnaire(questionnaire_record_mod, token=token)
     with pytest.raises(TypeError):
         api.add_questionnaire(questionnaire_record_mod)
+
+
+def test_delete_questionnaire(questionnaire_record_mod, token):
+    """Test ``delete_questionnaire``."""
+    que_id = (
+        questionnaire_record_mod["record_id"]
+        + ":"
+        + questionnaire_record_mod["redcap_repeat_instance"]
+    )
+    api.delete_questionnaire(questionnaire_record_mod, token=token)
+    recs = api.Records(token=token)
+    assert que_id not in recs.questionnaires.records
+    with pytest.raises(TypeError):
+        api.delete_questionnaire(questionnaire_record_mod)
 
 
 def test_redcap_backup(token, tmp_path) -> dict:

@@ -173,6 +173,24 @@ def add_participant(data: dict, modifying: bool = False, **kwargs):
     return post_request(fields=fields, **kwargs)
 
 
+def delete_participant(data: dict, **kwargs):
+    """Delete participant from REDCap database.
+
+    Args:
+        data (dict): Participant data.
+        modifying (bool, optional): Modifying existent participant?
+        *kwargs: Additional arguments passed to ``post_request``.
+    """
+    fields = {
+        "content": "record",
+        "action": "delete",
+        "returnFormat": "json",
+        "instrument": "",
+        f"records[{data['record_id']}]": f"{data['record_id']}",
+    }
+    return post_request(fields=fields, **kwargs)
+
+
 def add_appointment(data: dict, **kwargs):
     """Add new appointment to REDCap database.
 
@@ -193,8 +211,27 @@ def add_appointment(data: dict, **kwargs):
     return post_request(fields=fields, **kwargs)
 
 
+def delete_appointment(data: dict, **kwargs):
+    """Delete appointment from REDCap database.
+
+    Args:
+        data (dict): Participant data.
+        modifying (bool, optional): Modifying existent participant?
+        *kwargs: Additional arguments passed to ``post_request``.
+    """
+    fields = {
+        "content": "record",
+        "action": "delete",
+        "returnFormat": "json",
+        "instrument": "appointments",
+        "repeat_instance": int(data["redcap_repeat_instance"]),
+        f"records[{data['record_id']}]": f"{data['record_id']}",
+    }
+    return post_request(fields=fields, **kwargs)
+
+
 def add_questionnaire(data: dict, **kwargs):
-    """Add new appointment to REDCap database.
+    """Add new questionnaire to REDCap database.
 
     Args:
         data (dict): Questionnaire data.
@@ -210,6 +247,25 @@ def add_questionnaire(data: dict, **kwargs):
         "data": f"[{json.dumps(datetimes_to_strings(data))}]",
     }
 
+    return post_request(fields=fields, **kwargs)
+
+
+def delete_questionnaire(data: dict, **kwargs):
+    """Delete questionnaire from REDCap database.
+
+    Args:
+        data (dict): Participant data.
+        modifying (bool, optional): Modifying existent participant?
+        *kwargs: Additional arguments passed to ``post_request``.
+    """
+    fields = {
+        "content": "record",
+        "action": "delete",
+        "returnFormat": "json",
+        "instrument": "language",
+        "repeat_instance": int(data["redcap_repeat_instance"]),
+        f"records[{data['record_id']}]": f"{data['record_id']}",
+    }
     return post_request(fields=fields, **kwargs)
 
 
@@ -525,22 +581,22 @@ def compose_outlook(data: dict) -> dict:
     Returns:
         dict: Dictionary with composed subject and body.
     """  # pylint: disable=line-too-long
-
-    data["subject"] = (
-        f"Appointment { data['id'] } ({ data['status'] }) | { data['study'] } (ID: { data['record_id'] }) - { data['date'] }"  # pylint: disable=line-too-long
+    out = dict(data)
+    out["subject"] = (
+        f"Appointment { out['id'] } ({ out['status'] }) | { out['study'] } (ID: { out['record_id'] }) - { out['date'] }"  # pylint: disable=line-too-long
     )
-    data["body"] = (
-        f"The appointment {data['id']} (ID: {data['record_id']}) from study {data['study']} has been created or modified. "
+    out["body"] = (
+        f"The appointment {out['id']} (ID: {out['record_id']}) from study {out['study']} has been created or modified. "
         f"Here are the details:\n\n"
-        f"- Appointment ID: {data['id']}\n"
-        f"- Appointment date: {data['date']}\n"
-        f"- Participant ID: {data['record_id']}\n"
-        f"- Current status: {data['status']}\n"
-        f"- Taxi: {data['taxi_address']}\n"
-        f"- Taxi booked?: {data['taxi_isbooked']}\n"
-        f"- Notes: {data['comments']}\n"
+        f"- Appointment ID: {out['id']}\n"
+        f"- Appointment date: {out['date']}\n"
+        f"- Participant ID: {out['record_id']}\n"
+        f"- Current status: {out['status']}\n"
+        f"- Taxi: {out['taxi_address']}\n"
+        f"- Taxi booked?: {out['taxi_isbooked']}\n"
+        f"- Notes: {out['comments']}\n"
     )
-    return data
+    return out
 
 
 def send_email(

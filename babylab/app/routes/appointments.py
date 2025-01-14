@@ -20,7 +20,7 @@ def appointments_routes(app):
         data = utils.prepare_appointments(records, data_dict=data_dict)
         return render_template("apt_all.html", data=data)
 
-    @app.route("/appointments/<string:apt_id>")
+    @app.route("/appointments/<string:apt_id>", methods=["GET", "POST"])
     @conf.token_required
     def apt(apt_id: str = None):
         """Show the record_id for that appointment"""
@@ -32,6 +32,18 @@ def appointments_routes(app):
         participant = records.participants.records[data["record_id"]].data
         participant["age_now_months"] = str(participant["age_now_months"])
         participant["age_now_days"] = str(participant["age_now_days"])
+        if request.method == "POST":
+            try:
+                ppt_id, apt_id = apt_id.split(":")
+                api.delete_appointment(
+                    data={"record_id": ppt_id, "redcap_repeat_instance": apt_id},
+                    token=app.config["API_KEY"],
+                )
+                flash("Appointment deleted!", "success")
+                return redirect(url_for("apt_all"))
+            except requests.exceptions.HTTPError as e:
+                flash(f"Something went wrong! {e}", "error")
+                return redirect(url_for("apt_all"))
         return render_template(
             "apt.html",
             apt_id=apt_id,
