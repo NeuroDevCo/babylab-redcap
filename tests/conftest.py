@@ -143,17 +143,17 @@ def questionnaire_record_mod() -> dict:
     return tutils.create_record_questionnaire(is_new=False)
 
 
-@pytest.mark.skipif(IS_GIHTUB_ACTIONS, reason="Test doesn't work in Github Actions.")
 def pytest_sessionfinish(account: str = "gonzalo.garcia@sjd.es"):
     """
     Called after whole test run finished, right before
     returning the exit status to the system.
     """
-    api.check_email_address(account)
-    outlook = win.client.Dispatch("Outlook.Application").GetNamespace("MAPI")
-    recipient = outlook.createRecipient(account)
-    shared_cal = outlook.GetSharedDefaultFolder(recipient, 9).Folders(
-        "Appointments - Test"
-    )
-    for e in shared_cal.Items:
-        e.Delete()
+    if not IS_GIHTUB_ACTIONS:
+        api.check_email_address(account)
+        outlook = win.client.Dispatch("Outlook.Application").GetNamespace("MAPI")
+        recipient = outlook.createRecipient(account)
+        shared_cal = outlook.GetSharedDefaultFolder(recipient, 9).Folders(
+            "Appointments - Test"
+        )
+        for e in shared_cal.Items:
+            e.Delete()
