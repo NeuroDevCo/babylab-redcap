@@ -13,7 +13,7 @@ from dataclasses import dataclass
 from collections import OrderedDict
 import requests
 from dateutil import relativedelta
-import win32com.client as win32
+import win32com.client as win
 import pythoncom
 import pandas as pd
 
@@ -475,7 +475,7 @@ class MailDomainException(Exception):
         super().__init__(msg)
 
 
-class MailAddressException(win32.pywintypes.com_error):  # pylint: disable=no-member
+class MailAddressException(win.pywintypes.com_error):  # pylint: disable=no-member
     """If e-mail address is not authorized in local Outlook app."""
 
     def __init__(self, email):
@@ -490,14 +490,14 @@ def check_email_address(email: str):
         email (str): Email address to check.
     """  # pylint: disable=line-too-long
     pythoncom.CoInitialize()  # pylint: disable=no-member
-    ol_app = win32.Dispatch("Outlook.Application")
+    ol_app = win.Dispatch("Outlook.Application")
     ol_ns = ol_app.GetNameSpace("MAPI")
     mail_item = ol_app.CreateItem(0)
     try:
         mail_item._oleobj_.Invoke(  # pylint: disable=protected-access
             *(64209, 0, 8, 0, ol_ns.Accounts.Item(email))
         )
-    except win32.pywintypes.com_error as e:  # pylint: disable=no-member
+    except win.pywintypes.com_error as e:  # pylint: disable=no-member
         raise MailAddressException(email) from e
 
 
@@ -560,7 +560,7 @@ def send_email(
     composed = compose_outlook(data)
     pythoncom.CoInitialize()  # pylint: disable=no-member
 
-    ol_app = win32.Dispatch("Outlook.Application")
+    ol_app = win.Dispatch("Outlook.Application")
     ol_ns = ol_app.GetNameSpace("MAPI")
     mail_item = ol_app.CreateItem(0)
     mail_item.Subject = composed["subject"]
@@ -588,7 +588,7 @@ def create_event(
     check_email_domain(account)
     composed = compose_outlook(data)
 
-    ol_app = win32.Dispatch("Outlook.Application")
+    ol_app = win.Dispatch("Outlook.Application")
     namespace = ol_app.GetNamespace("MAPI")
 
     recipient = namespace.createRecipient(account)
@@ -621,7 +621,7 @@ def modify_event(
     check_email_domain(account)
     composed = compose_outlook(data)
 
-    ol_app = win32.Dispatch("Outlook.Application")
+    ol_app = win.Dispatch("Outlook.Application")
     namespace = ol_app.GetNamespace("MAPI")
 
     recipient = namespace.createRecipient(account)

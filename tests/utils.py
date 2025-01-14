@@ -3,7 +3,7 @@
 import datetime
 from string import digits, ascii_lowercase
 from random import choice, choices
-import win32com as win32
+import win32com as win
 from babylab.src import api
 from babylab.app import config as conf
 
@@ -41,7 +41,7 @@ def generate_email() -> str:
 def check_email_received(account: str = "gonzalo.garcia@sjd.es"):
     """Check that an email has been received."""
     # create an instance of the Outlook application
-    outlook = win32.client.Dispatch("Outlook.Application").GetNamespace("MAPI")
+    outlook = win.client.Dispatch("Outlook.Application").GetNamespace("MAPI")
 
     # iterate through all accounts to find the specified one
     for acc in outlook.Folders:
@@ -64,7 +64,7 @@ def check_email_received(account: str = "gonzalo.garcia@sjd.es"):
 def check_event_created(apt_id: str, account: str = "gonzalo.garcia@sjd.es"):
     """Check that an email has been received."""
     # create an instance of the Outlook application
-    outlook = win32.client.Dispatch("Outlook.Application").GetNamespace("MAPI")
+    outlook = win.client.Dispatch("Outlook.Application").GetNamespace("MAPI")
     recipient = outlook.createRecipient(account)
     shared_cal = outlook.GetSharedDefaultFolder(recipient, 9).Folders(
         "Appointments - Test"
