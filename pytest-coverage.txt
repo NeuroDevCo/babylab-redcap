@@ -3,16 +3,16 @@ platform win32 -- Python 3.12.8, pytest-8.3.4, pluggy-1.5.0
 rootdir: D:\a\babylab-redcap\babylab-redcap
 configfile: pyproject.toml
 plugins: cov-6.0.0
-collected 57 items
+collected 58 items
 
-tests\functional\test_appointments.py ....s..s                           [ 14%]
-tests\functional\test_general.py .......                                 [ 26%]
-tests\functional\test_participants.py .......                            [ 38%]
-tests\functional\test_questionnaires.py ......                           [ 49%]
-tests\unit\test_api.py ............                                      [ 70%]
-tests\unit\test_calendar.py ..                                           [ 73%]
-tests\unit\test_email.py s.s                                             [ 78%]
-tests\unit\test_models.py ..........                                     [ 96%]
+tests\functional\test_appointments.py ....s..s                           [ 13%]
+tests\functional\test_general.py .......                                 [ 25%]
+tests\functional\test_participants.py .......                            [ 37%]
+tests\functional\test_questionnaires.py ......                           [ 48%]
+tests\unit\test_api.py ............                                      [ 68%]
+tests\unit\test_calendar.py ..                                           [ 72%]
+tests\unit\test_models.py ..........                                     [ 89%]
+tests\unit\test_outlook.py s.ss                                          [ 96%]
 tests\unit\test_utils.py ..                                              [100%]
 
 ------ generated xml file: D:\a\babylab-redcap\babylab-redcap\pytest.xml ------
@@ -20,21 +20,22 @@ tests\unit\test_utils.py ..                                              [100%]
 ---------- coverage: platform win32, python 3.12.8-final-0 -----------
 Name                                    Stmts   Miss Branch BrPart  Cover   Missing
 -----------------------------------------------------------------------------------
-babylab\app\__init__.py                    18      1      2      1    90%   13
+babylab\app\__init__.py                    19      1      2      1    90%   13
 babylab\app\config.py                      61     17     10      3    66%   15-16, 23-24, 34-41, 44, 94-95, 105-106
-babylab\app\routes\appointments.py         73     13      8      2    81%   77-79, 87-89, 133-136, 144-146
+babylab\app\routes\appointments.py         77     17      8      2    78%   77-92, 101-103, 147-161, 170-172
 babylab\app\routes\general.py              69     13      8      1    82%   17, 22, 38-39, 85-88, 100-103, 112-114
 babylab\app\routes\participants.py         64      6     10      2    89%   25->30, 32->42, 115-117, 177-179
 babylab\app\routes\questionnaires.py       61      8      8      0    88%   33-34, 97-99, 150-152
-babylab\src\api.py                        220     28     50      1    89%   254->256, 474-475, 482-483, 492-501, 514-516, 611-626
-babylab\src\utils.py                      248     19     78      6    92%   164->166, 221, 243, 279, 334, 389, 868-869, 883-895, 904-913
-tests\functional\test_appointments.py      49     18      0      0    63%   38-45, 70-82
+babylab\src\api.py                        253     59     54      1    79%   254->256, 474-475, 482-483, 492-501, 514-516, 558-572, 588-606, 621-639
+babylab\src\utils.py                      270     39     78      6    86%   164->166, 221, 243, 279, 334, 389, 868-869, 883-893, 902-911, 920-929, 938-947
+tests\conftest.py                          67      7      4      0    85%   151-159
+tests\functional\test_appointments.py      55     24      0      0    56%   38-52, 77-96
 tests\unit\test_calendar.py                27      4      0      0    85%   36-39
-tests\unit\test_email.py                   34     15      0      0    56%   16-23, 56-82
-tests\utils.py                             88     15     16      4    76%   44-61, 144, 177, 265, 308
+tests\unit\test_outlook.py                 45     22      0      0    51%   16-23, 52-78, 84-110
+tests\utils.py                             96     21     20      3    71%   44-61, 67-77, 160, 193, 324
 -----------------------------------------------------------------------------------
-TOTAL                                    1304    157    190     20    87%
+TOTAL                                    1400    238    202     19    82%
 
-12 files skipped due to complete coverage.
+11 files skipped due to complete coverage.
 
-================== 53 passed, 4 skipped in 346.19s (0:05:46) ==================
+================== 53 passed, 5 skipped in 416.09s (0:06:56) ==================
