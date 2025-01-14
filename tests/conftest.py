@@ -2,12 +2,15 @@
 Fixtures for testing
 """
 
+import os
 import pytest
 import win32com as win
 from babylab.src import api
 from babylab.app import create_app
 from babylab.app import config as conf
 from tests import utils as tutils
+
+IS_GIHTUB_ACTIONS = os.getenv("GITHUB_ACTIONS") == "true"
 
 
 @pytest.fixture
@@ -140,6 +143,7 @@ def questionnaire_record_mod() -> dict:
     return tutils.create_record_questionnaire(is_new=False)
 
 
+@pytest.mark.skipif(IS_GIHTUB_ACTIONS, reason="Test doesn't work in Github Actions.")
 def pytest_sessionfinish(account: str = "gonzalo.garcia@sjd.es"):
     """
     Called after whole test run finished, right before
