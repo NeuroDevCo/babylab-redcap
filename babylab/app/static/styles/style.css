@@ -154,7 +154,9 @@ i {
 
 .card-header {
     background-color: rgb(227, 227, 227);
-    font-family: "Ciutadella SemiBold";
+    font-family: "Noto Sans Display";
+    font-weight: bold;
+    text-align: center;
 }
 
 .card-title {
@@ -224,7 +226,7 @@ td {
 #pills-appointments-tab,
 #pills-questionnaires-tab {
     color: rgb(115, 115, 115);
-    font-family: "Ciutadella Regular";
+    font-family: "Noto Sans Display";
     margin-left: 0.5em;
 }
 
