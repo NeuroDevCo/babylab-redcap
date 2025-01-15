@@ -1,6 +1,7 @@
 ﻿## Unpublished
 
-- Change nav bar font to Noto Sans Display
+- Shows only 20 records in ppt_all, apt_all, and que_all, and who total number of each record type in their corresponding page #51
+- Change nav bar, nav pills, and card header fonts to Noto Sans Display
 - Add Help section with links to GitHub issues
 - Simplify README instructions
 
