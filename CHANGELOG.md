@@ -1,4 +1,11 @@
-﻿## v0.1.4
+﻿## Unpublished
+
+- Change nav bar font to Noto Sans Display
+- Add Help section with links to GitHub issues
+- Simplify README instructions
+
+
+## v0.1.4
 
 - Add record-deleting functions to API
 - Calendar events using the Python API #43
