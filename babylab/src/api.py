@@ -88,6 +88,7 @@ def get_data_dict(**kwargs):
         "participant_sex",
         "participant_birth_type",
         "participant_hearing",
+        "participant_source",
         "appointment_study",
         "appointment_status",
         "language_lang1",
@@ -104,8 +105,9 @@ def get_data_dict(**kwargs):
     for idx, i in enumerate(items):
         fields[f"fields[{idx}]"] = i
     r = json.loads(post_request(fields=fields, **kwargs).text)
+    items_ordered = [i["field_name"] for i in r]
     dicts = {}
-    for k, v in zip(items, r):
+    for k, v in zip(items_ordered, r):
         options = v["select_choices_or_calculations"].split("|")
         options_parsed = {}
         for o in options:
