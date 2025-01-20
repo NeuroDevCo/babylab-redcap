@@ -17,8 +17,8 @@
     <div class="row">
       <div class="col">
         <div class="btn-group" role="group" aria-label="Basic example">
-          <button type="submit" class="btn btn-warning">
-            <i class="fa fa-pen"></i>&nbsp&nbspSubmit
+          <button type="submit" class="btn btn-success" onclick="loading();">
+            <i class="fa fa-pen"></i>&nbsp;&nbsp;Submit
           </button>
         </div>
       </div>
@@ -27,15 +27,17 @@
       <div class="card-header">Participant information</div>
       <div class="card-body">
         <div class="form-group">
-          <label for="inputSource" class="form-label"></label>
-          Source&nbsp;&nbsp;<i class="fa fa-database"></i>
-          </label>
-          <select class="form-select" name="inputSource" required>
-            {% for k, v in data_dict["participant_source"].items() %}
-            <option value="{{ k }}" {% if data["source"]==k %}selected{% endif %}>{{ v }}</option>
-            {% endfor %}
-          </select>
           <div class="row">
+            <div class="col-12">
+              <label class="form-label" for="inputSource">
+                Source&nbsp;&nbsp;<i class="fa fa-database"></i>
+              </label>
+              <select class="form-select" name="inputSource">
+                {% for k, v in data_dict["participant_source"].items() %}
+                <option value="{{ k }}" {% if data["source"]==k %}selected{% endif %}>{{ v }}</option>
+                {% endfor %}
+              </select>
+            </div>
             <div class="col">
               <label for="inputName" class="form-label">
                 Participant first name&nbsp;&nbsp;<i class="fa  fa-user"></i>

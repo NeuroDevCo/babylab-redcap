@@ -150,12 +150,12 @@ def participants_routes(app):
             )
             data = {
                 "record_id": ppt_id,
-                # "participant_date_added": date_now,
                 "participant_date_updated": date_now,
                 "participant_name": finput["inputName"],
                 "participant_age_now_months": finput["inputAgeMonths"],
                 "participant_age_now_days": finput["inputAgeDays"],
                 "participant_sex": finput["inputSex"],
+                "participant_source": finput["inputSource"],
                 "participant_twin": finput["inputTwinID"],
                 "participant_parent1_name": finput["inputParent1Name"],
                 "participant_parent1_surname": finput["inputParent1Surname"],
@@ -186,6 +186,7 @@ def participants_routes(app):
                     modifying=True,
                     token=app.config["API_KEY"],
                 )
+                flash("Participant modified!", "success")
                 return redirect(url_for("ppt", ppt_id=ppt_id))
             except requests.exceptions.HTTPError as e:
                 flash(f"Something went wrong! {e}", "error")

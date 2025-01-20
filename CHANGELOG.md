@@ -1,10 +1,9 @@
-﻿## Unpublished
+﻿## v0.1.5
 
-- Shows only 20 records in ppt_all, apt_all, and que_all, and who total number of each record type in their corresponding page #51
-- Change nav bar, nav pills, and card header fonts to Noto Sans Display
-- Add Help section with links to GitHub issues
-- Simplify README instructions
-
+- Fixes deleting function #46 
+- Adds "source" field to new participant and modify participant pages #45 
+- Use Noto Sans font for headers
+- Simplifies README file
 
 ## v0.1.4
 
@@ -15,7 +14,6 @@
 - Delete events/appointments/emails after testing #46
 - Add dev scripts for convenience during test development
 - Fixes table width
-- Appointment ID table has wrong width #41
 
 ## v0.1.3
 

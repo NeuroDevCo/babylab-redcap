@@ -24,6 +24,10 @@ test:
 cov:
 	python -m pytest -p no:cacheprovider --cov-report html --cov=babylab tests/
 
+publish:
+	hatch build
+	hatch publish
+
 version-patch:
 	hatch version patch
 	$version = hatch version

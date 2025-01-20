@@ -117,25 +117,6 @@ def get_data_dict(**kwargs):
     return dicts
 
 
-def get_records(**kwargs):
-    """Return records as JSON.
-
-    Args:
-        kwargs (str): Additional arguments passed to ``post_request``.
-
-    Returns:
-        dict: REDCap records in JSON format.
-    """
-    fields = {
-        "content": "record",
-        "format": "json",
-        "type": "flat",
-    }
-    records = post_request(fields=fields, **kwargs).json()
-    records = [datetimes_to_strings(r) for r in records]
-    return records
-
-
 def datetimes_to_strings(data: dict):
     """Return formatted datatimes as strings following the ISO 8061 date format.
 
@@ -153,6 +134,25 @@ def datetimes_to_strings(data: dict):
             if not v.second:
                 data[k] = datetime.datetime.strftime(v, "%Y-%m-%d %H:%M")
     return data
+
+
+def get_records(**kwargs):
+    """Return records as JSON.
+
+    Args:
+        kwargs (str): Additional arguments passed to ``post_request``.
+
+    Returns:
+        dict: REDCap records in JSON format.
+    """
+    fields = {
+        "content": "record",
+        "format": "json",
+        "type": "flat",
+    }
+    records = post_request(fields=fields, **kwargs).json()
+    records = [datetimes_to_strings(r) for r in records]
+    return records
 
 
 def add_participant(data: dict, modifying: bool = False, **kwargs):
