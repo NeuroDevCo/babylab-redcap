@@ -911,7 +911,6 @@ def prepare_email(ppt_id: str, apt_id: str, data: dict, data_dict: dict) -> dict
         "status": data["status"],
         "date": datetime.datetime.strptime(data["date"], "%Y-%m-%d %H:%M").isoformat(),
         "study": data["study"],
-        "source": data["source"],
         "taxi_address": data["taxi_address"],
         "taxi_isbooked": data["taxi_isbooked"],
         "comments": data["comments"],
