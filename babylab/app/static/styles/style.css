@@ -239,9 +239,12 @@ td {
 }
 
 label,
+.form-label,
+.form-group,
 .list-group-item {
     font-family: "Ciutadella Semibold";
     margin-top: 0.5em;
+    font-size: small;
 
 }
 

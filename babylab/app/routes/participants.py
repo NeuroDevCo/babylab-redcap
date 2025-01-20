@@ -88,6 +88,7 @@ def participants_routes(app):
                 "record_id": "0",
                 "participant_date_created": date_now,
                 "participant_date_updated": date_now,
+                "participant_source": finput["inputSource"],
                 "participant_name": finput["inputName"],
                 "participant_age_now_months": finput["inputAgeMonths"],
                 "participant_age_now_days": finput["inputAgeDays"],

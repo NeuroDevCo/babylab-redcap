@@ -240,6 +240,7 @@ def get_participants_table(
         "age_now_months",
         "age_now_days",
         "sex",
+        "source",
         "date_created",
         "date_updated",
     ]
@@ -532,6 +533,7 @@ def prepare_participants(records: api.Records, data_dict: dict, **kwargs) -> dic
             "age_now_months",
             "age_now_days",
             "sex",
+            "source",
             "date_created",
             "date_updated",
             "modify_button",
@@ -544,6 +546,7 @@ def prepare_participants(records: api.Records, data_dict: dict, **kwargs) -> dic
             "age_now_months": "Age (months)",
             "age_now_days": "Age (days)",
             "sex": "Sex",
+            "source": "Source",
             "date_created": "Added on",
             "date_updated": "Last updated",
             "modify_button": "",
@@ -563,7 +566,6 @@ def prepare_record_id(
 
     Args:
         records (api.Records): REDCap records, as returned by ``api.Records``.
-        data_dict (dict): Data dictionary as returned by ``api.get_data_dictionary``.
         ppt_id (str, optional): Participant ID. Defaults to None.
         **kwargs: Extra arguments passed to ``get_participants_table``, ``get_appointments_table``, and ``get_questionnaires_table``
 
@@ -909,6 +911,7 @@ def prepare_email(ppt_id: str, apt_id: str, data: dict, data_dict: dict) -> dict
         "status": data["status"],
         "date": datetime.datetime.strptime(data["date"], "%Y-%m-%d %H:%M").isoformat(),
         "study": data["study"],
+        "source": data["source"],
         "taxi_address": data["taxi_address"],
         "taxi_isbooked": data["taxi_isbooked"],
         "comments": data["comments"],
