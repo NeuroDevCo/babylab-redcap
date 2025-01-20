@@ -24,7 +24,7 @@ babylab\app\__init__.py                    19      1      2      1    90%   13
 babylab\app\config.py                      61     17     10      3    66%   15-16, 23-24, 34-41, 44, 94-95, 105-106
 babylab\app\routes\appointments.py         86     25     10      3    71%   40-50, 93-108, 117-119, 163-177, 186-188
 babylab\app\routes\general.py              69     12      8      1    83%   22, 38-39, 85-88, 100-103, 112-114
-babylab\app\routes\participants.py         72     13     12      3    81%   25->30, 32->42, 61-70, 128-130, 190-192
+babylab\app\routes\participants.py         73     13     12      3    81%   25->30, 32->42, 61-70, 128-130, 191-193
 babylab\app\routes\questionnaires.py       70     16     10      1    79%   41-42, 46-56, 117-119, 170-172
 babylab\src\api.py                        264     59     54      1    79%   312->314, 532-533, 540-541, 550-559, 572-574, 616-630, 646-664, 679-697
 babylab\src\utils.py                      277     39     84      6    87%   164->166, 222, 248, 286, 343, 401, 893-894, 908-918, 927-936, 945-954, 963-972
@@ -34,8 +34,8 @@ tests\unit\test_calendar.py                28      4      0      0    86%   36-3
 tests\unit\test_outlook.py                 48     22      0      0    54%   16-23, 60-86, 92-118
 tests\utils.py                             90     18     20      0    75%   44-61, 67-77
 -----------------------------------------------------------------------------------
-TOTAL                                    1473    258    214     19    82%
+TOTAL                                    1474    258    214     19    82%
 
 11 files skipped due to complete coverage.
 
-================== 56 passed, 5 skipped in 626.93s (0:10:26) ==================
+================== 56 passed, 5 skipped in 609.02s (0:10:09) ==================
