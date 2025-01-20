@@ -38,4 +38,4 @@ TOTAL                                    1466    258    208     19    82%
 
 11 files skipped due to complete coverage.
 
-================== 56 passed, 5 skipped in 491.73s (0:08:11) ==================
+================== 56 passed, 5 skipped in 571.96s (0:09:31) ==================
