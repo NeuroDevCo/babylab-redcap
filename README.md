@@ -27,16 +27,36 @@ Python >=3.10 is needed. I recommend you install Python 3.12.7 from the [officia
 
 Once Python is installed, [open your terminal](https://www.youtube.com/watch?v=8Iyldhkrh7E) and run this command to install the necessary Python modules:
 
+### On Windows
+
 ```bash
 python -m pip install flask pywin32 python-dotenv babylab
 ```
 
+### On Linux or macOS
+
+```bash
+python3 -m pip install flask python-dotenv babylab
+```
+
 ## Launch
+
+### On Windows
 
 To run the app in your browser, run the following command in your terminal:
 
 ```bash
 python -m flask --app babylab.app run
+```
+
+Open your browser and go to [http://127.0.0.1:5000](http://127.0.0.1:5000). Log in with your API authentication token (and maybe your email), and you should be ready to go!
+
+### On Linux or macOS
+
+To run the app in your browser, run the following command in your terminal:
+
+```bash
+python3 -m flask --app babylab.app run
 ```
 
 Open your browser and go to [http://127.0.0.1:5000](http://127.0.0.1:5000). Log in with your API authentication token (and maybe your email), and you should be ready to go!

@@ -1,9 +1,11 @@
 """Appointments routes."""
 
+import os
 import datetime
 import requests
 from flask import flash, redirect, render_template, url_for, request
 from babylab.src import api, utils
+
 from babylab.app import config as conf
 
 
@@ -89,7 +91,7 @@ def appointments_routes(app):
             try:
                 api.add_appointment(data, token=token)
                 flash("Appointment added!", "success")
-                if "EMAIL" in app.config and app.config["EMAIL"]:
+                if os.name == "nt" and "EMAIL" in app.config and app.config["EMAIL"]:
                     records = conf.get_records_or_index(token=token)
                     ppt_records = records.participants.records[ppt_id]
                     apt_id = list(ppt_records.appointments.records)[-1]

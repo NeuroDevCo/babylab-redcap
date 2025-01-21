@@ -4,23 +4,27 @@
 import os
 import time
 import pytest
-from babylab.src import api, utils
+from babylab.src import outlook, utils
 from tests import utils as tutils
 
 IS_GIHTUB_ACTIONS = os.getenv("GITHUB_ACTIONS") == "true"
+IS_NOT_WINDOWS = os.name != "nt"
 
 
-@pytest.mark.skipif(IS_GIHTUB_ACTIONS, reason="Test doesn't work in Github Actions.")
+@pytest.mark.skipif(
+    IS_GIHTUB_ACTIONS or IS_NOT_WINDOWS,
+    reason="Test doesn't work in Github Actions or OS other than Windows.",
+)
 def test_email_validation():
     """Validate email addresses."""
     try:
-        api.check_email_domain("iodsf@sjd.es")
-    except (api.MailDomainException, api.MailAddressException) as e:
+        outlook.check_email_domain("iodsf@sjd.es")
+    except (outlook.MailDomainException, outlook.MailAddressException) as e:
         pytest.fail(str(e))
-    with pytest.raises(api.MailDomainException):
-        api.check_email_domain("iodsf@sjd.com")
-    with pytest.raises(api.MailAddressException):
-        api.check_email_address("iodsf@opdofsn.com")
+    with pytest.raises(outlook.MailDomainException):
+        outlook.check_email_domain("iodsf@sjd.com")
+    with pytest.raises(outlook.MailAddressException):
+        outlook.check_email_address("iodsf@opdofsn.com")
 
 
 def test_compose_outlook(appointment_record_mod, data_dict: dict):
@@ -41,7 +45,7 @@ def test_compose_outlook(appointment_record_mod, data_dict: dict):
         "comments": appointment_record_mod["appointment_comments"],
     }
     data = utils.replace_labels(email_data, data_dict)
-    email = api.compose_outlook(data)
+    email = outlook.compose_outlook(data)
     study_test = data_dict["appointment_study"][email_data["study"]]
     status_test = data_dict["appointment_status"][email_data["status"]]
 
@@ -54,7 +58,10 @@ def test_compose_outlook(appointment_record_mod, data_dict: dict):
     assert f"Appointment {apt_id}" in email["subject"]
 
 
-@pytest.mark.skipif(IS_GIHTUB_ACTIONS, reason="Test doesn't work in Github Actions.")
+@pytest.mark.skipif(
+    IS_GIHTUB_ACTIONS or IS_NOT_WINDOWS,
+    reason="Test doesn't work in Github Actions or OS other than Windows.",
+)
 def test_send_email(data_dict: dict):
     """Test that en email is received."""
     record = {
@@ -79,14 +86,17 @@ def test_send_email(data_dict: dict):
         data=record,
         data_dict=data_dict,
     )
-    api.send_email(data=email_data)
+    outlook.send_email(data=email_data)
     time.sleep(20)
     email = tutils.check_email_received()
     assert email
     assert "1:1" == email_data["id"]
 
 
-@pytest.mark.skipif(IS_GIHTUB_ACTIONS, reason="Test doesn't work in Github Actions.")
+@pytest.mark.skipif(
+    IS_GIHTUB_ACTIONS or IS_NOT_WINDOWS,
+    reason="Test doesn't work in Github Actions or OS other than Windows.",
+)
 def test_create_event(data_dict: dict):
     """Test that en email is received."""
     record = {
@@ -111,7 +121,7 @@ def test_create_event(data_dict: dict):
         data=record,
         data_dict=data_dict,
     )
-    api.create_event(data=event_data, calendar_name="Appointments - Test")
+    outlook.create_event(data=event_data, calendar_name="Appointments - Test")
     time.sleep(20)
     event = tutils.check_event_created(ppt_id=record["record_id"])
     assert event

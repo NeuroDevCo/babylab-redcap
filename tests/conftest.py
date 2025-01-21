@@ -5,7 +5,7 @@ Fixtures for testing
 import os
 import pytest
 import win32com as win
-from babylab.src import api
+from babylab.src import api, outlook
 from babylab.app import create_app
 from babylab.app import config as conf
 from tests import utils as tutils
@@ -149,10 +149,10 @@ def pytest_sessionfinish(account: str = "gonzalo.garcia@sjd.es"):
     returning the exit status to the system.
     """
     if not IS_GIHTUB_ACTIONS:
-        api.check_email_address(account)
-        outlook = win.client.Dispatch("Outlook.Application").GetNamespace("MAPI")
-        recipient = outlook.createRecipient(account)
-        shared_cal = outlook.GetSharedDefaultFolder(recipient, 9).Folders(
+        outlook.check_email_address(account)
+        ol = win.client.Dispatch("Outlook.Application").GetNamespace("MAPI")
+        recipient = ol.createRecipient(account)
+        shared_cal = ol.GetSharedDefaultFolder(recipient, 9).Folders(
             "Appointments - Test"
         )
         for e in shared_cal.Items:
