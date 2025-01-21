@@ -9,7 +9,7 @@ import shutil
 import pandas as pd
 from pandas import DataFrame
 from flask import flash, render_template
-from babylab.src import api
+from babylab.src import api, outlook
 
 
 def format_ppt_id(ppt_id: str) -> str:
@@ -926,11 +926,11 @@ def send_email_or_exception(email_from: str, **kwargs) -> None:
     """
     try:
         data = prepare_email(**kwargs)
-        api.send_email(data=data, email_from=email_from)
-    except api.MailDomainException as e:
+        outlook.send_email(data=data, email_from=email_from)
+    except outlook.MailDomainException as e:
         flash(f"Appointment modified, but e-mail was not sent: {e}", "warning")
         return render_template("apt_new.html", **kwargs)
-    except api.MailAddressException as e:
+    except outlook.MailAddressException as e:
         flash(f"Appointment modified, but e-mail was not sent: {e}", "warning")
         return render_template("apt_new.html", **kwargs)
     return None
@@ -944,11 +944,11 @@ def create_event_or_exception(account: str, calendar_name: str, **kwargs) -> Non
     """
     try:
         data = prepare_email(**kwargs)
-        api.create_event(data=data, account=account, calendar_name=calendar_name)
-    except api.MailDomainException as e:
+        outlook.create_event(data=data, account=account, calendar_name=calendar_name)
+    except outlook.MailDomainException as e:
         flash(f"Appointment created, but event was not created: {e}", "warning")
         return render_template("apt_new.html", **kwargs)
-    except api.MailAddressException as e:
+    except outlook.MailAddressException as e:
         flash(f"Appointment created, but event was not created: {e}", "warning")
         return render_template("apt_new.html", **kwargs)
     return None
@@ -962,11 +962,11 @@ def modify_event_or_exception(account: str, calendar_name: str, **kwargs) -> Non
     """
     try:
         data = prepare_email(**kwargs)
-        api.modify_event(data=data, account=account, calendar_name=calendar_name)
-    except api.MailDomainException as e:
+        outlook.modify_event(data=data, account=account, calendar_name=calendar_name)
+    except outlook.MailDomainException as e:
         flash(f"Appointment modified, but event was not created: {e}", "warning")
         return render_template("apt_new.html", **kwargs)
-    except api.MailAddressException as e:
+    except outlook.MailAddressException as e:
         flash(f"Appointment modified, but event was not created: {e}", "warning")
         return render_template("apt_new.html", **kwargs)
     return None
