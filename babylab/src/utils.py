@@ -12,7 +12,7 @@ from flask import flash, render_template
 from babylab.src import api
 
 if os.name == "nt":
-    from src import outlook
+    from babylab.src import outlook
 
 
 def format_ppt_id(ppt_id: str) -> str:

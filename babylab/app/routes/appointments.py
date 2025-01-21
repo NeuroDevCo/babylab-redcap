@@ -5,7 +5,6 @@ import datetime
 import requests
 from flask import flash, redirect, render_template, url_for, request
 from babylab.src import api, utils
-
 from babylab.app import config as conf
 
 
