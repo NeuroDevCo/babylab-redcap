@@ -92,6 +92,28 @@
             </canvas>
           </div>
         </div>
+        <div class="card card-plot">
+          <div class="card-header">Source of participants</div>
+          <div class="card-body">
+            <canvas id="sourceDist">
+              <script>
+                circlePlot(
+                  {{ data["source_dist_labels"] | safe }},
+                  {{ data["source_dist_values"] | safe }},
+                  "sourceDist",
+                  [
+                    "#4bc0c0",
+                    "#ffcd56",
+                    "#ff6384",
+                    "#9966ff",
+                    "#36a2eb",
+                  ],
+                  "Source"
+                );
+              </script>
+            </canvas>
+          </div>
+        </div>
       </div>
       <div class="tab-pane fade show" id="pills-appointments" role="tabpanel" aria-labelledby="pills-appointments-tab"
         tabindex="1">

@@ -41,9 +41,10 @@ def general_routes(app):
 
     @app.route("/dashboard")
     @conf.token_required
-    def dashboard():
+    def dashboard(records: api.Records = None):
         """Dashboard page"""
-        records = conf.get_records_or_index(token=app.config["API_KEY"])
+        if records is None:
+            records = conf.get_records_or_index(token=app.config["API_KEY"])
         data_dict = api.get_data_dict(token=app.config["API_KEY"])
         data = utils.prepare_dashboard(records, data_dict)
         return render_template("dashboard.html", data=data)
