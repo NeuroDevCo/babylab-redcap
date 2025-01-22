@@ -22,21 +22,21 @@ Name                                    Stmts   Miss Branch BrPart  Cover   Miss
 -----------------------------------------------------------------------------------
 babylab\app\__init__.py                    19      1      2      1    90%   13
 babylab\app\config.py                      61     17     10      3    66%   15-16, 23-24, 34-41, 44, 94-95, 105-106
-babylab\app\routes\appointments.py         87     25     10      3    71%   42-52, 95-110, 119-121, 165-179, 188-190
-babylab\app\routes\general.py              69     12      8      1    83%   22, 38-39, 85-88, 100-103, 112-114
+babylab\app\routes\appointments.py         87     25     10      3    71%   41-51, 94-109, 118-120, 164-178, 187-189
+babylab\app\routes\general.py              70     12     10      2    82%   22, 38-39, 46->48, 86-89, 101-104, 113-115
 babylab\app\routes\participants.py         73     13     12      3    81%   25->30, 32->42, 61-70, 128-130, 191-193
 babylab\app\routes\questionnaires.py       70     16     10      1    79%   41-42, 46-56, 117-119, 170-172
 babylab\src\api.py                        189      0     48      1    99%   310->312
 babylab\src\outlook.py                     75     59      6      0    20%   11-12, 19-20, 29-38, 51-53, 95-109, 125-143, 158-176
-babylab\src\utils.py                      277     39     84      6    87%   164->166, 222, 248, 286, 343, 401, 893-894, 908-918, 927-936, 945-954, 963-972
+babylab\src\utils.py                      274     39     88      8    86%   14->18, 167->169, 225, 251, 289, 346, 404, 902-903, 917-927, 930->exit, 938-947, 955-966, 974-985
 tests\conftest.py                          67      7      4      0    85%   151-159
 tests\functional\test_appointments.py      59     25      0      0    58%   47-64, 89-108
 tests\unit\test_calendar.py                28      4      0      0    86%   36-39
 tests\unit\test_outlook.py                 49     22      0      0    55%   20-27, 67-93, 102-128
 tests\utils.py                             90     18     20      0    75%   44-61, 67-77
 -----------------------------------------------------------------------------------
-TOTAL                                    1476    258    214     19    82%
+TOTAL                                    1474    258    220     22    82%
 
 11 files skipped due to complete coverage.
 
-================== 56 passed, 5 skipped in 525.16s (0:08:45) ==================
+================== 56 passed, 5 skipped in 621.60s (0:10:21) ==================
