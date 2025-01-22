@@ -485,33 +485,36 @@ def prepare_dashboard(
         ppts["age_days"], bins=age_bins, labels=labels[:-1]
     )
 
-    age_dist = count_col(ppts, "age_days_binned")
-    sex_dist = count_col(ppts, "sex", values_sort=True)
-    source_dist = count_col(ppts, "source", values_sort=True, missing_label="None")
-    ppts_date_created = count_col(ppts, "date_created", cumulative=True)
-    apts_date_created = count_col(apts, "date_created", cumulative=True)
-    status_dist = count_col(apts, "status", values_sort=True)
-    lang1_dist = count_col(quest, "lang1", values_sort=True, missing_label="None")
-    lang2_dist = count_col(quest, "lang2", values_sort=True, missing_label="None")
+    variables = {
+        "age_dist": count_col(ppts, "age_days_binned"),
+        "sex_dist": count_col(ppts, "sex", values_sort=True),
+        "source_dist": count_col(ppts, "source", values_sort=True),
+        "ppts_date_created": count_col(ppts, "date_created", cumulative=True),
+        "apts_date_created": count_col(apts, "date_created", cumulative=True),
+        "status_dist": count_col(apts, "status", values_sort=True),
+        "lang1_dist": count_col(quest, "lang1", values_sort=True, missing_label="None"),
+        "lang2_dist": count_col(quest, "lang2", values_sort=True, missing_label="None"),
+    }
+
     return {
         "n_ppts": ppts.shape[0],
         "n_apts": apts.shape[0],
-        "age_dist_labels": list(age_dist.keys()),
-        "age_dist_values": list(age_dist.values()),
-        "sex_dist_labels": list(sex_dist.keys()),
-        "sex_dist_values": list(sex_dist.values()),
-        "source_dist_labels": list(source_dist.keys()),
-        "source_dist_values": list(source_dist.values()),
-        "ppts_date_created_labels": list(ppts_date_created.keys()),
-        "ppts_date_created_values": list(ppts_date_created.values()),
-        "apts_date_created_labels": list(apts_date_created.keys()),
-        "apts_date_created_values": list(apts_date_created.values()),
-        "status_dist_labels": list(status_dist.keys()),
-        "status_dist_values": list(status_dist.values()),
-        "lang1_dist_labels": list(lang1_dist.keys())[:24],
-        "lang1_dist_values": list(lang1_dist.values())[:24],
-        "lang2_dist_labels": list(lang2_dist.keys())[:24],
-        "lang2_dist_values": list(lang2_dist.values())[:24],
+        "age_dist_labels": list(variables["age_dist"].keys()),
+        "age_dist_values": list(variables["age_dist"].values()),
+        "sex_dist_labels": list(variables["sex_dist"].keys()),
+        "sex_dist_values": list(variables["sex_dist"].values()),
+        "source_dist_labels": list(variables["source_dist"].keys()),
+        "source_dist_values": list(variables["source_dist"].values()),
+        "ppts_date_created_labels": list(variables["ppts_date_created"].keys()),
+        "ppts_date_created_values": list(variables["ppts_date_created"].values()),
+        "apts_date_created_labels": list(variables["apts_date_created"].keys()),
+        "apts_date_created_values": list(variables["apts_date_created"].values()),
+        "status_dist_labels": list(variables["status_dist"].keys()),
+        "status_dist_values": list(variables["status_dist"].values()),
+        "lang1_dist_labels": list(variables["lang1_dist"].keys())[:24],
+        "lang1_dist_values": list(variables["lang1_dist"].values())[:24],
+        "lang2_dist_labels": list(variables["lang2_dist"].keys())[:24],
+        "lang2_dist_values": list(variables["lang2_dist"].values())[:24],
     }
 
 
