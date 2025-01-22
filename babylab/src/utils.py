@@ -487,6 +487,7 @@ def prepare_dashboard(
 
     age_dist = count_col(ppts, "age_days_binned")
     sex_dist = count_col(ppts, "sex", values_sort=True)
+    source_dist = count_col(ppts, "source", values_sort=True, missing_label="None")
     ppts_date_created = count_col(ppts, "date_created", cumulative=True)
     apts_date_created = count_col(apts, "date_created", cumulative=True)
     status_dist = count_col(apts, "status", values_sort=True)
@@ -499,6 +500,8 @@ def prepare_dashboard(
         "age_dist_values": list(age_dist.values()),
         "sex_dist_labels": list(sex_dist.keys()),
         "sex_dist_values": list(sex_dist.values()),
+        "source_dist_labels": list(source_dist.keys()),
+        "source_dist_values": list(source_dist.values()),
         "ppts_date_created_labels": list(ppts_date_created.keys()),
         "ppts_date_created_values": list(ppts_date_created.values()),
         "apts_date_created_labels": list(apts_date_created.keys()),
