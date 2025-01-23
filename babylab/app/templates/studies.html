@@ -1,10 +1,12 @@
 {% extends "base.html" %}
 {% block content %}
-<header>
+
+<body>
+  <link href="https://cdn.datatables.net/v/dt/dt-2.2.1/b-3.2.1/sp-2.3.3/sl-3.0.0/datatables.min.css" rel="stylesheet">
   <div class="jumbotron jumbotron-fluid">
     <div class="container">
       <h1 class="display-4">Studies</h1>
-      <p class="lead">Showing all appointments in database.</p>
+      <p class="lead">Select a study to see details.</p>
     </div>
   </div>
   <hr class="my-4">
@@ -22,12 +24,9 @@
       </select>
     </div>
   </form>
-</header>
-
-<body>
   {% if selected_study %}
   <div class="card card-plot">
-    <div class="card-header">Appointments</div>
+    <div class="card-title">Appointments</div>
     <div class="card-body">
       <canvas id="studies1" width="850" height="500">
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -47,21 +46,23 @@
     </div>
   </div>
   <div class="card">
-    <h5 class="card-header">Appointments: {{ selected_study }}</h5>
+    <h5 class="card-title">Appointments: {{ data_dict["appointment_study"][selected_study] }}</h5>
     <div class="card-body">
       <h6 class="card-subtitle mb-2 text-muted">Click IDs to see a participant's profile</h6>
       <div width="10%">{{ data["table"]|safe }}</div>
     </div>
   </div>
   {% endif %}
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+  <script src="https://cdn.datatables.net/v/dt/dt-2.2.1/b-3.2.1/sp-2.3.3/sl-3.0.0/datatables.min.js"></script>
   <script>
     let table = new DataTable(
-      '#quetable',
+      '#apttable',
       {
         layout: {
           topStart: {
             searchPanes: {
-              columns: [3, 4],
+              columns: [3, 9],
             },
 
           }

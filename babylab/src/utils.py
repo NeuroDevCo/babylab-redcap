@@ -876,7 +876,7 @@ def prepare_studies(records: api.Records, data_dict: dict, study: str = None):
     )
 
     table = df.to_html(
-        classes=classes,
+        classes=f'{classes}" id = "apttable',
         escape=False,
         justify="left",
         index=False,
