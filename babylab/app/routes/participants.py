@@ -7,47 +7,16 @@ from babylab.src import api, utils
 from babylab.app import config as conf
 
 
-def find_participant(
-    records: api.Records,
-    phone: str = None,
-    email: str = None,
-):
-    """Find participant from phone number or email address and return their ID.
-
-    Args:
-        records (api.Records): REDCap records, as returned by ``api.Records``.
-        phone (str, optional): Phone number. Defaults to None.
-        email (str, optional): Email number. Defaults to None.
-
-    Returns:
-        str: Participant ID, if found.
-        bool: If participant not found.
-        None: If no phone nor email were provided.
-    """
-    if phone is None and email is None:
-        return None
-    if phone:
-        for p in records.participants.records.values():
-            if phone in p.data["phone1"] or phone in p.data["phone2"]:
-                return p.data["record_id"]
-    if email:
-        for p in records.participants.records.values():
-            if email in p.data["email1"] or email in p.data["email2"]:
-                return p.data["record_id"]
-    return False
-
-
 def participants_routes(app):
     """Participants routes."""
 
-    @app.route("/participants/", methods=["GET", "POST"])
+    @app.route("/participants/")
     @conf.token_required
     def ppt_all(
-        ppt_id: str = None,
         ppt_options: list[str] = None,
         data_ppt: dict = None,
         records: api.Records = None,
-        n: int = 30,
+        n: int = None,
     ):
         """Participants database"""
         token = app.config["API_KEY"]
@@ -60,46 +29,6 @@ def participants_routes(app):
             ppt_options = [int(x) for x in ppt_options]
             ppt_options.sort(reverse=True)
             ppt_options = [str(x) for x in ppt_options]
-        if request.method == "POST":
-            ppt_id = request.form["inputPptId"]
-            ppt_phone = request.form["inputPhone"]
-            ppt_email = request.form["inputEmail"]
-            data_ppt = records.participants.records
-            if not any([ppt_phone, ppt_email, ppt_id]):
-                flash("No phone or e-mail address were provided.", "warning")
-            if ppt_phone or ppt_email:
-                ppt_id = find_participant(
-                    records,
-                    phone=ppt_phone,
-                    email=ppt_email,
-                )
-                if ppt_id == 0:
-                    flash(
-                        "No participant matches the phone or e-mail address provided",
-                        "warning",
-                    )
-                if ppt_id:
-                    data = utils.prepare_record_id(records, data_dict, ppt_id)
-                    return render_template(
-                        "ppt_all.html",
-                        data=data,
-                        ppt_options=ppt_options,
-                        data_dict=data_dict,
-                        ppt_id=ppt_id,
-                        data_ppt=data_ppt[ppt_id],
-                        records=None,
-                    )
-            if ppt_id not in ("-- Select one --", 0):
-                data = utils.prepare_record_id(records, data_dict, ppt_id)
-                return render_template(
-                    "ppt_all.html",
-                    data=data,
-                    ppt_options=ppt_options,
-                    data_dict=data_dict,
-                    ppt_id=ppt_id,
-                    data_ppt=data_ppt[ppt_id],
-                    records=None,
-                )
 
         return render_template(
             "ppt_all.html",

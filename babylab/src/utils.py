@@ -563,7 +563,11 @@ def prepare_participants(records: api.Records, data_dict: dict, **kwargs) -> dic
     )
     return {
         "table": df.to_html(
-            classes=classes, escape=False, justify="left", index=False, bold_rows=True
+            classes=f'{classes}" id = "ppttable',
+            escape=False,
+            justify="left",
+            index=False,
+            bold_rows=True,
         )
     }
 
