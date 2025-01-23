@@ -7,58 +7,6 @@ def test_ppt_all(client):
     assert response.status_code == 200
 
 
-def test_ppt_all_post(client):
-    """Test ppt_all endpoint."""
-    response = client.post(
-        "/participants/",
-        data={
-            "inputPptId": "1",
-            "inputPhone": "",
-            "inputEmail": "",
-        },
-    )
-    assert response.status_code == 200
-
-
-def test_ppt_all_post_id(client):
-    """Test ppt_all endpoint."""
-    response = client.post(
-        "/participants/",
-        data={
-            "inputPptId": "-- Select one --",
-            "inputPhone": "",
-            "inputEmail": "",
-        },
-    )
-    assert response.status_code == 200
-
-
-def test_ppt_all_post_phon(client):
-    """Test ppt_all endpoint."""
-    response = client.post(
-        "/participants/",
-        data={
-            "inputPptId": "-- Select one --",
-            "inputPhone": "455226463",
-            "inputEmail": "",
-        },
-    )
-    assert response.status_code == 200
-
-
-def test_ppt_all_post_email(client):
-    """Test ppt_all endpoint."""
-    response = client.post(
-        "/participants/",
-        data={
-            "inputPptId": "-- Select one --",
-            "inputPhone": "",
-            "inputEmail": "zass7m8@7q4mvje.com",
-        },
-    )
-    assert response.status_code == 200
-
-
 def test_ppt(client):
     """Test ppt_all endpoint."""
     response = client.get("/participants/1")

@@ -563,7 +563,11 @@ def prepare_participants(records: api.Records, data_dict: dict, **kwargs) -> dic
     )
     return {
         "table": df.to_html(
-            classes=classes, escape=False, justify="left", index=False, bold_rows=True
+            classes=f'{classes}" id = "ppttable',
+            escape=False,
+            justify="left",
+            index=False,
+            bold_rows=True,
         )
     }
 
@@ -747,7 +751,7 @@ def prepare_appointments(
     )
 
     table = df.to_html(
-        classes=classes,
+        classes=f'{classes}" id = "apttable',
         escape=False,
         justify="left",
         index=False,
@@ -817,7 +821,7 @@ def prepare_questionnaires(records: api.Records, data_dict: dict, **kwargs):
     )
 
     table = df.to_html(
-        classes=classes,
+        classes=f'{classes}" id = "quetable',
         escape=False,
         justify="left",
         index=False,
@@ -872,7 +876,7 @@ def prepare_studies(records: api.Records, data_dict: dict, study: str = None):
     )
 
     table = df.to_html(
-        classes=classes,
+        classes=f'{classes}" id = "apttable',
         escape=False,
         justify="left",
         index=False,

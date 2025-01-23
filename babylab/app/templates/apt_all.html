@@ -11,6 +11,7 @@
 </header>
 
 <body>
+  <link href="https://cdn.datatables.net/v/dt/dt-2.2.1/b-3.2.1/sp-2.3.3/sl-3.0.0/datatables.min.css" rel="stylesheet">
   <div class="card">
     <h5 class="card-title">Appointments</h5>
     <div class="card-body">
@@ -19,5 +20,21 @@
       {{ data["table"]|safe }}
     </div>
   </div>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+  <script src="https://cdn.datatables.net/v/dt/dt-2.2.1/b-3.2.1/sp-2.3.3/sl-3.0.0/datatables.min.js"></script>
+  <script>
+    let table = new DataTable(
+      '#apttable',
+      {
+        layout: {
+          topStart: {
+            searchPanes: {
+              columns: [3, 4],
+            },
+
+          }
+        },
+      });
+  </script>
 </body>
 {% endblock content %}
