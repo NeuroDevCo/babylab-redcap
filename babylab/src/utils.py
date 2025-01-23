@@ -751,7 +751,7 @@ def prepare_appointments(
     )
 
     table = df.to_html(
-        classes=classes,
+        classes=f'{classes}" id = "apttable',
         escape=False,
         justify="left",
         index=False,
