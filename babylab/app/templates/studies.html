@@ -54,5 +54,19 @@
     </div>
   </div>
   {% endif %}
+  <script>
+    let table = new DataTable(
+      '#quetable',
+      {
+        layout: {
+          topStart: {
+            searchPanes: {
+              columns: [3, 4],
+            },
+
+          }
+        },
+      });
+  </script>
 </body>
 {% endblock %}

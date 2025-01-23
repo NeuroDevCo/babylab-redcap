@@ -821,7 +821,7 @@ def prepare_questionnaires(records: api.Records, data_dict: dict, **kwargs):
     )
 
     table = df.to_html(
-        classes=classes,
+        classes=f'{classes}" id = "quetable',
         escape=False,
         justify="left",
         index=False,
