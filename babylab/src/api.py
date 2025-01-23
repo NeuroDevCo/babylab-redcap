@@ -134,7 +134,7 @@ def datetimes_to_strings(data: dict):
     return data
 
 
-def get_records(**kwargs):
+def get_records(record_id: str | list = None, **kwargs):
     """Return records as JSON.
 
     Args:
@@ -148,6 +148,13 @@ def get_records(**kwargs):
         "format": "json",
         "type": "flat",
     }
+
+    if record_id:
+        fields["records[0]"] = record_id
+        if isinstance(record_id, list):
+            for r in record_id:
+                fields[f"records[{record_id}]"] = r
+
     records = post_request(fields=fields, **kwargs).json()
     records = [datetimes_to_strings(r) for r in records]
     return records
@@ -434,9 +441,9 @@ class RecordList:
 class Records:
     """REDCap records"""
 
-    def __init__(self, **kwargs):
+    def __init__(self, record_id: str | list = None, **kwargs):
 
-        records = get_records(**kwargs)
+        records = get_records(record_id, **kwargs)
         participants = {}
         appointments = {}
         questionnaires = {}

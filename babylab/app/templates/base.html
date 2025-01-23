@@ -38,6 +38,11 @@
         <i class="fa fa-exclamation"></i>&nbsp;&nbsp;{{ msg }}
       </div>
       {% endif %}
+      {% if cat=="warning" %}
+      <div class="alert alert-warning">
+        <i class="fa fa-question"></i>&nbsp;&nbsp;{{ msg }}
+      </div>
+      {% endif %}
       {% endfor %}
       {% endif %}
       {% endwith %}

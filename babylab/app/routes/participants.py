@@ -7,6 +7,36 @@ from babylab.src import api, utils
 from babylab.app import config as conf
 
 
+def find_participant(
+    records: api.Records,
+    phone: str = None,
+    email: str = None,
+):
+    """Find participant from phone number or email address and return their ID.
+
+    Args:
+        records (api.Records): REDCap records, as returned by ``api.Records``.
+        phone (str, optional): Phone number. Defaults to None.
+        email (str, optional): Email number. Defaults to None.
+
+    Returns:
+        str: Participant ID, if found.
+        bool: If participant not found.
+        None: If no phone nor email were provided.
+    """
+    if phone is None and email is None:
+        return None
+    if phone:
+        for p in records.participants.records.values():
+            if phone in p.data["phone1"] or phone in p.data["phone2"]:
+                return p.data["record_id"]
+    if email:
+        for p in records.participants.records.values():
+            if email in p.data["email1"] or email in p.data["email2"]:
+                return p.data["record_id"]
+    return False
+
+
 def participants_routes(app):
     """Participants routes."""
 
@@ -16,12 +46,15 @@ def participants_routes(app):
         ppt_id: str = None,
         ppt_options: list[str] = None,
         data_ppt: dict = None,
+        records: api.Records = None,
+        n: int = 30,
     ):
         """Participants database"""
         token = app.config["API_KEY"]
-        records = conf.get_records_or_index(token=token)
+        if records is None:
+            records = conf.get_records_or_index(token=token)
         data_dict = api.get_data_dict(token=token)
-        data = utils.prepare_participants(records, data_dict=data_dict, n=20)
+        data = utils.prepare_participants(records, data_dict=data_dict, n=n)
         if ppt_options is None:
             ppt_options = list(records.participants.to_df().index)
             ppt_options = [int(x) for x in ppt_options]
@@ -29,33 +62,63 @@ def participants_routes(app):
             ppt_options = [str(x) for x in ppt_options]
         if request.method == "POST":
             ppt_id = request.form["inputPptId"]
-            if ppt_id != "-- Select one --":
-                data_ppt = records.participants.records[ppt_id]
+            ppt_phone = request.form["inputPhone"]
+            ppt_email = request.form["inputEmail"]
+            data_ppt = records.participants.records
+            if not any([ppt_phone, ppt_email, ppt_id]):
+                flash("No phone or e-mail address were provided.", "warning")
+            if ppt_phone or ppt_email:
+                ppt_id = find_participant(
+                    records,
+                    phone=ppt_phone,
+                    email=ppt_email,
+                )
+                if ppt_id == 0:
+                    flash(
+                        "No participant matches the phone or e-mail address provided",
+                        "warning",
+                    )
+                if ppt_id:
+                    data = utils.prepare_record_id(records, data_dict, ppt_id)
+                    return render_template(
+                        "ppt_all.html",
+                        data=data,
+                        ppt_options=ppt_options,
+                        data_dict=data_dict,
+                        ppt_id=ppt_id,
+                        data_ppt=data_ppt[ppt_id],
+                        records=None,
+                    )
+            if ppt_id not in ("-- Select one --", 0):
+                data = utils.prepare_record_id(records, data_dict, ppt_id)
                 return render_template(
                     "ppt_all.html",
                     data=data,
                     ppt_options=ppt_options,
                     data_dict=data_dict,
                     ppt_id=ppt_id,
-                    data_ppt=data_ppt,
+                    data_ppt=data_ppt[ppt_id],
+                    records=None,
                 )
+
         return render_template(
             "ppt_all.html",
             ppt_options=ppt_options,
             data=data,
             data_dict=data_dict,
-            ppt_id=ppt_id,
             data_ppt=data_ppt,
             n_ppt=len(records.participants.records),
+            records=records,
         )
 
     @app.route("/participants/<string:ppt_id>", methods=["GET", "POST"])
     @conf.token_required
-    def ppt(ppt_id: str):
+    def ppt(ppt_id: str, records: api.Records = None):
         """Show the ppt_id for that participant"""
         token = app.config["API_KEY"]
         data_dict = api.get_data_dict(token=token)
-        records = conf.get_records_or_index(token=token)
+        if records is None:
+            records = conf.get_records_or_index(token=token)
         data = utils.prepare_record_id(records, data_dict, ppt_id)
         if request.method == "POST":
             try:
@@ -64,7 +127,8 @@ def participants_routes(app):
                     token=app.config["API_KEY"],
                 )
                 flash("Participant deleted!", "success")
-                return redirect(url_for("ppt_all"))
+                records = conf.get_records_or_index(token=token)
+                return redirect(url_for("ppt_all", records=records))
             except requests.exceptions.HTTPError as e:
                 flash(f"Something went wrong! {e}", "error")
                 return redirect(url_for("ppt_all"))
@@ -124,7 +188,8 @@ def participants_routes(app):
                     token=app.config["API_KEY"],
                 )
                 flash("Participant added!", "success")
-                return redirect(url_for("ppt_all"))
+                records = conf.get_records_or_index(token=app.config["API_KEY"])
+                return redirect(url_for("ppt_all", records=records))
             except requests.exceptions.HTTPError as e:
                 flash(f"Something went wrong! {e}", "error")
                 return redirect(url_for("ppt_new", data_dict=data_dict))

@@ -66,7 +66,6 @@ def general_routes(app):
             data = utils.prepare_studies(
                 records, data_dict=data_dict, study=selected_study
             )
-
             return render_template(
                 "studies.html",
                 data_dict=data_dict,
