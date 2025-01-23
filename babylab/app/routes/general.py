@@ -4,12 +4,17 @@ import os
 import datetime
 import requests
 from flask import redirect, flash, render_template, url_for, request, send_file
+from flask_caching import Cache
 from babylab.src import api, utils
 from babylab.app import config as conf
 
 
 def general_routes(app):
     """General routes."""
+
+    cache = Cache(
+        app, config={"CACHE_TYPE": "SimpleCache"}
+    )  # pylint: disable=unused-variable
 
     @app.errorhandler(404)
     def error_404(error):
@@ -41,6 +46,7 @@ def general_routes(app):
 
     @app.route("/dashboard")
     @conf.token_required
+    @cache.cached(timeout=60)
     def dashboard(records: api.Records = None):
         """Dashboard page"""
         if records is None:
@@ -66,7 +72,7 @@ def general_routes(app):
             data = utils.prepare_studies(
                 records, data_dict=data_dict, study=selected_study
             )
-
+            cache.delete(f"item_data_{request.form}")
             return render_template(
                 "studies.html",
                 data_dict=data_dict,

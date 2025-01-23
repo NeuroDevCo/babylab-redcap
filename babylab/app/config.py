@@ -97,11 +97,11 @@ def token_required(f):
     return decorated
 
 
-def get_records_or_index(token: str):
+def get_records_or_index(token: str, **kwargs):
     """Try to get REDCap records, redirect to index if failure."""
-    redcap_version = api.get_redcap_version(token=token)
+    redcap_version = api.get_redcap_version(token=token, **kwargs)
     try:
-        records = api.Records(token=token)
+        records = api.Records(token=token, **kwargs)
     except Exception:  # pylint: disable=broad-exception-caught
         return render_template("index.html", redcap_version=redcap_version)
     return records
