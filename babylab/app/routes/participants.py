@@ -7,6 +7,36 @@ from babylab.src import api, utils
 from babylab.app import config as conf
 
 
+def find_participant(
+    records: api.Records,
+    phone: str = None,
+    email: str = None,
+):
+    """Find participant from phone number or email address and return their ID.
+
+    Args:
+        records (api.Records): REDCap records, as returned by ``api.Records``.
+        phone (str, optional): Phone number. Defaults to None.
+        email (str, optional): Email number. Defaults to None.
+
+    Returns:
+        str: Participant ID, if found.
+        bool: If participant not found.
+        None: If no phone nor email were provided.
+    """
+    if phone is None and email is None:
+        return None
+    if phone:
+        for p in records.participants.records.values():
+            if phone in p.data["phone1"] or phone in p.data["phone2"]:
+                return p.data["record_id"]
+    if email:
+        for p in records.participants.records.values():
+            if email in p.data["email1"] or email in p.data["email2"]:
+                return p.data["record_id"]
+    return False
+
+
 def participants_routes(app):
     """Participants routes."""
 
