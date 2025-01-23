@@ -68,7 +68,7 @@ def participants_routes(app):
             if not any([ppt_phone, ppt_email, ppt_id]):
                 flash("No phone or e-mail address were provided.", "warning")
             if ppt_phone or ppt_email:
-                ppt_id = utils.find_participant(
+                ppt_id = find_participant(
                     records,
                     phone=ppt_phone,
                     email=ppt_email,
