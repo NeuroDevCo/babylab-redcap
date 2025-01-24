@@ -11,7 +11,8 @@
 </header>
 
 <body>
-  <link href="https://cdn.datatables.net/v/dt/dt-2.2.1/b-3.2.1/sp-2.3.3/sl-3.0.0/datatables.min.css" rel="stylesheet">
+  <link href="https://cdn.datatables.net/v/bs5/jq-3.7.0/dt-2.2.1/b-3.2.1/fh-4.0.1/sp-2.3.3/sl-3.0.0/datatables.min.css"
+    rel="stylesheet">
   <br>
   <br>
   <br>
@@ -23,21 +24,22 @@
       <div width="10%">{{ data["table"]|safe }}</div>
     </div>
   </div>
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-  <script src="https://cdn.datatables.net/v/dt/dt-2.2.1/b-3.2.1/sp-2.3.3/sl-3.0.0/datatables.min.js"></script>
+  <script
+    src="https://cdn.datatables.net/v/bs5/jq-3.7.0/dt-2.2.1/b-3.2.1/fh-4.0.1/sp-2.3.3/sl-3.0.0/datatables.min.js"></script>
+  <script type="text/javascript" src="{{ url_for('static', filename='js/tables.js') }}"></script>
   <script>
-    let table = new DataTable(
-      '#quetable',
-      {
-        layout: {
-          topStart: {
-            searchPanes: {
-              columns: [3, 4, 6, 8, 4],
-            },
+    let table = new dt("#quetable", searchCols = [3], hideCols = [2, 12, 13])
 
-          }
-        },
-      });
+    table.on('click', 'td', function (e) {
+      let tr = e.target.closest('tr');
+      let row = table.row(tr);
+      if (row.child.isShown()) {
+        row.child.hide();
+      }
+      else {
+        row.child(format_que(row.data())).show();
+      }
+    });
   </script>
 </body>
 {% endblock content %}

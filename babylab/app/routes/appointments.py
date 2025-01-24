@@ -8,6 +8,75 @@ from babylab.src import api, utils
 from babylab.app import config as conf
 
 
+def prepare_appointments(
+    records: api.Records, data_dict: dict = None, study: str = None, **kwargs
+):
+    """Prepare record ID page.
+
+    Args:
+        records (api.Records): REDCap records, as returned by ``api.Records``.
+        data_dict (dict): Data dictionary as returned by ``api.get_data_dictionary``.
+        study (str, optional): Study to filter for. Defaults to None.
+        **kwargs: Extra arguments passed to ``get_participants_table``, ``get_appointments_table``, and ``get_questionnaires_table``
+
+    Returns:
+        dict: Parameters for the participants endpoint.
+    """  # pylint: disable=line-too-long
+    df = utils.get_appointments_table(
+        records, data_dict=data_dict, study=study, **kwargs
+    )
+    classes = "table table-hover table-responsive"
+    df["record_id"] = [utils.format_ppt_id(i) for i in df.index]
+    df["modify_button"] = [
+        utils.format_modify_button(p, a) for p, a in zip(df.index, df["appointment_id"])
+    ]
+    df["appointment_id"] = [utils.format_apt_id(i) for i in df["appointment_id"]]
+    df["status"] = [utils.format_status(s) for s in df["status"]]
+
+    df = df[
+        [
+            "appointment_id",
+            "record_id",
+            "study",
+            "status",
+            "date",
+            "date_created",
+            "date_updated",
+            "taxi_address",
+            "taxi_isbooked",
+            "comments",
+            "modify_button",
+        ]
+    ]
+    df = df.sort_values("date_updated", ascending=False)
+
+    df = df.rename(
+        columns={
+            "appointment_id": "Appointment",
+            "record_id": "Participant",
+            "study": "Study",
+            "status": "Appointment status",
+            "date": "Date",
+            "date_created": "Made on the",
+            "date_updated": "Last updated",
+            "taxi_address": "Taxi address",
+            "taxi_isbooked": "Taxi booked",
+            "comments": "Comments",
+            "modify_button": "",
+        }
+    )
+
+    table = df.to_html(
+        classes=f'{classes}" id = "apttable',
+        escape=False,
+        justify="left",
+        index=False,
+        bold_rows=True,
+    )
+
+    return {"table": table}
+
+
 def appointments_routes(app):
     """Appointments routes."""
 
@@ -18,7 +87,7 @@ def appointments_routes(app):
         token = app.config["API_KEY"]
         records = api.Records(token=token)
         data_dict = api.get_data_dict(token=token)
-        data = utils.prepare_appointments(records, data_dict=data_dict, n=20)
+        data = prepare_appointments(records, data_dict=data_dict, n=20)
         return render_template(
             "apt_all.html",
             data=data,

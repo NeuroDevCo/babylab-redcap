@@ -2,7 +2,8 @@
 {% block content %}
 
 <body>
-  <link href="https://cdn.datatables.net/v/dt/dt-2.2.1/b-3.2.1/sp-2.3.3/sl-3.0.0/datatables.min.css" rel="stylesheet">
+  <link href="https://cdn.datatables.net/v/bs5/jq-3.7.0/dt-2.2.1/b-3.2.1/fh-4.0.1/sp-2.3.3/sl-3.0.0/datatables.min.css"
+    rel="stylesheet">
   <div class="jumbotron jumbotron-fluid">
     <div class="container">
       <h1 class="display-4">Studies</h1>
@@ -54,20 +55,21 @@
   </div>
   {% endif %}
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-  <script src="https://cdn.datatables.net/v/dt/dt-2.2.1/b-3.2.1/sp-2.3.3/sl-3.0.0/datatables.min.js"></script>
+  <script
+    src="https://cdn.datatables.net/v/bs5/jq-3.7.0/dt-2.2.1/b-3.2.1/fh-4.0.1/sp-2.3.3/sl-3.0.0/datatables.min.js"></script>
+  <script type="text/javascript" src="{{ url_for('static', filename='js/tables.js') }}"></script>
   <script>
-    let table = new DataTable(
-      '#apttable',
-      {
-        layout: {
-          topStart: {
-            searchPanes: {
-              columns: [3, 9],
-            },
+    let table = new dt("#apttable", searchCols = [3, 4], hideCols = [2, 6, 7, 8, 9, 10])
 
-          }
-        },
-      });
-  </script>
+    table.on('click', 'td', function (e) {
+      let tr = e.target.closest('tr');
+      let row = table.row(tr);
+      if (row.child.isShown()) {
+        row.child.hide();
+      }
+      else {
+        row.child(format_apt(row.data())).show();
+      }
+    });  </script>
 </body>
 {% endblock %}

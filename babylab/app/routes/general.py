@@ -2,10 +2,149 @@
 
 import os
 import datetime
+from collections import OrderedDict
 import requests
+import pandas as pd
 from flask import redirect, flash, render_template, url_for, request, send_file
 from babylab.src import api, utils
 from babylab.app import config as conf
+
+
+def prepare_studies(records: api.Records, data_dict: dict, study: str = None):
+    """Prepare appointments page.
+
+    Args:
+        records (api.Records): REDCap records, as returned by ``api.Records``.
+        data_dict (dict): Data dictionary as returned by ``api.get_data_dictionary``.
+        study (str, optional): Study to filter for. Defaults to None.
+
+    Returns:
+        dict: Parameters for the participants endpoint.
+    """  # pylint: disable=line-too-long
+    df = utils.get_appointments_table(records, data_dict=data_dict, study=study)
+    classes = "table table-hover table-responsives"
+    df["appointment_id"] = [utils.format_apt_id(i) for i in df["appointment_id"]]
+    df["record_id"] = [utils.format_ppt_id(i) for i in df.index]
+    df["modify_button"] = [
+        utils.format_modify_button(p, a) for p, a in zip(df.index, df["appointment_id"])
+    ]
+    df["status"] = [utils.format_status(s) for s in df["status"]]
+
+    df = df[
+        [
+            "appointment_id",
+            "record_id",
+            "study",
+            "status",
+            "date",
+            "date_created",
+            "date_updated",
+            "taxi_address",
+            "taxi_isbooked",
+            "comments",
+            "modify_button",
+        ]
+    ]
+    df = df.sort_values("date", ascending=False)
+
+    df = df.rename(
+        columns={
+            "appointment_id": "Appointment",
+            "record_id": "Participant",
+            "study": "Study",
+            "status": "Appointment status",
+            "date": "Date",
+            "date_created": "Made on the",
+            "date_updated": "Last updated",
+            "taxi_address": "Taxi address",
+            "taxi_isbooked": "Taxi booked",
+            "comments": "Comments",
+            "modify_button": "",
+        }
+    )
+
+    table = df.to_html(
+        classes=f'{classes}" id = "apttable',
+        escape=False,
+        justify="left",
+        index=False,
+        bold_rows=True,
+    )
+
+    date = df["Date"].value_counts().to_dict()
+    date = OrderedDict(sorted(date.items()))
+    for idx, (k, v) in enumerate(date.items()):
+        if idx > 0:
+            date[k] = v + list(date.values())[idx - 1]
+
+    return {
+        "n_apts": df.shape[0],
+        "date_labels": list(date.keys()),
+        "date_values": list(date.values()),
+        "table": table,
+    }
+
+
+def prepare_dashboard(
+    records: api.Records = None, data_dict: dict = None, **kwargs
+) -> dict:
+    """Prepare data for dashboard.
+
+    Args:
+        records (api.Records): REDCap records, as returned by ``api.Records``.
+        data_dict (dict, optional): Data dictionary as returned by ``api.get_data_dictionary``. Defaults to None.
+        **kwargs: Extra arguments passed to ``get_participants_table``, ``get_appointments_table``, and ``get_questionnaires_table``
+
+    Returns:
+        dict: Parameters for the dashboard endpoint.
+    """  # pylint: disable=line-too-long
+    ppts = utils.get_participants_table(records, data_dict=data_dict, **kwargs)
+    apts = utils.get_appointments_table(records, data_dict=data_dict, **kwargs)
+    quest = utils.get_questionnaires_table(records, data_dict=data_dict, **kwargs)
+    ppts["age_days"] = round(
+        ppts["age_now_days"] + (ppts["age_now_months"] * 30.437), None
+    ).astype(int)
+    age_bins = list(range(0, max(ppts["age_days"]), 15))
+    labels = [f"{int(a // 30)}:{int(a % 30)}" for a in age_bins]
+    ppts["age_days_binned"] = pd.cut(
+        ppts["age_days"], bins=age_bins, labels=labels[:-1]
+    )
+
+    variables = {
+        "age_dist": utils.count_col(ppts, "age_days_binned"),
+        "sex_dist": utils.count_col(ppts, "sex", values_sort=True),
+        "source_dist": utils.count_col(ppts, "source", values_sort=True),
+        "ppts_date_created": utils.count_col(ppts, "date_created", cumulative=True),
+        "apts_date_created": utils.count_col(apts, "date_created", cumulative=True),
+        "status_dist": utils.count_col(apts, "status", values_sort=True),
+        "lang1_dist": utils.count_col(
+            quest, "lang1", values_sort=True, missing_label="None"
+        ),
+        "lang2_dist": utils.count_col(
+            quest, "lang2", values_sort=True, missing_label="None"
+        ),
+    }
+
+    return {
+        "n_ppts": ppts.shape[0],
+        "n_apts": apts.shape[0],
+        "age_dist_labels": list(variables["age_dist"].keys()),
+        "age_dist_values": list(variables["age_dist"].values()),
+        "sex_dist_labels": list(variables["sex_dist"].keys()),
+        "sex_dist_values": list(variables["sex_dist"].values()),
+        "source_dist_labels": list(variables["source_dist"].keys()),
+        "source_dist_values": list(variables["source_dist"].values()),
+        "ppts_date_created_labels": list(variables["ppts_date_created"].keys()),
+        "ppts_date_created_values": list(variables["ppts_date_created"].values()),
+        "apts_date_created_labels": list(variables["apts_date_created"].keys()),
+        "apts_date_created_values": list(variables["apts_date_created"].values()),
+        "status_dist_labels": list(variables["status_dist"].keys()),
+        "status_dist_values": list(variables["status_dist"].values()),
+        "lang1_dist_labels": list(variables["lang1_dist"].keys())[:24],
+        "lang1_dist_values": list(variables["lang1_dist"].values())[:24],
+        "lang2_dist_labels": list(variables["lang2_dist"].keys())[:24],
+        "lang2_dist_values": list(variables["lang2_dist"].values())[:24],
+    }
 
 
 def general_routes(app):
@@ -46,7 +185,7 @@ def general_routes(app):
         if records is None:
             records = conf.get_records_or_index(token=app.config["API_KEY"])
         data_dict = api.get_data_dict(token=app.config["API_KEY"])
-        data = utils.prepare_dashboard(records, data_dict)
+        data = prepare_dashboard(records, data_dict)
         return render_template("dashboard.html", data=data)
 
     @app.route("/studies", methods=["GET", "POST"])
@@ -63,9 +202,7 @@ def general_routes(app):
             finput = request.form
             selected_study = finput["inputStudy"]
             records = conf.get_records_or_index(token)
-            data = utils.prepare_studies(
-                records, data_dict=data_dict, study=selected_study
-            )
+            data = prepare_studies(records, data_dict=data_dict, study=selected_study)
             return render_template(
                 "studies.html",
                 data_dict=data_dict,

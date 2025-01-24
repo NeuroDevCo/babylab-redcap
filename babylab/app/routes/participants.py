@@ -7,6 +7,198 @@ from babylab.src import api, utils
 from babylab.app import config as conf
 
 
+def prepare_participants(records: api.Records, data_dict: dict, **kwargs) -> dict:
+    """Prepare data for participants page.
+
+    Args:
+        records (api.Records): REDCap records, as returned by ``api.Records``.
+        data_dict (dict): Data dictionary as returned by ``api.get_data_dictionary``.
+        **kwargs: Extra arguments passed to ``get_participants_table``.
+
+    Returns:
+        dict: Parameters for the participants endpoint.
+    """  # pylint: disable=line-too-long
+    df = utils.get_participants_table(records, data_dict=data_dict, **kwargs)
+    classes = "table table-hover table-responsive"
+    df["record_id"] = [utils.format_ppt_id(i) for i in df.index]
+    df.index = df.index.astype(int)
+    df = df.sort_index(ascending=False)
+    df["modify_button"] = [utils.format_modify_button(p) for p in df.index]
+    df = df[
+        [
+            "record_id",
+            "name",
+            "age_now_months",
+            "age_now_days",
+            "sex",
+            "source",
+            "email1",
+            "email2",
+            "phone1",
+            "phone2",
+            "date_created",
+            "date_updated",
+            "comments",
+            "modify_button",
+        ]
+    ]
+    df = df.rename(
+        columns={
+            "record_id": "Participant",
+            "name": "Name",
+            "age_now_months": "Age (months)",
+            "age_now_days": "Age (days)",
+            "sex": "Sex",
+            "source": "Source",
+            "phone1": "Phone 1",
+            "phone2": "Phone 2",
+            "email1": "E-mail 1",
+            "email2": "E-mail 2",
+            "date_created": "Added on",
+            "date_updated": "Last updated",
+            "comments": "Comments",
+            "modify_button": "",
+        }
+    )
+    return {
+        "table": df.to_html(
+            classes=f'{classes}" id = "ppttable',
+            escape=False,
+            justify="left",
+            index=False,
+            bold_rows=True,
+        )
+    }
+
+
+def prepare_record_id(
+    records: api.Records, data_dict: dict, ppt_id: str, **kwargs
+) -> dict:
+    """Prepare record ID page.
+
+    Args:
+        records (api.Records): REDCap records, as returned by ``api.Records``.
+        ppt_id (str, optional): Participant ID. Defaults to None.
+        **kwargs: Extra arguments passed to ``get_participants_table``, ``get_appointments_table``, and ``get_questionnaires_table``
+
+    Returns:
+        dict: Parameters for the participants endpoint.
+    """  # pylint: disable=line-too-long
+    data = records.participants.records[ppt_id].data
+    for k, v in data.items():
+        kdict = "participant_" + k
+        if kdict in data_dict:
+            data[k] = data_dict[kdict][v] if v else ""
+    data["age_now_months"] = (
+        str(data["age_now_months"]) if data["age_now_months"] else ""
+    )
+    data["age_now_days"] = str(data["age_now_days"]) if data["age_now_days"] else ""
+    data["parent1"] = data["parent1_name"] + " " + data["parent1_surname"]
+    data["parent2"] = data["parent2_name"] + " " + data["parent2_surname"]
+
+    classes = "table table-hover table-responsive"
+
+    # prepare participants table
+    df_appt = utils.get_appointments_table(
+        records, data_dict=data_dict, ppt_id=ppt_id, **kwargs
+    )
+    df_appt["record_id"] = [utils.format_ppt_id(i) for i in df_appt.index]
+    df_appt["appointment_id"] = [
+        utils.format_apt_id(i) for i in df_appt["appointment_id"]
+    ]
+    df_appt = df_appt.sort_values(by="date", ascending=False)
+    df_appt = df_appt[
+        [
+            "record_id",
+            "appointment_id",
+            "study",
+            "date",
+            "date_created",
+            "date_updated",
+            "taxi_address",
+            "taxi_isbooked",
+            "status",
+        ]
+    ]
+    df_appt = df_appt.rename(
+        columns={
+            "record_id": "Participant",
+            "appointment_id": "Appointment",
+            "study": "Study",
+            "date": "Date",
+            "date_created": "Made on the",
+            "date_updated": "Last update",
+            "taxi_address": "Taxi address",
+            "taxi_isbooked": "Taxi booked",
+            "status": "Status",
+        }
+    )
+    table_appt = df_appt.to_html(
+        classes=classes,
+        escape=False,
+        justify="left",
+        index=False,
+        bold_rows=True,
+    )
+
+    # prepare language questionnaires table
+    df_quest = utils.get_questionnaires_table(
+        records, data_dict=data_dict, ppt_id=ppt_id
+    )
+    df_quest["questionnaire_id"] = [
+        utils.format_que_id(p, q)
+        for p, q in zip(df_quest.index, df_quest["questionnaire_id"])
+    ]
+    df_quest["record_id"] = [utils.format_ppt_id(i) for i in df_quest.index]
+    df_quest = df_quest[
+        [
+            "questionnaire_id",
+            "record_id",
+            "lang1",
+            "lang1_exp",
+            "lang2",
+            "lang2_exp",
+            "lang3",
+            "lang3_exp",
+            "lang4",
+            "lang4_exp",
+            "date_created",
+            "date_updated",
+        ]
+    ]
+    df_quest = df_quest.sort_values("date_created", ascending=False)
+    df_quest = df_quest.rename(
+        columns={
+            "record_id": "ID",
+            "questionnaire_id": "Questionnaire",
+            "date_updated": "Last updated",
+            "date_created": "Created on the:",
+            "lang1": "L1",
+            "lang1_exp": "%",
+            "lang2": "L2",
+            "lang2_exp": "%",
+            "lang3": "L3",
+            "lang3_exp": "%",
+            "lang4": "L4",
+            "lang4_exp": "%",
+        }
+    )
+
+    table_quest = df_quest.to_html(
+        classes=classes,
+        escape=False,
+        justify="left",
+        index=False,
+        bold_rows=True,
+    )
+
+    return {
+        "data": data,
+        "table_appointments": table_appt,
+        "table_questionnaires": table_quest,
+    }
+
+
 def participants_routes(app):
     """Participants routes."""
 
@@ -23,7 +215,7 @@ def participants_routes(app):
         if records is None:
             records = conf.get_records_or_index(token=token)
         data_dict = api.get_data_dict(token=token)
-        data = utils.prepare_participants(records, data_dict=data_dict, n=n)
+        data = prepare_participants(records, data_dict=data_dict, n=n)
         if ppt_options is None:
             ppt_options = list(records.participants.to_df().index)
             ppt_options = [int(x) for x in ppt_options]
@@ -48,7 +240,7 @@ def participants_routes(app):
         data_dict = api.get_data_dict(token=token)
         if records is None:
             records = conf.get_records_or_index(token=token)
-        data = utils.prepare_record_id(records, data_dict, ppt_id)
+        data = prepare_record_id(records, data_dict, ppt_id)
         if request.method == "POST":
             try:
                 api.delete_participant(

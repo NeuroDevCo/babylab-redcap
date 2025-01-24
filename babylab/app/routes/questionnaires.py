@@ -7,6 +7,76 @@ from babylab.src import api, utils
 from babylab.app import config as conf
 
 
+def prepare_questionnaires(records: api.Records, data_dict: dict, **kwargs):
+    """Prepare appointments page.
+
+    Args:
+        records (api.Records): REDCap records, as returned by ``api.Records``.
+        data_dict (dict): Data dictionary as returned by ``api.get_data_dictionary``.
+        **kwargs: Extra arguments passed to ``get_participants_table``, ``get_appointments_table``, and ``get_questionnaires_table``
+
+    Returns:
+        dict: Parameters for the participants endpoint.
+    """  # pylint: disable=line-too-long
+    df = utils.get_questionnaires_table(records, data_dict=data_dict, **kwargs)
+    classes = "table table-hover"
+    df["modify_button"] = [
+        utils.format_modify_button(p, ques_id=q)  # pylint: disable=line-too-long
+        for p, q in zip(df.index, df["questionnaire_id"])
+    ]
+    df["questionnaire_id"] = [
+        utils.format_que_id(p, q) for p, q in zip(df["questionnaire_id"], df.index)
+    ]
+    df["record_id"] = [utils.format_ppt_id(i) for i in df.index]
+    df = df[
+        [
+            "questionnaire_id",
+            "record_id",
+            "isestimated",
+            "lang1",
+            "lang1_exp",
+            "lang2",
+            "lang2_exp",
+            "lang3",
+            "lang3_exp",
+            "lang4",
+            "lang4_exp",
+            "date_updated",
+            "date_created",
+            "modify_button",
+        ]
+    ]
+    df = df.sort_values("date_created", ascending=False)
+    df = df.rename(
+        columns={
+            "record_id": "Participant",
+            "questionnaire_id": "Questionnaire",
+            "isestimated": "Status",
+            "date_updated": "Updated",
+            "date_created": "Created",
+            "lang1": "L1",
+            "lang1_exp": "%",
+            "lang2": "L2",
+            "lang2_exp": "%",
+            "lang3": "L3",
+            "lang3_exp": "%",
+            "lang4": "L4",
+            "lang4_exp": "%",
+            "modify_button": "",
+        }
+    )
+
+    table = df.to_html(
+        classes=f'{classes}" id = "quetable',
+        escape=False,
+        justify="left",
+        index=False,
+        bold_rows=True,
+    )
+
+    return {"table": table}
+
+
 def questionnaires_routes(app):
     """Questionnaire routes."""
 
@@ -16,7 +86,7 @@ def questionnaires_routes(app):
         """Participants database"""
         records = api.Records(token=app.config["API_KEY"])
         data_dict = api.get_data_dict(token=app.config["API_KEY"])
-        data = utils.prepare_questionnaires(records, data_dict=data_dict, n=20)
+        data = prepare_questionnaires(records, data_dict=data_dict, n=20)
         return render_template(
             "que_all.html",
             data=data,
