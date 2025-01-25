@@ -28,7 +28,6 @@ def prepare_studies(records: api.Records, data_dict: dict, study: str = None):
     df["modify_button"] = [
         utils.format_modify_button(p, a) for p, a in zip(df.index, df["appointment_id"])
     ]
-    df["status"] = [utils.format_status(s) for s in df["status"]]
 
     df = df[
         [
@@ -85,6 +84,28 @@ def prepare_studies(records: api.Records, data_dict: dict, study: str = None):
     }
 
 
+def get_year_weeks(year: int):
+    """Get week numbers of the year"""
+    date_first = datetime.date(year, 1, 1)
+    date_first += datetime.timedelta(days=6 - date_first.weekday())
+    while date_first.year == year:
+        yield date_first
+        date_first += datetime.timedelta(days=7)
+
+
+def get_week_number(date: datetime.date):
+    """Get current week number"""
+    weeks = {}
+    for wn, d in enumerate(get_year_weeks(date.year)):
+        weeks[wn + 1] = [
+            (d + datetime.timedelta(days=k)).isoformat() for k in range(0, 7)
+        ]
+    for k, v in weeks.items():
+        if datetime.datetime.strftime(date, "%Y-%m-%d") in v:
+            return k
+    return None
+
+
 def prepare_dashboard(
     records: api.Records = None, data_dict: dict = None, **kwargs
 ) -> dict:
@@ -110,6 +131,22 @@ def prepare_dashboard(
         ppts["age_days"], bins=age_bins, labels=labels[:-1]
     )
 
+    current_week = get_week_number(datetime.datetime.today())
+    n_ppts_week = sum(
+        get_week_number(
+            datetime.datetime.strptime(v.data["date_created"], "%Y-%m-%d %H:%M:%S")
+        )
+        == current_week
+        for v in records.participants.records.values()
+    )
+    n_apts_week = sum(
+        get_week_number(
+            datetime.datetime.strptime(v.data["date_created"], "%Y-%m-%d %H:%M:%S")
+        )
+        == current_week
+        for v in records.appointments.records.values()
+    )
+
     variables = {
         "age_dist": utils.count_col(ppts, "age_days_binned"),
         "sex_dist": utils.count_col(ppts, "sex", values_sort=True),
@@ -128,6 +165,8 @@ def prepare_dashboard(
     return {
         "n_ppts": ppts.shape[0],
         "n_apts": apts.shape[0],
+        "n_ppts_week": n_ppts_week,
+        "n_apts_week": n_apts_week,
         "age_dist_labels": list(variables["age_dist"].keys()),
         "age_dist_values": list(variables["age_dist"].values()),
         "sex_dist_labels": list(variables["sex_dist"].keys()),

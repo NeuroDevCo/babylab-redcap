@@ -50,6 +50,18 @@ def format_que_id(que_id: str, ppt_id: str) -> str:
     return f"<a href=/participants/{ppt_id}/questionnaires/{que_id}>{que_id}</a>"
 
 
+def format_isestimated(isestimated: str) -> str:
+    """Format ``isestimated`` variable.
+
+    Args:
+        isestimated (str): Value of ``isestimated`` variable.
+
+    Returns:
+        str: Formatted ``isestimated`` value.
+    """
+    return "Estimated" if isestimated == "1" else "Calculated"
+
+
 def format_percentage(x: float | int) -> str:
     """Format number into percentage.
 
@@ -67,26 +79,6 @@ def format_percentage(x: float | int) -> str:
             "`x` higher than or equal to zero, and lower than or equal to one"
         )
     return str(int(float(x))) if x else ""
-
-
-def format_status(status: str) -> str:
-    """Format appointment status.
-
-    Args:
-        status (str): Appointment status value.
-
-    Returns:
-        str: Formated status value.
-    """
-    color_map = {
-        "Scheduled": "black",
-        "Confirmed": "orange",
-        "Successful": "green",
-        "Cancelled - Drop": "grey",
-        "Cancelled - Reschedule": "red",
-        "No show": "red",
-    }
-    return f"<p style='color: {color_map[status]};'>{status}</p>"
 
 
 def format_taxi_isbooked(address: str, isbooked: str) -> str:
@@ -129,22 +121,6 @@ def format_modify_button(ppt_id: str, apt_id: str = None, ques_id: str = None):
         return f'<a href="/participants/{ppt_id}/questionnaires/{ques_id}/questionnaire_modify"><button type="button" class="btn btn-warning">Modify</button></a>'  # pylint: disable=line-too-long
 
     return f'<a href="/participants/{ppt_id}/participant_modify"><button type="button" class="btn btn-warning">Modify</button></a>'  # pylint: disable=line-too-long
-
-
-def format_isestimated(isestimated: str) -> str:
-    """Format ``isestimated`` variable.
-
-    Args:
-        isestimated (str): Value of ``isestimated`` variable.
-
-    Returns:
-        str: Formatted ``isestimated`` value.
-    """
-    return (
-        "<p style='color: red;'>Estimated</p>"
-        if isestimated == "1"
-        else "<p style='color: green;'>Calculated</p>"
-    )
 
 
 def format_df(

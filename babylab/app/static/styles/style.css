@@ -129,53 +129,83 @@
 
 }
 
-
-p,
-input,
-select,
-option,
-ul,
-li,
-input,
-a,
-.form-control,
-.form-select {
-    font-family: "Ciutadella Regular";
+body {
+    font-family: 'Ciutadella Regular';
+    background-color: '#ffffff';
+    font-size: 20px;
+    width: 100%;
 }
 
-nav,
-.navbar-brand:h3 {
-    font-family: "Radio Canada";
+
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-family: "Ciutadella Bold";
 }
 
-i {
-    color: lightgrey;
-}
-
-.card-header {
-    background-color: rgb(227, 227, 227);
-    font-family: "Noto Sans Display";
-    font-weight: bold;
-    text-align: center;
-}
-
-.card-title {
-    font-family: "Ciutadella Semibold";
+nav {
+    font-family: "Ciutadella Bold";
+    background-color: lightgray;
+    color: black;
     font-size: larger;
-    padding-top: 1em;
-    text-align: center;
+}
+
+td {
+    font-size: 20px;
+    font-weight: 18px;
+    font-family: 'Ciutadella Regular';
+    vertical-align: text-bottom;
+    word-wrap: break-word;
+}
+
+label {
+    font-family: "Ciutadella Bold";
+    margin-top: 0.5em;
+    font-size: medium;
+}
+
+button {
+    font-family: "Ciutadella Bold";
+    font-size: 18px;
+    margin: 1em;
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+}
+
+.div-center {
+    display: flex;
+    justify-content: center;
+}
+
+.nav-link {
+    color: white;
+    font-family: "Ciutadella Medium";
+    margin-left: 0.5em;
+}
+
+.navbar-brand:h3 {
+    font-family: "Ciutadella Bold";
 }
 
 .tbl-record {
     margin: 1em;
 }
 
+.card-title {
+    font-family: "Ciutadella Bold";
+    font-size: larger;
+    padding-top: 1em;
+    text-align: center;
+}
+
 .card-body {
     float: left;
-    font-family: "Ciutadella Regular";
     margin: 1em;
     padding: 0%;
-    background-color: white;
 }
 
 .card-img-top {
@@ -184,12 +214,9 @@ i {
 
 
 .card-plot {
-    align-self: center;
     background-color: white;
-    height: 50%;
-    left: 20%;
     margin: 1em;
-    width: 60%;
+    width: 50%;
 
 }
 
@@ -203,6 +230,7 @@ i {
 }
 
 .card-table {
+    width: 80%;
     float: left;
     margin: 1em;
     text-wrap: pretty;
@@ -211,51 +239,28 @@ i {
     background-color: white;
 }
 
+
+p.card-highlight {
+    font-size: 50px;
+}
+
 .tdbreak {
     word-break: break-all
-}
-
-td {
-    vertical-align: text-bottom;
-    word-wrap: break-word;
-}
-
-
-.nav-link {
-    color: white;
-    font-family: "Noto Sans Display";
-    margin-left: 0.5em;
-}
-
-
-#pills-participants-tab,
-#pills-appointments-tab,
-#pills-questionnaires-tab {
-    color: rgb(115, 115, 115);
-    font-family: "Noto Sans Display";
-    margin-left: 0.5em;
 }
 
 .input-group-text {
     background-color: lightgrey;
 }
 
-.dtsp-name,
-.option {
-    font-family: "Ciutadella Regular";
-}
-
-label,
 .form-label,
 .form-group,
 .list-group-item {
     font-family: "Ciutadella Semibold";
     margin-top: 0.5em;
-    font-size: small;
+    font-size: medium;
 
 }
 
-button,
 .btn {
     font-family: "Ciutadella Semibold";
     margin: 1em;
@@ -268,18 +273,6 @@ button,
     font-family: "Ciutadella Medium";
 }
 
-
-b,
-h1,
-h2,
-h3,
-h4,
-h5,
-h6,
-th {
-    font-family: "Ciutadella Semibold";
-}
-
 .dtsp-panes,
 .d-md-flex,
 .mt,
@@ -290,46 +283,21 @@ th {
     font-size: medium;
 }
 
+.dt-column-title {
+    font-family: 'Ciutadella Bold';
+    font-size: 22px;
+}
 
 .dt-layout-row {
     border-radius: 1%;
 }
 
-
 .dtsp-title {
     font-weight: bold;
 }
 
-#indexCardLogin,
-#indexCardMain {
-    padding: 5%;
-    top: 4%;
-}
-
-#img-ndc-logo {
-    background-color: white;
-    border: 5px solid white;
-    border-radius: 100%;
-    display: block;
-    margin: auto;
-    margin-bottom: 5%;
-    margin-top: 10%;
-    overflow: hidden;
-    padding: 0%;
-    width: 60%;
-
-}
-
-nav {
-    background-color: lightgray;
-    color: black;
-    font-size: larger;
-}
-
-
 
 .error-container {
-    font-family: 'Ciutadella Regular', sans-serif;
     font-size: 180px;
     font-weight: 800;
     margin: 20px 15px;
@@ -391,6 +359,77 @@ nav {
     left: -9999em;
     position: absolute;
     top: -9999em;
+}
+
+
+.itemgroup {
+    float: left;
+    margin: 0.1em;
+}
+
+.jumbotron {
+    padding-top: 2em;
+    text-align: center;
+}
+
+.zoom-area {
+    font-size: 19px;
+    max-width: 490px;
+    margin: 30px auto 30px;
+    text-align: center;
+}
+
+.link-container {
+    text-align: center;
+}
+
+a.more-link {
+    background-color: lightgray;
+    border-radius: 0;
+    display: inline-block;
+    font-size: 13px;
+    letter-spacing: 1px;
+    line-height: 1.5;
+    margin-bottom: 5px;
+    margin-right: 5px;
+    margin-top: 50px;    
+    padding: 10px 15px;
+    text-decoration: none;
+    text-transform: uppercase;
+}
+    
+#pills-participants-tab,
+#pills-appointments-tab,
+#pills-questionnaires-tab {
+    color: rgb(115, 115, 115);
+    font-family: "Ciutadella Semibold";
+    margin-left: 0.5em;
+}
+
+#indexCardLogin,
+#indexCardMain {
+    padding: 5%;
+    top: 4%;
+}
+
+
+
+#img-ndc-logo {
+    background-color: white;
+    border: 5px solid white;
+    border-radius: 100%;
+    display: block;
+    margin: auto;
+    margin-bottom: 5%;
+    margin-top: 10%;
+    overflow: hidden;
+    padding: 0%;
+    width: 60%;
+
+}
+
+#participantstable {
+    float: none;
 }
 
 @keyframes shadowsdancing {
@@ -479,58 +518,4 @@ nav {
     box-sizing: border-box;
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
-}
-
-body {
-    background-color: #f1f1f9;
-    margin-bottom: 50px;
-}
-
-html,
-select,
-textarea {
-    color: lightgrey;
-    font-family: 'Ciutadella Regular';
-}
-
-.itemgroup {
-    float: left;
-    margin: 0.1em;
-}
-
-.jumbotron {
-    padding-top: 2em;
-    text-align: center;
-}
-
-
-#participantstable {
-    float: none;
-}
-
-
-.zoom-area {
-    font-size: 19px;
-    max-width: 490px;
-    margin: 30px auto 30px;
-    text-align: center;
-}
-
-.link-container {
-    text-align: center;
-}
-
-a.more-link {
-    background-color: lightgray;
-    border-radius: 0;
-    display: inline-block;
-    font-size: 13px;
-    letter-spacing: 1px;
-    line-height: 1.5;
-    margin-bottom: 5px;
-    margin-right: 5px;
-    margin-top: 50px;    
-    padding: 10px 15px;
-    text-decoration: none;
-    text-transform: uppercase;
 }

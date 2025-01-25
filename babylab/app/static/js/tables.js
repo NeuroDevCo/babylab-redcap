@@ -1,4 +1,4 @@
-function dt(id, searchCols, hideCols) {
+function dt(id, searchCols, hideCols, aptStatusCol, aptIsbookedCol, queStatusCol) {
     let panes = {
         extend: 'searchPanes',
         config: {
@@ -29,10 +29,48 @@ function dt(id, searchCols, hideCols) {
                 visible: false,
                 targets: hideCols,
             }
-        ]
+        ],
+        rowCallback: (row, data) => {
+            if (queStatusCol) {
+                c = format_que_status(data[queStatusCol])
+                $('td:eq(1)', row).css('color', c);
+            }
+            if (aptStatusCol) {
+                c = format_apt_status(data[aptStatusCol])
+                $('td:eq(2)', row).css('color', c);
+            }
+
+        },
     });
     return table;
 }
+
+function format_apt_status(x) {
+    switch (x) {
+        case 'Scheduled':
+            return '#000000'
+        case 'Confirmed':
+            return '#ffb700'
+        case 'Successful':
+            return '#0ea844'
+        case 'Cancelled - Reschedule':
+            return '#d62728'
+        default:
+            return '#acabab'
+    }
+}
+
+function format_que_status(x) {
+    switch (x) {
+        case 'Estimated':
+            return '#d62728'
+        case 'Calculated':
+            return '#0ea844'
+        default:
+            return '#000000'
+    }
+}
+
 
 function format_ppt(d) {
     const initial = arr => arr.slice(0, -1);

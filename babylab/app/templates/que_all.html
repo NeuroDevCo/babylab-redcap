@@ -16,11 +16,8 @@
   <br>
   <br>
   <br>
-  <div class="card-table">
-    <h5 class="card-title">Language questionnaires</h5>
-    <div class="card-body">
-      <h6 class="card-subtitle mb-2 text-muted">Showing the last 20 language questionnaires in database. Click IDs to
-        see a language questionnaire details.</h6>
+  <div class="div-center">
+    <div class="card-table">
       <div width="10%">{{ data["table"]|safe }}</div>
     </div>
   </div>
@@ -28,7 +25,7 @@
     src="https://cdn.datatables.net/v/bs5/jq-3.7.0/dt-2.2.1/b-3.2.1/fh-4.0.1/sp-2.3.3/sl-3.0.0/datatables.min.js"></script>
   <script type="text/javascript" src="{{ url_for('static', filename='js/tables.js') }}"></script>
   <script>
-    let table = new dt("#quetable", searchCols = [3], hideCols = [2, 12, 13])
+    let table = new dt("#quetable", searchCols = [3], hideCols = [2, 12, 13], queStatusCol = 3)
 
     table.on('click', 'td', function (e) {
       let tr = e.target.closest('tr');

@@ -13,11 +13,8 @@
 <body>
   <link href="https://cdn.datatables.net/v/bs5/jq-3.7.0/dt-2.2.1/b-3.2.1/fh-4.0.1/sp-2.3.3/sl-3.0.0/datatables.min.css"
     rel="stylesheet">
-  <div class="card">
-    <h5 class="card-title">Appointments</h5>
-    <div class="card-body">
-      <h6 class="card-subtitle mb-2 text-muted">Showing the last 20 appointments in database. Click IDs to see
-        appointment details.</h6>
+  <div class="div-center">
+    <div class="card-table">
       {{ data["table"]|safe }}
     </div>
   </div>
@@ -26,7 +23,7 @@
     src="https://cdn.datatables.net/v/bs5/jq-3.7.0/dt-2.2.1/b-3.2.1/fh-4.0.1/sp-2.3.3/sl-3.0.0/datatables.min.js"></script>
   <script type="text/javascript" src="{{ url_for('static', filename='js/tables.js') }}"></script>
   <script>
-    let table = new dt("#apttable", searchCols = [3, 4], hideCols = [2, 6, 7, 8, 9, 10])
+    let table = new dt("#apttable", searchCols = [3, 4], hideCols = [2, 6, 7, 8, 9, 10], statusCol = 4)
 
     table.on('click', 'td', function (e) {
       let tr = e.target.closest('tr');

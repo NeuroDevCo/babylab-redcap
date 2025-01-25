@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
+
 <header>
   <div class="jumbotron jumbotron-fluid">
     <div class="container">
@@ -13,28 +14,18 @@
 <body>
   <link href="https://cdn.datatables.net/v/bs5/jq-3.7.0/dt-2.2.1/b-3.2.1/fh-4.0.1/sp-2.3.3/sl-3.0.0/datatables.min.css"
     rel="stylesheet">
-  <h3>Search for a participant</h3>
   <br>
-  <a href="{{ url_for('ppt_new') }}">
-    <button type="button" class="btn btn-success">
-      <i class="fa fa-plus"></i>&nbsp;&nbsp;New
-      participant
-    </button>
-  </a>
   <div class="container">
-    <div class="row">
-      <div class="card card-table">
-        <div class="card-body">
-          <h5 class="card-title">Participants</h5>
-          <br>
-          <h6 class="card-subtitle mb-2 text-muted">Showing the last added 20 participants in database. Click IDs to see
-            a participant's profile.</h6>
-          <br>
-          <div class="card-text" width="10%">
-            {{ data["table"] | safe }}
-          </div>
-        </div>
-      </div>
+    <a href="{{ url_for('ppt_new') }}">
+      <button type="button" class="btn btn-success">
+        <i class="fa fa-plus"></i>&nbsp;&nbsp;New
+        participant
+      </button>
+    </a>
+  </div>
+  <div class="div-center ">
+    <div class="card-table">
+      {{ data["table"] | safe }}
     </div>
   </div>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
