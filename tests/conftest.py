@@ -20,12 +20,6 @@ def app():
 
 
 @pytest.fixture
-def client(app):  # pylint: disable=redefined-outer-name
-    """Testing client."""
-    return app.test_client()
-
-
-@pytest.fixture
 def token():
     """API test token.
 
@@ -33,6 +27,13 @@ def token():
         str: API test token.
     """
     return conf.get_api_key()
+
+
+@pytest.fixture
+def client(app, token):  # pylint: disable=redefined-outer-name
+    """Testing client."""
+    app.config["RECORDS"] = api.Records(token=token)
+    return app.test_client()
 
 
 @pytest.fixture
@@ -48,99 +49,99 @@ def data_dict():
 
 
 @pytest.fixture
-def participant_finput() -> dict:
+def ppt_finput() -> dict:
     """Form input for participant."""
-    return tutils.create_finput_participant()
+    return tutils.create_finput_ppt()
 
 
 @pytest.fixture
-def participant_finput_mod() -> dict:
+def ppt_finput_mod() -> dict:
     """Form input for participant."""
-    return tutils.create_finput_participant(is_new=False)
+    return tutils.create_finput_ppt(is_new=False)
 
 
 @pytest.fixture
-def appointment_finput() -> dict:
+def apt_finput() -> dict:
     """Form input for appointment."""
-    return tutils.create_finput_appointment()
+    return tutils.create_finput_apt()
 
 
 @pytest.fixture
-def appointment_finput_mod() -> dict:
+def apt_finput_mod() -> dict:
     """Form input for appointment."""
-    return tutils.create_finput_appointment(is_new=False)
+    return tutils.create_finput_apt(is_new=False)
 
 
 @pytest.fixture
-def questionnaire_finput() -> dict:
+def que_finput() -> dict:
     """Form input for questionnaire."""
-    return tutils.create_finput_questionnaire()
+    return tutils.create_finput_que()
 
 
 @pytest.fixture
-def questionnaire_finput_mod() -> dict:
+def que_finput_mod() -> dict:
     """Form input for questionnaire."""
-    return tutils.create_finput_questionnaire(is_new=False)
+    return tutils.create_finput_que(is_new=False)
 
 
 @pytest.fixture
-def participant_record() -> dict:
+def ppt_record() -> dict:
     """Create REDcap record fixture.
 
     Returns:
         dict: A REDcap record fixture.
     """
-    return tutils.create_record_participant()
+    return tutils.create_record_ppt()
 
 
 @pytest.fixture
-def participant_record_mod() -> dict:
+def ppt_record_mod() -> dict:
     """Create REDcap record fixture.
 
     Returns:
         dict: A REDcap record fixture.
     """
-    return tutils.create_record_participant(is_new=False)
+    return tutils.create_record_ppt(is_new=False)
 
 
 @pytest.fixture
-def appointment_record() -> dict:
+def apt_record() -> dict:
     """Create REDcap record fixture.
 
     Returns:
         dict: A REDcap record fixture.
     """
-    return tutils.create_record_appointment()
+    return tutils.create_record_apt()
 
 
 @pytest.fixture
-def appointment_record_mod() -> dict:
+def apt_record_mod() -> dict:
     """Create REDcap record fixture.
 
     Returns:
         dict: A REDcap record fixture.
     """
-    return tutils.create_record_appointment(is_new=False)
+    return tutils.create_record_apt(is_new=False)
 
 
 @pytest.fixture
-def questionnaire_record() -> dict:
+def que_record() -> dict:
     """Create REDcap record fixture.
 
     Returns:
         dict: A REDCap record fixture.
     """
-    return tutils.create_record_questionnaire()
+    return tutils.create_record_que()
 
 
 @pytest.fixture
-def questionnaire_record_mod() -> dict:
+def que_record_mod() -> dict:
     """Create REDcap record fixture.
 
     Returns:
         dict: A REDCap record fixture.
     """
-    return tutils.create_record_questionnaire(is_new=False)
+    return tutils.create_record_que(is_new=False)
 
 
 def pytest_sessionfinish(account: str = "gonzalo.garcia@sjd.es"):

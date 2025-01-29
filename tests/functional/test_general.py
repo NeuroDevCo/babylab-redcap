@@ -1,25 +1,35 @@
 """Test app genenal pages."""
 
+from babylab.src import api
+from babylab.app import create_app
+from babylab.app import config as conf
 
-def test_index_page(client):
+
+def test_index_page():
     """Test index page."""
+    app = create_app(env="prod")
+    with app.test_client() as client:
+        response = client.get("/")
+        assert response.status_code == 200
+        assert app.config["API_KEY"] == "BADTOKEN"
+        assert b"This is the SJD Babylab database" in response.data
+        assert b"You can find yor API token at REDCap" in response.data
 
-    with client as c:
-        response = c.get("/")
+
+def test_index_page_token():
+    """Test index page."""
+    app = create_app(env="prod")
+    with app.test_client() as client:
+        response = client.post("/", data={"apiToken": conf.get_api_key(), "email": ""})
         assert response.status_code == 200
         assert b"This is the SJD Babylab database" in response.data
+        assert b"Incorrect token" not in response.data
+        assert isinstance(app.config["RECORDS"], api.Records)
 
-
-def test_index_page_token(client, app):
-    """Test index page."""
-    response = client.post("/", data={"apiToken": app.config["API_KEY"], "email": ""})
-    assert response.status_code == 200
-    assert b"This is the SJD Babylab database" in response.data
-    assert b"Incorrect token" not in response.data
-
-    response = client.post("/", data={"apiToken": "badtoken", "email": ""})
-    assert response.status_code == 200
-    assert b"Incorrect token" in response.data
+    with app.test_client() as client:
+        response = client.post("/", data={"apiToken": "badtoken", "email": ""})
+        assert response.status_code == 200
+        assert b"Incorrect token" in response.data
 
 
 def test_dashboard_page(client):
@@ -36,15 +46,17 @@ def test_studies(client):
 
 def test_studies_input(client):
     """Test studies endpoint with input."""
+    with client as c:
+        response = c.post("/studies", data={"inputStudy": "1"})
+        assert response.status_code == 200
 
-    response = client.post("/studies", data={"inputStudy": "1"})
-    assert response.status_code == 200
+    with client as c:
+        response = c.post("/studies", data={"inputStudy": "2"})
+        assert response.status_code == 200
 
-    response = client.post("/studies", data={"inputStudy": "2"})
-    assert response.status_code == 200
-
-    response = client.post("/studies", data={"inputStudy": "3"})
-    assert response.status_code == 200
+    with client as c:
+        response = c.post("/studies", data={"inputStudy": "3"})
+        assert response.status_code == 200
 
 
 def test_other(client):

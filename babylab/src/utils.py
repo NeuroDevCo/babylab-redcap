@@ -5,6 +5,7 @@ Util functions for the app.
 import os
 import datetime
 import shutil
+from copy import deepcopy
 from pandas import DataFrame
 from flask import flash, render_template
 from babylab.src import api
@@ -37,7 +38,7 @@ def format_apt_id(apt_id: str) -> str:
     return f"<a href=/appointments/{apt_id}>{apt_id}</a>"
 
 
-def format_que_id(que_id: str, ppt_id: str) -> str:
+def format_que_id(que_id: str) -> str:
     """Format questionnaire ID.
 
     Args:
@@ -47,7 +48,7 @@ def format_que_id(que_id: str, ppt_id: str) -> str:
     Returns:
         str: Formated questionnaire ID.
     """
-    return f"<a href=/participants/{ppt_id}/questionnaires/{que_id}>{que_id}</a>"
+    return f"<a href=/questionnaires/{que_id}>{que_id}</a>"
 
 
 def format_isestimated(isestimated: str) -> str:
@@ -94,8 +95,10 @@ def format_taxi_isbooked(address: str, isbooked: str) -> str:
     Returns:
         str: Formatted HTML string.
     """  # pylint: disable=line-too-long
-    if isbooked not in ["0", "1"]:
-        raise ValueError("`is_booked` must be one of '0' or '1'")
+    if str(isbooked) not in ["", "0", "1"]:
+        raise ValueError(
+            f"`is_booked` must be one of '0' or '1', but {isbooked} was provided"
+        )
     if not address:
         return ""
     if int(isbooked):
@@ -103,22 +106,26 @@ def format_taxi_isbooked(address: str, isbooked: str) -> str:
     return "<p style='color: red;'>No</p>"
 
 
-def format_modify_button(ppt_id: str, apt_id: str = None, ques_id: str = None):
+def format_modify_button(
+    ppt_id: str = None,
+    apt_id: str = None,
+    que_id: str = None,
+):
     """Add modify button.
 
     Args:
         ppt_id (str): Participant ID.
         apt_id (str, optional): Appointment ID. Defaults to None.
-        ques_id (str, optional): Questionnaire ID. Defaults to None.
+        que_id (str, optional): Questionnaire ID. Defaults to None.
 
     Returns:
         str: Formatted HTML string.
     """  # pylint: disable=line-too-long
     if apt_id:
-        return f'<a href="/participants/{ppt_id}/{apt_id}/appointment_modify"><button type="button" class="btn btn-warning">Modify</button></a>'  # pylint: disable=line-too-long
+        return f'<a href="/appointments/{apt_id}/appointment_modify"><button type="button" class="btn btn-warning">Modify</button></a>'  # pylint: disable=line-too-long
 
-    if ques_id:
-        return f'<a href="/participants/{ppt_id}/questionnaires/{ques_id}/questionnaire_modify"><button type="button" class="btn btn-warning">Modify</button></a>'  # pylint: disable=line-too-long
+    if que_id:
+        return f'<a href="/questionnaires/{que_id}/questionnaire_modify"><button type="button" class="btn btn-warning">Modify</button></a>'  # pylint: disable=line-too-long
 
     return f'<a href="/participants/{ppt_id}/participant_modify"><button type="button" class="btn btn-warning">Modify</button></a>'  # pylint: disable=line-too-long
 
@@ -242,15 +249,12 @@ def get_age_timestamp(
     return months_new, days_new
 
 
-def get_participants_table(
-    records: api.Records, data_dict: dict, n: int = None
-) -> DataFrame:
+def get_participants_table(records: api.Records, data_dict: dict) -> DataFrame:
     """Get participants table
 
     Args:
         records (api.Records): REDCap records, as returned by ``api.Records``.
         data_dict (dict, optional): Data dictionary as returned by ``api.get_data_dictionary``.
-        n (int, optional): Number of records to show. Defaults to None (all records are shown).
 
     Returns:
         DataFrame: Table of partcicipants.
@@ -305,35 +309,25 @@ def get_participants_table(
     df = records.participants.to_df()
     df["age_now_months"] = new_age_months
     df["age_now_days"] = new_age_days
-    if n:
-        df = df.tail(n)
     return replace_labels(df, data_dict)
 
 
 def get_appointments_table(
     records: api.Records,
     data_dict: dict = None,
-    ppt_id: str = None,
     study: str = None,
-    n: int = None,
 ) -> DataFrame:
     """Get appointments table.
 
     Args:
         records (api.Records): REDCap records, as returned by ``api.Records``.
         data_dict (dict): Data dictionary as returned by ``api.get_data_dictionary``.
-        ppt_id (str, optional): Participant ID. Defaults to None.
         study (str, optional): Study to filter for. Defaults to None.
-        n (int, optional): Number of records to show. Defaults to None (all records are shown).
 
     Returns:
         DataFrame: Table of appointments.
     """  # pylint: disable=line-too-long
-    apts = (
-        records.participants.records[ppt_id].appointments
-        if ppt_id
-        else records.appointments
-    )
+    apts = deepcopy(records.appointments)
 
     if study:
         apts.records = {
@@ -356,47 +350,42 @@ def get_appointments_table(
             ],
         )
     apt_records = apts.records
-    ppt_records = records.participants.records
+    if isinstance(records, api.Records):
+        ppt_records = records.participants.records
+    else:
+        ppt_records = {records.record_id: api.RecordList(records).records}
 
     df = apts.to_df()
-    df["appointment_id"] = df["id"]
+    df["appointment_id"] = [
+        str(i) + ":" + str(apt_id)
+        for i, apt_id in zip(df.index, df["redcap_repeat_instance"])
+    ]
 
     # get current age
-    age_now = get_age_timestamp(apt_records, ppt_records, "date_created")[:n]
+    age_now = get_age_timestamp(apt_records, ppt_records, "date_created")
     df["age_now_months"] = age_now[0]
     df["age_now_days"] = age_now[1]
 
     # get age at appointment
-    age_apt = get_age_timestamp(apt_records, ppt_records, "date")[:n]
+    age_apt = get_age_timestamp(apt_records, ppt_records, "date")
     df["age_apt_months"] = age_apt[0]
     df["age_apt_days"] = age_apt[1]
-    if n:
-        df = df.tail(n)
+
     return replace_labels(df, data_dict)
 
 
-def get_questionnaires_table(
-    records: api.Records,
-    data_dict: dict,
-    ppt_id: str = None,
-    n: int = None,
-) -> DataFrame:
+def get_questionnaires_table(records: api.Records, data_dict: dict) -> DataFrame:
     """Get questionnaires table.
 
     Args:
         records (api.Records): REDCap records, as returned by ``api.Records``.
         data_dict (dict): Data dictionary as returned by ``api.get_data_dictionary``.
-        ppt_id (str, optional): Participant ID. Defaults to None.
         study (str, optional): Study to filter for. Defaults to None.
-        n (int, optional): Number of records to show. Defaults to None (all records are shown).
 
     Returns:
         DataFrame: A formated Pandas DataFrame.
     """  # pylint: disable=line-too-long
-    if ppt_id is None:
-        quest = records.questionnaires
-    else:
-        quest = records.participants.records[ppt_id].questionnaires
+    quest = records.questionnaires
 
     if not quest.records:
         return DataFrame(
@@ -421,10 +410,7 @@ def get_questionnaires_table(
     df["questionnaire_id"] = [
         str(p) + ":" + str(q) for p, q in zip(df.index, df["redcap_repeat_instance"])
     ]
-    df = replace_labels(df, data_dict)
-    if n:
-        df = df.tail(n)
-    return df
+    return replace_labels(df, data_dict)
 
 
 def count_col(

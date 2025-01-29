@@ -106,22 +106,19 @@ def get_week_number(date: datetime.date):
     return None
 
 
-def prepare_dashboard(
-    records: api.Records = None, data_dict: dict = None, **kwargs
-) -> dict:
+def prepare_dashboard(records: api.Records = None, data_dict: dict = None) -> dict:
     """Prepare data for dashboard.
 
     Args:
         records (api.Records): REDCap records, as returned by ``api.Records``.
         data_dict (dict, optional): Data dictionary as returned by ``api.get_data_dictionary``. Defaults to None.
-        **kwargs: Extra arguments passed to ``get_participants_table``, ``get_appointments_table``, and ``get_questionnaires_table``
 
     Returns:
         dict: Parameters for the dashboard endpoint.
     """  # pylint: disable=line-too-long
-    ppts = utils.get_participants_table(records, data_dict=data_dict, **kwargs)
-    apts = utils.get_appointments_table(records, data_dict=data_dict, **kwargs)
-    quest = utils.get_questionnaires_table(records, data_dict=data_dict, **kwargs)
+    ppts = utils.get_participants_table(records, data_dict=data_dict)
+    apts = utils.get_appointments_table(records, data_dict=data_dict)
+    quest = utils.get_questionnaires_table(records, data_dict=data_dict)
     ppts["age_days"] = round(
         ppts["age_now_days"] + (ppts["age_now_months"] * 30.437), None
     ).astype(int)
@@ -205,12 +202,14 @@ def general_routes(app):
         redcap_version = api.get_redcap_version(token=app.config["API_KEY"])
         if request.method == "POST":
             finput = request.form
-            app.config["API_KEY"] = finput["apiToken"]
+            token = finput["apiToken"]
+            app.config["API_KEY"] = token
             app.config["EMAIL"] = finput["email"]
             try:
-                redcap_version = api.get_redcap_version(token=app.config["API_KEY"])
+                redcap_version = api.get_redcap_version(token=token)
                 if redcap_version:
                     flash("Logged in.", "success")
+                    app.config["RECORDS"] = conf.get_records_or_index(token=token)
                     return render_template("index.html", redcap_version=redcap_version)
                 flash("Incorrect token", "error")
             except ValueError as e:
@@ -219,20 +218,15 @@ def general_routes(app):
 
     @app.route("/dashboard")
     @conf.token_required
-    def dashboard(records: api.Records = None):
+    def dashboard():
         """Dashboard page"""
-        if records is None:
-            records = conf.get_records_or_index(token=app.config["API_KEY"])
         data_dict = api.get_data_dict(token=app.config["API_KEY"])
-        data = prepare_dashboard(records, data_dict)
+        data = prepare_dashboard(app.config["RECORDS"], data_dict)
         return render_template("dashboard.html", data=data)
 
     @app.route("/studies", methods=["GET", "POST"])
     @conf.token_required
-    def studies(
-        selected_study: str = None,
-        data: dict = None,
-    ):
+    def studies(selected_study: str = None, data: dict = None):
         """Studies page"""
         token = app.config["API_KEY"]
         data_dict = api.get_data_dict(token=token)
@@ -240,8 +234,9 @@ def general_routes(app):
         if request.method == "POST":
             finput = request.form
             selected_study = finput["inputStudy"]
-            records = conf.get_records_or_index(token)
-            data = prepare_studies(records, data_dict=data_dict, study=selected_study)
+            data = prepare_studies(
+                app.config["RECORDS"], data_dict=data_dict, study=selected_study
+            )
             return render_template(
                 "studies.html",
                 data_dict=data_dict,

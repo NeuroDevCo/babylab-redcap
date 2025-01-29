@@ -101,7 +101,7 @@ def get_data_dict() -> dict:
     return api.get_data_dict(token=conf.get_api_key())
 
 
-def create_finput_participant(is_new: bool = True) -> dict:
+def create_finput_ppt(is_new: bool = True) -> dict:
     """Simulate form input to test POST request in participants.
 
     Args:
@@ -146,7 +146,7 @@ def create_finput_participant(is_new: bool = True) -> dict:
     return data
 
 
-def create_finput_appointment(is_new: bool = True) -> dict:
+def create_finput_apt(is_new: bool = True) -> dict:
     """Simulate form input to test POST request in appointments.
 
     Args:
@@ -174,7 +174,7 @@ def create_finput_appointment(is_new: bool = True) -> dict:
     return data
 
 
-def create_finput_questionnaire(is_new: bool = True) -> dict:
+def create_finput_que(is_new: bool = True) -> dict:
     """Simulate form input to test POST request in questionnaires.
 
     Args:
@@ -211,7 +211,7 @@ def create_finput_questionnaire(is_new: bool = True) -> dict:
     return data
 
 
-def create_record_participant(is_new: bool = True) -> dict:
+def create_record_ppt(is_new: bool = True) -> dict:
     """Create a REDCap participant record.
 
     Args:
@@ -233,7 +233,7 @@ def create_record_participant(is_new: bool = True) -> dict:
         "participant_name": generate_str(),
         "participant_age_now_months": choice(range(12)),
         "participant_age_now_days": choice(range(31)),
-        "participant_days_since_last_appointment": "",
+        "participant_days_since_last_apt": "",
         "participant_sex": str(choice(range(1, 6))),
         "participant_source": str(choice(range(1, 3))),
         "participant_twin": "",
@@ -262,7 +262,7 @@ def create_record_participant(is_new: bool = True) -> dict:
     }
 
 
-def create_record_appointment(is_new: bool = True) -> dict:
+def create_record_apt(is_new: bool = True) -> dict:
     """Create a REDCap appointment record.
 
     Args:
@@ -300,7 +300,7 @@ def create_record_appointment(is_new: bool = True) -> dict:
     }
 
 
-def create_record_questionnaire(is_new: bool = True) -> dict:
+def create_record_que(is_new: bool = True) -> dict:
     """Create a REDCap questionnaire record.
 
     Args:

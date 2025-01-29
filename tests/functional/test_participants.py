@@ -19,25 +19,21 @@ def test_ppt_new(client):
     assert response.status_code == 200
 
 
-def test_ppt_new_post(client, participant_finput):
+def test_ppt_new_post(client, ppt_finput):
     """Test ppt_all endpoint."""
-    response = client.post("/participant_new", data=participant_finput)
+    response = client.post("/participant_new", data=ppt_finput)
     assert response.status_code == 302
 
 
-def test_ppt_mod(client, participant_finput_mod):
+def test_ppt_mod(client, ppt_finput_mod):
     """Test ppt_all endpoint."""
-    response = client.get(
-        f"participants/{participant_finput_mod['record_id']}/participant_modify"
-    )
+    url = f"participants/{ppt_finput_mod['record_id']}/participant_modify"
+    response = client.get(url)
     assert response.status_code == 200
 
 
-def test_ppt_mod_post(client, participant_finput_mod):
+def test_ppt_mod_post(client, ppt_finput_mod):
     """Test ppt_all endpoint."""
-
-    response = client.post(
-        f"/participants/{participant_finput_mod['record_id']}/participant_modify",
-        data=participant_finput_mod,
-    )
+    url = f"/participants/{ppt_finput_mod['record_id']}/participant_modify"
+    response = client.post(url, data=ppt_finput_mod)
     assert response.status_code == 302

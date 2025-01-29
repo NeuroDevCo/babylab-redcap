@@ -7,26 +7,22 @@ from babylab.src import api, utils
 from babylab.app import config as conf
 
 
-def prepare_questionnaires(records: api.Records, data_dict: dict, **kwargs):
-    """Prepare appointments page.
+def prepare_questionnaires(records: api.Records, data_dict: dict):
+    """Prepare questionnaires page.
 
     Args:
         records (api.Records): REDCap records, as returned by ``api.Records``.
         data_dict (dict): Data dictionary as returned by ``api.get_data_dictionary``.
-        **kwargs: Extra arguments passed to ``get_participants_table``, ``get_appointments_table``, and ``get_questionnaires_table``
 
     Returns:
         dict: Parameters for the participants endpoint.
     """  # pylint: disable=line-too-long
-    df = utils.get_questionnaires_table(records, data_dict=data_dict, **kwargs)
+    df = utils.get_questionnaires_table(records, data_dict=data_dict)
     classes = "table table-hover"
     df["modify_button"] = [
-        utils.format_modify_button(p, ques_id=q)  # pylint: disable=line-too-long
-        for p, q in zip(df.index, df["questionnaire_id"])
+        utils.format_modify_button(que_id=q) for q in df["questionnaire_id"]
     ]
-    df["questionnaire_id"] = [
-        utils.format_que_id(p, q) for p, q in zip(df["questionnaire_id"], df.index)
-    ]
+    df["questionnaire_id"] = [utils.format_que_id(q) for q in df["questionnaire_id"]]
     df["record_id"] = [utils.format_ppt_id(i) for i in df.index]
     df = df[
         [
@@ -84,9 +80,9 @@ def questionnaires_routes(app):
     @conf.token_required
     def que_all():
         """Participants database"""
-        records = api.Records(token=app.config["API_KEY"])
+        records = app.config["RECORDS"]
         data_dict = api.get_data_dict(token=app.config["API_KEY"])
-        data = prepare_questionnaires(records, data_dict=data_dict, n=20)
+        data = prepare_questionnaires(records, data_dict=data_dict)
         return render_template(
             "que_all.html",
             data=data,
@@ -94,56 +90,40 @@ def questionnaires_routes(app):
             n_que=len(records.questionnaires.records),
         )
 
-    @app.route(
-        "/participants/<string:ppt_id>/questionnaires/<string:que_id>",
-        methods=["GET", "POST"],
-    )
+    @app.route("/questionnaires/<string:que_id>", methods=["GET", "POST"])
     @conf.token_required
-    def que(
-        ppt_id: str = None,
-        que_id: str = None,
-        data: dict = None,
-    ):
+    def que(que_id: str):
         """Show a language questionnaire"""
-        data_dict = api.get_data_dict(token=app.config["API_KEY"])
-        try:
-            records = api.Records(token=app.config["API_KEY"])
-        except Exception:  # pylint: disable=broad-exception-caught
-            return render_template("index.html", login_status="incorrect")
-        data = records.questionnaires.records[que_id].data
-        data = utils.replace_labels(data, data_dict=data_dict)
+        token = app.config["API_KEY"]
+        data_dict = api.get_data_dict(token=token)
+        ppt_id, repeat_id = que_id.split(":")
+        ppt = api.get_participant(ppt_id, token=token)
+        que = ppt.questionnaires.records[que_id]
+        data = utils.replace_labels(que.data, data_dict)
         if request.method == "POST":
             try:
-                ppt_id, que_id = que_id.split(":")
                 api.delete_questionnaire(
-                    data={"record_id": ppt_id, "redcap_repeat_instance": que_id},
+                    data={"record_id": ppt_id, "redcap_repeat_instance": repeat_id},
                     token=app.config["API_KEY"],
                 )
                 flash("Questionnaire deleted!", "success")
-                return redirect(url_for("apt_all"))
+                return redirect(url_for("que_all"))
             except requests.exceptions.HTTPError as e:
                 flash(f"Something went wrong! {e}", "error")
-                return redirect(url_for("apt_all"))
+                return redirect(url_for("que_all"))
         data["isestimated"] = (
             "<div style='color: red'>Estimated</div>"
             if data["isestimated"] == "1"
             else "<div style='color: green'>Calculated</div>"
         )
-        return render_template(
-            "que.html",
-            ppt_id=ppt_id,
-            que_id=que_id,
-            data=data,
-        )
+        return render_template("que.html", que_id=que_id, data=data)
 
-    @app.route(
-        "/participants/<string:ppt_id>/questionnaires/questionnaire_new",
-        methods=["GET", "POST"],
-    )
+    @app.route("/questionnaires/questionnaire_new", methods=["GET", "POST"])
     @conf.token_required
-    def que_new(ppt_id: str):
+    def que_new(ppt_id: str = None):
         """New langage questionnaire page"""
-        data_dict = api.get_data_dict(token=app.config["API_KEY"])
+        token = app.config["API_KEY"]
+        data_dict = api.get_data_dict(token=token)
         if request.method == "POST":
             finput = request.form
             date_now = datetime.datetime.strftime(
@@ -177,11 +157,10 @@ def questionnaires_routes(app):
                 "language_comments": finput["inputComments"],
                 "language_complete": "2",
             }
-            api.add_questionnaire(
-                data,
-                token=app.config["API_KEY"],
-            )
             try:
+                api.add_questionnaire(data, token=token)
+                records = conf.get_records_or_index(token=token)
+                app.config["RECORDS"] = records
                 flash("Questionnaire added!", "success")
                 return redirect(url_for("que_all"))
             except requests.exceptions.HTTPError as e:
@@ -190,22 +169,18 @@ def questionnaires_routes(app):
         return render_template("que_new.html", ppt_id=ppt_id, data_dict=data_dict)
 
     @app.route(
-        "/participants/<string:ppt_id>/questionnaires/<string:que_id>/questionnaire_modify",
-        methods=["GET", "POST"],
+        "/questionnaires/<string:que_id>/questionnaire_modify", methods=["GET", "POST"]
     )
     @conf.token_required
-    def que_modify(
-        que_id: str,
-        ppt_id: str,
-    ):
+    def que_modify(que_id: str, data: dict = None, data_dict: dict = None):
         """Modify language questionnaire page"""
-        data_dict = api.get_data_dict(token=app.config["API_KEY"])
-        data = (
-            api.Records(token=app.config["API_KEY"]).questionnaires.records[que_id].data
-        )
-        for k, v in data.items():
-            if "exp" in k:
-                data[k] = str(round(v, None))
+        token = app.config["API_KEY"]
+        if data_dict is None:
+            data_dict = api.get_data_dict(token=token)
+        ppt_id, repeat_id = que_id.split(":")
+        ppt = api.get_participant(ppt_id, token=token)
+        data = ppt.questionnaires.records[que_id].data
+        data = utils.replace_labels(data, data_dict)
         if request.method == "POST":
             finput = request.form
             date_now = datetime.datetime.strftime(
@@ -213,7 +188,7 @@ def questionnaires_routes(app):
             )
             data = {
                 "record_id": ppt_id,
-                "redcap_repeat_instance": que_id.split(":")[1],
+                "redcap_repeat_instance": repeat_id,
                 "language_isestimated": (
                     "1" if "inputIsEstimated" in finput.keys() else "0"
                 ),
@@ -231,19 +206,16 @@ def questionnaires_routes(app):
                 "language_complete": "2",
             }
             try:
-                api.add_questionnaire(
-                    data,
-                    token=app.config["API_KEY"],
-                )
+                api.add_questionnaire(data, token=token)
+                records = conf.get_records_or_index(token=token)
+                app.config["RECORDS"] = records
                 flash("Questionnaire modified!", "success")
                 return redirect(url_for("que_all"))
             except requests.exceptions.HTTPError as e:
                 flash(f"Something went wrong! {e}", "error")
-                return render_template("que_all.html", ppt_id=ppt_id)
+                return render_template(
+                    "que_all.html", ppt_id=ppt_id, data_dict=data_dict
+                )
         return render_template(
-            "que_modify.html",
-            ppt_id=ppt_id,
-            que_id=que_id,
-            data=data,
-            data_dict=data_dict,
+            "que_modify.html", que_id=que_id, data=data, data_dict=data_dict
         )

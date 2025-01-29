@@ -9,7 +9,7 @@ from babylab.app import config as conf
 
 
 def prepare_appointments(
-    records: api.Records, data_dict: dict = None, study: str = None, **kwargs
+    records: api.Records, data_dict: dict = None, study: str = None
 ):
     """Prepare record ID page.
 
@@ -17,14 +17,11 @@ def prepare_appointments(
         records (api.Records): REDCap records, as returned by ``api.Records``.
         data_dict (dict): Data dictionary as returned by ``api.get_data_dictionary``.
         study (str, optional): Study to filter for. Defaults to None.
-        **kwargs: Extra arguments passed to ``get_participants_table``, ``get_appointments_table``, and ``get_questionnaires_table``
 
     Returns:
         dict: Parameters for the participants endpoint.
     """  # pylint: disable=line-too-long
-    df = utils.get_appointments_table(
-        records, data_dict=data_dict, study=study, **kwargs
-    )
+    df = utils.get_appointments_table(records, data_dict=data_dict, study=study)
     classes = "table table-hover table-responsive"
     df["record_id"] = [utils.format_ppt_id(i) for i in df.index]
     df["modify_button"] = [
@@ -85,9 +82,9 @@ def appointments_routes(app):
     def apt_all():
         """Appointments database"""
         token = app.config["API_KEY"]
-        records = api.Records(token=token)
+        records = app.config["RECORDS"]
         data_dict = api.get_data_dict(token=token)
-        data = prepare_appointments(records, data_dict=data_dict, n=20)
+        data = prepare_appointments(records, data_dict=data_dict)
         return render_template(
             "apt_all.html",
             data=data,
@@ -100,17 +97,16 @@ def appointments_routes(app):
         """Show the record_id for that appointment"""
         token = app.config["API_KEY"]
         data_dict = api.get_data_dict(token=token)
-        records = conf.get_records_or_index(token=token)
-        data = records.appointments.records[apt_id].data
-        data = utils.replace_labels(data, data_dict)
-        participant = records.participants.records[data["record_id"]].data
-        participant["age_now_months"] = str(participant["age_now_months"])
-        participant["age_now_days"] = str(participant["age_now_days"])
+        ppt_id, repeat_id = apt_id.split(":")
+        ppt = api.get_participant(ppt_id, token=token)
+        apt = ppt.appointments.records[apt_id]
+        data = utils.replace_labels(apt.data, data_dict)
+        ppt.data["age_now_months"] = str(ppt.data["age_now_months"])
+        ppt.data["age_now_days"] = str(ppt.data["age_now_days"])
         if request.method == "POST":
             try:
-                ppt_id, apt_id = apt_id.split(":")
                 api.delete_appointment(
-                    data={"record_id": ppt_id, "redcap_repeat_instance": apt_id},
+                    data={"record_id": ppt_id, "redcap_repeat_instance": repeat_id},
                     token=app.config["API_KEY"],
                 )
                 flash("Appointment deleted!", "success")
@@ -123,15 +119,17 @@ def appointments_routes(app):
             apt_id=apt_id,
             ppt_id=data["record_id"],
             data=data,
-            participant=participant,
+            participant=ppt.data,
         )
 
-    @app.route("/participants/<string:ppt_id>/appointment_new", methods=["GET", "POST"])
+    @app.route("/appointments/appointment_new", methods=["GET", "POST"])
     @conf.token_required
-    def apt_new(ppt_id: str):
+    def apt_new(ppt_id: str = None):
         """New appointment page"""
+        if ppt_id is None:
+            ppt_id = request.args.get("ppt_id")
         token = app.config["API_KEY"]
-        records = conf.get_records_or_index(token=token)
+        records = app.config["RECORDS"]
         data_dict = api.get_data_dict(token=token)
         if request.method == "POST":
             finput = request.form
@@ -158,9 +156,10 @@ def appointments_routes(app):
             # try to add appointment: if success try to send email
             try:
                 api.add_appointment(data, token=token)
+                records = conf.get_records_or_index(token=token)
+                app.config["RECORDS"] = records
                 flash("Appointment added!", "success")
                 if os.name == "nt" and "EMAIL" in app.config and app.config["EMAIL"]:
-                    records = conf.get_records_or_index(token=token)
                     ppt_records = records.participants.records[ppt_id]
                     apt_id = list(ppt_records.appointments.records)[-1]
                     utils.send_email_or_exception(
@@ -186,22 +185,22 @@ def appointments_routes(app):
                 return redirect(url_for("apt_all", records=records))
             except requests.exceptions.HTTPError as e:
                 flash(f"Something went wrong! {e}", "error")
-                return render_template(
-                    "apt_new.html", ppt_id=ppt_id, data_dict=data_dict
-                )
+                return render_template("apt_new.html", data_dict=data_dict)
 
         return render_template("apt_new.html", ppt_id=ppt_id, data_dict=data_dict)
 
     @app.route(
-        "/participants/<string:ppt_id>/<string:apt_id>/appointment_modify",
-        methods=["GET", "POST"],
+        "/appointments/<string:apt_id>/appointment_modify", methods=["GET", "POST"]
     )
     @conf.token_required
-    def apt_modify(apt_id: str, ppt_id: str):
+    def apt_modify(apt_id: str, data: dict = None, data_dict: dict = None):
         """Modify appointment page"""
         token = app.config["API_KEY"]
-        data_dict = api.get_data_dict(token=token)
-        data = api.Records(token=token).appointments.records[apt_id].data
+        if data_dict is None:
+            data_dict = api.get_data_dict(token=token)
+        ppt_id, repeat_id = apt_id.split(":")
+        ppt = api.get_participant(ppt_id, token=token)
+        data = ppt.appointments.records[apt_id].data
         data = utils.replace_labels(data, data_dict)
         if request.method == "POST":
             finput = request.form
@@ -210,7 +209,7 @@ def appointments_routes(app):
             )
             data = {
                 "record_id": finput["inputId"],
-                "redcap_repeat_instance": finput["inputAptId"].split(":")[1],
+                "redcap_repeat_instance": repeat_id,
                 "redcap_repeat_instrument": "appointments",
                 "appointment_study": finput["inputStudy"],
                 "appointment_date_updated": date_now,
@@ -228,6 +227,7 @@ def appointments_routes(app):
             try:
                 api.add_appointment(data, token=token)
                 records = conf.get_records_or_index(token=token)
+                app.config["RECORDS"] = records
                 flash("Appointment modified!", "success")
                 if "EMAIL" in app.config and app.config["EMAIL"]:
                     ppt_records = records.participants.records[ppt_id]
@@ -258,11 +258,6 @@ def appointments_routes(app):
                 return render_template(
                     "apt_new.html", ppt_id=ppt_id, data_dict=data_dict
                 )
-
         return render_template(
-            "apt_modify.html",
-            ppt_id=ppt_id,
-            apt_id=apt_id,
-            data=data,
-            data_dict=data_dict,
+            "apt_modify.html", apt_id=apt_id, data=data, data_dict=data_dict
         )

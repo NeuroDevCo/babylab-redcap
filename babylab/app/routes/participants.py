@@ -71,20 +71,16 @@ def prepare_participants(records: api.Records, data_dict: dict, **kwargs) -> dic
     }
 
 
-def prepare_record_id(
-    records: api.Records, data_dict: dict, ppt_id: str, **kwargs
-) -> dict:
+def prepare_record_id(ppt: api.Participant, data_dict: dict) -> dict:
     """Prepare record ID page.
 
     Args:
-        records (api.Records): REDCap records, as returned by ``api.Records``.
-        ppt_id (str, optional): Participant ID. Defaults to None.
-        **kwargs: Extra arguments passed to ``get_participants_table``, ``get_appointments_table``, and ``get_questionnaires_table``
+        records (api.Records): REDCap record of the participant, as returned by ``api.get_participant``.
 
     Returns:
         dict: Parameters for the participants endpoint.
     """  # pylint: disable=line-too-long
-    data = records.participants.records[ppt_id].data
+    data = ppt.data
     for k, v in data.items():
         kdict = "participant_" + k
         if kdict in data_dict:
@@ -99,15 +95,13 @@ def prepare_record_id(
     classes = "table table-hover table-responsive"
 
     # prepare participants table
-    df_appt = utils.get_appointments_table(
-        records, data_dict=data_dict, ppt_id=ppt_id, **kwargs
-    )
-    df_appt["record_id"] = [utils.format_ppt_id(i) for i in df_appt.index]
-    df_appt["appointment_id"] = [
-        utils.format_apt_id(i) for i in df_appt["appointment_id"]
+    df_apt = utils.get_appointments_table(ppt, data_dict=data_dict)
+    df_apt["record_id"] = [utils.format_ppt_id(i) for i in df_apt.index]
+    df_apt["appointment_id"] = [
+        utils.format_apt_id(i) for i in df_apt["appointment_id"]
     ]
-    df_appt = df_appt.sort_values(by="date", ascending=False)
-    df_appt = df_appt[
+    df_apt = df_apt.sort_values(by="date", ascending=False)
+    df_apt = df_apt[
         [
             "record_id",
             "appointment_id",
@@ -120,7 +114,7 @@ def prepare_record_id(
             "status",
         ]
     ]
-    df_appt = df_appt.rename(
+    df_apt = df_apt.rename(
         columns={
             "record_id": "Participant",
             "appointment_id": "Appointment",
@@ -133,7 +127,7 @@ def prepare_record_id(
             "status": "Status",
         }
     )
-    table_appt = df_appt.to_html(
+    table_apt = df_apt.to_html(
         classes=classes,
         escape=False,
         justify="left",
@@ -142,15 +136,12 @@ def prepare_record_id(
     )
 
     # prepare language questionnaires table
-    df_quest = utils.get_questionnaires_table(
-        records, data_dict=data_dict, ppt_id=ppt_id
-    )
-    df_quest["questionnaire_id"] = [
-        utils.format_que_id(p, q)
-        for p, q in zip(df_quest.index, df_quest["questionnaire_id"])
+    df_que = utils.get_questionnaires_table(ppt, data_dict=data_dict)
+    df_que["questionnaire_id"] = [
+        utils.format_que_id(q) for q in df_que["questionnaire_id"]
     ]
-    df_quest["record_id"] = [utils.format_ppt_id(i) for i in df_quest.index]
-    df_quest = df_quest[
+    df_que["record_id"] = [utils.format_ppt_id(i) for i in df_que.index]
+    df_que = df_que[
         [
             "questionnaire_id",
             "record_id",
@@ -166,8 +157,8 @@ def prepare_record_id(
             "date_updated",
         ]
     ]
-    df_quest = df_quest.sort_values("date_created", ascending=False)
-    df_quest = df_quest.rename(
+    df_que = df_que.sort_values("date_created", ascending=False)
+    df_que = df_que.rename(
         columns={
             "record_id": "ID",
             "questionnaire_id": "Questionnaire",
@@ -184,7 +175,7 @@ def prepare_record_id(
         }
     )
 
-    table_quest = df_quest.to_html(
+    table_que = df_que.to_html(
         classes=classes,
         escape=False,
         justify="left",
@@ -194,8 +185,8 @@ def prepare_record_id(
 
     return {
         "data": data,
-        "table_appointments": table_appt,
-        "table_questionnaires": table_quest,
+        "table_appointments": table_apt,
+        "table_questionnaires": table_que,
     }
 
 
@@ -204,52 +195,40 @@ def participants_routes(app):
 
     @app.route("/participants/")
     @conf.token_required
-    def ppt_all(
-        ppt_options: list[str] = None,
-        data_ppt: dict = None,
-        records: api.Records = None,
-        n: int = None,
-    ):
+    def ppt_all(ppt_list: list[str] = None):
         """Participants database"""
         token = app.config["API_KEY"]
-        if records is None:
-            records = conf.get_records_or_index(token=token)
+        records = app.config["RECORDS"]
         data_dict = api.get_data_dict(token=token)
-        data = prepare_participants(records, data_dict=data_dict, n=n)
-        if ppt_options is None:
-            ppt_options = list(records.participants.to_df().index)
-            ppt_options = [int(x) for x in ppt_options]
-            ppt_options.sort(reverse=True)
-            ppt_options = [str(x) for x in ppt_options]
+        data = prepare_participants(records, data_dict=data_dict)
+        if ppt_list is None:
+            ppt_list = list(records.participants.to_df().index)
+            ppt_list = [int(x) for x in ppt_list]
+            ppt_list.sort(reverse=True)
+            ppt_list = [str(x) for x in ppt_list]
 
         return render_template(
             "ppt_all.html",
-            ppt_options=ppt_options,
+            ppt_options=ppt_list,
             data=data,
             data_dict=data_dict,
-            data_ppt=data_ppt,
             n_ppt=len(records.participants.records),
-            records=records,
         )
 
     @app.route("/participants/<string:ppt_id>", methods=["GET", "POST"])
     @conf.token_required
-    def ppt(ppt_id: str, records: api.Records = None):
+    def ppt(ppt_id: str):
         """Show the ppt_id for that participant"""
         token = app.config["API_KEY"]
         data_dict = api.get_data_dict(token=token)
-        if records is None:
-            records = conf.get_records_or_index(token=token)
-        data = prepare_record_id(records, data_dict, ppt_id)
+        ppt = api.get_participant(ppt_id, token=token)
+        data = prepare_record_id(ppt, data_dict)
         if request.method == "POST":
             try:
-                api.delete_participant(
-                    data={"record_id": ppt_id},
-                    token=app.config["API_KEY"],
-                )
+                api.delete_participant(data={"record_id": ppt_id}, token=token)
                 flash("Participant deleted!", "success")
-                records = conf.get_records_or_index(token=token)
-                return redirect(url_for("ppt_all", records=records))
+                app.config["RECORDS"] = conf.get_records_or_index(token=token)
+                return redirect(url_for("ppt_all", records=app.config["RECORDS"]))
             except requests.exceptions.HTTPError as e:
                 flash(f"Something went wrong! {e}", "error")
                 return redirect(url_for("ppt_all"))
@@ -309,8 +288,10 @@ def participants_routes(app):
                     token=app.config["API_KEY"],
                 )
                 flash("Participant added!", "success")
-                records = conf.get_records_or_index(token=app.config["API_KEY"])
-                return redirect(url_for("ppt_all", records=records))
+                app.config["RECORDS"] = conf.get_records_or_index(
+                    token=app.config["API_KEY"]
+                )
+                return redirect(url_for("ppt_all"))
             except requests.exceptions.HTTPError as e:
                 flash(f"Something went wrong! {e}", "error")
                 return redirect(url_for("ppt_new", data_dict=data_dict))
@@ -320,15 +301,12 @@ def participants_routes(app):
         "/participants/<string:ppt_id>/participant_modify", methods=["GET", "POST"]
     )
     @conf.token_required
-    def ppt_modify(
-        ppt_id: str,
-        data: dict = None,
-    ):
+    def ppt_modify(ppt_id: str, data: dict = None, data_dict: dict = None):
         """Modify participant page"""
-        data_dict = api.get_data_dict(token=app.config["API_KEY"])
-        data = (
-            api.Records(token=app.config["API_KEY"]).participants.records[ppt_id].data
-        )
+        token = app.config["API_KEY"]
+        if data_dict is None:
+            data_dict = api.get_data_dict(token=token)
+        ppt = api.get_participant(ppt_id, token=token)
         if request.method == "POST":
             finput = request.form
             date_now = datetime.datetime.strftime(
@@ -367,11 +345,8 @@ def participants_routes(app):
                 "participants_complete": "2",
             }
             try:
-                api.add_participant(
-                    data,
-                    modifying=True,
-                    token=app.config["API_KEY"],
-                )
+                api.add_participant(data, modifying=True, token=token)
+                app.config["RECORDS"] = conf.get_records_or_index(token=token)
                 flash("Participant modified!", "success")
                 return redirect(url_for("ppt", ppt_id=ppt_id))
             except requests.exceptions.HTTPError as e:
@@ -380,5 +355,5 @@ def participants_routes(app):
                     "ppt_modify.html", ppt_id=ppt_id, data=data, data_dict=data_dict
                 )
         return render_template(
-            "ppt_modify.html", ppt_id=ppt_id, data=data, data_dict=data_dict
+            "ppt_modify.html", ppt_id=ppt_id, data=ppt.data, data_dict=data_dict
         )

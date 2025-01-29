@@ -1,8 +1,10 @@
 {% extends "base.html" %}
 {% block header %}
 {% endblock header %}
+
 {% block content %}
-<header>
+
+<body>
   <div class="jumbotron jumbotron-fluid">
     <div class="container">
       <h1 class="display-4">Participants</h1>
@@ -10,9 +12,6 @@
     </div>
   </div>
   <hr class="my-4">
-</header>
-
-<body>
   <form class="form needs-validation" method="post" novalidate>
     <div class="row">
       <div class="col">
@@ -24,7 +23,7 @@
       </div>
     </div>
     <div class="card card-input">
-      <div class="card-header">Participant information</div>
+      <div class="card-header bg-dark">Participant information</div>
       <div class="card-body">
         <div class="form-group">
           <label for="inputSource" class="form-label">
@@ -92,7 +91,7 @@
             {% endfor %}
           </select>
           <label for="inputTwinID" class="form-label">Twin ID</label>
-          <textarea class="form-control" name="inputTwinID" rows="1"></textarea>
+          <input class="form-control" name="inputTwinID" rows="1">
           <label for="inputComments" class="form-label">
             Comments&nbsp;&nbsp;<i class="fa fa-comment"></i>
           </label>
@@ -101,7 +100,7 @@
       </div>
     </div>
     <div class="card card-input">
-      <div class="card-header">Contact information</div>
+      <div class="card-header bg-dark">Contact information</div>
       <div class="card-body">
         <div class="form-group">
           <label for="inputEmail1" class="form-label">
@@ -129,7 +128,7 @@
           <label for="inputCity" class="form-label">
             City/place of residence&nbsp;&nbsp;<i class="fa fa-city"></i>
           </label>
-          <textarea class="form-control" name="inputCity" rows="1"></textarea>
+          <input class="form-control" name="inputCity" rows="1">
           <label for="inputPostcode" class="form-label">
             Postcode&nbsp;&nbsp;<i class="fa fa-city"></i>
           </label>
@@ -139,7 +138,7 @@
       </div>
     </div>
     <div class="card card-input">
-      <div class="card-header">Birth information</div>
+      <div class="card-header bg-dark">Birth information</div>
       <div class="card-body">
         <div class="form-group">
           <div class="row">
