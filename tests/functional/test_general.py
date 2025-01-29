@@ -59,13 +59,19 @@ def test_studies_input(client):
         assert response.status_code == 200
 
 
-def test_other(client):
-    """Test studies endpoint."""
-    response = client.get("/other")
+def test_calendar(client):
+    """Test calendar endpoint."""
+    response = client.get("/calendar")
     assert response.status_code == 200
 
 
 def test_other_backup(client):
-    """Test studies endpoint."""
+    """Test backup endpoint."""
     response = client.post("/other")
+    assert response.status_code == 200
+
+
+def test_other(client):
+    """Test other endpoint."""
+    response = client.get("/other")
     assert response.status_code == 200

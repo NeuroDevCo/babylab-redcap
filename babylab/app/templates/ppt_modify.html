@@ -7,7 +7,7 @@
 <body>
   <div class="jumbotron jumbotron-fluid">
     <div class="container">
-      <h1 class="display-4">Participants ({{ ppt_id }})</h1>
+      <h1 class="display-4">Participant {{ ppt_id }}&nbsp;&nbsp;<i class="fa fa-user-pen"></i></h1>
       <p class="lead">Modify the corresponding values and hit the submit button.</p>
     </div>
   </div>
@@ -17,7 +17,7 @@
       <div class="row">
         <div class="col">
           <div class="btn-group" role="group" aria-label="Basic example">
-            <button type="submit" class="btn btn-success" onclick="loading();">
+            <button type="submit" class="btn btn-warning" onclick="loading();">
               <i class="fa fa-pen"></i>&nbsp;&nbsp;Submit
             </button>
           </div>

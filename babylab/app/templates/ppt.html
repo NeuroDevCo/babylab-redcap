@@ -3,7 +3,7 @@
 <header>
   <div class="jumbotron jumbotron-fluid">
     <div class="container">
-      <h1 class="display-4">Participants ({{ ppt_id }})</h1>
+      <h1 class="display-4">Participant {{ ppt_id }}&nbsp;&nbsp;<i class="fa fa-user"></i></h1>
       <p class="lead">Showing details from participant {{ ppt_id }}.</p>
     </div>
   </div>
@@ -17,19 +17,19 @@
         <div class="btn-group" role="group" aria-label="Basic example">
           <a href="{{ url_for('apt_new', ppt_id = ppt_id) }}">
             <button type="button" class="btn btn-success">
-              <i class="fa fa-plus"></i>&nbsp;&nbsp;&nbsp;&nbsp;New
+              <i class="fa fa-calendar-plus"></i>&nbsp;&nbsp;&nbsp;&nbsp;New
               appointment
             </button>
           </a>
           <a href="{{ url_for('ppt_modify', ppt_id = ppt_id) }}">
             <button type="button" class="btn btn-warning">
-              <i class="fa fa-pen"></i>&nbsp;&nbsp;&nbsp;&nbsp;Modify
+              <i class="fa fa-user-pen"></i>&nbsp;&nbsp;&nbsp;&nbsp;Modify
               participant
             </button>
           </a>
           <a href="{{ url_for('que_new', ppt_id = ppt_id) }}">
             <button type="button" class="btn btn-primary">
-              <i class="fa fa-pen"></i>&nbsp;&nbsp;&nbsp;&nbsp;Add questionnaire
+              <i class="fa-solid fa-file-circle-plus"></i>&nbsp;&nbsp;&nbsp;&nbsp;Add questionnaire
             </button>
           </a>
           <a>

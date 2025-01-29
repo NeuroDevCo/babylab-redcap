@@ -5,7 +5,7 @@
 <header>
   <div class="jumbotron jumbotron-fluid">
     <div class="container">
-      <h1 class="display-4">Appointments ({{ apt_id }})</h1>
+      <h1 class="display-4">Appointment {{ apt_id }}&nbsp;&nbsp;<i class="fa fa-calendar"></i></h1>
       <p class="lead">Showing details about appointmenmt {{ apt_id }}. To modify, hit the "Modify appointment" button.
       </p>
     </div>
@@ -49,6 +49,12 @@
           <tbody>
             <tr>
               <th width="47%">
+                Date&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-clock"></i>
+              </th>
+              <td>{{ data["date"] }}</td>
+            </tr>
+            <tr>
+              <th width="47%">
                 Participant&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-person"></i>
               </th>
               <td user-select-all>{{ ppt_id }}</td>
@@ -69,7 +75,7 @@
               <th>
                 Study&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-flask"></i>
               </th>
-              <td>{{ data["date"] }}</td>
+              <td>{{ data["study"] }}</td>
             </tr>
             <tr>
               <th>

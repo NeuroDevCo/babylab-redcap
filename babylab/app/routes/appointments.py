@@ -28,7 +28,6 @@ def prepare_appointments(
         utils.format_modify_button(p, a) for p, a in zip(df.index, df["appointment_id"])
     ]
     df["appointment_id"] = [utils.format_apt_id(i) for i in df["appointment_id"]]
-    # df["status"] = [utils.format_status(s) for s in df["status"]]
 
     df = df[
         [

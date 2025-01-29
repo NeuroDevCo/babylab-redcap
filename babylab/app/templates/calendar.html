@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block head %}
+{% endblock head %}
+{% block body %}
+{% block content %}
+<header>
+    <div class="jumbotron jumbotron-fluid">
+        <div class="container">
+            <h1 class="display-4">Calendar&nbsp;&nbsp;<i class="fa-regular fa-calendar-days"></i></h1>
+            <p class="lead">Showing the appointments calendar.</p>
+        </div>
+    </div>
+    <hr class="my-4" />
+    <br>
+</header>
+
+<body>
+    <div class="container col-12">
+        <div class="div-center">
+            <div class="row col-12">
+                {% for s, c in data["colors_dict"].items() %}
+                <div class="col">
+                    <div class="card"
+                        style="background-color: {{ c }}; text-align: center; border-radius: 0%; border-color: white; color: white; font-family: 'Ciutadella Medium'; font-size: 25px;">
+                        <div class="card-body">
+                            <div class="card-text">
+                                {{ s }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    <br><br>
+    <div class="container" height="50%">
+        <div id="calendar"></div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js "></script>
+    <script src="static/js/calendar.js"></script>
+    <script>calendar({{ data["events"] | safe }})</script>
+</body>
+{% endblock content %}
+{% endblock body %}

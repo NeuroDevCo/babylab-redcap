@@ -3,6 +3,7 @@
 import os
 import datetime
 from collections import OrderedDict
+import json
 import requests
 import pandas as pd
 from flask import redirect, flash, render_template, url_for, request, send_file
@@ -223,6 +224,61 @@ def general_routes(app):
         data_dict = api.get_data_dict(token=app.config["API_KEY"])
         data = prepare_dashboard(app.config["RECORDS"], data_dict)
         return render_template("dashboard.html", data=data)
+
+    @app.route("/calendar")
+    @conf.token_required
+    def calendar(data_dict: dict = None):
+        """Calendar page"""
+        token = app.config["API_KEY"]
+        if data_dict is None:
+            data_dict = api.get_data_dict(token=token)
+        if app.config["RECORDS"] is None:
+            app.config["RECORDS"] = api.Records(token)
+        records = app.config["RECORDS"]
+        events = []
+        fmt_str = "%Y-%m-%d %H:%M"
+        cols = [
+            "#36a2eb",
+            "#ff6384",
+            "#ff9f40",
+            "#4bc0c0",
+            "#9966ff",
+            "#ffcd56",
+            "#c9cbcf",
+        ]
+        ecols = dict(zip(data_dict["appointment_study"].values(), cols))
+        scols = {
+            "Scheduled": "black",
+            "Confirmed": "black",
+            "Successful": "black",
+            "Cancelled - Reschedule": "red",
+            "No show": "grey",
+            "Cancelled - Drop": "grey",
+        }
+        for apt in list(records.appointments.records.values()):
+            data = utils.replace_labels(apt.data, data_dict)
+            start = datetime.datetime.strptime(data["date"], fmt_str)
+            end = start + datetime.timedelta(minutes=60)
+
+            events.append(
+                {
+                    "title": f"{data['status']} | {data['study']}: {data['id']}",
+                    "start": datetime.datetime.strftime(start, fmt_str),
+                    "end": datetime.datetime.strftime(end, fmt_str),
+                    "timeStart": datetime.datetime.strftime(start, "%H:%M"),
+                    "timeEnd": datetime.datetime.strftime(end, "%H:%M"),
+                    "groupID": data["study"],
+                    "display": "block",
+                    "location": "Barcelona",
+                    "url": f"/appointments/{data['id']}",
+                    "borderColor": "white",
+                    "textColor": scols[data["status"]],
+                    "backgroundColor": ecols[data["study"]],
+                }
+            )
+        data = {"events": events, "colors_dict": ecols}
+
+        return render_template("calendar.html", data=data, data_dict=data_dict)
 
     @app.route("/studies", methods=["GET", "POST"])
     @conf.token_required

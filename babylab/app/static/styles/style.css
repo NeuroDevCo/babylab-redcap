@@ -136,8 +136,6 @@ body {
     width: 100%;
 }
 
-
-
 h1,
 h2,
 h3,
@@ -175,6 +173,30 @@ button {
     margin: 1em;
     padding-left: 0.5em;
     padding-right: 0.5em;
+}
+
+th.fc-col-header-cell-cushion,
+a.fc-col-header-cell-cushion,
+a.fc-daygrid-day-number {
+    color: black;
+    margin: 5px;
+    padding: 0em 0.1em 0em 0.1em;
+    text-decoration: none;
+}
+
+.fc-daygrid-event-harness {
+    margin: 0em;
+    border-radius: 0%;
+    padding: 0.1em;
+}
+
+a.fc-event {
+    color: black;
+}
+
+button.fc-button, button.fc-next-button, button.fc-button-primary {
+    background-color: #343a40;
+    color: white;
 }
 
 .div-center {
