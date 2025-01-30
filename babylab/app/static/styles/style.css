@@ -175,6 +175,12 @@ button {
     padding-right: 0.5em;
 }
 
+.fc-timegrid-slot-label-cushion,
+.fc-scrollgrid-sync-inner,
+.fc-scrollgrid-shrink-cushion {
+    font-family: 'Ciutadella Medium';
+}
+
 th.fc-col-header-cell-cushion,
 a.fc-col-header-cell-cushion,
 a.fc-daygrid-day-number {
@@ -194,9 +200,8 @@ a.fc-event {
     color: black;
 }
 
-button.fc-button, button.fc-next-button, button.fc-button-primary {
-    background-color: #343a40;
-    color: white;
+.fc-event-title, .fc-event-time {
+    font-family: 'Arial';
 }
 
 .div-center {

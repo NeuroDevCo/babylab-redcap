@@ -1,7 +1,19 @@
 {% extends "base.html" %}
+
 {% block head %}
+
+<head>
+    <title>Calendar</title>
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
+    <script src='https://unpkg.com/popper.js/dist/umd/popper.min.js'></script>
+    <script src="https://unpkg.com/tooltip.js/dist/umd/tooltip.min.js"></script>
+    <script src="static/js/calendar.js"></script>
+</head>
+
 {% endblock head %}
+
 {% block body %}
+
 {% block content %}
 <header>
     <div class="jumbotron jumbotron-fluid">
@@ -37,9 +49,9 @@
     <div class="container" height="50%">
         <div id="calendar"></div>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js "></script>
-    <script src="static/js/calendar.js"></script>
-    <script>calendar({{ data["events"] | safe }})</script>
+    <script>
+        calendar({{ data["events"] | safe }})
+    </script>
 </body>
 {% endblock content %}
 {% endblock body %}

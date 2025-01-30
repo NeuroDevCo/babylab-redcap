@@ -262,7 +262,7 @@ def general_routes(app):
 
             events.append(
                 {
-                    "title": f"{data['status']} | {data['study']}: {data['id']}",
+                    "title": f"{data['status']} | {data['id']}",
                     "start": datetime.datetime.strftime(start, fmt_str),
                     "end": datetime.datetime.strftime(end, fmt_str),
                     "timeStart": datetime.datetime.strftime(start, "%H:%M"),
@@ -274,7 +274,7 @@ def general_routes(app):
                     "borderColor": "white",
                     "textColor": scols[data["status"]],
                     "backgroundColor": ecols[data["study"]],
-                }
+                },
             )
         data = {"events": events, "colors_dict": ecols}
 
