@@ -53,6 +53,7 @@ def test_get_data_dict(token):
 
 
 def test_get_participant(ppt_record_mod, token):
+    """Test ``get_participant``."""
     ppt_id = ppt_record_mod["record_id"]
     ppt = api.get_participant(ppt_id, token=token)
     assert isinstance(ppt, api.Participant)
