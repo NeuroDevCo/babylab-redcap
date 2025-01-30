@@ -53,14 +53,24 @@ class Participant:
         self.questionnaires = que
 
     def __repr__(self):
+        """Print class in console.
+
+        Returns:
+            str: Description to print in console.
+        """
         n_apt = 0 if self.appointments is None else len(self.appointments.records)
         n_que = 0 if self.questionnaires is None else len(self.questionnaires.records)
-        return f" Participant {self.record_id}: {n_apt} appointments, {n_que} questionnaires"  # pylint: disable=line-too-long
+        return f"Participant {self.record_id}: {n_apt} appointments, {n_que} questionnaires"  # pylint: disable=line-too-long
 
     def __str__(self):
+        """Return class description as string.
+
+        Returns:
+            str: Description of class.
+        """
         n_apt = 0 if self.appointments is None else len(self.appointments.records)
         n_que = 0 if self.questionnaires is None else len(self.questionnaires.records)
-        return f" Participant {self.record_id}: {n_apt} appointments, {n_que} questionnaires"  # pylint: disable=line-too-long
+        return f"Participant {self.record_id}: {n_apt} appointments, {n_que} questionnaires"  # pylint: disable=line-too-long
 
 
 class Appointment:
@@ -82,9 +92,19 @@ class Appointment:
         self.date = data["date"]
 
     def __repr__(self):
+        """Print class in console.
+
+        Returns:
+            str: Description to print in console.
+        """
         return f"Appointment {self.appointment_id}, participant {self.record_id}, {self.date}, {self.status}"  # pylint: disable=line-too-long
 
     def __str__(self):
+        """Return class description as string.
+
+        Returns:
+            str: Description of class.
+        """
         return f"Appointment {self.appointment_id}, participant {self.record_id}, {self.date}, {self.status}"  # pylint: disable=line-too-long
 
 
@@ -108,6 +128,11 @@ class Questionnaire:
             self.data[l] = int(self.data[l]) if self.data[l] else 0
 
     def __repr__(self):
+        """Print class in console.
+
+        Returns:
+            str: Description to print in console.
+        """
         return (
             f" Language questionnaire {self.questionnaire_id} from participant {self.record_id}"  # pylint: disable=no-member
             + f"\n- L1 ({self.data['lang1']}) = {self.data['lang1_exp']}%"
@@ -117,6 +142,11 @@ class Questionnaire:
         )  # pylint: disable=line-too-long
 
     def __str__(self):
+        """Return class description as string.
+
+        Returns:
+            str: Description of class.
+        """
         return (
             f" Language questionnaire {self.questionnaire_id} from participant {self.record_id}"  # pylint: disable=no-member
             + f"\n- L1 ({self.data['lang1']}) = {self.data['lang1_exp']}%"
@@ -300,7 +330,7 @@ def get_participant(ppt_id: str, **kwargs):
     apt = {}
     que = {}
     for r in recs:
-        repeat_id = f"{str(r["record_id"])}:{str(r["redcap_repeat_instance"])}"
+        repeat_id = f"{str(r['record_id'])}:{str(r['redcap_repeat_instance'])}"
         form = r["redcap_repeat_instrument"]
         if form == "appointments":
             apt[repeat_id] = Appointment(r)
@@ -519,6 +549,11 @@ class Records:
         self.questionnaires = RecordList(questionnaires)
 
     def __repr__(self):
+        """Print class in console.
+
+        Returns:
+            str: Description to print in console.
+        """
         return (
             "REDCap database:"
             + f"\n- {len(self.participants.records)} participants"
@@ -527,6 +562,11 @@ class Records:
         )
 
     def __str__(self):
+        """Return class description as string.
+
+        Returns:
+            str: Description of class.
+        """
         return (
             "REDCap database:"
             + f"\n- {len(self.participants.records)} participants"

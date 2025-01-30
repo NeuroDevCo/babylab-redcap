@@ -1,4 +1,14 @@
-﻿## v0.1.5
+﻿## 0.2.0
+
+- Speeds up by avoiding unnecessary requests
+- Uses DataTables.js to display and filter tables
+- Implements a basic calendar to display appointments using FullCalendar.js
+- Adds new function to API to fetch a single participant (and associated records)
+- Some styling changes
+- Adds extra information to the Dashboard
+- Adds unit and functional testing for all features
+
+## v0.1.5
 
 - Fixes deleting function #46 
 - Adds "source" field to new participant and modify participant pages #45 

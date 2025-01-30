@@ -3,7 +3,6 @@
 import os
 import datetime
 from collections import OrderedDict
-import json
 import requests
 import pandas as pd
 from flask import redirect, flash, render_template, url_for, request, send_file
