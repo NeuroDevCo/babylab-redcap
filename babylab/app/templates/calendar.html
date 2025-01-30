@@ -33,7 +33,7 @@
                 {% for s, c in data["colors_dict"].items() %}
                 <div class="col">
                     <div class="card"
-                        style="background-color: {{ c }}; text-align: center; border-radius: 0%; border-color: white; color: white; font-family: 'Ciutadella Medium'; font-size: 25px;">
+                        style="background-color: {{ c }}; text-align: center; border-radius: 0%; font-family: 'Ciutadella Medium'; font-size: 25px;">
                         <div class="card-body">
                             <div class="card-text">
                                 {{ s }}
@@ -46,7 +46,7 @@
         </div>
     </div>
     <br><br>
-    <div class="container" height="50%">
+    <div class="container" height="50%" style="background-color: white; padding: 4%">
         <div id="calendar"></div>
     </div>
     <script>

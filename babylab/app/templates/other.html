@@ -13,47 +13,58 @@
 </header>
 <hr class="my-4">
 <div class="container">
-    <div class="card-info col-4">
-        <div class="card-title">
-            Backup&nbsp;&nbsp;<i class="fa fa-download"></i>
+    <div class="row">
+        <div class="col">
+            <div class="card">
+                <div class="card-header">
+                    Backup&nbsp;&nbsp;<i class="fa fa-download"></i>
+                </div>
+                <div class="card-body">
+                    Download a backup of the REDCap project metadata, item, fields, and records.
+                    <br>
+                    <a href="{{ url_for('download_backup') }}">
+                        <button name="backupButton" class="btn btn-secondary"><i
+                                class="fa fa-download"></i>&nbsp;&nbsp;Download
+                            backup</button>
+                    </a>
+                </div>
+            </div>
         </div>
-        <div class="card-body">
-            Download a backup of the REDCap project metadata, item, fields, and records.
-            <br>
-            <a href="{{ url_for('download_backup') }}">
-                <button name="backupButton" class="btn btn-secondary"><i class="fa fa-download"></i>&nbsp;&nbsp;Download
-                    backup</button>
-            </a>
+        <div class="col">
+            <div class="card">
+                <div class="card-header">
+                    Help&nbsp;&nbsp;<i class="fa fa-question"></i>
+                </div>
+                <div class="card-body">
+                    If you have run into an error, need help, or want to provide feed-back, please open a GitHub issue
+                    following
+                    the
+                    link below:
+                    <br>
+                    <a href="https://github.com/NeuroDevComp/babylab-redcap/issues/new/choose" target="_blank">
+                        <button name="Issue" class="btn btn-secondary"><i
+                                class="fa-brands fa-github"></i>&nbsp;&nbsp;Report
+                            an
+                            issue</button>
+                    </a>
+                </div>
+            </div>
         </div>
-    </div>
-    <div class="card-info col-4">
-        <div class="card-title">
-            Help&nbsp;&nbsp;<i class="fa fa-question"></i>
-        </div>
-        <div class="card-body">
-            If you have run into an error, need help, or want to provide feed-back, please open a GitHub issue
-            following
-            the
-            link below:
-            <br>
-            <a href="https://github.com/NeuroDevComp/babylab-redcap/issues/new/choose" target="_blank">
-                <button name="Issue" class="btn btn-secondary"><i class="fa-brands fa-github"></i>&nbsp;&nbsp;Report
-                    an
-                    issue</button>
-            </a>
-        </div>
-    </div>
-    <div class="card-info col-4">
-        <div class="card-title">
-            REDCap&nbsp;&nbsp;<i class="fa fa-database"></i>
-        </div>
-        <div class="card-body">
-            Link to REDCap database
-            <br>
-            <a href="https://apps.sjdhospitalbarcelona.org/redcap/" target="_blank">
-                <button name="Issue" class="btn btn-secondary"><i class="fa fa-database"></i>&nbsp;&nbsp;Go to the
-                    database</button>
-            </a>
+        <div class="col">
+            <div class="card">
+                <div class="card-header">
+                    REDCap&nbsp;&nbsp;<i class="fa fa-database"></i>
+                </div>
+                <div class="card-body">
+                    Link to REDCap database
+                    <br>
+                    <a href="https://apps.sjdhospitalbarcelona.org/redcap/" target="_blank">
+                        <button name="Issue" class="btn btn-secondary"><i class="fa fa-database"></i>&nbsp;&nbsp;Go to
+                            the
+                            database</button>
+                    </a>
+                </div>
+            </div>
         </div>
     </div>
 </div>

@@ -130,8 +130,13 @@
 }
 
 body {
+    background: rgb(234,98,18);
+    background: linear-gradient(35deg, rgba(234,98,18,0.4413486315700541) 13%, rgba(255,0,30,0.515139980170563) 57%, rgba(120,20,120,0.6245547384402831) 100%) no-repeat center center fixed;
+    background-size: cover;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
     font-family: 'Arial';
-    background-color: '#ffffff';
     font-size: 20px;
     width: 100%;
 }
@@ -148,11 +153,12 @@ th {
 
 nav {
     font-family: "Ciutadella Bold";
-    background-color: lightgray;
-    color: black;
     font-size: larger;
 }
 
+td, tr, th {
+    background-color: #ffffff83;
+}
 td, option, select, input, textarea {
     font-size: 18px;
     font-family: 'Arial';
@@ -223,6 +229,8 @@ a.fc-event {
     margin: 1em;
 }
 
+
+
 .card-title {
     font-family: "Ciutadella Bold";
     font-size: larger;
@@ -230,11 +238,11 @@ a.fc-event {
     text-align: center;
 }
 
-.card-header{   
+.card-header{ 
     font-family: "Ciutadella Medium";
-    color: white;
     font-size: larger;
     text-align: center;
+    border-radius: 0%;
 }
 
 .card-footer{   
@@ -243,6 +251,7 @@ a.fc-event {
 }
 
 .card-body {
+    background-color: #ffffff00;
     float: left;
     margin: 1em;
     padding: 0%;
@@ -254,7 +263,7 @@ a.fc-event {
 
 
 .card-plot {
-    background-color: white;
+    background-color: #ffffff83;
     margin: 1em;
     width: 50%;
 
@@ -262,6 +271,7 @@ a.fc-event {
 
 .card-info,
 .card-input {
+    background-color: white;
     float: left;
     margin: 0.5em;
     text-wrap: pretty;
@@ -270,13 +280,13 @@ a.fc-event {
 }
 
 .card-table {
+    background-color: white;
     width: 80%;
     float: left;
     margin: 1em;
     text-wrap: pretty;
     vertical-align: middle;
     word-break: normal;
-    background-color: white;
 }
 
 
@@ -289,7 +299,7 @@ p.card-highlight {
 }
 
 .input-group-text {
-    background-color: lightgrey;
+    background-color: #ffffff83;
 }
 
 .form-label,
@@ -316,9 +326,11 @@ p.card-highlight {
 .dtsp-panes,
 .d-md-flex,
 .mt,
-.dt-container,
+div.dt-container,
+div.dt-bootstrap,
 .dt-layout-row,
 .dtsp-panesContainer {
+    background-color: #ffffff83;
     padding: 0.5em 2em 0.5em 2em;
     font-size: medium;
 }
@@ -334,6 +346,10 @@ p.card-highlight {
 
 .dtsp-title {
     font-weight: bold;
+}
+
+dt-search {
+    background-color: #ffffff83;
 }
 
 
@@ -423,6 +439,7 @@ p.card-highlight {
     text-align: center;
 }
 
+
 a.more-link {
     background-color: lightgray;
     border-radius: 0;
@@ -441,15 +458,21 @@ a.more-link {
 #pills-participants-tab,
 #pills-appointments-tab,
 #pills-questionnaires-tab {
-    color: rgb(115, 115, 115);
+    color: black;
     font-family: "Ciutadella Semibold";
     margin-left: 0.5em;
 }
 
 #indexCardLogin,
 #indexCardMain {
+    background-color: #ffffff83;
     padding: 5%;
     top: 4%;
+}
+
+#indexCardBody,
+#indexCardHeader {
+    background-color: #ffffff00;
 }
 
 
