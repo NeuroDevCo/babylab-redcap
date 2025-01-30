@@ -6,9 +6,9 @@ from pandas import DataFrame
 from babylab.src import api
 
 
-def test_participant_class(participant_record):
+def test_participant_class(ppt_record):
     """Test participant class."""
-    p = api.Participant(participant_record)
+    p = api.Participant(ppt_record)
     assert hasattr(p, "record_id")
     assert hasattr(p, "data")
 
@@ -21,9 +21,9 @@ def test_participant_class(participant_record):
     assert "Participant " in str(p)
 
 
-def test_appointment_class(appointment_record):
+def test_appointment_class(apt_record):
     """Test appointment class."""
-    a = api.Appointment(appointment_record)
+    a = api.Appointment(apt_record)
     assert hasattr(a, "appointment_id")
     assert hasattr(a, "record_id")
     assert hasattr(a, "date")
@@ -42,9 +42,9 @@ def test_appointment_class(appointment_record):
     assert "Appointment " in str(a)
 
 
-def test_questionnaire_class(questionnaire_record):
+def test_questionnaire_class(que_record):
     """Test questionnaire class."""
-    q = api.Questionnaire(questionnaire_record)
+    q = api.Questionnaire(que_record)
     assert hasattr(q, "questionnaire_id")
     assert hasattr(q, "isestimated")
     assert hasattr(q, "record_id")

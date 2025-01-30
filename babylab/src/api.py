@@ -16,6 +16,146 @@ from dateutil import relativedelta
 import pandas as pd
 
 
+@dataclass
+class RecordList:
+    """List of records"""
+
+    records: dict
+
+    def to_df(self) -> pd.DataFrame:
+        """Transform a dictionary dataset to a Pandas DataFrame.
+        Returns:
+            pd.DataFrame: Tabular dataset.
+        """
+        db_list = []
+        for v in self.records.values():
+            d = pd.DataFrame(v.data.items())
+            d = d.set_index([0])
+            db_list.append(d.transpose())
+        df = pd.concat(db_list)
+        df.index = pd.Index(df[df.columns[0]])
+        df = df[df.columns[1:]]
+        return df
+
+
+class Participant:
+    """Participant in database"""
+
+    def __init__(self, data, apt: RecordList = None, que: RecordList = None):
+        data = {
+            re.sub("participant_", "", k): v
+            for k, v in data.items()
+            if k.startswith("participant_") or k == "record_id"
+        }
+        self.record_id = data["record_id"]
+        self.data = data
+        self.appointments = apt
+        self.questionnaires = que
+
+    def __repr__(self):
+        """Print class in console.
+
+        Returns:
+            str: Description to print in console.
+        """
+        n_apt = 0 if self.appointments is None else len(self.appointments.records)
+        n_que = 0 if self.questionnaires is None else len(self.questionnaires.records)
+        return f"Participant {self.record_id}: {n_apt} appointments, {n_que} questionnaires"  # pylint: disable=line-too-long
+
+    def __str__(self):
+        """Return class description as string.
+
+        Returns:
+            str: Description of class.
+        """
+        n_apt = 0 if self.appointments is None else len(self.appointments.records)
+        n_que = 0 if self.questionnaires is None else len(self.questionnaires.records)
+        return f"Participant {self.record_id}: {n_apt} appointments, {n_que} questionnaires"  # pylint: disable=line-too-long
+
+
+class Appointment:
+    """Appointment in database"""
+
+    def __init__(self, data):
+        data = {
+            re.sub("appointment_", "", k): v
+            for k, v in data.items()
+            if k.startswith("appointment_")
+            or k in ["record_id", "redcap_repeat_instance"]
+        }
+        self.record_id = data["record_id"]
+        self.data = data
+        self.appointment_id = (
+            data["record_id"] + ":" + str(data["redcap_repeat_instance"])
+        )
+        self.status = data["status"]
+        self.date = data["date"]
+
+    def __repr__(self):
+        """Print class in console.
+
+        Returns:
+            str: Description to print in console.
+        """
+        return f"Appointment {self.appointment_id}, participant {self.record_id}, {self.date}, {self.status}"  # pylint: disable=line-too-long
+
+    def __str__(self):
+        """Return class description as string.
+
+        Returns:
+            str: Description of class.
+        """
+        return f"Appointment {self.appointment_id}, participant {self.record_id}, {self.date}, {self.status}"  # pylint: disable=line-too-long
+
+
+class Questionnaire:
+    """Language questionnaire in database"""
+
+    def __init__(self, data):
+        data = {
+            re.sub("language_", "", k): v
+            for k, v in data.items()
+            if k.startswith("language_") or k in ["record_id", "redcap_repeat_instance"]
+        }
+        self.record_id = data["record_id"]
+        self.questionnaire_id = (
+            data["record_id"] + ":" + str(data["redcap_repeat_instance"])
+        )
+        self.isestimated = data["isestimated"]
+        self.data = data
+        for i in range(1, 5):
+            l = f"lang{i}_exp"
+            self.data[l] = int(self.data[l]) if self.data[l] else 0
+
+    def __repr__(self):
+        """Print class in console.
+
+        Returns:
+            str: Description to print in console.
+        """
+        return (
+            f" Language questionnaire {self.questionnaire_id} from participant {self.record_id}"  # pylint: disable=no-member
+            + f"\n- L1 ({self.data['lang1']}) = {self.data['lang1_exp']}%"
+            + f"\n- L2 ({self.data['lang2']}) = {self.data['lang2_exp']}%"
+            + f"\n- L3 ({self.data['lang3']}) = {self.data['lang3_exp']}%"
+            + f"\n- L4 ({self.data['lang4']}) = {self.data['lang4_exp']}%"
+        )  # pylint: disable=line-too-long
+
+    def __str__(self):
+        """Return class description as string.
+
+        Returns:
+            str: Description of class.
+        """
+        return (
+            f" Language questionnaire {self.questionnaire_id} from participant {self.record_id}"  # pylint: disable=no-member
+            + f"\n- L1 ({self.data['lang1']}) = {self.data['lang1_exp']}%"
+            + f"\n- L2 ({self.data['lang2']}) = {self.data['lang2_exp']}%"
+            + f"\n- L3 ({self.data['lang3']}) = {self.data['lang3_exp']}%"
+            + f"\n- L4 ({self.data['lang4']}) = {self.data['lang4_exp']}%"
+        )  # pylint: disable=line-too-long
+
+
 class BadTokenException(Exception):
     """If token is ill-formed."""
 
@@ -158,6 +298,46 @@ def get_records(record_id: str | list = None, **kwargs):
     records = post_request(fields=fields, **kwargs).json()
     records = [datetimes_to_strings(r) for r in records]
     return records
+
+
+def get_participant(ppt_id: str, **kwargs):
+    """Get participant record.
+
+    Args:
+        ppt_id: ID of participant (record_id).
+        **kwargs: Additional arguments passed to ``post_request``
+
+    Returns:
+        api.Participant: Participant object.
+    """
+    fields = {
+        "content": "record",
+        "action": "export",
+        "format": "json",
+        "type": "flat",
+        "csvDelimiter": "",
+        "records[0]": ppt_id,
+        "rawOrLabel": "raw",
+        "rawOrLabelHeaders": "raw",
+        "exportCheckboxLabel": "false",
+        "exportSurveyFields": "false",
+        "exportDataAccessGroups": "false",
+        "returnFormat": "json",
+    }
+    for i, f in enumerate(["participants", "appointments", "language"]):
+        fields[f"forms[{i}]"] = f
+    recs = post_request(fields, **kwargs).json()
+    apt = {}
+    que = {}
+    for r in recs:
+        repeat_id = f"{str(r['record_id'])}:{str(r['redcap_repeat_instance'])}"
+        form = r["redcap_repeat_instrument"]
+        if form == "appointments":
+            apt[repeat_id] = Appointment(r)
+        if form == "language":
+            que[repeat_id] = Questionnaire(r)
+    ppt = Participant(recs[0], apt=RecordList(apt), que=RecordList(que))
+    return ppt
 
 
 def add_participant(data: dict, modifying: bool = False, **kwargs):
@@ -334,110 +514,6 @@ def redcap_backup(dirpath: str = "tmp", **kwargs) -> dict:
     return file
 
 
-class Participant:
-    """Participant in database"""
-
-    def __init__(self, data):
-        data = {
-            re.sub("participant_", "", k): v
-            for k, v in data.items()
-            if k.startswith("participant_") or k == "record_id"
-        }
-        self.record_id = data["record_id"]
-        self.data = data
-
-    def __repr__(self):
-        return f" Participant {self.record_id}"
-
-    def __str__(self):
-        return f" Participant {self.record_id}"
-
-
-class Appointment:
-    """Appointment in database"""
-
-    def __init__(self, data):
-        data = {
-            re.sub("appointment_", "", k): v
-            for k, v in data.items()
-            if k.startswith("appointment_")
-            or k in ["record_id", "redcap_repeat_instance"]
-        }
-        self.record_id = data["record_id"]
-        self.data = data
-        self.appointment_id = (
-            data["record_id"] + ":" + str(data["redcap_repeat_instance"])
-        )
-        self.status = data["status"]
-        self.date = data["date"]
-
-    def __repr__(self):
-        return f"Appointment {self.appointment_id}, participant {self.record_id}, {self.date}, {self.status}"  # pylint: disable=line-too-long
-
-    def __str__(self):
-        return f"Appointment {self.appointment_id}, participant {self.record_id}, {self.date}, {self.status}"  # pylint: disable=line-too-long
-
-
-class Questionnaire:
-    """Language questionnaire in database"""
-
-    def __init__(self, data):
-        data = {
-            re.sub("language_", "", k): v
-            for k, v in data.items()
-            if k.startswith("language_") or k in ["record_id", "redcap_repeat_instance"]
-        }
-        self.record_id = data["record_id"]
-        self.questionnaire_id = (
-            data["record_id"] + ":" + str(data["redcap_repeat_instance"])
-        )
-        self.isestimated = data["isestimated"]
-        self.data = data
-        for i in range(1, 5):
-            l = f"lang{i}_exp"
-            self.data[l] = int(self.data[l]) if self.data[l] else 0
-
-    def __repr__(self):
-        return (
-            f" Language questionnaire {self.questionnaire_id} from participant {self.record_id}"  # pylint: disable=no-member
-            + f"\n- L1 ({self.data['lang1']}) = {self.data['lang1_exp']}%"
-            + f"\n- L2 ({self.data['lang2']}) = {self.data['lang2_exp']}%"
-            + f"\n- L3 ({self.data['lang3']}) = {self.data['lang3_exp']}%"
-            + f"\n- L4 ({self.data['lang4']}) = {self.data['lang4_exp']}%"
-        )  # pylint: disable=line-too-long
-
-    def __str__(self):
-        return (
-            f" Language questionnaire {self.questionnaire_id} from participant {self.record_id}"  # pylint: disable=no-member
-            + f"\n- L1 ({self.data['lang1']}) = {self.data['lang1_exp']}%"
-            + f"\n- L2 ({self.data['lang2']}) = {self.data['lang2_exp']}%"
-            + f"\n- L3 ({self.data['lang3']}) = {self.data['lang3_exp']}%"
-            + f"\n- L4 ({self.data['lang4']}) = {self.data['lang4_exp']}%"
-        )  # pylint: disable=line-too-long
-
-
-@dataclass
-class RecordList:
-    """List of records"""
-
-    records: dict
-
-    def to_df(self) -> pd.DataFrame:
-        """Transform a dictionary dataset to a Pandas DataFrame.
-        Returns:
-            pd.DataFrame: Tabular dataset.
-        """
-        db_list = []
-        for v in self.records.values():
-            d = pd.DataFrame(v.data.items())
-            d = d.set_index([0])
-            db_list.append(d.transpose())
-        df = pd.concat(db_list)
-        df.index = pd.Index(df[df.columns[0]])
-        df = df[df.columns[1:]]
-        return df
-
-
 class Records:
     """REDCap records"""
 
@@ -473,6 +549,11 @@ class Records:
         self.questionnaires = RecordList(questionnaires)
 
     def __repr__(self):
+        """Print class in console.
+
+        Returns:
+            str: Description to print in console.
+        """
         return (
             "REDCap database:"
             + f"\n- {len(self.participants.records)} participants"
@@ -481,12 +562,67 @@ class Records:
         )
 
     def __str__(self):
+        """Return class description as string.
+
+        Returns:
+            str: Description of class.
+        """
         return (
             "REDCap database:"
             + f"\n- {len(self.participants.records)} participants"
             + f"\n- {len(self.appointments.records)} appointments"
             + f"\n- {len(self.questionnaires.records)} language questionnaires"  # pylint: disable=line-too-long
         )
+
+    def update_record(self, record_id: str, record_type: str, **kwargs):
+        """Fetch appointment information from REDCap database and updated Records.
+
+        Args:
+            record_id (str): ID of record.
+            record_type (str): Type of record. Must be one of "participant", "appointment" or "questionnaire"
+            **kwargs: Additional arguments passed to ``post_request``.
+
+        Raises:
+            ValueError: If `record_type` is not one of "participant", "appointment", "questionnaire".
+        """  # pylint: disable=line-too-long
+        if not record_type in ["participant", "appointment", "questionnaire"]:
+            raise ValueError(
+                "`record_type` must be one of 'participant', 'appointment', 'questionnaire'"
+            )
+
+        data = {
+            "content": "record",
+            "action": "export",
+            "format": "json",
+            "type": "flat",
+            "csvDelimiter": "",
+            "records[0]": record_id,
+            "forms[0]": "participants",
+            "rawOrLabel": "raw",
+            "rawOrLabelHeaders": "raw",
+            "exportCheckboxLabel": "false",
+            "exportSurveyFields": "false",
+            "exportDataAccessGroups": "false",
+            "returnFormat": "json",
+        }
+
+        if record_type != "participant":
+            ppt_id, repeat_id = record_id.split(":")
+            data["records[0]"] = int(ppt_id)
+            data["redcap_repeat_instance"] = repeat_id
+            data["forms[1]"] = "appointments"
+        if record_type == "questionnaire":
+            data["forms[1]"] = "languages"
+
+        r = post_request(data, **kwargs).json()
+        if record_type == "participant":
+            self.participants.records[record_id] = Participant(r)
+        elif record_type == "appointment":
+            r[1]["record_id"] = r[0]["record_id"]
+            self.appointments.records[record_id] = Appointment(r[1])
+        else:
+            r[1]["record_id"] = r[0]["record_id"]
+            self.questionnaires.records[record_id] = Questionnaire(r[1])
 
 
 def get_age(

@@ -27,22 +27,20 @@ def test_email_validation():
         outlook.check_email_address("iodsf@opdofsn.com")
 
 
-def test_compose_outlook(appointment_record_mod, data_dict: dict):
+def test_compose_outlook(apt_record_mod, data_dict: dict):
     """Validate composed outlook."""
     apt_id = (
-        appointment_record_mod["record_id"]
-        + ":"
-        + appointment_record_mod["redcap_repeat_instance"]
+        apt_record_mod["record_id"] + ":" + apt_record_mod["redcap_repeat_instance"]
     )
     email_data = {
-        "record_id": appointment_record_mod["record_id"],
+        "record_id": apt_record_mod["record_id"],
         "id": apt_id,
         "status": "1",
-        "date": appointment_record_mod["appointment_date"].isoformat(),
+        "date": apt_record_mod["appointment_date"].isoformat(),
         "study": "1",
-        "taxi_address": appointment_record_mod["appointment_taxi_address"],
-        "taxi_isbooked": appointment_record_mod["appointment_taxi_isbooked"],
-        "comments": appointment_record_mod["appointment_comments"],
+        "taxi_address": apt_record_mod["appointment_taxi_address"],
+        "taxi_isbooked": apt_record_mod["appointment_taxi_isbooked"],
+        "comments": apt_record_mod["appointment_comments"],
     }
     data = utils.replace_labels(email_data, data_dict)
     email = outlook.compose_outlook(data)

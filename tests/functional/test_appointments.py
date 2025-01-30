@@ -14,95 +14,86 @@ def test_apt_all(client):
     assert response.status_code == 200
 
 
-def test_apt(client, appointment_record_mod):
+def test_apt(client, apt_record_mod):
     """Test apt_all endpoint."""
     apt_id = (
-        appointment_record_mod["record_id"]
-        + ":"
-        + appointment_record_mod["redcap_repeat_instance"]
+        apt_record_mod["record_id"] + ":" + apt_record_mod["redcap_repeat_instance"]
     )
     response = client.get("/appointments/" + apt_id)
     assert response.status_code == 200
 
 
-def test_apt_new(client, appointment_finput):
+def test_apt_new(client, apt_finput):
     """Test apt_new endpoint."""
-    ppt_id = appointment_finput["inputId"]
-    response = client.get(f"/participants/{ppt_id}/appointment_new")
+    ppt_id = apt_finput["inputId"]
+    response = client.get(f"/appointments/appointment_new?ppt_id={ppt_id}")
     assert response.status_code == 200
 
 
-def test_apt_new_post(client, appointment_finput):
+def test_apt_new_post(client, apt_finput):
     """Test apt_new endpoint."""
-    ppt_id = appointment_finput["inputId"]
-    response = client.post(
-        f"/participants/{ppt_id}/appointment_new", data=appointment_finput
-    )
+    ppt_id = apt_finput["inputId"]
+    url = f"/appointments/appointment_new?ppt_id={ppt_id}"
+    response = client.post(url, data=apt_finput)
     assert response.status_code == 302
 
 
 @pytest.mark.skipif(IS_GIHTUB_ACTIONS, reason="Test doesn't work in Github Actions.")
-def test_apt_new_post_email(app, appointment_finput):
+def test_apt_new_post_email(app, apt_finput):
     """Test apt_new endpoint with email."""
     app.config["EMAIL"] = "gonzalo.garcia@sjd.es"
-    client = app.test_client()
-    ppt_id = appointment_finput["inputId"]
-    response = client.post(
-        f"/participants/{ppt_id}/appointment_new", data=appointment_finput
-    )
-    assert response.status_code == 302
+    ppt_id = apt_finput["inputId"]
+    with app.test_client() as client:
+        url = f"/appointments/appointment_new?ppt_id={ppt_id}"
+        response = client.post(url, data=apt_finput)
+        assert response.status_code == 302
 
     # check that email has been sent
     time.sleep(20)
     email = tutils.check_email_received()
     assert email
-    assert f"Appointment {ppt_id}:" in email["subject"]
+    assert f"{ppt_id}:" in email["subject"]
 
     # check that event has been created
     event = tutils.check_event_created(ppt_id=ppt_id)
     assert event
-    assert ppt_id in event["subject"]
+    assert f"{ppt_id}:" in event["subject"]
 
 
-def test_apt_mod(client, appointment_finput_mod):
+def test_apt_mod(client, apt_finput_mod):
     """Test apt_all endpoint."""
-    ppt_id = appointment_finput_mod["inputId"]
-    apt_id = appointment_finput_mod["inputAptId"]
-    response = client.get(f"/participants/{ppt_id}/{apt_id}/appointment_modify")
+    apt_id = apt_finput_mod["inputAptId"]
+    url = f"/appointments/{apt_id}/appointment_modify"
+    response = client.get(url)
     assert response.status_code == 200
 
 
-def test_apt_mod_post(client, appointment_finput_mod):
+def test_apt_mod_post(client, apt_finput_mod):
     """Test apt_all endpoint."""
-    ppt_id = appointment_finput_mod["inputId"]
-    apt_id = appointment_finput_mod["inputAptId"]
-    response = client.post(
-        f"/participants/{ppt_id}/{apt_id}/appointment_modify",
-        data=appointment_finput_mod,
-    )
+    apt_id = apt_finput_mod["inputAptId"]
+    url = f"/appointments/{apt_id}/appointment_modify"
+    response = client.post(url, data=apt_finput_mod)
     assert response.status_code == 302
 
 
 @pytest.mark.skipif(IS_GIHTUB_ACTIONS, reason="Test doesn't work in Github Actions.")
-def test_apt_mod_post_email(app, appointment_finput_mod):
+def test_apt_mod_post_email(app, apt_finput_mod):
     """Test apt_post endpoint with email."""
     app.config["EMAIL"] = "gonzalo.garcia@sjd.es"
-    client = app.test_client()
-    ppt_id = appointment_finput_mod["inputId"]
-    apt_id = appointment_finput_mod["inputAptId"]
-    response = client.post(
-        f"/participants/{ppt_id}/{apt_id}/appointment_modify",
-        data=appointment_finput_mod,
-    )
+    apt_id = apt_finput_mod["inputAptId"]
+    url = f"/appointments/{apt_id}/appointment_modify"
+    with app.test_client() as client:
+        response = client.post(url, data=apt_finput_mod)
     assert response.status_code == 302
 
     # check that email has been sent
     time.sleep(20)
     email = tutils.check_email_received()
     assert email
-    assert f"Appointment {ppt_id}:" in email["subject"]
+    assert f"{apt_id}" in email["subject"]
 
     # check that event has been created
+    ppt_id = apt_id.split(":")[0]
     event = tutils.check_event_created(ppt_id=ppt_id)
     assert event
     assert ppt_id in event["subject"]

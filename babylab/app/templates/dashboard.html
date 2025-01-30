@@ -6,36 +6,94 @@
 <header>
   <div class="jumbotron jumbotron-fluid">
     <div class="container">
-      <h1 class="display-4">Dashboard</h1>
+      <h1 class="display-4">Dashboard&nbsp;&nbsp;<i class="fa fa-rocket"></i></h1>
       <p class="lead">Showing the current status of the project.</p>
     </div>
   </div>
   <hr class="my-4" />
+  <br>
 </header>
 
 <body>
-  <content>
-    <ul class="nav nav-tabs mb-3 justify-content-center" id="pills-tab" role="tablist">
-      <li class="nav-item" role="presentation">
-        <button class="nav-link active" id="pills-participants-tab" data-bs-toggle="pill"
-          data-bs-target="#pills-participants" type="button" role="tab" aria-controls="pills-participants"
-          aria-selected="true">Participants</button>
-      </li>
-      <li class="nav-item" role="appointments">
-        <button class="nav-link" id="pills-appointments-tab" data-bs-toggle="pill" data-bs-target="#pills-appointments"
-          type="button" role="tab" aria-controls="pills-appointments" aria-selected="false">Appointments</button>
-      </li>
-      <li class="nav-item" role="presentation">
-        <button class="nav-link" id="pills-questionnaires-tab" data-bs-toggle="pill"
-          data-bs-target="#pills-questionnaires" type="button" role="tab" aria-controls="pills-questionnaires"
-          aria-selected="false">Questionnaires</button>
-      </li>
-    </ul>
-    <div class="tab-content" id="pills-tabContent">
-      <div class="tab-pane fade show active" id="pills-participants" role="tabpanel"
-        aria-labelledby="pills-participants-tab" tabindex="0">
+  <div class="container col-12">
+    <div class="row">
+      <div class="col">
+        <div class="card text-bg-primary mb-4">
+          <div class="card-header">
+            Participants
+          </div>
+          <div class="card-body">
+            <div class="card-text">
+              <h1>{{ data["n_ppts"] }}&nbsp;&nbsp;<i class="fa-solid fa-user"></i></h1>
+            </div>
+          </div>
+          <div class="card-footer text-bg-primary">In total</div>
+        </div>
+      </div>
+      <div class="col">
+        <div class="card text-bg-warning">
+          <div class="card-header text-black">Appointments</div>
+          <div class="card-body">
+            <div class="card-text">
+              <h1>{{ data["n_apts"] }}&nbsp;&nbsp;<i class="fa-solid fa-calendar"></i></h1>
+            </div>
+          </div>
+          <div class="card-footer text-bg-warning">In total</div>
+        </div>
+      </div>
+      <div class="col">
+        <div class="card text-bg-success">
+          <div class="card-header">
+            Participants
+          </div>
+          <div class="card-body">
+            <div class="card-text">
+              <h1>{{ data["n_ppts_week"] }}&nbsp;&nbsp;<i class="fa-solid fa-user"></i></h1>
+            </div>
+          </div>
+          <div class="card-footer text-bg-success">This week</div>
+        </div>
+      </div>
+      <div class="col">
+        <div class="card text-bg-danger">
+          <div class="card-header">
+            Appointments
+          </div>
+          <div class="card-body">
+            <div class="card-text">
+              <h1>{{ data["n_apts_week"] }}&nbsp;&nbsp;<i class="fa-solid fa-calendar"></i></h1>
+            </div>
+          </div>
+          <div class="card-footer text-bg-danger">This week</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <br>
+  <hr class="my-4" />
+  <br>
+  <ul class="nav nav-tabs mb-3 justify-content-center" id="pills-tab" role="tablist">
+    <li class="nav-item" role="presentation">
+      <button class="nav-link active" id="pills-participants-tab" data-bs-toggle="pill"
+        data-bs-target="#pills-participants" type="button" role="tab" aria-controls="pills-participants"
+        aria-selected="true">Participants</button>
+    </li>
+    <li class="nav-item" role="appointments">
+      <button class="nav-link" id="pills-appointments-tab" data-bs-toggle="pill" data-bs-target="#pills-appointments"
+        type="button" role="tab" aria-controls="pills-appointments" aria-selected="false">Appointments</button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" id="pills-questionnaires-tab" data-bs-toggle="pill"
+        data-bs-target="#pills-questionnaires" type="button" role="tab" aria-controls="pills-questionnaires"
+        aria-selected="false">Questionnaires</button>
+    </li>
+  </ul>
+  <div class="tab-content" id="pills-tabContent">
+    <div class="tab-pane fade show active" id="pills-participants" role="tabpanel"
+      aria-labelledby="pills-participants-tab" tabindex="0">
+      <div class="div-center">
         <div class="card card-plot">
-          <div class="card-header">Age distribution</div>
+          <div class="card-title">Age distribution</div>
           <div class="card-body">
             <canvas id="ageDist">
               <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -52,8 +110,10 @@
             </canvas>
           </div>
         </div>
+      </div>
+      <div class="div-center">
         <div class="card card-plot">
-          <div class="card-header">Sex distribution</div>
+          <div class="card-title">Sex distribution</div>
           <div class="card-body">
             <canvas id="sexDist">
               <script>
@@ -74,10 +134,12 @@
             </canvas>
           </div>
         </div>
+      </div>
+      <div class="div-center">
         <div class="card card-plot">
-          <div class="card-header">Participant influx</div>
+          <div class="card-title">Participant influx</div>
           <div class="card-body">
-            <canvas id="influx" width="800" height="450">
+            <canvas id="influx">
               <script
                 src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
               <script>
@@ -92,8 +154,10 @@
             </canvas>
           </div>
         </div>
+      </div>
+      <div class="div-center">
         <div class="card card-plot">
-          <div class="card-header">Source of participants</div>
+          <div class="card-title">Source of participants</div>
           <div class="card-body">
             <canvas id="sourceDist">
               <script>
@@ -115,12 +179,14 @@
           </div>
         </div>
       </div>
-      <div class="tab-pane fade show" id="pills-appointments" role="tabpanel" aria-labelledby="pills-appointments-tab"
-        tabindex="1">
+    </div>
+    <div class="tab-pane fade show" id="pills-appointments" role="tabpanel" aria-labelledby="pills-appointments-tab"
+      tabindex="1">
+      <div class="div-center">
         <div class="card card-plot">
-          <div class="card-header">Appointments made</div>
+          <div class="card-title">Appointments made</div>
           <div class="card-body">
-            <canvas id="appointments" width="500" height="350">
+            <canvas id="appointments">
               <script>
                 dateLinePlot(
                   {{ data["apts_date_created_labels"] | safe }},
@@ -133,8 +199,10 @@
             </canvas>
           </div>
         </div>
+      </div>
+      <div class="div-center">
         <div class="card card-plot">
-          <div class="card-header">Appointment status</div>
+          <div class="card-title">Appointment status</div>
           <div class="card-body">
             <canvas id="statusDist">
               <script>
@@ -156,12 +224,15 @@
           </div>
         </div>
       </div>
-      <div class="tab-pane fade show" id="pills-questionnaires" role="tabpanel"
-        aria-labelledby="pills-questionnaires-tab" tabindex="2">
+    </div>
+    <div class="tab-pane fade show" id="pills-questionnaires" role="tabpanel" aria-labelledby="pills-questionnaires-tab"
+      tabindex="2">
+      <div class="div-center">
+
         <div class="card card-plot">
-          <div class="card-header">First language distribution</div>
+          <div class="card-title">First language distribution</div>
           <div class="card-body">
-            <canvas id="l1Dist" width="800px" height="400px">
+            <canvas id="l1Dist">
               <script>
                 colPlot(
                   {{ data["lang1_dist_labels"] | safe }},
@@ -174,10 +245,12 @@
             </canvas>
           </div>
         </div>
+      </div>
+      <div class="div-center">
         <div class="card card-plot">
-          <div class="card-header">Second language distribution</div>
+          <div class="card-title">Second language distribution</div>
           <div class="card-body">
-            <canvas id="l2Dist" width="800px" height="400px">
+            <canvas id="l2Dist">
               <script>
                 colPlot(
                   {{ data["lang2_dist_labels"] | safe }},
@@ -192,7 +265,7 @@
         </div>
       </div>
     </div>
-  </content>
+  </div>
 </body>
 {% endblock content %}
 {% endblock body %}

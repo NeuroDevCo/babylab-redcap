@@ -129,46 +129,130 @@
 
 }
 
-
-p,
-input,
-select,
-option,
-ul,
-li,
-input,
-a,
-.form-control,
-.form-select {
-    font-family: "Ciutadella Regular";
+body {
+    background: rgb(234,98,18);
+    background: linear-gradient(35deg, rgba(234,98,18,0.4413486315700541) 13%, rgba(255,0,30,0.515139980170563) 57%, rgba(120,20,120,0.6245547384402831) 100%) no-repeat center center fixed;
+    background-size: cover;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    font-family: 'Arial';
+    font-size: 20px;
+    width: 100%;
 }
 
-nav,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+th {
+    font-family: "Ciutadella Bold";
+}
+
+nav {
+    font-family: "Ciutadella Bold";
+    font-size: larger;
+}
+
+td, tr, th {
+    background-color: #ffffff83;
+}
+td, option, select, input, textarea {
+    font-size: 18px;
+    font-family: 'Arial';
+    vertical-align: text-bottom;
+    word-wrap: break-word;
+    user-select: all;
+}
+
+label {
+    font-family: "Ciutadella Bold";
+    margin-top: 0.5em;
+    font-size: medium;
+}
+
+button {
+    font-family: "Ciutadella Bold";
+    font-size: 18px;
+    margin: 1em;
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+}
+
+.fc-timegrid-slot-label-cushion,
+.fc-scrollgrid-sync-inner,
+.fc-scrollgrid-shrink-cushion {
+    font-family: 'Ciutadella Medium';
+}
+
+th.fc-col-header-cell-cushion,
+a.fc-col-header-cell-cushion,
+a.fc-daygrid-day-number {
+    color: black;
+    margin: 5px;
+    padding: 0em 0.1em 0em 0.1em;
+    text-decoration: none;
+}
+
+.fc-daygrid-event-harness {
+    margin: 0em;
+    border-radius: 0%;
+    padding: 0.1em;
+}
+
+a.fc-event {
+    color: black;
+}
+
+.fc-event-title, .fc-event-time {
+    font-family: 'Arial';
+}
+
+.div-center {
+    display: flex;
+    justify-content: center;
+}
+
+.nav-link {
+    color: white;
+    font-family: "Ciutadella Medium";
+    margin-left: 0.5em;
+}
+
 .navbar-brand:h3 {
-    font-family: "Radio Canada";
+    font-family: "Ciutadella Bold";
 }
 
-i {
-    color: lightgrey;
+.tbl-record {
+    margin: 1em;
 }
 
-.card-header {
-    background-color: rgb(227, 227, 227);
-    font-family: "Noto Sans Display";
-    font-weight: bold;
-    text-align: center;
-}
+
 
 .card-title {
-    font-family: "Ciutadella Semibold";
+    font-family: "Ciutadella Bold";
     font-size: larger;
     padding-top: 1em;
     text-align: center;
 }
 
-.card-body {
-    float: left;
+.card-header{ 
+    font-family: "Ciutadella Medium";
+    font-size: larger;
+    text-align: center;
+    border-radius: 0%;
+}
+
+.card-footer{   
     font-family: "Ciutadella Regular";
+    font-size: larger;
+}
+
+.card-body {
+    background-color: #ffffff00;
+    float: left;
     margin: 1em;
     padding: 0%;
 }
@@ -179,17 +263,15 @@ i {
 
 
 .card-plot {
-    align-self: center;
-    background-color: white;
-    height: 50%;
-    left: 20%;
+    background-color: #ffffff83;
     margin: 1em;
-    width: 60%;
+    width: 50%;
 
 }
 
 .card-info,
 .card-input {
+    background-color: white;
     float: left;
     margin: 0.5em;
     text-wrap: pretty;
@@ -198,6 +280,8 @@ i {
 }
 
 .card-table {
+    background-color: white;
+    width: 80%;
     float: left;
     margin: 1em;
     text-wrap: pretty;
@@ -205,50 +289,28 @@ i {
     word-break: normal;
 }
 
+
+p.card-highlight {
+    font-size: 50px;
+}
+
 .tdbreak {
     word-break: break-all
 }
 
-td {
-    vertical-align: text-bottom;
-    word-wrap: break-word;
-}
-
-
-.nav-link {
-    color: white;
-    font-family: "Noto Sans Display";
-    margin-left: 0.5em;
-}
-
-
-#pills-participants-tab,
-#pills-appointments-tab,
-#pills-questionnaires-tab {
-    color: rgb(115, 115, 115);
-    font-family: "Noto Sans Display";
-    margin-left: 0.5em;
-}
-
 .input-group-text {
-    background-color: lightgrey;
+    background-color: #ffffff83;
 }
 
-.option {
-    font-family: "Ciutadella Regular";
-}
-
-label,
 .form-label,
 .form-group,
 .list-group-item {
     font-family: "Ciutadella Semibold";
     margin-top: 0.5em;
-    font-size: small;
+    font-size: medium;
 
 }
 
-button,
 .btn {
     font-family: "Ciutadella Semibold";
     margin: 1em;
@@ -261,47 +323,37 @@ button,
     font-family: "Ciutadella Medium";
 }
 
-b,
-h1,
-h2,
-h3,
-h4,
-h5,
-h6,
-th {
-    font-family: "Ciutadella Semibold";
+.dtsp-panes,
+.d-md-flex,
+.mt,
+div.dt-container,
+div.dt-bootstrap,
+.dt-layout-row,
+.dtsp-panesContainer {
+    background-color: #ffffff83;
+    padding: 0.5em 2em 0.5em 2em;
+    font-size: medium;
 }
 
-#indexCardLogin,
-#indexCardMain {
-    padding: 5%;
-    top: 4%;
+.dt-column-title {
+    font-family: 'Ciutadella Bold';
+    font-size: 22px;
 }
 
-#img-ndc-logo {
-    background-color: white;
-    border: 5px solid white;
-    border-radius: 100%;
-    display: block;
-    margin: auto;
-    margin-bottom: 5%;
-    margin-top: 10%;
-    overflow: hidden;
-    padding: 0%;
-    width: 60%;
-
+.dt-layout-row {
+    border-radius: 1%;
 }
 
-nav {
-    background-color: lightgray;
-    color: black;
-    font-size: larger;
+.dtsp-title {
+    font-weight: bold;
 }
 
+dt-search {
+    background-color: #ffffff83;
+}
 
 
 .error-container {
-    font-family: 'Ciutadella Regular', sans-serif;
     font-size: 180px;
     font-weight: 800;
     margin: 20px 15px;
@@ -363,6 +415,84 @@ nav {
     left: -9999em;
     position: absolute;
     top: -9999em;
+}
+
+
+.itemgroup {
+    float: left;
+    margin: 0.1em;
+}
+
+.jumbotron {
+    padding-top: 2em;
+    text-align: center;
+}
+
+.zoom-area {
+    font-size: 19px;
+    max-width: 490px;
+    margin: 30px auto 30px;
+    text-align: center;
+}
+
+.link-container {
+    text-align: center;
+}
+
+
+a.more-link {
+    background-color: lightgray;
+    border-radius: 0;
+    display: inline-block;
+    font-size: 13px;
+    letter-spacing: 1px;
+    line-height: 1.5;
+    margin-bottom: 5px;
+    margin-right: 5px;
+    margin-top: 50px;    
+    padding: 10px 15px;
+    text-decoration: none;
+    text-transform: uppercase;
+}
+    
+#pills-participants-tab,
+#pills-appointments-tab,
+#pills-questionnaires-tab {
+    color: black;
+    font-family: "Ciutadella Semibold";
+    margin-left: 0.5em;
+}
+
+#indexCardLogin,
+#indexCardMain {
+    background-color: #ffffff83;
+    padding: 5%;
+    top: 4%;
+}
+
+#indexCardBody,
+#indexCardHeader {
+    background-color: #ffffff00;
+}
+
+
+
+#img-ndc-logo {
+    background-color: white;
+    border: 5px solid white;
+    border-radius: 100%;
+    display: block;
+    margin: auto;
+    margin-bottom: 5%;
+    margin-top: 10%;
+    overflow: hidden;
+    padding: 0%;
+    width: 60%;
+
+}
+
+#participantstable {
+    float: none;
 }
 
 @keyframes shadowsdancing {
@@ -451,58 +581,4 @@ nav {
     box-sizing: border-box;
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
-}
-
-body {
-    background-color: #f1f1f9;
-    margin-bottom: 50px;
-}
-
-html,
-select,
-textarea {
-    color: lightgrey;
-    font-family: 'Ciutadella Regular';
-}
-
-.itemgroup {
-    float: left;
-    margin: 0.1em;
-}
-
-.jumbotron {
-    padding-top: 2em;
-    text-align: center;
-}
-
-
-#participantstable {
-    float: none;
-}
-
-
-.zoom-area {
-    font-size: 19px;
-    max-width: 490px;
-    margin: 30px auto 30px;
-    text-align: center;
-}
-
-.link-container {
-    text-align: center;
-}
-
-a.more-link {
-    background-color: lightgray;
-    border-radius: 0;
-    display: inline-block;
-    font-size: 13px;
-    letter-spacing: 1px;
-    line-height: 1.5;
-    margin-bottom: 5px;
-    margin-right: 5px;
-    margin-top: 50px;    
-    padding: 10px 15px;
-    text-decoration: none;
-    text-transform: uppercase;
 }

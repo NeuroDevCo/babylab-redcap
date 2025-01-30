@@ -1,9 +1,10 @@
 {% extends "base.html" %}
 {% block content %}
+
 <header>
   <div class="jumbotron jumbotron-fluid">
     <div class="container">
-      <h1 class="display-4">Participants</h1>
+      <h1 class="display-4">Participants&nbsp;&nbsp;<i class="fa fa-users"></i></h1>
       <p class="lead">There is a total of {{ n_ppt }} participants in the database.</p>
     </div>
   </div>
@@ -11,52 +12,39 @@
 </header>
 
 <body>
-  <link href="https://cdn.datatables.net/v/dt/dt-2.2.1/b-3.2.1/sp-2.3.3/sl-3.0.0/datatables.min.css" rel="stylesheet">
-  <form method="post">
-    <div class="row">
-      <div class="col-3">
-        <h3>Search for a participant</h3>
-      </div>
-    </div>
-    <br>
-  </form>
-  <a href="{{ url_for('ppt_new') }}">
-    <button type="button" class="btn btn-success">
-      <i class="fa fa-plus"></i>&nbsp;&nbsp;New
-      participant
-    </button>
-  </a>
-  <div class="container">
-    <div class="row">
-      <div class="card card-table">
-        <div class="card-body">
-          <h5 class="card-title">Participants</h5>
-          <br>
-          <h6 class="card-subtitle mb-2 text-muted">Showing the last added 20 participants in database. Click IDs to see
-            a participant's profile.</h6>
-          <br>
-          <div class="card-text" width="10%">
-            {{ data["table"] | safe }}
-          </div>
-        </div>
-      </div>
+  <link href="https://cdn.datatables.net/v/bs5/jq-3.7.0/dt-2.2.1/b-3.2.1/fh-4.0.1/sp-2.3.3/sl-3.0.0/datatables.min.css"
+    rel="stylesheet">
+  <br>
+  <div class="div-center">
+    <a href="{{ url_for('ppt_new') }}">
+      <button type="button" class="btn btn-success">
+        <i class="fa fa-user-plus"></i>&nbsp;&nbsp;New
+        participant
+      </button>
+    </a>
+  </div>
+  <div class="div-center ">
+    <div class="card-table">
+      {{ data["table"] | safe }}
     </div>
   </div>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-  <script src="https://cdn.datatables.net/v/dt/dt-2.2.1/b-3.2.1/sp-2.3.3/sl-3.0.0/datatables.min.js"></script>
+  <script
+    src="https://cdn.datatables.net/v/bs5/jq-3.7.0/dt-2.2.1/b-3.2.1/fh-4.0.1/sp-2.3.3/sl-3.0.0/datatables.min.js"></script>
+  <script type="text/javascript" src="{{ url_for('static', filename='js/tables.js') }}"></script>
   <script>
-    let table = new DataTable(
-      '#ppttable',
-      {
-        layout: {
-          topStart: {
-            searchPanes: {
-              columns: [3, 5, 6],
-            },
+    let table = new dt("#ppttable", searchCols = [3, 5, 6], hideCols = [7, 8, 9, 10, 11, 12, 13])
 
-          }
-        },
-      });
+    table.on('click', 'td', function (e) {
+      let tr = e.target.closest('tr');
+      let row = table.row(tr);
+      if (row.child.isShown()) {
+        row.child.hide();
+      }
+      else {
+        row.child(format_ppt(row.data())).show();
+      }
+    });
   </script>
 </body>
 {% endblock content %}
