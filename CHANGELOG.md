@@ -1,11 +1,11 @@
-﻿## 0.2.1
+﻿## v0.2.1
 
 - Fixes bug in which appointments were not being properly modified #64
 - Uses waitress as WSGI server
-- Some styling changes
-- Add a .bat file for desktop shortcut
+- Makes some styling changes
+- Adds a .bat file for desktop shortcut
 
-## 0.2.0
+## v0.2.0
 
 - Speeds up by avoiding unnecessary requests #48
 - Uses DataTables.js to display and filter tables #48
