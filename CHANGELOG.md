@@ -1,6 +1,7 @@
 ﻿## v0.2.1
 
 - Fixes bug in which appointments were not being properly modified #64
+- Fixes missing information in appointment page #66
 - Uses waitress as WSGI server
 - Makes some styling changes
 - Adds a .bat file for desktop shortcut
