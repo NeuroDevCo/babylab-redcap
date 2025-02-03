@@ -20,9 +20,9 @@ tests\unit\test_utils.py ..                                              [100%]
 ---------- coverage: platform win32, python 3.12.8-final-0 -----------
 Name                                    Stmts   Miss Branch BrPart  Cover   Missing
 -----------------------------------------------------------------------------------
-babylab\app\__init__.py                    21      1      2      1    91%   14
+babylab\app\__init__.py                    20      1      2      1    91%   13
 babylab\app\config.py                      61     17     10      3    66%   15-16, 23-24, 34-41, 44, 94-95, 105-106
-babylab\app\routes\appointments.py        104     23     14      5    76%   106-115, 128->130, 162-176, 185-187, 198->200, 232-246, 255-257
+babylab\app\routes\appointments.py        104     23     14      5    76%   106-115, 128->130, 162-176, 185-187, 198->200, 232-246, 263-265
 babylab\app\routes\general.py             135     14     26      3    89%   192, 197, 215-216, 232->234, 235, 311-314, 326-329, 338-340
 babylab\app\routes\participants.py        109     14     14      3    86%   204->210, 227-234, 295-297, 307->309, 352-354
 babylab\app\routes\questionnaires.py       86     13      8      2    84%   104-113, 166-168, 178->180, 214-216
@@ -35,8 +35,8 @@ tests\unit\test_calendar.py                28      4      0      0    86%   36-3
 tests\unit\test_outlook.py                 49     22      0      0    55%   20-27, 65-91, 100-126
 tests\utils.py                             90     18     20      0    75%   44-61, 67-77
 -----------------------------------------------------------------------------------
-TOTAL                                    1583    280    250     27    81%
+TOTAL                                    1582    280    250     27    81%
 
 11 files skipped due to complete coverage.
 
-================== 57 passed, 5 skipped in 383.20s (0:06:23) ==================
+================== 57 passed, 5 skipped in 366.26s (0:06:06) ==================
