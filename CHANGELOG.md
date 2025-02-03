@@ -1,9 +1,17 @@
-﻿## 0.2.0
+﻿## v0.2.1
 
-- Speeds up by avoiding unnecessary requests
-- Uses DataTables.js to display and filter tables
-- Implements a basic calendar to display appointments using FullCalendar.js
-- Adds new function to API to fetch a single participant (and associated records)
+- Fixes bug in which appointments were not being properly modified #64
+- Fixes missing information in appointment page #66
+- Uses waitress as WSGI server
+- Makes some styling changes
+- Adds a .bat file for desktop shortcut
+
+## v0.2.0
+
+- Speeds up by avoiding unnecessary requests #48
+- Uses DataTables.js to display and filter tables #48
+- Implements a basic calendar to display appointments using FullCalendar.js #43 
+- Adds new function to API to fetch a single participant (and associated records) #48
 - Some styling changes
 - Adds extra information to the Dashboard
 - Adds unit and functional testing for all features
