@@ -43,17 +43,13 @@ python3 -m pip install flask python-dotenv babylab
 
 ### On Windows
 
-To run the app in your browser, run the following command in your terminal:
+To run the app in your browser in **Windows**, run the following command in your terminal:
 
 ```bash
 python -m flask --app babylab.app run
 ```
 
-Open your browser and go to [http://127.0.0.1:5000](http://127.0.0.1:5000). Log in with your API authentication token (and maybe your email), and you should be ready to go!
-
-### On Linux or macOS
-
-To run the app in your browser, run the following command in your terminal:
+To run the app in your browser in **Linux or macOS**, run the following command in your terminal:
 
 ```bash
 python3 -m flask --app babylab.app run
@@ -63,11 +59,18 @@ Open your browser and go to [http://127.0.0.1:5000](http://127.0.0.1:5000). Log 
 
 ## Updating
 
-To update the app, run the following line of code in your terminal:
+To update the app in **Windows**, run the following line of code in your terminal:
 
 ```bash
 python -m pip install --upgrade babylab
 ```
+
+To update the app in **Linux or macOS**, run the following line:
+
+```bash
+python3 -m pip install --upgrade babylab
+```
+
 
 ## Feed-back
 
