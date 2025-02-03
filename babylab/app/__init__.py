@@ -5,7 +5,6 @@ import datetime
 from flask import Flask
 from babylab.app.routes import appointments, general, participants, questionnaires
 from babylab.app import config
-from babylab.src import api
 
 
 def create_app(env: str = "prod"):

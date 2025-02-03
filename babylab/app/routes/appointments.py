@@ -136,7 +136,7 @@ def appointments_routes(app):
                 datetime.datetime.now(), "%Y-%m-%d %H:%M:%S"
             )
             data = {
-                "record_id": finput["inputId"],
+                "record_id": ppt_id,
                 "redcap_repeat_instance": "new",
                 "redcap_repeat_instrument": "appointments",
                 "appointment_study": finput["inputStudy"],
@@ -207,7 +207,7 @@ def appointments_routes(app):
                 datetime.datetime.now(), "%Y-%m-%d %H:%M"
             )
             data = {
-                "record_id": finput["inputId"],
+                "record_id": ppt_id,
                 "redcap_repeat_instance": repeat_id,
                 "redcap_repeat_instrument": "appointments",
                 "appointment_study": finput["inputStudy"],
@@ -251,11 +251,19 @@ def appointments_routes(app):
                         data=records.appointments.records[apt_id].data,
                         data_dict=data_dict,
                     )
-                return redirect(url_for("apt_all", records=records))
+                return redirect(
+                    url_for(
+                        "apt",
+                        apt_id=apt_id,
+                        ppt_id=data["record_id"],
+                        data=data,
+                        participant=ppt.data,
+                    )
+                )
             except requests.exceptions.HTTPError as e:
                 flash(f"Something went wrong! {e}", "error")
                 return render_template(
-                    "apt_new.html", ppt_id=ppt_id, data_dict=data_dict
+                    "apt_modify.html", ppt_id=ppt_id, data_dict=data_dict
                 )
         return render_template(
             "apt_modify.html", apt_id=apt_id, data=data, data_dict=data_dict
