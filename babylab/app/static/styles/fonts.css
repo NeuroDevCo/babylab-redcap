@@ -52,7 +52,7 @@
 }
 
 @font-face {
-    font-family: 'Ciutadella Regular';
+    font-family: 'Ciutadella';
     font-style: normal;
     font-weight: normal;
     src: url('/static/fonts/Ciutadella/Ciutadella-Regular.eot');
@@ -61,7 +61,6 @@
         url('/static/fonts/Ciutadella/Ciutadella-Regular.woff2') format('woff2'),
         url('/static/fonts/Ciutadella/Ciutadella-Regular.woff') format('woff'),
         url('/static/fonts/Ciutadella/Ciutadella-Regular.ttf') format('truetype');
-
 }
 
 @font-face {
