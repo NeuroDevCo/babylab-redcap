@@ -231,8 +231,8 @@ def create_record_ppt(is_new: bool = True) -> dict:
             "2024-12-16 11:13:00", "%Y-%m-%d %H:%M:%S"
         ),
         "participant_name": generate_str(),
-        "participant_age_now_months": choice(range(12)),
-        "participant_age_now_days": choice(range(31)),
+        "participant_created_now_months": choice(range(12)),
+        "participant_created_now_days": choice(range(31)),
         "participant_days_since_last_apt": "",
         "participant_sex": str(choice(range(1, 6))),
         "participant_source": str(choice(range(1, 3))),
