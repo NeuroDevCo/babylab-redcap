@@ -20,6 +20,10 @@ th {
     font-family: 'Ciutadella Bold', 'Roboto Bold', Fallback, sans-serif;
 }
 
+hr {
+    margin: auto 220px
+}
+
 nav {
     font-family: 'Ciutadella Bold', 'Roboto Bold', Fallback, sans-serif;
     font-size: larger;
@@ -107,7 +111,7 @@ a.fc-event {
     text-align: center;
 }
 
-.card-header{ 
+.card-header { 
     font-family: 'Ciutadella Medium', 'Roboto Medium', Fallback, sans-serif;;
     font-size: larger;
     text-align: center;
@@ -153,6 +157,18 @@ a.fc-event {
     width: 80%;
     float: left;
     margin: 1em;
+    text-wrap: pretty;
+    vertical-align: middle;
+    word-break: normal;
+}
+
+.card-index {
+    background-color: white;
+    width: 40%;
+    height: 40%;
+    float: left;
+    margin: 2em 0.5em 2em 0.5em;
+    padding: 0em;
     text-wrap: pretty;
     vertical-align: middle;
     word-break: normal;
@@ -331,20 +347,6 @@ a.more-link {
     font-family: 'Ciutadella Semibold', 'Roboto', Fallback, sans-serif;;
     margin-left: 0.5em;
 }
-
-#indexCardLogin,
-#indexCardMain {
-    background-color: white;
-    padding: 5%;
-    top: 4%;
-}
-
-#indexCardBody,
-#indexCardHeader {
-    background-color: white;
-}
-
-
 
 #img-ndc-logo {
     background-color: white;
