@@ -1,13 +1,13 @@
 body {
-    background: rgb(234,98,18);
-    background: linear-gradient(35deg, rgba(234,98,18,0.4413486315700541) 13%, rgba(255,0,30,0.515139980170563) 57%, rgba(120,20,120,0.6245547384402831) 100%) no-repeat center center fixed;
-    background-size: cover;
+    background: url('../img/background.svg') no-repeat center center fixed;
+    background-size: 100% auto;
     -webkit-background-size: cover;
     -moz-background-size: cover;
     -o-background-size: cover;
     font-family: 'Roboto';
     font-size: 20px;
     width: 100%;
+    word-break: break-word;
 }
 
 h1,
