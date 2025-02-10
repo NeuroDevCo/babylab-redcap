@@ -163,6 +163,34 @@ class Questionnaire:
         )  # pylint: disable=line-too-long
 
 
+class User:
+    """User class"""
+
+    def __init__(self, **kwargs):
+        fields = {"content": "user", "format": "json", "returnFormat": "json"}
+        r = post_request(fields, **kwargs)
+        user = json.loads(r.content.decode())[0]
+        self.user = user["username"]
+        self.name = user["firstname"] + " " + user["lastname"]
+        self.email = user["email"]
+
+    def __repr__(self):
+        """Print class in console.
+
+        Returns:
+            str: Description to print in console.
+        """
+        return f"User {self.user} ({self.name}, {self.email})"
+
+    def __str__(self):
+        """Return class description as string.
+
+        Returns:
+            str: Description of class.
+        """
+        return f"User {self.user} ({self.name}, {self.email})"
+
+
 class BadTokenException(Exception):
     """If token is ill-formed."""
 
