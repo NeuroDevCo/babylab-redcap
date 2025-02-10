@@ -135,7 +135,6 @@ def create_event(
     apt.Start = " ".join(composed["date"].split("T"))
     apt.Subject = composed["subject"]
     apt.Duration = 60
-    apt.BodyFormat = 1
     apt.Body = composed["body"]
     apt.MeetingStatus = "5" if "Cancelled" in data["status"] else "1"
     apt.Location = "Barcelona, Spain"
@@ -170,7 +169,6 @@ def modify_event(
             apt.Start = " ".join(composed["date"].split("T"))
             apt.Subject = composed["subject"]
             apt.Duration = 60
-            apt.BodyFormat = 2
             apt.Body = composed["body"]
             apt.MeetingStatus = "5" if "Cancelled" in data["status"] else "1"
             apt.Save()

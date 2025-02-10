@@ -48,7 +48,7 @@ class Participant:
             if k.startswith("participant_") or k == "record_id"
         }
         date_birth = get_birth_date(
-            data["age_created_months"] + ":" + data["age_created_months"],
+            str(data["age_created_months"]) + ":" + str(data["age_created_months"]),
             datetime.datetime.strptime(data["date_created"], "%Y-%m-%d %H:%M:%S"),
         )
         data["age_now_months"], data["age_now_days"] = get_age(
@@ -67,7 +67,7 @@ class Participant:
         """
         n_apt = 0 if self.appointments is None else len(self.appointments.records)
         n_que = 0 if self.questionnaires is None else len(self.questionnaires.records)
-        return f"Participant {self.record_id}: {n_apt} appointments, {n_que} questionnaires"  # pylint: disable=line-too-long
+        return f"Participant {self.record_id}: {str(n_apt)} appointments, {str(n_que)} questionnaires"  # pylint: disable=line-too-long
 
     def __str__(self):
         """Return class description as string.
@@ -77,7 +77,7 @@ class Participant:
         """
         n_apt = 0 if self.appointments is None else len(self.appointments.records)
         n_que = 0 if self.questionnaires is None else len(self.questionnaires.records)
-        return f"Participant {self.record_id}: {n_apt} appointments, {n_que} questionnaires"  # pylint: disable=line-too-long
+        return f"Participant {self.record_id}: {str(n_apt)} appointments, {str(n_que)} questionnaires"  # pylint: disable=line-too-long
 
 
 class Appointment:

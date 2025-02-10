@@ -224,15 +224,11 @@ def create_record_ppt(is_new: bool = True) -> dict:
     ppt_id = choice(list(recs.participants.records.keys()))
     return {
         "record_id": "0" if is_new else ppt_id,
-        "participant_date_created": datetime.datetime.strptime(
-            "2024-12-16 11:13:00", "%Y-%m-%d %H:%M:%S"
-        ),
-        "participant_date_updated": datetime.datetime.strptime(
-            "2024-12-16 11:13:00", "%Y-%m-%d %H:%M:%S"
-        ),
+        "participant_date_created": "2024-12-16 11:13:00",
+        "participant_date_updated": "2024-12-16 11:13:00",
         "participant_name": generate_str(),
-        "participant_created_months": choice(range(12)),
-        "participant_created_days": choice(range(31)),
+        "participant_age_created_months": choice(range(12)),
+        "participant_age_created_days": choice(range(31)),
         "participant_days_since_last_apt": "",
         "participant_sex": str(choice(range(1, 6))),
         "participant_source": str(choice(range(1, 3))),

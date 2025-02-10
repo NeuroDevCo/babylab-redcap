@@ -114,7 +114,6 @@ def test_delete_appointment(apt_record_mod, token):
     api.delete_appointment(apt_record_mod, token=token)
     recs = api.Records(token=token)
     assert apt_id not in recs.appointments.records
-    api.delete_appointment(apt_record_mod, token=token)
     with pytest.raises(TypeError):
         api.delete_appointment(apt_record_mod)
 
