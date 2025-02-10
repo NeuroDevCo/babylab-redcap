@@ -5,7 +5,7 @@ body {
     -webkit-background-size: cover;
     -moz-background-size: cover;
     -o-background-size: cover;
-    font-family: 'Noto Sans';
+    font-family: 'Roboto';
     font-size: 20px;
     width: 100%;
 }
@@ -17,11 +17,11 @@ h4,
 h5,
 h6,
 th {
-    font-family: 'Ciutadella Bold';
+    font-family: 'Ciutadella Bold', 'Roboto Bold', Fallback, sans-serif;
 }
 
 nav {
-    font-family: 'Ciutadella Bold';
+    font-family: 'Ciutadella Bold', 'Roboto Bold', Fallback, sans-serif;
     font-size: larger;
 }
 
@@ -30,20 +30,20 @@ td, tr, th {
 }
 td, option, select, input, textarea {
     font-size: 18px;
-    font-family: 'Noto Sans';
+    font-family: 'Roboto';
     vertical-align: text-bottom;
     word-wrap: break-word;
     user-select: all;
 }
 
 label {
-    font-family: 'Ciutadella Bold';
+    font-family: 'Ciutadella Bold', 'Roboto Bold', Fallback, sans-serif;
     margin-top: 0.5em;
     font-size: medium;
 }
 
 button {
-    font-family: 'Ciutadella Bold';
+    font-family: 'Ciutadella Bold', 'Roboto Bold', Fallback, sans-serif;
     font-size: 18px;
     margin: 1em;
     padding-left: 0.5em;
@@ -53,7 +53,7 @@ button {
 .fc-timegrid-slot-label-cushion,
 .fc-scrollgrid-sync-inner,
 .fc-scrollgrid-shrink-cushion {
-    font-family: 'Ciutadella Medium';
+    font-family: 'Ciutadella Medium', 'Roboto Medium', Fallback, sans-serif;
 }
 
 th.fc-col-header-cell-cushion,
@@ -76,7 +76,7 @@ a.fc-event {
 }
 
 .fc-event-title, .fc-event-time {
-    font-family: 'Arial';
+    font-family: 'Roboto';
 }
 
 .div-center {
@@ -86,12 +86,12 @@ a.fc-event {
 
 .nav-link {
     color: white;
-    font-family: 'Ciutadella Medium';
+    font-family: 'Ciutadella Medium', 'Roboto Medium', Fallback, sans-serif;;
     margin-left: 0.5em;
 }
 
 .navbar-brand:h3 {
-    font-family: 'Ciutadella Bold';
+    font-family: 'Ciutadella Bold', 'Roboto Bold', Fallback, sans-serif;;
 }
 
 .tbl-record {
@@ -101,21 +101,21 @@ a.fc-event {
 
 
 .card-title {
-    font-family: 'Ciutadella Bold';
+    font-family: 'Ciutadella Bold', 'Roboto Bold', Fallback, sans-serif;;
     font-size: larger;
     padding-top: 1em;
     text-align: center;
 }
 
 .card-header{ 
-    font-family: 'Ciutadella Medium';
+    font-family: 'Ciutadella Medium', 'Roboto Medium', Fallback, sans-serif;;
     font-size: larger;
     text-align: center;
     border-radius: 0%;
 }
 
 .card-footer{   
-    font-family: 'Ciutadella';
+    font-family: 'Ciutadella', 'Roboto', Fallback, sans-serif;;
     font-size: larger;
 }
 
@@ -174,14 +174,14 @@ p.card-highlight {
 .form-label,
 .form-group,
 .list-group-item {
-    font-family: 'Ciutadella Semibold';
+    font-family: 'Ciutadella Semibold', 'Roboto', Fallback, sans-serif;;
     margin-top: 0.5em;
     font-size: medium;
 
 }
 
 .btn {
-    font-family: 'Ciutadella Semibold';
+    font-family: 'Ciutadella Semibold', 'Roboto', Fallback, sans-serif;;
     margin: 1em;
     padding-left: 0.5em;
     padding-right: 0.5em;
@@ -189,7 +189,7 @@ p.card-highlight {
 
 .btn,
 .lead {
-    font-family: 'Ciutadella Medium';
+    font-family: 'Ciutadella Medium', 'Roboto Medium', Fallback, sans-serif;;
 }
 
 .dtsp-panes,
@@ -205,7 +205,7 @@ div.dt-bootstrap,
 }
 
 .dt-column-title {
-    font-family: 'Ciutadella Bold';
+    font-family: 'Ciutadella Bold', 'Roboto Bold', Fallback, sans-serif;;
     font-size: 22px;
 }
 
@@ -328,7 +328,7 @@ a.more-link {
 #pills-appointments-tab,
 #pills-questionnaires-tab {
     color: black;
-    font-family: 'Ciutadella Semibold';
+    font-family: 'Ciutadella Semibold', 'Roboto', Fallback, sans-serif;;
     margin-left: 0.5em;
 }
 
