@@ -1,4 +1,9 @@
-﻿## v0.2.1
+﻿## v0.2.2
+
+- Adds .sh and .bat launchers for Windows, Linux, and macOS
+- Use Noto Sans for body text
+
+## v0.2.1
 
 - Fixes bug in which appointments were not being properly modified #64
 - Fixes missing information in appointment page #66
