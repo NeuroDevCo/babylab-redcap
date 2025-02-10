@@ -47,6 +47,13 @@ class Participant:
             for k, v in data.items()
             if k.startswith("participant_") or k == "record_id"
         }
+        date_birth = get_birth_date(
+            data["age_created_months"] + ":" + data["age_created_months"],
+            datetime.datetime.strptime(data["date_created"], "%Y-%m-%d %H:%M:%S"),
+        )
+        data["age_now_months"], data["age_now_days"] = get_age(
+            date_birth, datetime.datetime.today()
+        )
         self.record_id = data["record_id"]
         self.data = data
         self.appointments = apt

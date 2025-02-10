@@ -209,7 +209,7 @@ def general_routes(app):
                 redcap_version = api.get_redcap_version(token=token)
                 if redcap_version:
                     flash("Logged in.", "success")
-                    app.config["RECORDS"] = conf.get_records_or_index(token=token)
+                    app.config["RECORDS"] = api.Records(token=token)
                     return render_template("index.html", redcap_version=redcap_version)
                 flash("Incorrect token", "error")
             except ValueError as e:
