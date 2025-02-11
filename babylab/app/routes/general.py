@@ -147,13 +147,11 @@ def prepare_dashboard(records: api.Records = None, data_dict: dict = None) -> di
         for v in records.appointments.records.values()
     )
 
-    age_counts = utils.count_col(ppts, "age_days_binned")
     age_dist = {}
-    for k, v in age_counts.items():
+    for k, v in utils.count_col(ppts, "age_days_binned").items():
         months = k.split(":")[0]
         months = "0" + months if len(months) == 1 else months
-        k = months + ":" + k.split(":")[1]
-        age_dist[k] = v
+        age_dist[months + ":" + k.split(":")[1]] = v
     age_dist = dict(sorted(age_dist.items()))
 
     variables = {
