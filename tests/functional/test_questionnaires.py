@@ -36,7 +36,7 @@ def test_que_new_post(client, que_finput, token):
     response = client.post(url, data=que_finput)
     assert response.status_code == 302
     ppt = api.get_participant(ppt_id, token=token)
-    que_ids = list(ppt.appointments.records.keys())
+    que_ids = list(ppt.questionnaires.records.keys())
     last_que_id = que_ids[-1].split(":")[1]
     assert ppt_id + ":" + last_que_id in que_ids
 
