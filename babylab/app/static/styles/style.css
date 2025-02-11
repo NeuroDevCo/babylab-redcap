@@ -1,3 +1,6 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
+
+
 body {
     background: url('../img/background.svg') no-repeat center center fixed;
     background-size: 100% auto;
@@ -17,6 +20,10 @@ h4,
 h5,
 h6,
 th {
+    font-family: 'Ciutadella Bold', 'Roboto Bold', Fallback, sans-serif;
+}
+
+.card-footer:b {
     font-family: 'Ciutadella Bold', 'Roboto Bold', Fallback, sans-serif;
 }
 
@@ -90,12 +97,12 @@ a.fc-event {
 
 .nav-link {
     color: white;
-    font-family: 'Ciutadella Medium', 'Roboto Medium', Fallback, sans-serif;;
+    font-family: 'Ciutadella Medium', 'Roboto Medium', Fallback, sans-serif;
     margin-left: 0.5em;
 }
 
 .navbar-brand:h3 {
-    font-family: 'Ciutadella Bold', 'Roboto Bold', Fallback, sans-serif;;
+    font-family: 'Ciutadella Bold', 'Roboto Bold', Fallback, sans-serif;
 }
 
 .tbl-record {
@@ -105,21 +112,21 @@ a.fc-event {
 
 
 .card-title {
-    font-family: 'Ciutadella Bold', 'Roboto Bold', Fallback, sans-serif;;
+    font-family: 'Ciutadella Bold', 'Roboto Bold', Fallback, sans-serif;
     font-size: larger;
     padding-top: 1em;
     text-align: center;
 }
 
 .card-header { 
-    font-family: 'Ciutadella Medium', 'Roboto Medium', Fallback, sans-serif;;
+    font-family: 'Ciutadella Medium', 'Roboto Medium', Fallback, sans-serif;
     font-size: larger;
     text-align: center;
     border-radius: 0%;
 }
 
 .card-footer{   
-    font-family: 'Ciutadella', 'Roboto', Fallback, sans-serif;;
+    font-family: 'Ciutadella', 'Roboto', Fallback, sans-serif;
     font-size: larger;
 }
 
@@ -190,14 +197,14 @@ p.card-highlight {
 .form-label,
 .form-group,
 .list-group-item {
-    font-family: 'Ciutadella Semibold', 'Roboto', Fallback, sans-serif;;
+    font-family: 'Ciutadella Semibold', 'Roboto', Fallback, sans-serif;
     margin-top: 0.5em;
     font-size: medium;
 
 }
 
 .btn {
-    font-family: 'Ciutadella Semibold', 'Roboto', Fallback, sans-serif;;
+    font-family: 'Ciutadella Semibold', 'Roboto', Fallback, sans-serif;
     margin: 1em;
     padding-left: 0.5em;
     padding-right: 0.5em;
@@ -205,7 +212,7 @@ p.card-highlight {
 
 .btn,
 .lead {
-    font-family: 'Ciutadella Medium', 'Roboto Medium', Fallback, sans-serif;;
+    font-family: 'Ciutadella Medium', 'Roboto Medium', Fallback, sans-serif;
 }
 
 .dtsp-panes,
@@ -221,7 +228,7 @@ div.dt-bootstrap,
 }
 
 .dt-column-title {
-    font-family: 'Ciutadella Bold', 'Roboto Bold', Fallback, sans-serif;;
+    font-family: 'Ciutadella Bold', 'Roboto Bold', Fallback, sans-serif;
     font-size: 22px;
 }
 
@@ -344,7 +351,7 @@ a.more-link {
 #pills-appointments-tab,
 #pills-questionnaires-tab {
     color: black;
-    font-family: 'Ciutadella Semibold', 'Roboto', Fallback, sans-serif;;
+    font-family: 'Ciutadella Semibold', 'Roboto', Fallback, sans-serif;
     margin-left: 0.5em;
 }
 
