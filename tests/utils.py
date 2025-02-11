@@ -337,3 +337,23 @@ def create_record_que(is_new: bool = True) -> dict:
         "language_comments": "",
         "language_complete": "2",
     }
+
+
+def last_participant_added(records: api.Records = None) -> str:
+    """Returns the record_id of the last record."""
+    token = conf.get_api_key()
+    if records is None:
+        records = api.Records(token=token)
+    return list(records.participants.records.keys())[-1]
+
+
+def participant_exists(ppt_id: str, records: api.Records = None) -> bool:
+    """Check that participant exists"""
+    token = conf.get_api_key()
+    if records is None:
+        records = api.Records(token=token)
+    try:
+        api.get_participant(ppt_id, token=token)
+        return True
+    except IndexError:
+        return False

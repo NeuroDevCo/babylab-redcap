@@ -4,6 +4,7 @@ import os
 import time
 import pytest
 from tests import utils as tutils
+from babylab.src import api
 
 IS_GIHTUB_ACTIONS = os.getenv("GITHUB_ACTIONS") == "true"
 
@@ -30,12 +31,21 @@ def test_apt_new(client, apt_finput):
     assert response.status_code == 200
 
 
-def test_apt_new_post(client, apt_finput):
+def test_apt_new_post(client, apt_finput, token):
     """Test apt_new endpoint."""
     ppt_id = apt_finput["inputId"]
+    ppt = api.get_participant(ppt_id, token=token)
+    apt_ids = list(ppt.appointments.records.keys())
+    last_apt_id = apt_ids[-1].split(":")[1]
+    next_apt_id = str(int(last_apt_id) + 1)
+    assert ppt_id + ":" + next_apt_id not in apt_ids
     url = f"/appointments/appointment_new?ppt_id={ppt_id}"
     response = client.post(url, data=apt_finput)
     assert response.status_code == 302
+    ppt = api.get_participant(ppt_id, token=token)
+    apt_ids = list(ppt.appointments.records.keys())
+    last_apt_id = apt_ids[-1].split(":")[1]
+    assert ppt_id + ":" + last_apt_id in apt_ids
 
 
 @pytest.mark.skipif(IS_GIHTUB_ACTIONS, reason="Test doesn't work in Github Actions.")

@@ -1,5 +1,7 @@
 """Test questionnaires endpoints."""
 
+from babylab.src import api
+
 
 def test_ques_all(client):
     """Test que_all endpoint."""
@@ -22,12 +24,21 @@ def test_que_new(client, que_finput):
     assert response.status_code == 200
 
 
-def test_que_new_post(client, que_finput):
+def test_que_new_post(client, que_finput, token):
     """Test que_new endpoint."""
     ppt_id = que_finput["inputId"]
+    ppt = api.get_participant(ppt_id, token=token)
+    que_ids = list(ppt.questionnaires.records.keys())
+    last_que_id = que_ids[-1].split(":")[1]
+    next_que_id = str(int(last_que_id) + 1)
+    assert ppt_id + ":" + next_que_id not in que_ids
     url = f"/questionnaires/questionnaire_new?ppt_id={ppt_id}"
     response = client.post(url, data=que_finput)
     assert response.status_code == 302
+    ppt = api.get_participant(ppt_id, token=token)
+    que_ids = list(ppt.appointments.records.keys())
+    last_que_id = que_ids[-1].split(":")[1]
+    assert ppt_id + ":" + last_que_id in que_ids
 
 
 def test_que_mod(client, que_finput_mod):

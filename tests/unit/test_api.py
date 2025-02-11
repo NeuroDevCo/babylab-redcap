@@ -151,3 +151,11 @@ def test_redcap_backup(token, tmp_path) -> dict:
     assert os.path.exists(file)
     with pytest.raises(TypeError):
         api.redcap_backup(dirpath=tmp_dir)
+
+
+def get_next_id(token, records: api.Records = None) -> str:
+    """Test ``get_next_id``."""
+    if records is None:
+        records = api.Records(token=token)
+    next_id = api.get_next_id(token=token)
+    assert next_id not in list(records.participants.records.keys())

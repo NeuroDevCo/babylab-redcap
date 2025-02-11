@@ -1,5 +1,8 @@
 """Test participants endpoints."""
 
+from tests import utils as tutils
+from babylab.src import api
+
 
 def test_ppt_all(client):
     """Test ppt_all endpoint."""
@@ -19,9 +22,12 @@ def test_ppt_new(client):
     assert response.status_code == 200
 
 
-def test_ppt_new_post(client, ppt_finput):
+def test_ppt_new_post(client, ppt_finput, token):
     """Test ppt_all endpoint."""
+    ppt_id = api.get_next_id(token=token)
+    assert not tutils.participant_exists(ppt_id)
     response = client.post("/participant_new", data=ppt_finput)
+    assert tutils.participant_exists(ppt_id)
     assert response.status_code == 302
 
 

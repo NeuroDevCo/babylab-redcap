@@ -2,8 +2,10 @@
 
 - Fix age display in participant and appointment pages
 - Adds .sh and .bat launchers for Windows, Linux, and macOS
-- Use Noto Sans for body text
+- Use Roboto for body text and as fallback font
 - Fix dashboard age plot ordering of age bins
+- Fix card footers in index
+- Add more severe tests for new participant and appointment pages
 
 ## v0.2.1
 

@@ -310,6 +310,18 @@ def datetimes_to_strings(data: dict):
     return data
 
 
+def get_next_id(**kwargs) -> str:
+    """Get next record_id in REDCap database.
+
+    Args:
+        **kwargs: Additional arguments passed to ``post_request``.
+    Returns:
+        str: record_id of next record.
+    """
+    fields = {"content": "generateNextRecordName"}
+    return str(post_request(fields=fields, **kwargs).json())
+
+
 def get_records(record_id: str | list = None, **kwargs):
     """Return records as JSON.
 
