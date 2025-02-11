@@ -125,7 +125,10 @@ def prepare_dashboard(records: api.Records = None, data_dict: dict = None) -> di
     age_bins = list(range(0, max(ppts["age_days"]), 15))
     labels = [f"{int(a // 30)}:{int(a % 30)}" for a in age_bins]
     ppts["age_days_binned"] = pd.cut(
-        ppts["age_days"], bins=age_bins, labels=labels[:-1]
+        ppts["age_days"],
+        bins=age_bins,
+        labels=labels[:-1],
+        include_lowest=True,
     )
 
     current_week = get_week_number(datetime.datetime.today())
@@ -144,8 +147,17 @@ def prepare_dashboard(records: api.Records = None, data_dict: dict = None) -> di
         for v in records.appointments.records.values()
     )
 
+    age_counts = utils.count_col(ppts, "age_days_binned")
+    age_dist = {}
+    for k, v in age_counts.items():
+        months = k.split(":")[0]
+        months = "0" + months if len(months) == 1 else months
+        k = months + ":" + k.split(":")[1]
+        age_dist[k] = v
+    age_dist = dict(sorted(age_dist.items()))
+
     variables = {
-        "age_dist": utils.count_col(ppts, "age_days_binned"),
+        "age_dist": age_dist,
         "sex_dist": utils.count_col(ppts, "sex", values_sort=True),
         "source_dist": utils.count_col(ppts, "source", values_sort=True),
         "ppts_date_created": utils.count_col(ppts, "date_created", cumulative=True),
