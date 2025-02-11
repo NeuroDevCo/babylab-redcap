@@ -1,7 +1,9 @@
 ﻿## v0.2.2
 
+- Fix age display in participant and appointment pages
 - Adds .sh and .bat launchers for Windows, Linux, and macOS
 - Use Noto Sans for body text
+- Fix dashboard age plot ordering of age bins
 
 ## v0.2.1
 

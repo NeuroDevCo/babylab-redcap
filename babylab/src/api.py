@@ -4,10 +4,11 @@
 Functions to interact with the REDCap API.
 """
 
-import json
-import zipfile
+import math
 import os
 import re
+import json
+import zipfile
 import datetime
 from dataclasses import dataclass
 from collections import OrderedDict
@@ -48,7 +49,7 @@ class Participant:
             if k.startswith("participant_") or k == "record_id"
         }
         date_birth = get_birth_date(
-            str(data["age_created_months"]) + ":" + str(data["age_created_months"]),
+            str(data["age_created_months"]) + ":" + str(data["age_created_days"]),
             datetime.datetime.strptime(data["date_created"], "%Y-%m-%d %H:%M:%S"),
         )
         data["age_now_months"], data["age_now_days"] = get_age(
@@ -697,5 +698,5 @@ def get_birth_date(age: str, timestamp: str | datetime.datetime = None):
     if not isinstance(timestamp, datetime.datetime):
         timestamp = datetime.datetime.strptime(timestamp, "%Y-%m-%d")
     age_parsed = age.split(":")
-    days_diff = int(float(age_parsed[0]) * 30.437 + float(age_parsed[1]))
+    days_diff = math.ceil(float(age_parsed[0]) * 30.437 + float(age_parsed[1]))
     return timestamp - relativedelta.relativedelta(days=days_diff)

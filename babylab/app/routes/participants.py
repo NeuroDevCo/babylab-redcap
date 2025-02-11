@@ -85,10 +85,17 @@ def prepare_record_id(ppt: api.Participant, data_dict: dict) -> dict:
         kdict = "participant_" + k
         if kdict in data_dict:
             data[k] = data_dict[kdict][v] if v else ""
-    data["age_now_months"] = (
-        str(data["age_now_months"]) if data["age_now_months"] else ""
+
+    age = api.get_age(
+        birth_date=api.get_birth_date(
+            age=f"{str(data['age_created_months'])}:{str(data['age_created_days'])}",
+            timestamp=datetime.datetime.strptime(
+                data["date_created"], "%Y-%m-%d %H:%M:%S"
+            ),
+        )
     )
-    data["age_now_days"] = str(data["age_now_days"]) if data["age_now_days"] else ""
+    data["age_now_months"] = str(age[0])
+    data["age_now_days"] = str(age[1])
     data["parent1"] = data["parent1_name"] + " " + data["parent1_surname"]
     data["parent2"] = data["parent2_name"] + " " + data["parent2_surname"]
 
@@ -254,8 +261,8 @@ def participants_routes(app):
                 "participant_date_updated": date_now,
                 "participant_source": finput["inputSource"],
                 "participant_name": finput["inputName"],
-                "participant_age_now_months": finput["inputAgeMonths"],
-                "participant_age_now_days": finput["inputAgeDays"],
+                "participant_age_created_months": finput["inputAgeMonths"],
+                "participant_age_created_days": finput["inputAgeDays"],
                 "participant_sex": finput["inputSex"],
                 "participant_twin": finput["inputTwinID"],
                 "participant_parent1_name": finput["inputParent1Name"],

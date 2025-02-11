@@ -100,6 +100,7 @@ def appointments_routes(app):
         ppt = api.get_participant(ppt_id, token=token)
         apt = ppt.appointments.records[apt_id]
         data = utils.replace_labels(apt.data, data_dict)
+
         date_birth = api.get_birth_date(
             ppt.data["age_created_months"] + ":" + ppt.data["age_created_days"],
             datetime.datetime.strptime(ppt.data["date_created"], "%Y-%m-%d %H:%M:%S"),

@@ -265,8 +265,8 @@ def get_participants_table(records: api.Records, data_dict: dict) -> DataFrame:
         "date_updated",
         "source",
         "name",
-        "age_now_months",
-        "age_now_days",
+        "age_created_months",
+        "age_created_days",
         "days_since_last_appointment",
         "sex",
         "twin",
@@ -300,7 +300,10 @@ def get_participants_table(records: api.Records, data_dict: dict) -> DataFrame:
     for _, v in records.participants.records.items():
         age = api.get_age(
             birth_date=api.get_birth_date(
-                age=f"{v.data['age_now_months']}:{v.data['age_now_days']}"
+                age=f"{v.data['age_created_months']}:{v.data['age_created_days']}",
+                timestamp=datetime.datetime.strptime(
+                    v.data["date_created"], "%Y-%m-%d %H:%M:%S"
+                ),
             )
         )
         new_age_months.append(int(age[0]))

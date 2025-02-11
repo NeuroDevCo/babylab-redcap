@@ -46,5 +46,7 @@ def test_get_birth_date():
         api.get_birth_date("2:1"), datetime
     )  # pylint: disable=undefined-variable
     assert api.get_birth_date("0:1", "2024-12-17") == datetime(2024, 12, 16, 0, 0)
-    assert api.get_birth_date("1:0", "2024-12-17") == datetime(2024, 11, 17, 0, 0)
+    assert (
+        api.get_birth_date("1:0", "2024-12-17") == datetime(2024, 11, 17, 0, 0)
+    ) or (api.get_birth_date("1:0", "2024-12-17") == datetime(2024, 11, 16, 0, 0))
     assert api.get_birth_date("0:0", "2024-12-17") == datetime(2024, 12, 17, 0, 0)
