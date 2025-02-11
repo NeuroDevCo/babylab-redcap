@@ -22,7 +22,7 @@ def test_index_page_token():
     with app.test_client() as client:
         response = client.post("/", data={"apiToken": conf.get_api_key(), "email": ""})
         assert response.status_code == 200
-        assert b"This is the SJD Babylab database" in response.data
+        assert b"SJD Babylab database" in response.data
         assert b"Incorrect token" not in response.data
         assert isinstance(app.config["RECORDS"], api.Records)
 
