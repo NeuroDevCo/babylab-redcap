@@ -206,6 +206,11 @@ def general_routes(app):
         """Error 403 page."""
         return render_template("443.html", error=error), 443
 
+    @app.errorhandler(500)
+    def error_500(error):
+        """Error 500 page."""
+        return render_template("500.html", error=error), 500
+
     @app.route("/", methods=["GET", "POST"])
     def index():
         """Index page"""
