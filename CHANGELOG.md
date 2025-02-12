@@ -1,9 +1,10 @@
 ﻿## v0.2.2
 
-- Fix age display in participant and appointment pages $67
+- Fix age display in participant and appointment pages #67
 - Fixes language questionnaires not being saved #73
 - Removes e-mail sending and calendar event creation #55
 - Adds `make_id` function to simplify testing
+- Adds Ubuntu and macOS to GitHub Actions workflows
 - Adds `get_participant`, `get_appointment`, and `get_questionnaire` to fetch information from individual records
 - More severe tests for adding and modifying records #76
 - Adds .sh and .bat launchers for Windows, Linux, and macOS #77
