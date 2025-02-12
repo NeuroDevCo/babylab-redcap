@@ -1,6 +1,5 @@
 """Appointments routes."""
 
-import os
 import datetime
 import requests
 from flask import flash, redirect, render_template, url_for, request
