@@ -4,8 +4,7 @@ Fixtures for testing
 
 import os
 import pytest
-import win32com as win
-from babylab.src import api, outlook
+from babylab.src import api
 from babylab.app import create_app
 from babylab.app import config as conf
 from tests import utils as tutils

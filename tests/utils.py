@@ -3,7 +3,6 @@
 import datetime
 from string import digits, ascii_lowercase
 from random import choice, choices
-import win32com as win
 from babylab.src import api
 from babylab.app import config as conf
 
