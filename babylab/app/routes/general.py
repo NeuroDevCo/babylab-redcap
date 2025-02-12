@@ -125,7 +125,10 @@ def prepare_dashboard(records: api.Records = None, data_dict: dict = None) -> di
     age_bins = list(range(0, max(ppts["age_days"]), 15))
     labels = [f"{int(a // 30)}:{int(a % 30)}" for a in age_bins]
     ppts["age_days_binned"] = pd.cut(
-        ppts["age_days"], bins=age_bins, labels=labels[:-1]
+        ppts["age_days"],
+        bins=age_bins,
+        labels=labels[:-1],
+        include_lowest=True,
     )
 
     current_week = get_week_number(datetime.datetime.today())
@@ -144,8 +147,15 @@ def prepare_dashboard(records: api.Records = None, data_dict: dict = None) -> di
         for v in records.appointments.records.values()
     )
 
+    age_dist = {}
+    for k, v in utils.count_col(ppts, "age_days_binned").items():
+        months = k.split(":")[0]
+        months = "0" + months if len(months) == 1 else months
+        age_dist[months + ":" + k.split(":")[1]] = v
+    age_dist = dict(sorted(age_dist.items()))
+
     variables = {
-        "age_dist": utils.count_col(ppts, "age_days_binned"),
+        "age_dist": age_dist,
         "sex_dist": utils.count_col(ppts, "sex", values_sort=True),
         "source_dist": utils.count_col(ppts, "source", values_sort=True),
         "ppts_date_created": utils.count_col(ppts, "date_created", cumulative=True),
@@ -196,6 +206,11 @@ def general_routes(app):
         """Error 403 page."""
         return render_template("443.html", error=error), 443
 
+    @app.errorhandler(500)
+    def error_500(error):
+        """Error 500 page."""
+        return render_template("500.html", error=error), 500
+
     @app.route("/", methods=["GET", "POST"])
     def index():
         """Index page"""
@@ -204,12 +219,11 @@ def general_routes(app):
             finput = request.form
             token = finput["apiToken"]
             app.config["API_KEY"] = token
-            app.config["EMAIL"] = finput["email"]
             try:
                 redcap_version = api.get_redcap_version(token=token)
                 if redcap_version:
                     flash("Logged in.", "success")
-                    app.config["RECORDS"] = conf.get_records_or_index(token=token)
+                    app.config["RECORDS"] = api.Records(token=token)
                     return render_template("index.html", redcap_version=redcap_version)
                 flash("Incorrect token", "error")
             except ValueError as e:

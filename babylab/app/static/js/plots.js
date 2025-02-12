@@ -1,5 +1,12 @@
 function colPlot(labels, values, canvas, color, label) {
   const stx = document.getElementById(canvas).getContext("2d")
+  for (let i = 0; i < labels.length; i++) {
+    while (labels[i].charAt(0) === '0' & labels[i].charAt(1) !== '0') {
+      labels[i] = labels[i].substring(1);
+    }
+  }
+
+
   new Chart(stx, {
     type: "bar",
     data: {
@@ -15,7 +22,7 @@ function colPlot(labels, values, canvas, color, label) {
         legend: {
           display: false,
           font: {
-            family: "Ciutadella Regular"
+            family: "Ciutadella"
           }
         }
       },
@@ -37,7 +44,7 @@ function colPlot(labels, values, canvas, color, label) {
             suggestedMin: 'min-int-value',
             suggestedMax: 'max-int-value',
             font: {
-              family: 'Ciutadella Regular',
+              family: 'Ciutadella',
               size: 16
             }
           }
@@ -57,7 +64,7 @@ function colPlot(labels, values, canvas, color, label) {
             suggestedMin: 'min-int-value',
             suggestedMax: 'max-int-value',
             font: {
-              family: 'Ciutadella Regular',
+              family: 'Ciutadella',
               size: 16
             }
           }
@@ -88,10 +95,10 @@ function circlePlot(labels, values, canvas, color, label) {
           position: 'top',
           labels: {
             font: {
-              family: 'Ciutadella Regular',
+              family: 'Ciutadella',
               size: 18
             }
-         }
+          }
         },
       },
       rotation: -90,
@@ -124,7 +131,7 @@ function dateLinePlot(labels, values, canvas, color, label) {
           display: true,
           labels: {
             font: {
-              family: 'Ciutadella Regular',
+              family: 'Ciutadella',
               size: 18
             }
           }
@@ -146,7 +153,7 @@ function dateLinePlot(labels, values, canvas, color, label) {
             suggestedMin: 'min-int-value',
             suggestedMax: 'max-int-value',
             font: {
-              family: 'Ciutadella Regular',
+              family: 'Ciutadella',
               size: 16
             }
           }
@@ -166,7 +173,7 @@ function dateLinePlot(labels, values, canvas, color, label) {
           },
           ticks: {
             font: {
-              family: 'Ciutadella Regular',
+              family: 'Ciutadella',
               size: 16
             }
           }

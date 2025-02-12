@@ -122,6 +122,8 @@ def questionnaires_routes(app):
     @conf.token_required
     def que_new(ppt_id: str = None):
         """New langage questionnaire page"""
+        if ppt_id is None:
+            ppt_id = request.args.get("ppt_id")
         token = app.config["API_KEY"]
         data_dict = api.get_data_dict(token=token)
         if request.method == "POST":
@@ -172,7 +174,9 @@ def questionnaires_routes(app):
         "/questionnaires/<string:que_id>/questionnaire_modify", methods=["GET", "POST"]
     )
     @conf.token_required
-    def que_modify(que_id: str, data: dict = None, data_dict: dict = None):
+    def que_modify(
+        que_id: str, ppt_id: str = None, data: dict = None, data_dict: dict = None
+    ):
         """Modify language questionnaire page"""
         token = app.config["API_KEY"]
         if data_dict is None:
@@ -217,5 +221,9 @@ def questionnaires_routes(app):
                     "que_all.html", ppt_id=ppt_id, data_dict=data_dict
                 )
         return render_template(
-            "que_modify.html", que_id=que_id, data=data, data_dict=data_dict
+            "que_modify.html",
+            que_id=que_id,
+            data=data,
+            data_dict=data_dict,
+            ppt_id=ppt_id,
         )

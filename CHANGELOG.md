@@ -1,4 +1,22 @@
-﻿## v0.2.1
+﻿## v0.2.2
+
+- Fix age display in participant and appointment pages #67
+- Fixes language questionnaires not being saved #73
+- Removes e-mail sending and calendar event creation #55
+- Adds `make_id` function to simplify testing
+- Add better handling of 500 error #63
+- Adds Ubuntu and macOS to GitHub Actions workflows
+- Fixes modifying record pages not saving default values in text areas #78
+- Adds `get_participant`, `get_appointment`, and `get_questionnaire` to fetch information from individual records
+- Cleans Python dependencies
+- More severe tests for adding and modifying records #57 #76
+- Adds .sh and .bat launchers for Windows, Linux, and macOS #77
+- Use Roboto for body text and as fallback font #71
+- Fix dashboard age plot ordering of age bins #74
+- Fix card footers in index
+- Fixes head circumference not showing in participant page #70
+
+## v0.2.1
 
 - Fixes bug in which appointments were not being properly modified #64
 - Fixes missing information in appointment page #66

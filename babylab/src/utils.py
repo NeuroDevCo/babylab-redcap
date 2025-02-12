@@ -7,11 +7,7 @@ import datetime
 import shutil
 from copy import deepcopy
 from pandas import DataFrame
-from flask import flash, render_template
 from babylab.src import api
-
-if os.name == "nt":
-    from babylab.src import outlook
 
 
 def format_ppt_id(ppt_id: str) -> str:
@@ -265,8 +261,8 @@ def get_participants_table(records: api.Records, data_dict: dict) -> DataFrame:
         "date_updated",
         "source",
         "name",
-        "age_now_months",
-        "age_now_days",
+        "age_created_months",
+        "age_created_days",
         "days_since_last_appointment",
         "sex",
         "twin",
@@ -300,7 +296,10 @@ def get_participants_table(records: api.Records, data_dict: dict) -> DataFrame:
     for _, v in records.participants.records.items():
         age = api.get_age(
             birth_date=api.get_birth_date(
-                age=f"{v.data['age_now_months']}:{v.data['age_now_days']}"
+                age=f"{v.data['age_created_months']}:{v.data['age_created_days']}",
+                timestamp=datetime.datetime.strptime(
+                    v.data["date_created"], "%Y-%m-%d %H:%M:%S"
+                ),
             )
         )
         new_age_months.append(int(age[0]))
@@ -357,7 +356,7 @@ def get_appointments_table(
 
     df = apts.to_df()
     df["appointment_id"] = [
-        str(i) + ":" + str(apt_id)
+        api.make_id(i, apt_id)
         for i, apt_id in zip(df.index, df["redcap_repeat_instance"])
     ]
 
@@ -408,7 +407,7 @@ def get_questionnaires_table(records: api.Records, data_dict: dict) -> DataFrame
         )
     df = quest.to_df()
     df["questionnaire_id"] = [
-        str(p) + ":" + str(q) for p, q in zip(df.index, df["redcap_repeat_instance"])
+        api.make_id(p, q) for p, q in zip(df.index, df["redcap_repeat_instance"])
     ]
     return replace_labels(df, data_dict)
 
@@ -476,61 +475,3 @@ def prepare_email(ppt_id: str, apt_id: str, data: dict, data_dict: dict) -> dict
         "comments": data["comments"],
     }
     return replace_labels(email, data_dict)
-
-
-if os.name == "nt":
-
-    def send_email_or_exception(email_from: str, **kwargs) -> None:
-        """Try sending an email or catch the exception.
-
-        Args:
-            **kwargs: Arguments passed to ``prepare_email``.
-        """
-        try:
-            data = prepare_email(**kwargs)
-            outlook.send_email(data=data, email_from=email_from)
-        except outlook.MailDomainException as e:
-            flash(f"Appointment modified, but e-mail was not sent: {e}", "warning")
-            return render_template("apt_new.html", **kwargs)
-        except outlook.MailAddressException as e:
-            flash(f"Appointment modified, but e-mail was not sent: {e}", "warning")
-            return render_template("apt_new.html", **kwargs)
-        return None
-
-    def create_event_or_exception(account: str, calendar_name: str, **kwargs) -> None:
-        """Try creating and email or catch the exception.
-
-        Args:
-            **kwargs: Arguments passed to ``prepare_email``.
-        """
-        try:
-            data = prepare_email(**kwargs)
-            outlook.create_event(
-                data=data, account=account, calendar_name=calendar_name
-            )
-        except outlook.MailDomainException as e:
-            flash(f"Appointment created, but event was not created: {e}", "warning")
-            return render_template("apt_new.html", **kwargs)
-        except outlook.MailAddressException as e:
-            flash(f"Appointment created, but event was not created: {e}", "warning")
-            return render_template("apt_new.html", **kwargs)
-        return None
-
-    def modify_event_or_exception(account: str, calendar_name: str, **kwargs) -> None:
-        """Try modifying and email or catch the exception.
-
-        Args:
-            **kwargs: Arguments passed to ``prepare_email``.
-        """
-        try:
-            data = prepare_email(**kwargs)
-            outlook.modify_event(
-                data=data, account=account, calendar_name=calendar_name
-            )
-        except outlook.MailDomainException as e:
-            flash(f"Appointment modified, but event was not created: {e}", "warning")
-            return render_template("apt_new.html", **kwargs)
-        except outlook.MailAddressException as e:
-            flash(f"Appointment modified, but event was not created: {e}", "warning")
-            return render_template("apt_new.html", **kwargs)
-        return None

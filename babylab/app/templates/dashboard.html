@@ -6,11 +6,13 @@
 <header>
   <div class="jumbotron jumbotron-fluid">
     <div class="container">
-      <h1 class="display-4">Dashboard&nbsp;&nbsp;<i class="fa fa-rocket"></i></h1>
+      <h1 class="display-4">
+        Dashboard&nbsp;&nbsp;<i class="fa fa-rocket"></i>
+      </h1>
       <p class="lead">Showing the current status of the project.</p>
     </div>
   </div>
-  <hr class="my-4" />
+  <hr>
   <br>
 </header>
 
@@ -19,12 +21,12 @@
     <div class="row">
       <div class="col">
         <div class="card text-bg-primary mb-4">
-          <div class="card-header">
-            Participants
-          </div>
+          <div class="card-header">Participants</div>
           <div class="card-body">
             <div class="card-text">
-              <h1>{{ data["n_ppts"] }}&nbsp;&nbsp;<i class="fa-solid fa-user"></i></h1>
+              <h1>
+                {{ data["n_ppts"] }}&nbsp;&nbsp;<i class="fa-solid fa-user"></i>
+              </h1>
             </div>
           </div>
           <div class="card-footer text-bg-primary">In total</div>
@@ -35,7 +37,9 @@
           <div class="card-header text-black">Appointments</div>
           <div class="card-body">
             <div class="card-text">
-              <h1>{{ data["n_apts"] }}&nbsp;&nbsp;<i class="fa-solid fa-calendar"></i></h1>
+              <h1>
+                {{ data["n_apts"] }}&nbsp;&nbsp;<i class="fa-solid fa-calendar"></i>
+              </h1>
             </div>
           </div>
           <div class="card-footer text-bg-warning">In total</div>
@@ -43,12 +47,12 @@
       </div>
       <div class="col">
         <div class="card text-bg-success">
-          <div class="card-header">
-            Participants
-          </div>
+          <div class="card-header">Participants</div>
           <div class="card-body">
             <div class="card-text">
-              <h1>{{ data["n_ppts_week"] }}&nbsp;&nbsp;<i class="fa-solid fa-user"></i></h1>
+              <h1>
+                {{ data["n_ppts_week"] }}&nbsp;&nbsp;<i class="fa-solid fa-user"></i>
+              </h1>
             </div>
           </div>
           <div class="card-footer text-bg-success">This week</div>
@@ -56,12 +60,12 @@
       </div>
       <div class="col">
         <div class="card text-bg-danger">
-          <div class="card-header">
-            Appointments
-          </div>
+          <div class="card-header">Appointments</div>
           <div class="card-body">
             <div class="card-text">
-              <h1>{{ data["n_apts_week"] }}&nbsp;&nbsp;<i class="fa-solid fa-calendar"></i></h1>
+              <h1>
+                {{ data["n_apts_week"] }}&nbsp;&nbsp;<i class="fa-solid fa-calendar"></i>
+              </h1>
             </div>
           </div>
           <div class="card-footer text-bg-danger">This week</div>
@@ -70,7 +74,6 @@
     </div>
   </div>
   <br>
-  <hr class="my-4" />
   <br>
   <ul class="nav nav-tabs mb-3 justify-content-center" id="pills-tab" role="tablist">
     <li class="nav-item" role="presentation">
@@ -97,7 +100,7 @@
           <div class="card-body">
             <canvas id="ageDist">
               <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-              <script type="text/javascript" src="{{ url_for('static', filename='js/functions.js') }}"></script>
+              <script type="text/javascript" src="{{ url_for('static', filename='js/plots.js') }}"></script>
               <script>
                 colPlot(
                   {{ data["age_dist_labels"] | safe }},
@@ -228,7 +231,6 @@
     <div class="tab-pane fade show" id="pills-questionnaires" role="tabpanel" aria-labelledby="pills-questionnaires-tab"
       tabindex="2">
       <div class="div-center">
-
         <div class="card card-plot">
           <div class="card-title">First language distribution</div>
           <div class="card-body">

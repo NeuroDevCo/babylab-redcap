@@ -3,7 +3,6 @@
 import datetime
 from string import digits, ascii_lowercase
 from random import choice, choices
-import win32com as win
 from babylab.src import api
 from babylab.app import config as conf
 
@@ -36,45 +35,6 @@ def generate_email() -> str:
         str: Random e-mail address.
     """
     return generate_str() + "@" + generate_str() + ".com"
-
-
-def check_email_received(account: str = "gonzalo.garcia@sjd.es"):
-    """Check that an email has been received."""
-    # create an instance of the Outlook application
-    outlook = win.client.Dispatch("Outlook.Application").GetNamespace("MAPI")
-
-    # iterate through all accounts to find the specified one
-    for acc in outlook.Folders:
-        if acc.Name == account:
-            inbox = acc.Folders["Inbox"]
-            messages = inbox.Items
-            # sort messages by received time in descending order
-            messages.Sort("[ReceivedTime]", True)
-            latest_message = messages.GetFirst()
-            if latest_message:
-                return {
-                    "sender": latest_message.SenderName,
-                    "subject": latest_message.Subject,
-                    "timestamp": latest_message.ReceivedTime,
-                }
-            return False
-    return False
-
-
-def check_event_created(ppt_id: str, account: str = "gonzalo.garcia@sjd.es"):
-    """Check that an email has been received."""
-    # create an instance of the Outlook application
-    outlook = win.client.Dispatch("Outlook.Application").GetNamespace("MAPI")
-    recipient = outlook.createRecipient(account)
-    shared_cal = outlook.GetSharedDefaultFolder(recipient, 9).Folders(
-        "Appointments - Test"
-    )
-    for apt in shared_cal.Items:
-        if ppt_id in apt.Subject:
-            return {
-                "subject": apt.Subject,
-            }
-    return False
 
 
 def generate_lang_exp():
@@ -224,15 +184,11 @@ def create_record_ppt(is_new: bool = True) -> dict:
     ppt_id = choice(list(recs.participants.records.keys()))
     return {
         "record_id": "0" if is_new else ppt_id,
-        "participant_date_created": datetime.datetime.strptime(
-            "2024-12-16 11:13:00", "%Y-%m-%d %H:%M:%S"
-        ),
-        "participant_date_updated": datetime.datetime.strptime(
-            "2024-12-16 11:13:00", "%Y-%m-%d %H:%M:%S"
-        ),
+        "participant_date_created": "2024-12-16 11:13:00",
+        "participant_date_updated": "2024-12-16 11:13:00",
         "participant_name": generate_str(),
-        "participant_age_now_months": choice(range(12)),
-        "participant_age_now_days": choice(range(31)),
+        "participant_age_created_months": choice(range(12)),
+        "participant_age_created_days": choice(range(31)),
         "participant_days_since_last_apt": "",
         "participant_sex": str(choice(range(1, 6))),
         "participant_source": str(choice(range(1, 3))),
@@ -271,23 +227,29 @@ def create_record_apt(is_new: bool = True) -> dict:
     Returns:
         dict: A REDCap record.
     """
+    token = conf.get_api_key()
     ddict = get_data_dict()
-    recs = api.Records(token=conf.get_api_key())
-    ppt_id = choice(list(recs.participants.records.keys()))
-    while not recs.participants.records[ppt_id].appointments.records:
-        ppt_id = choice(list(recs.participants.records.keys()))
-    apt_id = choice(list(recs.participants.records[ppt_id].appointments.records.keys()))
-
+    recs = api.Records(token=token)
+    ppd_id_list = list(recs.participants.records.keys())
+    ppt_id = choice(ppd_id_list)
+    apt_recs = recs.participants.records[ppt_id].appointments.records
+    while not apt_recs:
+        ppt_id = choice(ppd_id_list)
+        apt_recs = recs.participants.records[ppt_id].appointments.records
+    apt_id = choice(list(apt_recs.keys()))
+    date_fmt = "%Y-%m-%d %H:%M:%S"
     return {
         "record_id": ppt_id,
         "redcap_repeat_instrument": "appointments",
-        "redcap_repeat_instance": "new" if is_new else apt_id.split(":")[1],
+        "redcap_repeat_instance": (
+            api.get_next_id(token=token) if is_new else apt_id.split(":")[1]
+        ),
         "appointment_study": choice(list(ddict["appointment_study"].keys())),
         "appointment_date_created": datetime.datetime.strptime(
-            "2024-12-12 14:09:00", "%Y-%m-%d %H:%M:%S"
+            "2024-12-12 14:09:00", date_fmt
         ),
         "appointment_date_updated": datetime.datetime.strptime(
-            "2024-12-14 12:08:00", "%Y-%m-%d %H:%M:%S"
+            "2024-12-14 12:08:00", date_fmt
         ),
         "appointment_date": datetime.datetime.strptime(
             "2024-12-31 14:09", "%Y-%m-%d %H:%M"
@@ -309,26 +271,28 @@ def create_record_que(is_new: bool = True) -> dict:
     Returns:
         dict: A REDCap record.
     """
+    token = conf.get_api_key()
     ddict = get_data_dict()
-    recs = api.Records(token=conf.get_api_key())
+    recs = api.Records(token=token)
     lang_exp = generate_lang_exp()
-    ppt_id = choice(list(recs.participants.records.keys()))
-    while not recs.participants.records[ppt_id].questionnaires.records:
-        ppt_id = choice(list(recs.participants.records.keys()))
-    que_id = choice(
-        list(recs.participants.records[ppt_id].questionnaires.records.keys())
-    )
+    ppt_id_list = list(recs.participants.records.keys())
+    ppt_id = choice(ppt_id_list)
+    que_recs = recs.participants.records[ppt_id].questionnaires.records
+    while not que_recs:
+        ppt_id = choice(ppt_id_list)
+        que_recs = recs.participants.records[ppt_id].questionnaires.records
+    que_id = choice(list(que_recs.keys()))
 
+    date_fmt = "%Y-%m-%d %H:%M:%S"
+    date = "2024-12-12 14:24:00"
     return {
         "record_id": ppt_id,
         "redcap_repeat_instrument": "language",
-        "redcap_repeat_instance": "new" if is_new else que_id.split(":")[1],
-        "language_date_created": datetime.datetime.strptime(
-            "2024-12-12 14:24:00", "%Y-%m-%d %H:%M:%S"
+        "redcap_repeat_instance": (
+            api.get_next_id(token=token) if is_new else que_id.split(":")[1]
         ),
-        "language_date_updated": datetime.datetime.strptime(
-            "2024-12-12 14:24:00", "%Y-%m-%d %H:%M:%S"
-        ),
+        "language_date_created": datetime.datetime.strptime(date, date_fmt),
+        "language_date_updated": datetime.datetime.strptime(date, date_fmt),
         "language_isestimated": choice(["0", "1"]),
         "language_lang1": choice(list(ddict["language_lang1"].keys())),
         "language_lang1_exp": lang_exp[0],
@@ -341,3 +305,23 @@ def create_record_que(is_new: bool = True) -> dict:
         "language_comments": "",
         "language_complete": "2",
     }
+
+
+def last_participant_added(records: api.Records = None) -> str:
+    """Returns the record_id of the last record."""
+    token = conf.get_api_key()
+    if records is None:
+        records = api.Records(token=token)
+    return list(records.participants.records.keys())[-1]
+
+
+def participant_exists(ppt_id: str, records: api.Records = None) -> bool:
+    """Check that participant exists"""
+    token = conf.get_api_key()
+    if records is None:
+        records = api.Records(token=token)
+    try:
+        api.get_participant(ppt_id, token=token)
+        return True
+    except api.RecordNotFound:
+        return False

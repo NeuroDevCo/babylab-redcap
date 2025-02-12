@@ -1,6 +1,5 @@
 """Appointments routes."""
 
-import os
 import datetime
 import requests
 from flask import flash, redirect, render_template, url_for, request
@@ -100,8 +99,18 @@ def appointments_routes(app):
         ppt = api.get_participant(ppt_id, token=token)
         apt = ppt.appointments.records[apt_id]
         data = utils.replace_labels(apt.data, data_dict)
+
+        date_birth = api.get_birth_date(
+            ppt.data["age_created_months"] + ":" + ppt.data["age_created_days"],
+            datetime.datetime.strptime(ppt.data["date_created"], "%Y-%m-%d %H:%M:%S"),
+        )
+        data["age_apt_months"], data["age_apt_days"] = api.get_age(
+            date_birth, datetime.datetime.strptime(data["date"], "%Y-%m-%d %H:%M")
+        )
         ppt.data["age_now_months"] = str(ppt.data["age_now_months"])
         ppt.data["age_now_days"] = str(ppt.data["age_now_days"])
+        data["age_apt_months"] = str(data["age_apt_months"])
+        data["age_apt_days"] = str(data["age_apt_days"])
         if request.method == "POST":
             try:
                 api.delete_appointment(
@@ -152,35 +161,11 @@ def appointments_routes(app):
                 "appointments_complete": "2",
             }
 
-            # try to add appointment: if success try to send email
             try:
                 api.add_appointment(data, token=token)
                 records = conf.get_records_or_index(token=token)
                 app.config["RECORDS"] = records
                 flash("Appointment added!", "success")
-                if os.name == "nt" and "EMAIL" in app.config and app.config["EMAIL"]:
-                    ppt_records = records.participants.records[ppt_id]
-                    apt_id = list(ppt_records.appointments.records)[-1]
-                    utils.send_email_or_exception(
-                        email_from=app.config["EMAIL"],
-                        ppt_id=ppt_id,
-                        apt_id=apt_id,
-                        data=records.appointments.records[apt_id].data,
-                        data_dict=data_dict,
-                    )
-                    calname = (
-                        "Appointments - Test"
-                        if app.config["TESTING"]
-                        else "Appointments"
-                    )
-                    utils.create_event_or_exception(
-                        account=app.config["EMAIL"],
-                        calendar_name=calname,
-                        ppt_id=ppt_id,
-                        apt_id=apt_id,
-                        data=records.appointments.records[apt_id].data,
-                        data_dict=data_dict,
-                    )
                 return redirect(url_for("apt_all", records=records))
             except requests.exceptions.HTTPError as e:
                 flash(f"Something went wrong! {e}", "error")
@@ -222,35 +207,11 @@ def appointments_routes(app):
                 "appointments_complete": "2",
             }
 
-            # try to add appointment: if success try to send email
             try:
                 api.add_appointment(data, token=token)
                 records = conf.get_records_or_index(token=token)
                 app.config["RECORDS"] = records
                 flash("Appointment modified!", "success")
-                if "EMAIL" in app.config and app.config["EMAIL"]:
-                    ppt_records = records.participants.records[ppt_id]
-                    apt_id = list(ppt_records.appointments.records)[-1]
-                    calname = (
-                        "Appointments - Test"
-                        if app.config["TESTING"]
-                        else "Appointments"
-                    )
-                    utils.send_email_or_exception(
-                        email_from=app.config["EMAIL"],
-                        ppt_id=ppt_id,
-                        apt_id=apt_id,
-                        data=records.appointments.records[apt_id].data,
-                        data_dict=data_dict,
-                    )
-                    utils.modify_event_or_exception(
-                        account=app.config["EMAIL"],
-                        calendar_name=calname,
-                        ppt_id=ppt_id,
-                        apt_id=apt_id,
-                        data=records.appointments.records[apt_id].data,
-                        data_dict=data_dict,
-                    )
                 return redirect(
                     url_for(
                         "apt",

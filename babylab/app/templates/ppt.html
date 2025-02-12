@@ -3,7 +3,9 @@
 <header>
   <div class="jumbotron jumbotron-fluid">
     <div class="container">
-      <h1 class="display-4">Participant {{ ppt_id }}&nbsp;&nbsp;<i class="fa fa-user"></i></h1>
+      <h1 class="display-4">
+        Participant {{ ppt_id }}&nbsp;&nbsp;<i class="fa fa-user"></i>
+      </h1>
       <p class="lead">Showing details from participant {{ ppt_id }}.</p>
     </div>
   </div>
@@ -179,7 +181,7 @@
                 <th>
                   Head circ. (cm)&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-ruler"></i>
                 </th>
-                <td>{{ data["data"]["head_cincumference"] }}</td>
+                <td>{{ data["data"]["head_circumference"] }}</td>
               </tr>
               <tr>
                 <th>
@@ -215,18 +217,14 @@
     <div class="div-center">
       <div class="card card-table">
         <div class="card-header ">Appointments</div>
-        <div class="card-body">
-          {{ data["table_appointments"] | safe }}
-        </div>
+        <div class="card-body">{{ data["table_appointments"] | safe }}</div>
       </div>
     </div>
     <div class="row col-12">
       <div class="div-center">
         <div class="card card-table">
           <div class="card-header ">Language questionnaires</div>
-          <div class="card-body">
-            {{ data["table_questionnaires"] | safe }}
-          </div>
+          <div class="card-body">{{ data["table_questionnaires"] | safe }}</div>
         </div>
       </div>
     </div>
