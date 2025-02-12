@@ -93,9 +93,7 @@ class Appointment:
         }
         self.record_id = data["record_id"]
         self.data = data
-        self.appointment_id = (
-            data["record_id"] + ":" + str(data["redcap_repeat_instance"])
-        )
+        self.appointment_id = make_id(data["record_id"], data["redcap_repeat_instance"])
         self.status = data["status"]
         self.date = data["date"]
 
@@ -126,9 +124,7 @@ class Questionnaire:
             if k.startswith("language_") or k in ["record_id", "redcap_repeat_instance"]
         }
         self.record_id = data["record_id"]
-        self.questionnaire_id = (
-            data["record_id"] + ":" + str(data["redcap_repeat_instance"])
-        )
+        self.questionnaire_id = make_id(self.record_id, data["redcap_repeat_instance"])
         self.isestimated = data["isestimated"]
         self.data = data
         for i in range(1, 5):
@@ -348,6 +344,36 @@ def get_records(record_id: str | list = None, **kwargs):
     return records
 
 
+def make_id(ppt_id: str, repeat_id: str = None):
+    """Make a record ID.
+
+    Args:
+        ppt_id (str): Participant ID.
+        repeat_id (str, optional): Appointment or Questionnaire ID, or ``redcap_repeated_id``. Defaults to None.
+
+    Returns:
+        str: Record ID.
+    """  # pylint: disable=line-too-long
+    ppt_id = str(ppt_id)
+    if not ppt_id.isdigit():
+        raise ValueError(f"`ppt_id`` must be a digit, but '{ppt_id}' was provided")
+    if repeat_id is None:
+        return ppt_id
+    repeat_id = str(repeat_id)
+    if not repeat_id.isdigit():
+        raise ValueError(
+            f"`repeat_id`` must be a digit, but '{repeat_id}' was provided"
+        )
+    return ppt_id + ":" + repeat_id
+
+
+class RecordNotFound(Exception):
+    """If record is not found."""
+
+    def __init__(self, record_id):
+        super().__init__(f"Record '{record_id}' not found")
+
+
 def get_participant(ppt_id: str, **kwargs):
     """Get participant record.
 
@@ -384,8 +410,46 @@ def get_participant(ppt_id: str, **kwargs):
             apt[repeat_id] = Appointment(r)
         if form == "language":
             que[repeat_id] = Questionnaire(r)
-    ppt = Participant(recs[0], apt=RecordList(apt), que=RecordList(que))
-    return ppt
+    try:
+        return Participant(recs[0], apt=RecordList(apt), que=RecordList(que))
+    except IndexError as exc:
+        raise RecordNotFound(record_id=ppt_id) from exc
+
+
+def get_appointment(apt_id: str, **kwargs):
+    """Get appointment record.
+
+    Args:
+        apt_id: ID of appointment (``redcap_repeated_id``).
+        **kwargs: Additional arguments passed to ``post_request``
+
+    Returns:
+        api.Appointment: Appointment object.
+    """
+    ppt_id, _ = apt_id.split(":")
+    ppt = get_participant(ppt_id, **kwargs)
+    try:
+        return ppt.appointments.records[apt_id]
+    except KeyError as exc:
+        raise RecordNotFound(record_id=apt_id) from exc
+
+
+def get_questionnaire(que_id: str, **kwargs):
+    """Get questionnaire record.
+
+    Args:
+        que_id: ID of appointment (``redcap_repeated_id``).
+        **kwargs: Additional arguments passed to ``post_request``
+
+    Returns:
+        api.Questionnaire: Appointment object.
+    """
+    ppt_id, _ = que_id.split(":")
+    ppt = get_participant(ppt_id, **kwargs)
+    try:
+        return ppt.questionnaires.records[que_id]
+    except KeyError as exc:
+        raise RecordNotFound(record_id=que_id) from exc
 
 
 def add_participant(data: dict, modifying: bool = False, **kwargs):
@@ -572,18 +636,17 @@ class Records:
         appointments = {}
         questionnaires = {}
         for r in records:
-            if r["redcap_repeat_instance"] and r["appointment_status"]:
-                r["appointment_id"] = (
-                    r["record_id"] + ":" + str(r["redcap_repeat_instance"])
-                )
+            ppt_id = r["record_id"]
+            repeat_id = r["redcap_repeat_instance"]
+
+            if repeat_id and r["appointment_status"]:
+                r["appointment_id"] = make_id(ppt_id, repeat_id)
                 appointments[r["appointment_id"]] = Appointment(r)
-            if r["redcap_repeat_instance"] and r["language_lang1"]:
-                r["questionnaire_id"] = (
-                    r["record_id"] + ":" + str(r["redcap_repeat_instance"])
-                )
+            if repeat_id and r["language_lang1"]:
+                r["questionnaire_id"] = make_id(ppt_id, repeat_id)
                 questionnaires[r["questionnaire_id"]] = Questionnaire(r)
             if not r["redcap_repeat_instrument"]:
-                participants[r["record_id"]] = Participant(r)
+                participants[ppt_id] = Participant(r)
 
         # add appointments and questionnaires to each participant
         for p, v in participants.items():

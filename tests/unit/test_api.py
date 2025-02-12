@@ -52,11 +52,53 @@ def test_get_data_dict(token):
         api.get_data_dict()
 
 
+def test_make_id():
+    """Test ``make_id``"""
+    assert api.make_id(1, 2) == "1:2"
+    assert api.make_id(1) == "1"
+    assert api.make_id("1", "2") == "1:2"
+    assert api.make_id("1") == "1"
+    with pytest.raises(ValueError):
+        api.make_id(1, "a")
+    with pytest.raises(ValueError):
+        api.make_id(1, "1 ")
+    with pytest.raises(ValueError):
+        api.make_id("a")
+    with pytest.raises(ValueError):
+        api.make_id("1 ")
+    with pytest.raises(ValueError):
+        api.make_id("1:1")
+
+
 def test_get_participant(ppt_record_mod, token):
     """Test ``get_participant``."""
     ppt_id = ppt_record_mod["record_id"]
     ppt = api.get_participant(ppt_id, token=token)
     assert isinstance(ppt, api.Participant)
+    with pytest.raises(api.RecordNotFound):
+        api.get_participant("BADID", token=token)
+
+
+def test_get_appointment(apt_record_mod, token):
+    """Test ``get_participant``."""
+    ppt_id = apt_record_mod["record_id"]
+    repeat_id = apt_record_mod["redcap_repeat_instance"]
+    apt_id = api.make_id(ppt_id, repeat_id)
+    apt = api.get_appointment(apt_id, token=token)
+    assert isinstance(apt, api.Appointment)
+    with pytest.raises(api.RecordNotFound):
+        api.get_appointment("f{ppt_id}:BADID", token=token)
+
+
+def test_get_questionnaire(que_record_mod, token):
+    """Test ``get_participant``."""
+    ppt_id = que_record_mod["record_id"]
+    repeat_id = que_record_mod["redcap_repeat_instance"]
+    que_id = api.make_id(ppt_id, repeat_id)
+    que = api.get_questionnaire(que_id, token=token)
+    assert isinstance(que, api.Questionnaire)
+    with pytest.raises(api.RecordNotFound):
+        api.get_questionnaire("f{que_id}:BADID", token=token)
 
 
 def test_get_records(token):
@@ -108,8 +150,8 @@ def test_add_appointment_modifying(apt_record_mod, token):
 
 def test_delete_appointment(apt_record_mod, token):
     """Test ``add_appointment`` ."""
-    apt_id = (
-        apt_record_mod["record_id"] + ":" + apt_record_mod["redcap_repeat_instance"]
+    apt_id = api.make_id(
+        apt_record_mod["record_id"], apt_record_mod["redcap_repeat_instance"]
     )
     api.delete_appointment(apt_record_mod, token=token)
     recs = api.Records(token=token)
@@ -134,8 +176,8 @@ def test_add_questionnaire_mod(que_record_mod, token):
 
 def test_delete_questionnaire(que_record_mod, token):
     """Test ``delete_questionnaire``."""
-    que_id = (
-        que_record_mod["record_id"] + ":" + que_record_mod["redcap_repeat_instance"]
+    que_id = api.make_id(
+        que_record_mod["record_id"], que_record_mod["redcap_repeat_instance"]
     )
     api.delete_questionnaire(que_record_mod, token=token)
     recs = api.Records(token=token)

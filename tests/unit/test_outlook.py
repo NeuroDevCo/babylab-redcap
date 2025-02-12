@@ -5,6 +5,7 @@ import os
 import time
 import pytest
 from babylab.src import outlook, utils
+from babylab.src import api
 from tests import utils as tutils
 
 IS_GIHTUB_ACTIONS = os.getenv("GITHUB_ACTIONS") == "true"
@@ -29,8 +30,8 @@ def test_email_validation():
 
 def test_compose_outlook(apt_record_mod, data_dict: dict):
     """Validate composed outlook."""
-    apt_id = (
-        apt_record_mod["record_id"] + ":" + apt_record_mod["redcap_repeat_instance"]
+    apt_id = api.make_id(
+        apt_record_mod["record_id"], apt_record_mod["redcap_repeat_instance"]
     )
     email_data = {
         "record_id": apt_record_mod["record_id"],

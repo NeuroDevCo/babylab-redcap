@@ -17,8 +17,8 @@ def test_apt_all(client):
 
 def test_apt(client, apt_record_mod):
     """Test apt_all endpoint."""
-    apt_id = (
-        apt_record_mod["record_id"] + ":" + apt_record_mod["redcap_repeat_instance"]
+    apt_id = api.make_id(
+        apt_record_mod["record_id"], apt_record_mod["redcap_repeat_instance"]
     )
     response = client.get("/appointments/" + apt_id)
     assert response.status_code == 200
@@ -38,14 +38,14 @@ def test_apt_new_post(client, apt_finput, token):
     apt_ids = list(ppt.appointments.records.keys())
     last_apt_id = apt_ids[-1].split(":")[1]
     next_apt_id = str(int(last_apt_id) + 1)
-    assert ppt_id + ":" + next_apt_id not in apt_ids
+    assert api.make_id(ppt_id, next_apt_id) not in apt_ids
     url = f"/appointments/appointment_new?ppt_id={ppt_id}"
     response = client.post(url, data=apt_finput)
     assert response.status_code == 302
     ppt = api.get_participant(ppt_id, token=token)
     apt_ids = list(ppt.appointments.records.keys())
     last_apt_id = apt_ids[-1].split(":")[1]
-    assert ppt_id + ":" + last_apt_id in apt_ids
+    assert api.make_id(ppt_id, last_apt_id) in apt_ids
 
 
 @pytest.mark.skipif(IS_GIHTUB_ACTIONS, reason="Test doesn't work in Github Actions.")

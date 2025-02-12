@@ -360,7 +360,7 @@ def get_appointments_table(
 
     df = apts.to_df()
     df["appointment_id"] = [
-        str(i) + ":" + str(apt_id)
+        api.make_id(i, apt_id)
         for i, apt_id in zip(df.index, df["redcap_repeat_instance"])
     ]
 
@@ -411,7 +411,7 @@ def get_questionnaires_table(records: api.Records, data_dict: dict) -> DataFrame
         )
     df = quest.to_df()
     df["questionnaire_id"] = [
-        str(p) + ":" + str(q) for p, q in zip(df.index, df["redcap_repeat_instance"])
+        api.make_id(p, q) for p, q in zip(df.index, df["redcap_repeat_instance"])
     ]
     return replace_labels(df, data_dict)
 

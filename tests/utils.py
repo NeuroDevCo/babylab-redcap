@@ -267,23 +267,29 @@ def create_record_apt(is_new: bool = True) -> dict:
     Returns:
         dict: A REDCap record.
     """
+    token = conf.get_api_key()
     ddict = get_data_dict()
-    recs = api.Records(token=conf.get_api_key())
-    ppt_id = choice(list(recs.participants.records.keys()))
-    while not recs.participants.records[ppt_id].appointments.records:
-        ppt_id = choice(list(recs.participants.records.keys()))
-    apt_id = choice(list(recs.participants.records[ppt_id].appointments.records.keys()))
-
+    recs = api.Records(token=token)
+    ppd_id_list = list(recs.participants.records.keys())
+    ppt_id = choice(ppd_id_list)
+    apt_recs = recs.participants.records[ppt_id].appointments.records
+    while not apt_recs:
+        ppt_id = choice(ppd_id_list)
+        apt_recs = recs.participants.records[ppt_id].appointments.records
+    apt_id = choice(list(apt_recs.keys()))
+    date_fmt = "%Y-%m-%d %H:%M:%S"
     return {
         "record_id": ppt_id,
         "redcap_repeat_instrument": "appointments",
-        "redcap_repeat_instance": "new" if is_new else apt_id.split(":")[1],
+        "redcap_repeat_instance": (
+            api.get_next_id(token=token) if is_new else apt_id.split(":")[1]
+        ),
         "appointment_study": choice(list(ddict["appointment_study"].keys())),
         "appointment_date_created": datetime.datetime.strptime(
-            "2024-12-12 14:09:00", "%Y-%m-%d %H:%M:%S"
+            "2024-12-12 14:09:00", date_fmt
         ),
         "appointment_date_updated": datetime.datetime.strptime(
-            "2024-12-14 12:08:00", "%Y-%m-%d %H:%M:%S"
+            "2024-12-14 12:08:00", date_fmt
         ),
         "appointment_date": datetime.datetime.strptime(
             "2024-12-31 14:09", "%Y-%m-%d %H:%M"
@@ -305,26 +311,28 @@ def create_record_que(is_new: bool = True) -> dict:
     Returns:
         dict: A REDCap record.
     """
+    token = conf.get_api_key()
     ddict = get_data_dict()
-    recs = api.Records(token=conf.get_api_key())
+    recs = api.Records(token=token)
     lang_exp = generate_lang_exp()
-    ppt_id = choice(list(recs.participants.records.keys()))
-    while not recs.participants.records[ppt_id].questionnaires.records:
-        ppt_id = choice(list(recs.participants.records.keys()))
-    que_id = choice(
-        list(recs.participants.records[ppt_id].questionnaires.records.keys())
-    )
+    ppt_id_list = list(recs.participants.records.keys())
+    ppt_id = choice(ppt_id_list)
+    que_recs = recs.participants.records[ppt_id].questionnaires.records
+    while not que_recs:
+        ppt_id = choice(ppt_id_list)
+        que_recs = recs.participants.records[ppt_id].questionnaires.records
+    que_id = choice(list(que_recs.keys()))
 
+    date_fmt = "%Y-%m-%d %H:%M:%S"
+    date = "2024-12-12 14:24:00"
     return {
         "record_id": ppt_id,
         "redcap_repeat_instrument": "language",
-        "redcap_repeat_instance": "new" if is_new else que_id.split(":")[1],
-        "language_date_created": datetime.datetime.strptime(
-            "2024-12-12 14:24:00", "%Y-%m-%d %H:%M:%S"
+        "redcap_repeat_instance": (
+            api.get_next_id(token=token) if is_new else que_id.split(":")[1]
         ),
-        "language_date_updated": datetime.datetime.strptime(
-            "2024-12-12 14:24:00", "%Y-%m-%d %H:%M:%S"
-        ),
+        "language_date_created": datetime.datetime.strptime(date, date_fmt),
+        "language_date_updated": datetime.datetime.strptime(date, date_fmt),
         "language_isestimated": choice(["0", "1"]),
         "language_lang1": choice(list(ddict["language_lang1"].keys())),
         "language_lang1_exp": lang_exp[0],
@@ -355,5 +363,5 @@ def participant_exists(ppt_id: str, records: api.Records = None) -> bool:
     try:
         api.get_participant(ppt_id, token=token)
         return True
-    except IndexError:
+    except api.RecordNotFound:
         return False
