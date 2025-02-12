@@ -20,14 +20,14 @@ def test_index_page_token():
     """Test index page."""
     app = create_app(env="prod")
     with app.test_client() as client:
-        response = client.post("/", data={"apiToken": conf.get_api_key(), "email": ""})
+        response = client.post("/", data={"apiToken": conf.get_api_key()})
         assert response.status_code == 200
         assert b"NeuroDevComp Babylab database" in response.data
         assert b"Incorrect token" not in response.data
         assert isinstance(app.config["RECORDS"], api.Records)
 
     with app.test_client() as client:
-        response = client.post("/", data={"apiToken": "badtoken", "email": ""})
+        response = client.post("/", data={"apiToken": "badtoken"})
         assert response.status_code == 200
         assert b"Incorrect token" in response.data
 

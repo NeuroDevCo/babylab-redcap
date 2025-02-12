@@ -162,35 +162,11 @@ def appointments_routes(app):
                 "appointments_complete": "2",
             }
 
-            # try to add appointment: if success try to send email
             try:
                 api.add_appointment(data, token=token)
                 records = conf.get_records_or_index(token=token)
                 app.config["RECORDS"] = records
                 flash("Appointment added!", "success")
-                if os.name == "nt" and "EMAIL" in app.config and app.config["EMAIL"]:
-                    ppt_records = records.participants.records[ppt_id]
-                    apt_id = list(ppt_records.appointments.records)[-1]
-                    utils.send_email_or_exception(
-                        email_from=app.config["EMAIL"],
-                        ppt_id=ppt_id,
-                        apt_id=apt_id,
-                        data=records.appointments.records[apt_id].data,
-                        data_dict=data_dict,
-                    )
-                    calname = (
-                        "Appointments - Test"
-                        if app.config["TESTING"]
-                        else "Appointments"
-                    )
-                    utils.create_event_or_exception(
-                        account=app.config["EMAIL"],
-                        calendar_name=calname,
-                        ppt_id=ppt_id,
-                        apt_id=apt_id,
-                        data=records.appointments.records[apt_id].data,
-                        data_dict=data_dict,
-                    )
                 return redirect(url_for("apt_all", records=records))
             except requests.exceptions.HTTPError as e:
                 flash(f"Something went wrong! {e}", "error")
@@ -232,35 +208,11 @@ def appointments_routes(app):
                 "appointments_complete": "2",
             }
 
-            # try to add appointment: if success try to send email
             try:
                 api.add_appointment(data, token=token)
                 records = conf.get_records_or_index(token=token)
                 app.config["RECORDS"] = records
                 flash("Appointment modified!", "success")
-                if "EMAIL" in app.config and app.config["EMAIL"]:
-                    ppt_records = records.participants.records[ppt_id]
-                    apt_id = list(ppt_records.appointments.records)[-1]
-                    calname = (
-                        "Appointments - Test"
-                        if app.config["TESTING"]
-                        else "Appointments"
-                    )
-                    utils.send_email_or_exception(
-                        email_from=app.config["EMAIL"],
-                        ppt_id=ppt_id,
-                        apt_id=apt_id,
-                        data=records.appointments.records[apt_id].data,
-                        data_dict=data_dict,
-                    )
-                    utils.modify_event_or_exception(
-                        account=app.config["EMAIL"],
-                        calendar_name=calname,
-                        ppt_id=ppt_id,
-                        apt_id=apt_id,
-                        data=records.appointments.records[apt_id].data,
-                        data_dict=data_dict,
-                    )
                 return redirect(
                     url_for(
                         "apt",

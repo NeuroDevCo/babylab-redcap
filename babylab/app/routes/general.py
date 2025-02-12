@@ -214,7 +214,6 @@ def general_routes(app):
             finput = request.form
             token = finput["apiToken"]
             app.config["API_KEY"] = token
-            app.config["EMAIL"] = finput["email"]
             try:
                 redcap_version = api.get_redcap_version(token=token)
                 if redcap_version:

@@ -142,19 +142,3 @@ def que_record_mod() -> dict:
         dict: A REDCap record fixture.
     """
     return tutils.create_record_que(is_new=False)
-
-
-def pytest_sessionfinish(account: str = "gonzalo.garcia@sjd.es"):
-    """
-    Called after whole test run finished, right before
-    returning the exit status to the system.
-    """
-    if not IS_GIHTUB_ACTIONS:
-        outlook.check_email_address(account)
-        ol = win.client.Dispatch("Outlook.Application").GetNamespace("MAPI")
-        recipient = ol.createRecipient(account)
-        shared_cal = ol.GetSharedDefaultFolder(recipient, 9).Folders(
-            "Appointments - Test"
-        )
-        for e in shared_cal.Items:
-            e.Delete()

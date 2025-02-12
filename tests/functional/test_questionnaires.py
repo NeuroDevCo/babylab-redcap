@@ -48,9 +48,14 @@ def test_que_mod(client, que_finput_mod):
     assert response.status_code == 200
 
 
-def test_que_mod_post(client, que_finput_mod):
+def test_que_mod_post(client, que_finput_mod, token):
     """Test que_mod endpoint."""
     que_id = que_finput_mod["inputQueId"]
+    que = api.get_questionnaire(que_id, token=token)
+
     url = f"/questionnaires/{que_id}/questionnaire_modify"
     response = client.post(url, data=que_finput_mod)
     assert response.status_code == 302
+
+    new_que = api.get_questionnaire(que_id, token=token)
+    assert new_que.data != que.data

@@ -38,45 +38,6 @@ def generate_email() -> str:
     return generate_str() + "@" + generate_str() + ".com"
 
 
-def check_email_received(account: str = "gonzalo.garcia@sjd.es"):
-    """Check that an email has been received."""
-    # create an instance of the Outlook application
-    outlook = win.client.Dispatch("Outlook.Application").GetNamespace("MAPI")
-
-    # iterate through all accounts to find the specified one
-    for acc in outlook.Folders:
-        if acc.Name == account:
-            inbox = acc.Folders["Inbox"]
-            messages = inbox.Items
-            # sort messages by received time in descending order
-            messages.Sort("[ReceivedTime]", True)
-            latest_message = messages.GetFirst()
-            if latest_message:
-                return {
-                    "sender": latest_message.SenderName,
-                    "subject": latest_message.Subject,
-                    "timestamp": latest_message.ReceivedTime,
-                }
-            return False
-    return False
-
-
-def check_event_created(ppt_id: str, account: str = "gonzalo.garcia@sjd.es"):
-    """Check that an email has been received."""
-    # create an instance of the Outlook application
-    outlook = win.client.Dispatch("Outlook.Application").GetNamespace("MAPI")
-    recipient = outlook.createRecipient(account)
-    shared_cal = outlook.GetSharedDefaultFolder(recipient, 9).Folders(
-        "Appointments - Test"
-    )
-    for apt in shared_cal.Items:
-        if ppt_id in apt.Subject:
-            return {
-                "subject": apt.Subject,
-            }
-    return False
-
-
 def generate_lang_exp():
     """Create vector of language exposures.
 

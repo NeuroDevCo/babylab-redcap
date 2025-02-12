@@ -1,11 +1,16 @@
 ﻿## v0.2.2
 
-- Fix age display in participant and appointment pages
-- Adds .sh and .bat launchers for Windows, Linux, and macOS
-- Use Roboto for body text and as fallback font
-- Fix dashboard age plot ordering of age bins
+- Fix age display in participant and appointment pages $67
+- Fixes language questionnaires not being saved #73
+- Removes e-mail sending and calendar event creation #55
+- Adds `make_id` function to simplify testing
+- Adds `get_participant`, `get_appointment`, and `get_questionnaire` to fetch information from individual records
+- More severe tests for adding and modifying records #76
+- Adds .sh and .bat launchers for Windows, Linux, and macOS #77
+- Use Roboto for body text and as fallback font #71
+- Fix dashboard age plot ordering of age bins #74
 - Fix card footers in index
-- Add more severe tests for new participant and appointment pages
+- Fixes head circumference not showing in participant page #70
 
 ## v0.2.1
 

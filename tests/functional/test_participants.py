@@ -38,8 +38,11 @@ def test_ppt_mod(client, ppt_finput_mod):
     assert response.status_code == 200
 
 
-def test_ppt_mod_post(client, ppt_finput_mod):
+def test_ppt_mod_post(client, ppt_finput_mod, token):
     """Test ppt_all endpoint."""
+    ppt = api.get_participant(ppt_finput_mod["record_id"], token=token)
     url = f"/participants/{ppt_finput_mod['record_id']}/participant_modify"
     response = client.post(url, data=ppt_finput_mod)
     assert response.status_code == 302
+    new_ppt = api.get_participant(ppt_finput_mod["record_id"], token=token)
+    assert new_ppt.data != ppt.data
