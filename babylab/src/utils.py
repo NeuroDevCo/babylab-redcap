@@ -7,11 +7,7 @@ import datetime
 import shutil
 from copy import deepcopy
 from pandas import DataFrame
-from flask import flash, render_template
 from babylab.src import api
-
-if os.name == "nt":
-    from babylab.src import outlook
 
 
 def format_ppt_id(ppt_id: str) -> str:
@@ -479,61 +475,3 @@ def prepare_email(ppt_id: str, apt_id: str, data: dict, data_dict: dict) -> dict
         "comments": data["comments"],
     }
     return replace_labels(email, data_dict)
-
-
-if os.name == "nt":
-
-    def send_email_or_exception(email_from: str, **kwargs) -> None:
-        """Try sending an email or catch the exception.
-
-        Args:
-            **kwargs: Arguments passed to ``prepare_email``.
-        """
-        try:
-            data = prepare_email(**kwargs)
-            outlook.send_email(data=data, email_from=email_from)
-        except outlook.MailDomainException as e:
-            flash(f"Appointment modified, but e-mail was not sent: {e}", "warning")
-            return render_template("apt_new.html", **kwargs)
-        except outlook.MailAddressException as e:
-            flash(f"Appointment modified, but e-mail was not sent: {e}", "warning")
-            return render_template("apt_new.html", **kwargs)
-        return None
-
-    def create_event_or_exception(account: str, calendar_name: str, **kwargs) -> None:
-        """Try creating and email or catch the exception.
-
-        Args:
-            **kwargs: Arguments passed to ``prepare_email``.
-        """
-        try:
-            data = prepare_email(**kwargs)
-            outlook.create_event(
-                data=data, account=account, calendar_name=calendar_name
-            )
-        except outlook.MailDomainException as e:
-            flash(f"Appointment created, but event was not created: {e}", "warning")
-            return render_template("apt_new.html", **kwargs)
-        except outlook.MailAddressException as e:
-            flash(f"Appointment created, but event was not created: {e}", "warning")
-            return render_template("apt_new.html", **kwargs)
-        return None
-
-    def modify_event_or_exception(account: str, calendar_name: str, **kwargs) -> None:
-        """Try modifying and email or catch the exception.
-
-        Args:
-            **kwargs: Arguments passed to ``prepare_email``.
-        """
-        try:
-            data = prepare_email(**kwargs)
-            outlook.modify_event(
-                data=data, account=account, calendar_name=calendar_name
-            )
-        except outlook.MailDomainException as e:
-            flash(f"Appointment modified, but event was not created: {e}", "warning")
-            return render_template("apt_new.html", **kwargs)
-        except outlook.MailAddressException as e:
-            flash(f"Appointment modified, but event was not created: {e}", "warning")
-            return render_template("apt_new.html", **kwargs)
-        return None

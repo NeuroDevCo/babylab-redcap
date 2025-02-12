@@ -5,8 +5,10 @@
 - Removes e-mail sending and calendar event creation #55
 - Adds `make_id` function to simplify testing
 - Adds Ubuntu and macOS to GitHub Actions workflows
+- Fixes modifying record pages not saving default values in text areas #78
 - Adds `get_participant`, `get_appointment`, and `get_questionnaire` to fetch information from individual records
-- More severe tests for adding and modifying records #76
+- Cleans Python dependencies
+- More severe tests for adding and modifying records #57 #76
 - Adds .sh and .bat launchers for Windows, Linux, and macOS #77
 - Use Roboto for body text and as fallback font #71
 - Fix dashboard age plot ordering of age bins #74
