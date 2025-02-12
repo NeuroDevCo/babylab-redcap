@@ -4,6 +4,7 @@
 - Fixes language questionnaires not being saved #73
 - Removes e-mail sending and calendar event creation #55
 - Adds `make_id` function to simplify testing
+- Add better handling of 500 error #63
 - Adds Ubuntu and macOS to GitHub Actions workflows
 - Fixes modifying record pages not saving default values in text areas #78
 - Adds `get_participant`, `get_appointment`, and `get_questionnaire` to fetch information from individual records
