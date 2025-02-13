@@ -33,7 +33,7 @@
     src="https://cdn.datatables.net/v/bs5/jq-3.7.0/dt-2.2.1/b-3.2.1/fh-4.0.1/sp-2.3.3/sl-3.0.0/datatables.min.js"></script>
   <script type="text/javascript" src="{{ url_for('static', filename='js/tables.js') }}"></script>
   <script>
-    let table = new dt("#ppttable", searchCols = [3, 5, 6], hideCols = [7, 8, 9, 10, 11, 12, 13])
+    let table = new dt("#ppttable", searchCols = [3, 5, 6], hideCols = [7, 8, 9, 10, 11, 12, 13], lookupCols = [1])
 
     table.on('click', 'td', function (e) {
       let tr = e.target.closest('tr');
