@@ -1,4 +1,4 @@
-function dt(id, searchCols, hideCols, aptStatusCol, aptIsbookedCol, queStatusCol) {
+function dt(id, searchCols, hideCols, lookupCols, aptStatusCol, queStatusCol) {
     let panes = {
         extend: 'searchPanes',
         config: {
@@ -28,7 +28,15 @@ function dt(id, searchCols, hideCols, aptStatusCol, aptIsbookedCol, queStatusCol
             {
                 visible: false,
                 targets: hideCols,
-            }
+            },
+            {
+                searchable: true,
+                targets: lookupCols,
+            },
+            {
+                searchable: false,
+                targets: '_all',
+            },
         ],
         rowCallback: (row, data) => {
             if (queStatusCol) {
