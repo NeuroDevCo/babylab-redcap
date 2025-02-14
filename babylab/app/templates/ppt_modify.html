@@ -189,7 +189,7 @@
             </label>
             <select class="form-select" name="inputDeliveryType">
               {% for k, v in data_dict["participant_birth_type"].items() %}
-              <option value="{{ k }}" {% if data["birth_type"]=="v" %}selected{% endif %}>{{ v }}</option>
+              <option value="{{ k }}" {% if data["birth_type"]==k %}selected{% endif %}>{{ v }}</option>
               {% endfor %}
             </select>
             <div class="col">
