@@ -17,7 +17,12 @@
     <div class="div-center">
       <div class="row">
         <div class="col">
-          <div class="btn-group" role="group" aria-label="Basic example">
+          <div class="btn-group" role="group">
+            <a href="{{ url_for('ppt', ppt_id = ppt_id) }}">
+              <button type="button" class="btn btn-info">
+                <i class="fa fa-user"></i>&nbsp;&nbsp;See participant
+              </button>
+            </a>
             <a href="{{ url_for('apt_modify', apt_id = apt_id, ppt_id = ppt_id) }}">
               <button type="button" class="btn btn-warning">
                 <i class="fa fa-pen"></i>&nbsp;&nbsp;Modify
