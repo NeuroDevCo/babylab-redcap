@@ -1,4 +1,4 @@
-function dt(id, searchCols, hideCols, aptStatusCol, aptIsbookedCol, queStatusCol) {
+function dt(id, searchCols, hideCols, aptStatusCol, queStatusCol) {
     let panes = {
         extend: 'searchPanes',
         config: {
@@ -32,8 +32,8 @@ function dt(id, searchCols, hideCols, aptStatusCol, aptIsbookedCol, queStatusCol
         ],
         rowCallback: (row, data) => {
             if (queStatusCol) {
-                c = format_que_status(data[queStatusCol])
-                $('td:eq(1)', row).css('color', c);
+                c = format_que_status(data[2])
+                $('td:eq(2)', row).css('color', c);
             }
             if (aptStatusCol) {
                 c = format_apt_status(data[aptStatusCol])
