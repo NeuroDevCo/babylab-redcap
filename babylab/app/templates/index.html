@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+
 {% block content %}
 
 <body>
@@ -26,12 +27,16 @@
             <input type="password" class="form-control" id="apiToken" name="apiToken" aria-describedby="token-addon"
               placeholder="">
           </div>
-          <button type="submit" class="btn btn-primary">Submit</button>
+          <button type="submit" class="btn btn-primary" onclick="spinner()">Submit</button>
         </form>
       </div>
       <div class="card-footer">You can find yor <b>API token</b> at REDCap.</div>
     </div>
-    {% endif %}
+    <div class="loading">
+      <div class="loader">
+      </div>
+    </div>
   </div>
+  {% endif %}
 </body>
 {% endblock content %}
