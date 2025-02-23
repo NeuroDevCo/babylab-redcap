@@ -36,7 +36,11 @@
       <div class="loader">
       </div>
     </div>
-  </div>
-  {% endif %}
+    <script type="text/javascript">
+      function spinner() {
+        document.getElementsByClassName("loading")[0].style.display = "block";
+      }
+    </script>
+    {% endif %}
 </body>
 {% endblock content %}
