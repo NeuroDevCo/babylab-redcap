@@ -249,7 +249,9 @@ def participants_routes(app):
     @conf.token_required
     def ppt_new():
         """New participant page"""
-        data_dict = api.get_data_dict(token=app.config["API_KEY"])
+        token = app.config["API_KEY"]
+        data_dict = api.get_data_dict(token=token)
+        ppt_id = api.get_next_id(token=token)
         if request.method == "POST":
             finput = request.form
             date_now = datetime.datetime.strftime(
@@ -298,7 +300,7 @@ def participants_routes(app):
                 app.config["RECORDS"] = conf.get_records_or_index(
                     token=app.config["API_KEY"]
                 )
-                return redirect(url_for("ppt_all"))
+                return redirect(url_for("que_new", ppt_id=ppt_id))
             except requests.exceptions.HTTPError as e:
                 flash(f"Something went wrong! {e}", "error")
                 return redirect(url_for("ppt_new", data_dict=data_dict))
