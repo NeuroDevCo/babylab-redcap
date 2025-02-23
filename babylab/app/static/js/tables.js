@@ -1,4 +1,4 @@
-function dt(id, searchCols, hideCols, lookupCols, aptStatusCol, queStatusCol) {
+function dt(id, searchCols, hideCols, lookupCols, queStatusCol, aptStatusCol) {
     let panes = {
         extend: 'searchPanes',
         config: {
@@ -39,18 +39,28 @@ function dt(id, searchCols, hideCols, lookupCols, aptStatusCol, queStatusCol) {
             },
         ],
         rowCallback: (row, data) => {
-            if (queStatusCol) {
+            if (typeof queStatusCol !== "undefined") {
                 c = format_que_status(data[queStatusCol])
-                $('td:eq(1)', row).css('color', c);
+                $('td:eq(2)', row).css('color', c);
             }
-            if (aptStatusCol) {
+            if (typeof aptStatusCol !== "undefined") {
                 c = format_apt_status(data[aptStatusCol])
                 $('td:eq(2)', row).css('color', c);
             }
-
         },
     });
     return table;
+}
+
+function format_que_status(x) {
+    switch (x) {
+        case 'Estimated':
+            return '#d62728'
+        case 'Calculated':
+            return '#0ea844'
+        default:
+            return '#000000'
+    }
 }
 
 function format_apt_status(x) {
@@ -68,16 +78,7 @@ function format_apt_status(x) {
     }
 }
 
-function format_que_status(x) {
-    switch (x) {
-        case 'Estimated':
-            return '#d62728'
-        case 'Calculated':
-            return '#0ea844'
-        default:
-            return '#000000'
-    }
-}
+
 
 
 function format_ppt(d) {
