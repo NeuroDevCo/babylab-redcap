@@ -237,7 +237,7 @@ def get_age_timestamp(
         months = ppt_records[v.record_id].data["age_now_months"]
         days = ppt_records[v.record_id].data["age_now_days"]
         age_now = api.get_age(
-            birth_date=api.get_birth_date(age=f"{months}:{days}"),
+            birth_date=api.get_birth_date(age=(months, days)),
             timestamp=t,
         )
         months_new.append(int(age_now[0]))
@@ -294,14 +294,12 @@ def get_participants_table(records: api.Records, data_dict: dict) -> DataFrame:
     new_age_months = []
     new_age_days = []
     for _, v in records.participants.records.items():
-        age = api.get_age(
-            birth_date=api.get_birth_date(
-                age=f"{v.data['age_created_months']}:{v.data['age_created_days']}",
-                timestamp=datetime.datetime.strptime(
-                    v.data["date_created"], "%Y-%m-%d %H:%M:%S"
-                ),
-            )
+        timestamp = datetime.datetime.strptime(
+            v.data["date_created"], "%Y-%m-%d %H:%M:%S"
         )
+        age_created = (v.data["age_created_months"], v.data["age_created_days"])
+        birth_date = api.get_birth_date(age=age_created, timestamp=timestamp)
+        age = api.get_age(birth_date=birth_date)
         new_age_months.append(int(age[0]))
         new_age_days.append(int(age[1]))
 

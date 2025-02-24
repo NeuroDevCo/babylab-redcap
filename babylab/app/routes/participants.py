@@ -85,14 +85,10 @@ def prepare_record_id(ppt: api.Participant, data_dict: dict) -> dict:
         kdict = "participant_" + k
         if kdict in data_dict:
             data[k] = data_dict[kdict][v] if v else ""
-
+    age_created = (data["age_created_months"], data["age_created_days"])
+    timestamp = datetime.datetime.strptime(data["date_created"], "%Y-%m-%d %H:%M:%S")
     age = api.get_age(
-        birth_date=api.get_birth_date(
-            age=f"{str(data['age_created_months'])}:{str(data['age_created_days'])}",
-            timestamp=datetime.datetime.strptime(
-                data["date_created"], "%Y-%m-%d %H:%M:%S"
-            ),
-        )
+        birth_date=api.get_birth_date(age=age_created, timestamp=timestamp)
     )
     data["age_now_months"] = str(age[0])
     data["age_now_days"] = str(age[1])
@@ -239,11 +235,7 @@ def participants_routes(app):
             except requests.exceptions.HTTPError as e:
                 flash(f"Something went wrong! {e}", "error")
                 return redirect(url_for("ppt_all"))
-        return render_template(
-            "ppt.html",
-            ppt_id=ppt_id,
-            data=data,
-        )
+        return render_template("ppt.html", ppt_id=ppt_id, data=data)
 
     @app.route("/participant_new", methods=["GET", "POST"])
     @conf.token_required
@@ -296,7 +288,7 @@ def participants_routes(app):
                     modifying=False,
                     token=app.config["API_KEY"],
                 )
-                flash("Participant added!", "success")
+                flash(f"Participant added! ({ ppt_id })", "success")
                 app.config["RECORDS"] = conf.get_records_or_index(
                     token=app.config["API_KEY"]
                 )
@@ -325,8 +317,8 @@ def participants_routes(app):
                 "record_id": ppt_id,
                 "participant_date_updated": date_now,
                 "participant_name": finput["inputName"],
-                "participant_age_created_months": finput["inputAgeMonths"],
-                "participant_age_created_days": finput["inputAgeDays"],
+                # "participant_age_created_months": ppt.data["age_created_months"],
+                # "participant_age_created_days": ppt.data["age_created_days"],
                 "participant_sex": finput["inputSex"],
                 "participant_source": finput["inputSource"],
                 "participant_twin": finput["inputTwinID"],

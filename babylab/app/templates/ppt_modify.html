@@ -90,12 +90,14 @@
                   (months)
                 </label>
                 <input type="number" name="inputAgeMonths" class="form-control" min="0"
-                  placeholder="{{ data['age_now_months'] }}" value="{{ data['age_now_months'] }}" required>
+                  placeholder="{{ data['age_now_months'] }}" value="{{ data['age_now_months'] }}" required readonly
+                  disabled="disabled">
               </div>
               <div class="col">
                 <label class="form-label" for="inputAgeDays">Age (days)</label>
-                <input type=" number" name="inputAgeDays" class="form-control" min="1" max="31"
-                  placeholder="{{ data['age_now_days'] }}" value="{{ data['age_now_days'] }}" required>
+                <input type="number" name="inputAgeDays" class="form-control disable" min="1" max="31"
+                  placeholder="{{ data['age_now_days'] }}" value="{{ data['age_now_days'] }}" required readonly
+                  disabled="disabled">
               </div>
             </div>
             <div class="col">
