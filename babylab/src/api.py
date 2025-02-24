@@ -4,7 +4,6 @@
 Functions to interact with the REDCap API.
 """
 
-import math
 import os
 import re
 import json
