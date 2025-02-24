@@ -116,7 +116,7 @@ def questionnaires_routes(app):
             if data["isestimated"] == "1"
             else "<div style='color: green'>Calculated</div>"
         )
-        return render_template("que.html", que_id=que_id, data=data)
+        return render_template("que.html", ppt_id=ppt_id, que_id=que_id, data=data)
 
     @app.route("/questionnaires/questionnaire_new", methods=["GET", "POST"])
     @conf.token_required

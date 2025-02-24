@@ -126,7 +126,7 @@ def appointments_routes(app):
         return render_template(
             "apt.html",
             apt_id=apt_id,
-            ppt_id=data["record_id"],
+            ppt_id=ppt_id,
             data=data,
             participant=ppt.data,
         )

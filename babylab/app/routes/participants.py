@@ -235,11 +235,7 @@ def participants_routes(app):
             except requests.exceptions.HTTPError as e:
                 flash(f"Something went wrong! {e}", "error")
                 return redirect(url_for("ppt_all"))
-        return render_template(
-            "ppt.html",
-            ppt_id=ppt_id,
-            data=data,
-        )
+        return render_template("ppt.html", ppt_id=ppt_id, data=data)
 
     @app.route("/participant_new", methods=["GET", "POST"])
     @conf.token_required
