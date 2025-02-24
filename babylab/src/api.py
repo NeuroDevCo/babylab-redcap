@@ -48,13 +48,11 @@ class Participant:
             for k, v in data.items()
             if k.startswith("participant_") or k == "record_id"
         }
-        date_birth = get_birth_date(
-            str(data["age_created_months"]) + ":" + str(data["age_created_days"]),
-            datetime.datetime.strptime(data["date_created"], "%Y-%m-%d %H:%M:%S"),
-        )
-        data["age_now_months"], data["age_now_days"] = get_age(
-            date_birth, datetime.datetime.today()
-        )
+        age_now = (data["age_created_months"], data["age_created_days"])
+        time_fmt = "%Y-%m-%d %H:%M:%S"
+        timestamp = datetime.datetime.strptime(data["date_created"], time_fmt)
+        date_birth = get_birth_date(age_now, timestamp)
+        data["age_now_months"], data["age_now_days"] = get_age(date_birth)
         self.record_id = data["record_id"]
         self.data = data
         self.appointments = apt
@@ -737,41 +735,67 @@ class Records:
 
 
 def get_age(
-    birth_date: str | datetime.datetime, timestamp: str | datetime.datetime = None
+    birth_date: datetime.datetime,
+    timestamp: datetime.datetime = datetime.datetime.now(),
 ):
     """Estimate age in months and days at some timestamp based on date of birth.
 
     Args:
-        birth_date (str | datetime.datetime): Birthdate as ``datetime`` object or str in "Y-m-d" format. Defaults to current date (``datetime.today()``).
-        timestamp (str | datetime.datetime, optional): Time for which the age is calculated. Defaults to None.
+        birth_date (datetime.datetime): Birth date as ``datetime.datetime`` type.
+        timestamp (datetime.datetime, optional): Time for which the age is calculated. Defaults to current date (``datetime.datetime.now()``).
 
     Returns:
-        list[int]: Age in months and days.
+        tuple[int, int]: Age in months and days in the ``(months, days)`` format.
     """  # pylint: disable=line-too-long
-    if timestamp is None:
-        timestamp = datetime.datetime.today()
-    if isinstance(timestamp, str):
-        timestamp = datetime.datetime.strptime(timestamp, "%Y-%m-%d")
-    if isinstance(birth_date, str):
-        birth_date = datetime.datetime.strptime(birth_date, "%Y-%m-%d")
+    if not isinstance(timestamp, datetime.datetime):
+        raise ValueError("`birth_date` must be of type `datetime.datetime`")
+    if not isinstance(birth_date, datetime.datetime):
+        raise ValueError("`timestamp` must be of type `datetime.datetime`")
     delta = relativedelta.relativedelta(timestamp, birth_date)
-    return [delta.months + (delta.years * 12), delta.days]
+    return delta.months, delta.days
 
 
-def get_birth_date(age: str, timestamp: str | datetime.datetime = None):
+class BadAgeFormat(Exception):
+    """If age des not follow the right format."""
+
+    def __init__(self, age):
+        super().__init__(f"`age` must follow the `(months, age)` format': { age }")
+
+
+def parse_age(age: tuple) -> tuple[int, int]:
+    """Validate age string or tuple.
+
+    Args:
+        age (tuple): Age of the participant as a tuple in the ``(months, days)`` format.
+
+    Raises:
+        ValueError: If age is not str or tuple.
+        BadAgeFormat: If age is ill-formatted.
+
+    Returns:
+        tuple[int, int]: Age of the participant in the ``(months, days)`` format.
+    """  # pylint: disable=line-too-long
+    try:
+        assert isinstance(age, tuple)
+        assert len(age) == 2
+        return int(age[0]), int(age[1])
+    except AssertionError as e:
+        raise BadAgeFormat(age) from e
+
+
+def get_birth_date(
+    age: str | tuple, timestamp: str | datetime.datetime = datetime.datetime.now()
+):
     """Calculate date of birth based on age at some timestamp.
 
     Args:
-        age (str): Age in months and days (``m:d`` format) at the timestamp.
-        timestamp (str | datetime, optional): Time at which age was calculated. Defaults to ``datetime.today()``.
+        age (tuple): Age in months and days as a tuple of type ``(months, days)``.
+        timestamp (str | datetime, optional): Time at which age was calculated. Defaults to ``datetime.datetime.now()``.
 
     Returns:
-        _type_: _description_
+        datetime.datetime: Birth date of the participant.
     """  # pylint: disable=line-too-long
-    if timestamp is None:
-        timestamp = datetime.datetime.today()
+    months, days = parse_age(age)
     if not isinstance(timestamp, datetime.datetime):
-        timestamp = datetime.datetime.strptime(timestamp, "%Y-%m-%d")
-    age_parsed = age.split(":")
-    days_diff = math.ceil(float(age_parsed[0]) * 30.437 + float(age_parsed[1]))
-    return timestamp - relativedelta.relativedelta(days=days_diff)
+        raise ValueError("timestamp must be a `datetime.datetime`")
+    return timestamp - relativedelta.relativedelta(months=months, days=days)

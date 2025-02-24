@@ -100,10 +100,11 @@ def appointments_routes(app):
         apt = ppt.appointments.records[apt_id]
         data = utils.replace_labels(apt.data, data_dict)
 
-        date_birth = api.get_birth_date(
-            ppt.data["age_created_months"] + ":" + ppt.data["age_created_days"],
-            datetime.datetime.strptime(ppt.data["date_created"], "%Y-%m-%d %H:%M:%S"),
+        age_created = (ppt.data["age_created_months"], ppt.data["age_created_days"])
+        timestamp = datetime.datetime.strptime(
+            ppt.data["date_created"], "%Y-%m-%d %H:%M:%S"
         )
+        date_birth = api.get_birth_date(age_created, timestamp=timestamp)
         data["age_apt_months"], data["age_apt_days"] = api.get_age(
             date_birth, datetime.datetime.strptime(data["date"], "%Y-%m-%d %H:%M")
         )
@@ -165,7 +166,7 @@ def appointments_routes(app):
                 api.add_appointment(data, token=token)
                 records = conf.get_records_or_index(token=token)
                 app.config["RECORDS"] = records
-                flash("Appointment added!", "success")
+                flash(f"Appointment added! ({ppt_id})", "success")
                 return redirect(url_for("apt_all", records=records))
             except requests.exceptions.HTTPError as e:
                 flash(f"Something went wrong! {e}", "error")

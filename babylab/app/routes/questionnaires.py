@@ -163,7 +163,7 @@ def questionnaires_routes(app):
                 api.add_questionnaire(data, token=token)
                 records = conf.get_records_or_index(token=token)
                 app.config["RECORDS"] = records
-                flash("Questionnaire added!", "success")
+                flash(f"Questionnaire added! ({ppt_id})", "success")
                 return redirect(url_for("que_all"))
             except requests.exceptions.HTTPError as e:
                 flash(f"Something went wrong! {e}", "error")
