@@ -11,38 +11,39 @@
       <p class="lead">Showing details about appointmenmt {{ apt_id }}. To modify, hit the "Modify appointment" button.
       </p>
     </div>
-  </div>
-  <hr class="my-4">
-</header>
-
-<body>
-  <div class="div-center">
-    <div class="row">
-      <div class="col">
-        <div class="btn-group" role="group">
-          <a href="{{ url_for('ppt', ppt_id = ppt_id) }}">
-            <button type="button" class="btn btn-info">
-              <i class="fa fa-user"></i>&nbsp;&nbsp;See participant
-            </button>
-          </a>
-          <a href="{{ url_for('apt_modify', apt_id = apt_id, ppt_id = ppt_id) }}">
-            <button type="button" class="btn btn-warning">
-              <i class="fa fa-pen"></i>&nbsp;&nbsp;Modify
-              appointment
-            </button>
-          </a>
-          <a href="{{ url_for('que_new', ppt_id = ppt_id) }}">
-            <button type="button" class="btn btn-primary">
-              <i class="fa-regular fa-clipboard"></i>&nbsp;&nbsp;Add language
-              questionnaire
-            </button>
-          </a>
-          <a>
-            <form method="post">
-              <input type="submit" name="deleteAppointment" class="btn btn-danger"
-                value="×&nbsp;&nbsp;&nbsp;&nbsp;Delete appointment">
-            </form>
-          </a>
+    <hr class="my-4">
+  </header>
+  <body>
+    <div class="div-center">
+      <div class="row">
+        <div class="col">
+          <div class="btn-group" role="group">
+            <a href="{{ url_for('ppt', ppt_id = ppt_id) }}">
+              <button type="button" class="btn btn-info">
+                <i class="fa fa-user"></i>&nbsp;&nbsp;See participant
+              </button>
+            </a>
+            <a href="{{ url_for('apt_modify', apt_id = apt_id, ppt_id = ppt_id) }}">
+              <button type="button" class="btn btn-warning">
+                <i class="fa fa-pen"></i>&nbsp;&nbsp;Modify
+                appointment
+              </button>
+            </a>
+            <a href="{{ url_for('que_new', ppt_id = ppt_id) }}">
+              <button type="button" class="btn btn-primary">
+                <i class="fa-regular fa-clipboard"></i>&nbsp;&nbsp;Add language
+                questionnaire
+              </button>
+            </a>
+            <a>
+              <form method="post">
+                <input type="submit"
+                       name="deleteAppointment"
+                       class="btn btn-danger"
+                       value="×&nbsp;&nbsp;&nbsp;&nbsp;Delete appointment">
+              </form>
+            </a>
+          </div>
         </div>
       </div>
     </div>
