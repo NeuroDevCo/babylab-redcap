@@ -102,11 +102,29 @@ def format_taxi_isbooked(address: str, isbooked: str) -> str:
     return "<p style='color: red;'>No</p>"
 
 
-def format_modify_button(
-    ppt_id: str = None,
-    apt_id: str = None,
-    que_id: str = None,
-):
+def format_new_button(record: str, ppt_id: str = None):
+    """Add new record button.
+
+    Args:
+        record (str): Type of record.
+        ppt_id (str): Participant ID.
+
+    Returns:
+        str: Formatted HTML string.
+    """  # pylint: disable=line-too-long
+    if record not in ["Appointment", "Questionnaire"]:
+        raise ValueError(
+            f"`record` must be 'Appointment' or 'Questionnaire', but {record} was provided"
+        )
+    status = "success" if record == "Appointment" else "primary"
+    button_str = f'<button type="button" class="btn btn-{status}"><i class="fa-solid fa-plus"></i>&nbsp;&nbsp;{record}</button></a>'
+    if record == "Appointment":
+        return f'<a href="/appointments/appointment_new?ppt_id={ppt_id}">{button_str}'
+
+    return f'<a href="/questionnaires/questionnaire_new?ppt_id={ppt_id}">{button_str}'
+
+
+def format_modify_button(ppt_id: str = None, apt_id: str = None, que_id: str = None):
     """Add modify button.
 
     Args:
@@ -117,13 +135,15 @@ def format_modify_button(
     Returns:
         str: Formatted HTML string.
     """  # pylint: disable=line-too-long
+    button_str = '<button type="button" class="btn btn-warning"><i class="fa-solid fa-pen"></i>&nbsp;&nbsp;Modify</button></a>'
+
     if apt_id:
-        return f'<a href="/appointments/{apt_id}/appointment_modify"><button type="button" class="btn btn-warning">Modify</button></a>'  # pylint: disable=line-too-long
+        return f'<a href="/appointments/{apt_id}/appointment_modify">{button_str}'
 
     if que_id:
-        return f'<a href="/questionnaires/{que_id}/questionnaire_modify"><button type="button" class="btn btn-warning">Modify</button></a>'  # pylint: disable=line-too-long
+        return f'<a href="/questionnaires/{que_id}/questionnaire_modify">{button_str}'
 
-    return f'<a href="/participants/{ppt_id}/participant_modify"><button type="button" class="btn btn-warning">Modify</button></a>'  # pylint: disable=line-too-long
+    return f'<a href="/participants/{ppt_id}/participant_modify">{button_str}'
 
 
 def format_df(
