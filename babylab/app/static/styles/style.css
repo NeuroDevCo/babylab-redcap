@@ -39,13 +39,22 @@ nav {
 td, tr, th {
     background-color: #ffffff83;
 }
+
+td {
+    user-select: all;
+}
+
 td, option, select, input, textarea {
     font-size: 18px;
     font-family: 'Roboto';
     vertical-align: text-bottom;
-    word-wrap: break-word;
-    user-select: all;
+    -webkit-hyphens: auto;
+    -moz-hyphens: auto;
+    -ms-hyphens: auto;
+    hyphens: auto;
 }
+
+
 
 label {
     font-family: 'Ciutadella Bold', 'Roboto Bold', Fallback, sans-serif;
