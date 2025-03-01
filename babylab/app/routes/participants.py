@@ -23,7 +23,15 @@ def prepare_participants(records: api.Records, data_dict: dict, **kwargs) -> dic
     df["record_id"] = [utils.format_ppt_id(i) for i in df.index]
     df.index = df.index.astype(int)
     df = df.sort_index(ascending=False)
-    df["modify_button"] = [utils.format_modify_button(p) for p in df.index]
+    df["buttons"] = [
+        utils.format_modify_button(p)
+        + " "
+        + utils.format_new_button(record="Appointment", ppt_id=p)
+        + " "
+        + utils.format_new_button(record="Questionnaire", ppt_id=p)
+        for p in df.index
+    ]
+
     df = df[
         [
             "record_id",
@@ -39,7 +47,7 @@ def prepare_participants(records: api.Records, data_dict: dict, **kwargs) -> dic
             "date_created",
             "date_updated",
             "comments",
-            "modify_button",
+            "buttons",
         ]
     ]
     df = df.rename(
@@ -57,7 +65,7 @@ def prepare_participants(records: api.Records, data_dict: dict, **kwargs) -> dic
             "date_created": "Added on",
             "date_updated": "Last updated",
             "comments": "Comments",
-            "modify_button": "",
+            "buttons": "",
         }
     )
     return {
