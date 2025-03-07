@@ -1,24 +1,25 @@
 function dt(id, searchCols, hideCols, lookupCols, queStatusCol, aptStatusCol) {
-    let panes = {
-        extend: 'searchPanes',
-        config: {
-            cascadePanes: true,
-            combiner: 'and',
-            collapse: false,
-            controls: false,
-            viewTotal: true,
-            columns: searchCols,
-        },
-        text: '<i class="fa fa-filter fa-lg"></i>&nbsp;&nbsp;Filter',
 
-    };
 
     let table = new DataTable(id, {
         fixedHeader: true,
         layout: {
-            topStart: 'buttons',
+            topStart: {
+                buttons: [
+                    {
+                        extend: 'searchPanes',
+                        config: {
+                            cascadePanes: true,
+                            combiner: 'or',
+                            collapse: true,
+                            controls: false,
+                            viewTotal: true,
+                            columns: searchCols,
+                        }
+                    }
+                ]
+            },
         },
-        buttons: [panes],
         language: {
             searchPanes: {
                 collapse: '<i class="fa fa-filter fa-lg"></i>&nbsp;&nbsp;Filter'

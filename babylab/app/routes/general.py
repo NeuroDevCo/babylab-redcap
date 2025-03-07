@@ -352,3 +352,8 @@ def general_routes(app):
         app.config["API_KEY"] = "BADTOKEN"
         flash("You have logged out.", category="error")
         return redirect(url_for("index"))
+
+    @app.route("/age_calculator", methods=["GET", "POST"])
+    def age_calculator():
+        """Age calculator."""
+        return render_template("age_calculator.html")
