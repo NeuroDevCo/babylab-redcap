@@ -54,7 +54,13 @@ td, option, select, input, textarea {
     hyphens: auto;
 }
 
+tfoot input {
+    width: 50px;
+}
 
+tfoot {
+    display: table-row-group;
+}
 
 label {
     font-family: 'Ciutadella Bold', 'Roboto Bold', Fallback, sans-serif;

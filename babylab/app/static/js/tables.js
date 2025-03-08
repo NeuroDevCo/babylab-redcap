@@ -1,3 +1,57 @@
+function tbl_ppt(id) {
+    let table = new DataTable(id, {
+        fixedHeader: true,
+        autoWidth: false,
+        columns: [
+            { title: '' },
+            { title: 'ID' },
+            { title: 'Name' },
+            { title: 'Months' },
+            { title: 'Days' },
+            { title: 'Sex' },
+            { title: 'Source' },
+            { title: 'E-mail' },
+            { title: 'Phone' },
+            { title: 'Buttons' },
+        ],
+        layout: {
+            topStart: {
+                buttons: [
+                    {
+                        extend: 'searchPanes',
+                        config: {
+                            cascadePanes: true,
+                            combiner: 'or',
+                            collapse: true,
+                            controls: false,
+                            viewTotal: true,
+                            columns: [3, 5, 6],
+                        }
+                    }
+                ]
+            },
+        },
+        language: {
+            searchPanes: {
+                collapse: '<i class="fa fa-filter fa-lg"></i>&nbsp;&nbsp;Filter'
+            },
+        },
+    });
+
+    table.on('click', 'td', function (e) {
+        let tr = e.target.closest('tr');
+        let row = table.row(tr);
+        if (row.child.isShown()) {
+            row.child.hide();
+        }
+        else {
+            row.child(format_ppt(row.data())).show();
+        }
+    });
+
+    return table;
+}
+
 function dt(id, searchCols, hideCols, lookupCols, queStatusCol, aptStatusCol) {
 
 

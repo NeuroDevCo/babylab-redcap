@@ -30,21 +30,34 @@
   </div>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
   <script
-    src="https://cdn.datatables.net/v/bs5/jq-3.7.0/dt-2.2.1/b-3.2.1/fh-4.0.1/sp-2.3.3/sl-3.0.0/datatables.min.js"></script>
+    src="https://cdn.datatables.net/v/bs5/jq-3.7.0/dt-2.2.2/b-3.2.1/fh-4.0.1/sp-2.3.3/sl-3.0.0/datatables.min.js"></script>
   <script type="text/javascript" src="{{ url_for('static', filename='js/tables.js') }}"></script>
   <script>
-    let table = new dt("#ppttable", searchCols = [3, 5, 6], hideCols = [7, 8, 9, 10, 11, 12, 13], lookupCols = [1])
+    $("#ppttable").append("<tfoot><tr><th></th><th>record_id</th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th></tr></tfoot>")
 
-    table.on('click', 'td', function (e) {
-      let tr = e.target.closest('tr');
-      let row = table.row(tr);
-      if (row.child.isShown()) {
-        row.child.hide();
-      }
-      else {
-        row.child(format_ppt(row.data())).show();
+    $("#ppttable tfoot th").each(function (index, value) {
+      var title = $(this).text();
+      if ([1].includes(index)) {
+        $(this).html(`<input type="text" placeholder="Search ID"/>`);
+      } else {
+        $(this).html('');
       }
     });
+
+    let table = new tbl_ppt("#ppttable")
+
+    table.columns().every(function (index) {
+      var that = this;
+      $("input", this.footer()).on("keyup change clear", function () {
+        if (that.search() !== this.value) {
+          that.search(this.value, { smart: true }).draw();
+          table
+            .rows()
+            .$("tr", { filter: "applied" })
+        }
+      });
+    });
+
   </script>
 </body>
 {% endblock content %}
