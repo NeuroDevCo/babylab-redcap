@@ -41,33 +41,11 @@ def prepare_participants(records: api.Records, data_dict: dict, **kwargs) -> dic
             "sex",
             "source",
             "email1",
-            "email2",
             "phone1",
-            "phone2",
-            "date_created",
-            "date_updated",
-            "comments",
             "buttons",
         ]
     ]
-    df = df.rename(
-        columns={
-            "record_id": "Participant",
-            "name": "Name",
-            "age_now_months": "Age (months)",
-            "age_now_days": "Age (days)",
-            "sex": "Sex",
-            "source": "Source",
-            "phone1": "Phone 1",
-            "phone2": "Phone 2",
-            "email1": "E-mail 1",
-            "email2": "E-mail 2",
-            "date_created": "Added on",
-            "date_updated": "Last updated",
-            "comments": "Comments",
-            "buttons": "",
-        }
-    )
+
     return {
         "table": df.to_html(
             classes=f'{classes}" id = "ppttable',
