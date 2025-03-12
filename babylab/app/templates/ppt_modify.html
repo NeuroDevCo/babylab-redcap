@@ -16,8 +16,8 @@
     <div class="div-center">
       <div class="row">
         <div class="col">
-          <div class="btn-group" role="group" aria-label="Basic example">
-            <button type="submit" class="btn btn-warning" onclick="loading();">
+          <div class="btn-group" role="group">
+            <button type="submit" class="btn btn-warning">
               <i class="fa fa-pen"></i>&nbsp;&nbsp;Submit
             </button>
           </div>
@@ -90,12 +90,14 @@
                   (months)
                 </label>
                 <input type="number" name="inputAgeMonths" class="form-control" min="0"
-                  placeholder="{{ data['age_now_months'] }}" value="{{ data['age_now_months'] }}" required>
+                  placeholder="{{ data['age_now_months'] }}" value="{{ data['age_now_months'] }}" required readonly
+                  disabled="disabled">
               </div>
               <div class="col">
                 <label class="form-label" for="inputAgeDays">Age (days)</label>
-                <input type=" number" name="inputAgeDays" class="form-control" min="1" max="31"
-                  placeholder="{{ data['age_now_days'] }}" value="{{ data['age_now_days'] }}" required>
+                <input type="number" name="inputAgeDays" class="form-control disable" min="1" max="31"
+                  placeholder="{{ data['age_now_days'] }}" value="{{ data['age_now_days'] }}" required readonly
+                  disabled="disabled">
               </div>
             </div>
             <div class="col">
@@ -114,7 +116,8 @@
             <label for="inputComments" class="form-label">
               Comments&nbsp;&nbsp;<i class="fa  fa-comment"></i>
             </label>
-            <textarea class="form-control" name="inputComments" rows="3"></textarea>
+            <input type="text" class="form-control" name="inputComments" rows="3" value="{{ data['comments'] }}"
+              placeholder="{{ data['comments'] }}" />
           </div>
         </div>
       </div>
@@ -147,8 +150,8 @@
               <label for="inputAddress" class="form-label">
                 Home address&nbsp;&nbsp;<i class="fa fa-house"></i>
               </label>
-              <textarea class="form-control" name="inputAddress" rows="1" placeholder="e.g., Tristan 1089, 1D"
-                placeholder="{{ data['address'] }}" value="{{ data['address'] }}"></textarea>
+              <input type="text" class="form-control" name="inputAddress" rows="3" value="{{ data['address'] }}"
+                placeholder="{{ data['address'] }}" />
               <label for="inputCity" class="form-label">
                 City/place of residence&nbsp;&nbsp;<i class="fa  fa-city"></i>
               </label>
@@ -188,7 +191,7 @@
             </label>
             <select class="form-select" name="inputDeliveryType">
               {% for k, v in data_dict["participant_birth_type"].items() %}
-              <option value="{{ k }}" {% if data["birth_type"]=="v" %}selected{% endif %}>{{ v }}</option>
+              <option value="{{ k }}" {% if data["birth_type"]==k %}selected{% endif %}>{{ v }}</option>
               {% endfor %}
             </select>
             <div class="col">
@@ -218,21 +221,18 @@
             <label for="inputDiagnoses" class="form-label">
               Diagnoses&nbsp;&nbsp;<i class="fa  fa-user-doctor"></i>
             </label>
-            <textarea class="form-control" name="inputDiagnoses" rows="3" placeholder="{{ data['diagnoses'] }}"
-              value="{{ data['diagnoses'] }}"></textarea>
+            <input type="text" class="form-control" name="inputDiagnoses" rows="3" value="{{ data['diagnoses'] }}"
+              placeholder="{{ data['diagnoses'] }}" />
           </div>
         </div>
       </div>
     </div>
   </form>
   <script>
-    // Example starter JavaScript for disabling form submissions if there are invalid fields
     (function () {
       'use strict';
       window.addEventListener('load', function () {
-        // Fetch all the forms we want to apply custom Bootstrap validation styles to
         var forms = document.getElementsByClassName('needs-validation');
-        // Loop over them and prevent submission
         var validation = Array.prototype.filter.call(forms, function (form) {
           form.addEventListener('submit', function (event) {
             if (form.checkValidity() === false) {

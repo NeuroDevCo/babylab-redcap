@@ -23,7 +23,7 @@
     <script type="text/javascript"
             src="{{ url_for('static', filename='js/tables.js') }}"></script>
     <script>
-    let table = new dt(id = "#quetable", searchCols = [3, 4, 6], hideCols = [2, 12, 13], queStatusCol = 1)
+    let table = new dt("#quetable", searchCols = [3], hideCols = [12, 13], lookupCols = [1], queStatusCol = [3])
 
     table.on('click', 'td', function (e) {
       let tr = e.target.closest('tr');

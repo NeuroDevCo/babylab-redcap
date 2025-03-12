@@ -15,7 +15,7 @@
 </header>
 
 <body>
-  <form class=" form needs-validation" method="post" novalidate>
+  <form class="form needs-validation" method="post" novalidate>
     <div class="div-center">
       <button type="submit" class="btn btn-primary">Submit</button>
     </div>
@@ -52,7 +52,7 @@
           <label for="inputTaxiAddress" class="form-label">
             Taxi address&nbsp;&nbsp;<i class="fa fa-car"></i>
           </label>
-          <textarea class="form-control" name="inputTaxiAddress" rows="1"></textarea>
+          <input type="text" class="form-control" name="inputTaxiAddress" />
           <div class="form-check form-check-inline">
             <input class="form-check-input" type="checkbox" name="inputTaxiIsbooked" id="inputTaxiIsbooked" value="1">
             <label class="form-check-label" for="inputTaxiIsbooked">Taxi booked?</label>
@@ -61,20 +61,17 @@
             <label for="inputComments" class="form-label">
               Comments&nbsp;&nbsp;<i class="fa  fa-user-comment"></i>
             </label>
-            <textarea class="form-control" name="inputComments" rows="3"></textarea>
+            <input type="text" class="form-control" name="inputComments" />
           </div>
         </div>
       </div>
     </div>
   </form>
   <script>
-    // Example starter JavaScript for disabling form submissions if there are invalid fields
     (function () {
       'use strict';
       window.addEventListener('load', function () {
-        // Fetch all the forms we want to apply custom Bootstrap validation styles to
         var forms = document.getElementsByClassName('needs-validation');
-        // Loop over them and prevent submission
         var validation = Array.prototype.filter.call(forms, function (form) {
           form.addEventListener('submit', function (event) {
             if (form.checkValidity() === false) {

@@ -4,10 +4,10 @@
 Functions to interact with the REDCap API.
 """
 
-import json
-import zipfile
 import os
 import re
+import json
+import zipfile
 import datetime
 from dataclasses import dataclass
 from collections import OrderedDict
@@ -47,13 +47,11 @@ class Participant:
             for k, v in data.items()
             if k.startswith("participant_") or k == "record_id"
         }
-        date_birth = get_birth_date(
-            str(data["age_created_months"]) + ":" + str(data["age_created_months"]),
-            datetime.datetime.strptime(data["date_created"], "%Y-%m-%d %H:%M:%S"),
-        )
-        data["age_now_months"], data["age_now_days"] = get_age(
-            date_birth, datetime.datetime.today()
-        )
+        age_now = (data["age_created_months"], data["age_created_days"])
+        time_fmt = "%Y-%m-%d %H:%M:%S"
+        timestamp = datetime.datetime.strptime(data["date_created"], time_fmt)
+        date_birth = get_birth_date(age_now, timestamp)
+        data["age_now_months"], data["age_now_days"] = get_age(date_birth)
         self.record_id = data["record_id"]
         self.data = data
         self.appointments = apt
@@ -92,9 +90,7 @@ class Appointment:
         }
         self.record_id = data["record_id"]
         self.data = data
-        self.appointment_id = (
-            data["record_id"] + ":" + str(data["redcap_repeat_instance"])
-        )
+        self.appointment_id = make_id(data["record_id"], data["redcap_repeat_instance"])
         self.status = data["status"]
         self.date = data["date"]
 
@@ -125,9 +121,7 @@ class Questionnaire:
             if k.startswith("language_") or k in ["record_id", "redcap_repeat_instance"]
         }
         self.record_id = data["record_id"]
-        self.questionnaire_id = (
-            data["record_id"] + ":" + str(data["redcap_repeat_instance"])
-        )
+        self.questionnaire_id = make_id(self.record_id, data["redcap_repeat_instance"])
         self.isestimated = data["isestimated"]
         self.data = data
         for i in range(1, 5):
@@ -309,6 +303,18 @@ def datetimes_to_strings(data: dict):
     return data
 
 
+def get_next_id(**kwargs) -> str:
+    """Get next record_id in REDCap database.
+
+    Args:
+        **kwargs: Additional arguments passed to ``post_request``.
+    Returns:
+        str: record_id of next record.
+    """
+    fields = {"content": "generateNextRecordName"}
+    return str(post_request(fields=fields, **kwargs).json())
+
+
 def get_records(record_id: str | list = None, **kwargs):
     """Return records as JSON.
 
@@ -333,6 +339,36 @@ def get_records(record_id: str | list = None, **kwargs):
     records = post_request(fields=fields, **kwargs).json()
     records = [datetimes_to_strings(r) for r in records]
     return records
+
+
+def make_id(ppt_id: str, repeat_id: str = None):
+    """Make a record ID.
+
+    Args:
+        ppt_id (str): Participant ID.
+        repeat_id (str, optional): Appointment or Questionnaire ID, or ``redcap_repeated_id``. Defaults to None.
+
+    Returns:
+        str: Record ID.
+    """  # pylint: disable=line-too-long
+    ppt_id = str(ppt_id)
+    if not ppt_id.isdigit():
+        raise ValueError(f"`ppt_id`` must be a digit, but '{ppt_id}' was provided")
+    if repeat_id is None:
+        return ppt_id
+    repeat_id = str(repeat_id)
+    if not repeat_id.isdigit():
+        raise ValueError(
+            f"`repeat_id`` must be a digit, but '{repeat_id}' was provided"
+        )
+    return ppt_id + ":" + repeat_id
+
+
+class RecordNotFound(Exception):
+    """If record is not found."""
+
+    def __init__(self, record_id):
+        super().__init__(f"Record '{record_id}' not found")
 
 
 def get_participant(ppt_id: str, **kwargs):
@@ -371,8 +407,46 @@ def get_participant(ppt_id: str, **kwargs):
             apt[repeat_id] = Appointment(r)
         if form == "language":
             que[repeat_id] = Questionnaire(r)
-    ppt = Participant(recs[0], apt=RecordList(apt), que=RecordList(que))
-    return ppt
+    try:
+        return Participant(recs[0], apt=RecordList(apt), que=RecordList(que))
+    except IndexError as exc:
+        raise RecordNotFound(record_id=ppt_id) from exc
+
+
+def get_appointment(apt_id: str, **kwargs):
+    """Get appointment record.
+
+    Args:
+        apt_id: ID of appointment (``redcap_repeated_id``).
+        **kwargs: Additional arguments passed to ``post_request``
+
+    Returns:
+        api.Appointment: Appointment object.
+    """
+    ppt_id, _ = apt_id.split(":")
+    ppt = get_participant(ppt_id, **kwargs)
+    try:
+        return ppt.appointments.records[apt_id]
+    except KeyError as exc:
+        raise RecordNotFound(record_id=apt_id) from exc
+
+
+def get_questionnaire(que_id: str, **kwargs):
+    """Get questionnaire record.
+
+    Args:
+        que_id: ID of appointment (``redcap_repeated_id``).
+        **kwargs: Additional arguments passed to ``post_request``
+
+    Returns:
+        api.Questionnaire: Appointment object.
+    """
+    ppt_id, _ = que_id.split(":")
+    ppt = get_participant(ppt_id, **kwargs)
+    try:
+        return ppt.questionnaires.records[que_id]
+    except KeyError as exc:
+        raise RecordNotFound(record_id=que_id) from exc
 
 
 def add_participant(data: dict, modifying: bool = False, **kwargs):
@@ -559,18 +633,17 @@ class Records:
         appointments = {}
         questionnaires = {}
         for r in records:
-            if r["redcap_repeat_instance"] and r["appointment_status"]:
-                r["appointment_id"] = (
-                    r["record_id"] + ":" + str(r["redcap_repeat_instance"])
-                )
+            ppt_id = r["record_id"]
+            repeat_id = r["redcap_repeat_instance"]
+
+            if repeat_id and r["appointment_status"]:
+                r["appointment_id"] = make_id(ppt_id, repeat_id)
                 appointments[r["appointment_id"]] = Appointment(r)
-            if r["redcap_repeat_instance"] and r["language_lang1"]:
-                r["questionnaire_id"] = (
-                    r["record_id"] + ":" + str(r["redcap_repeat_instance"])
-                )
+            if repeat_id and r["language_lang1"]:
+                r["questionnaire_id"] = make_id(ppt_id, repeat_id)
                 questionnaires[r["questionnaire_id"]] = Questionnaire(r)
             if not r["redcap_repeat_instrument"]:
-                participants[r["record_id"]] = Participant(r)
+                participants[ppt_id] = Participant(r)
 
         # add appointments and questionnaires to each participant
         for p, v in participants.items():
@@ -661,41 +734,67 @@ class Records:
 
 
 def get_age(
-    birth_date: str | datetime.datetime, timestamp: str | datetime.datetime = None
+    birth_date: datetime.datetime,
+    timestamp: datetime.datetime = datetime.datetime.now(),
 ):
     """Estimate age in months and days at some timestamp based on date of birth.
 
     Args:
-        birth_date (str | datetime.datetime): Birthdate as ``datetime`` object or str in "Y-m-d" format. Defaults to current date (``datetime.today()``).
-        timestamp (str | datetime.datetime, optional): Time for which the age is calculated. Defaults to None.
+        birth_date (datetime.datetime): Birth date as ``datetime.datetime`` type.
+        timestamp (datetime.datetime, optional): Time for which the age is calculated. Defaults to current date (``datetime.datetime.now()``).
 
     Returns:
-        list[int]: Age in months and days.
+        tuple[int, int]: Age in months and days in the ``(months, days)`` format.
     """  # pylint: disable=line-too-long
-    if timestamp is None:
-        timestamp = datetime.datetime.today()
-    if isinstance(timestamp, str):
-        timestamp = datetime.datetime.strptime(timestamp, "%Y-%m-%d")
-    if isinstance(birth_date, str):
-        birth_date = datetime.datetime.strptime(birth_date, "%Y-%m-%d")
+    if not isinstance(timestamp, datetime.datetime):
+        raise ValueError("`birth_date` must be of type `datetime.datetime`")
+    if not isinstance(birth_date, datetime.datetime):
+        raise ValueError("`timestamp` must be of type `datetime.datetime`")
     delta = relativedelta.relativedelta(timestamp, birth_date)
-    return [delta.months + (delta.years * 12), delta.days]
+    return delta.months, delta.days
 
 
-def get_birth_date(age: str, timestamp: str | datetime.datetime = None):
+class BadAgeFormat(Exception):
+    """If age des not follow the right format."""
+
+    def __init__(self, age):
+        super().__init__(f"`age` must follow the `(months, age)` format': { age }")
+
+
+def parse_age(age: tuple) -> tuple[int, int]:
+    """Validate age string or tuple.
+
+    Args:
+        age (tuple): Age of the participant as a tuple in the ``(months, days)`` format.
+
+    Raises:
+        ValueError: If age is not str or tuple.
+        BadAgeFormat: If age is ill-formatted.
+
+    Returns:
+        tuple[int, int]: Age of the participant in the ``(months, days)`` format.
+    """  # pylint: disable=line-too-long
+    try:
+        assert isinstance(age, tuple)
+        assert len(age) == 2
+        return int(age[0]), int(age[1])
+    except AssertionError as e:
+        raise BadAgeFormat(age) from e
+
+
+def get_birth_date(
+    age: str | tuple, timestamp: str | datetime.datetime = datetime.datetime.now()
+):
     """Calculate date of birth based on age at some timestamp.
 
     Args:
-        age (str): Age in months and days (``m:d`` format) at the timestamp.
-        timestamp (str | datetime, optional): Time at which age was calculated. Defaults to ``datetime.today()``.
+        age (tuple): Age in months and days as a tuple of type ``(months, days)``.
+        timestamp (str | datetime, optional): Time at which age was calculated. Defaults to ``datetime.datetime.now()``.
 
     Returns:
-        _type_: _description_
+        datetime.datetime: Birth date of the participant.
     """  # pylint: disable=line-too-long
-    if timestamp is None:
-        timestamp = datetime.datetime.today()
+    months, days = parse_age(age)
     if not isinstance(timestamp, datetime.datetime):
-        timestamp = datetime.datetime.strptime(timestamp, "%Y-%m-%d")
-    age_parsed = age.split(":")
-    days_diff = int(float(age_parsed[0]) * 30.437 + float(age_parsed[1]))
-    return timestamp - relativedelta.relativedelta(days=days_diff)
+        raise ValueError("timestamp must be a `datetime.datetime`")
+    return timestamp - relativedelta.relativedelta(months=months, days=days)

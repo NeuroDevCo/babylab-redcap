@@ -1,5 +1,12 @@
 function colPlot(labels, values, canvas, color, label) {
   const stx = document.getElementById(canvas).getContext("2d")
+  for (let i = 0; i < labels.length; i++) {
+    while (labels[i].charAt(0) === '0' & labels[i].charAt(1) !== '0') {
+      labels[i] = labels[i].substring(1);
+    }
+  }
+
+
   new Chart(stx, {
     type: "bar",
     data: {

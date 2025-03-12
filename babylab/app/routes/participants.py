@@ -23,7 +23,15 @@ def prepare_participants(records: api.Records, data_dict: dict, **kwargs) -> dic
     df["record_id"] = [utils.format_ppt_id(i) for i in df.index]
     df.index = df.index.astype(int)
     df = df.sort_index(ascending=False)
-    df["modify_button"] = [utils.format_modify_button(p) for p in df.index]
+    df["buttons"] = [
+        utils.format_modify_button(p)
+        + " "
+        + utils.format_new_button(record="Appointment", ppt_id=p)
+        + " "
+        + utils.format_new_button(record="Questionnaire", ppt_id=p)
+        for p in df.index
+    ]
+
     df = df[
         [
             "record_id",
@@ -33,33 +41,11 @@ def prepare_participants(records: api.Records, data_dict: dict, **kwargs) -> dic
             "sex",
             "source",
             "email1",
-            "email2",
             "phone1",
-            "phone2",
-            "date_created",
-            "date_updated",
-            "comments",
-            "modify_button",
+            "buttons",
         ]
     ]
-    df = df.rename(
-        columns={
-            "record_id": "Participant",
-            "name": "Name",
-            "age_now_months": "Age (months)",
-            "age_now_days": "Age (days)",
-            "sex": "Sex",
-            "source": "Source",
-            "phone1": "Phone 1",
-            "phone2": "Phone 2",
-            "email1": "E-mail 1",
-            "email2": "E-mail 2",
-            "date_created": "Added on",
-            "date_updated": "Last updated",
-            "comments": "Comments",
-            "modify_button": "",
-        }
-    )
+
     return {
         "table": df.to_html(
             classes=f'{classes}" id = "ppttable',
@@ -85,10 +71,13 @@ def prepare_record_id(ppt: api.Participant, data_dict: dict) -> dict:
         kdict = "participant_" + k
         if kdict in data_dict:
             data[k] = data_dict[kdict][v] if v else ""
-    data["age_now_months"] = (
-        str(data["age_now_months"]) if data["age_now_months"] else ""
+    age_created = (data["age_created_months"], data["age_created_days"])
+    timestamp = datetime.datetime.strptime(data["date_created"], "%Y-%m-%d %H:%M:%S")
+    age = api.get_age(
+        birth_date=api.get_birth_date(age=age_created, timestamp=timestamp)
     )
-    data["age_now_days"] = str(data["age_now_days"]) if data["age_now_days"] else ""
+    data["age_now_months"] = str(age[0])
+    data["age_now_days"] = str(age[1])
     data["parent1"] = data["parent1_name"] + " " + data["parent1_surname"]
     data["parent2"] = data["parent2_name"] + " " + data["parent2_surname"]
 
@@ -232,17 +221,15 @@ def participants_routes(app):
             except requests.exceptions.HTTPError as e:
                 flash(f"Something went wrong! {e}", "error")
                 return redirect(url_for("ppt_all"))
-        return render_template(
-            "ppt.html",
-            ppt_id=ppt_id,
-            data=data,
-        )
+        return render_template("ppt.html", ppt_id=ppt_id, data=data)
 
     @app.route("/participant_new", methods=["GET", "POST"])
     @conf.token_required
     def ppt_new():
         """New participant page"""
-        data_dict = api.get_data_dict(token=app.config["API_KEY"])
+        token = app.config["API_KEY"]
+        data_dict = api.get_data_dict(token=token)
+        ppt_id = api.get_next_id(token=token)
         if request.method == "POST":
             finput = request.form
             date_now = datetime.datetime.strftime(
@@ -254,8 +241,8 @@ def participants_routes(app):
                 "participant_date_updated": date_now,
                 "participant_source": finput["inputSource"],
                 "participant_name": finput["inputName"],
-                "participant_age_now_months": finput["inputAgeMonths"],
-                "participant_age_now_days": finput["inputAgeDays"],
+                "participant_age_created_months": finput["inputAgeMonths"],
+                "participant_age_created_days": finput["inputAgeDays"],
                 "participant_sex": finput["inputSex"],
                 "participant_twin": finput["inputTwinID"],
                 "participant_parent1_name": finput["inputParent1Name"],
@@ -287,11 +274,11 @@ def participants_routes(app):
                     modifying=False,
                     token=app.config["API_KEY"],
                 )
-                flash("Participant added!", "success")
+                flash(f"Participant added! ({ ppt_id })", "success")
                 app.config["RECORDS"] = conf.get_records_or_index(
                     token=app.config["API_KEY"]
                 )
-                return redirect(url_for("ppt_all"))
+                return redirect(url_for("que_new", ppt_id=ppt_id))
             except requests.exceptions.HTTPError as e:
                 flash(f"Something went wrong! {e}", "error")
                 return redirect(url_for("ppt_new", data_dict=data_dict))
@@ -316,8 +303,8 @@ def participants_routes(app):
                 "record_id": ppt_id,
                 "participant_date_updated": date_now,
                 "participant_name": finput["inputName"],
-                "participant_age_now_months": finput["inputAgeMonths"],
-                "participant_age_now_days": finput["inputAgeDays"],
+                # "participant_age_created_months": ppt.data["age_created_months"],
+                # "participant_age_created_days": ppt.data["age_created_days"],
                 "participant_sex": finput["inputSex"],
                 "participant_source": finput["inputSource"],
                 "participant_twin": finput["inputTwinID"],

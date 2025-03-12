@@ -51,13 +51,13 @@
             <div class="col-7">
               <div class="input-group">
                 <div class="input-group-prepend">
-                  <span class="input-group-text" id="lang2addon">L1</span>
+                  <span class="input-group-text" id="lang1addon">L1</span>
                 </div>
-                <select class="form-select" name="inputLang1" required>
-                  <option selected value="0">-- Select one --</option>
+                <select class="form-select" name="inputLang1" autocomplete="off" required>
+                  <option selected="selected" value="0">-- Select one --</option>
                   {% for k, v in data_dict["language_lang1"].items() %}
                   {% if k!="0" %}
-                  <option if value="{{ k }}" {% if data["lang1"]==k %}selected{% endif %}>{{ v }}</option>
+                  <option value="{{ k }}" {% if data["lang1"]==v %}selected="selected" {% endif %}>{{ v }}</option>
                   {% endif %}
                   {% endfor %}
                 </select>
@@ -74,11 +74,11 @@
                 <div class="input-group-prepend">
                   <span class="input-group-text" id="lang2addon">L2</span>
                 </div>
-                <select class="form-select" name="inputLang2">
-                  <option selected value="0">-- Select one --</option>
-                  {% for k, v in data_dict["language_lang1"].items() %}
+                <select class="form-select" name="inputLang2" autocomplete="off">
+                  <option selected="selected" value="0">-- Select one --</option>
+                  {% for k, v in data_dict["language_lang2"].items() %}
                   {% if k!="0" %}
-                  <option value="{{ k }}" {% if data["lang2"]==k %}selected{% endif %}>{{ v }}</option>
+                  <option value="{{ k }}" {% if data["lang2"]==v %}selected="selected" {% endif %}>{{ v }}</option>
                   {% endif %}
                   {% endfor %}
                 </select>
@@ -93,13 +93,13 @@
             <div class="col-7">
               <div class="input-group">
                 <div class="input-group-prepend">
-                  <span class="input-group-text" id="lang2addon">L3</span>
+                  <span class="input-group-text" id="lang3addon">L3</span>
                 </div>
-                <select class="form-select" name="inputLang3">
-                  <option selected value="0">-- Select one --</option>
-                  {% for k, v in data_dict["language_lang1"].items() %}
+                <select class="form-select" name="inputLang3" autocomplete="off">
+                  <option selected="selected" value="0">-- Select one --</option>
+                  {% for k, v in data_dict["language_lang3"].items() %}
                   {% if k!="0" %}
-                  <option value="{{ k }}" {% if data["lang3"]==k %}selected{% endif %}>{{ v }}</option>
+                  <option value="{{ k }}" {% if data["lang3"]==v %}selected="selected" {% endif %}>{{ v }}</option>
                   {% endif %}
                   {% endfor %}
                 </select>
@@ -114,13 +114,13 @@
             <div class="col-7">
               <div class="input-group">
                 <div class="input-group-prepend">
-                  <span class="input-group-text" id="lang2addon">L4</span>
+                  <span class="input-group-text" id="lang4addon">L4</span>
                 </div>
-                <select class="form-select" name="inputLang4">
-                  <option selected value="0">-- Select one --</option>
-                  {% for k, v in data_dict["language_lang1"].items() %}
+                <select class="form-select" name="inputLang4" autocomplete="off">
+                  <option selected="selected" value="0">-- Select one --</option>
+                  {% for k, v in data_dict["language_lang4"].items() %}
                   {% if k!="0" %}
-                  <option if value="{{ k }}" {% if data["lang4"]==k %}selected{% endif %}>{{ v }}</option>
+                  <option if value="{{ k }}" {% if data["lang4"]==v %}selected="selected" {% endif %}>{{ v }}</option>
                   {%
                   endif %}
                   {% endfor %}
@@ -134,13 +134,13 @@
           </div>
           <br>
           <label for="inputComments" class="form-label">Comments</label>
-          <textarea class="form-control" name="inputComments" rows="3"></textarea>
+          <input type="text" class="form-control" name="inputComments" rows="3" value="{{ data['comments'] }}"
+            placeholder="{{ data['comments'] }}" />
         </div>
       </div>
     </div>
   </form>
   <script>
-    // Example starter JavaScript for disabling form submissions if there are invalid fields
     (function () {
       'use strict';
       window.addEventListener('load', function () {
@@ -213,8 +213,6 @@
         alert("Language 4 is selected but exposure is 0%.");
         return false;
       }
-
-
     }
   </script>
 </body>

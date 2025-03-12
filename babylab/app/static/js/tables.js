@@ -1,24 +1,79 @@
-function dt(id, searchCols, hideCols, aptStatusCol, queStatusCol) {
-    let panes = {
-        extend: 'searchPanes',
-        config: {
-            cascadePanes: true,
-            combiner: 'and',
-            collapse: false,
-            controls: false,
-            viewTotal: true,
-            columns: searchCols,
+function tbl_ppt(id) {
+    let table = new DataTable(id, {
+        fixedHeader: true,
+        autoWidth: false,
+        columns: [
+            { title: '' },
+            { title: 'ID' },
+            { title: 'Name' },
+            { title: 'Months' },
+            { title: 'Days' },
+            { title: 'Sex' },
+            { title: 'Source' },
+            { title: 'E-mail' },
+            { title: 'Phone' },
+            { title: 'Buttons' },
+        ],
+        layout: {
+            topStart: {
+                buttons: [
+                    {
+                        extend: 'searchPanes',
+                        config: {
+                            cascadePanes: true,
+                            combiner: 'or',
+                            collapse: true,
+                            controls: false,
+                            viewTotal: true,
+                            columns: [3, 5, 6],
+                        }
+                    }
+                ]
+            },
         },
-        text: '<i class="fa fa-filter fa-lg"></i>&nbsp;&nbsp;Filter',
+        language: {
+            searchPanes: {
+                collapse: '<i class="fa fa-filter fa-lg"></i>&nbsp;&nbsp;Filter'
+            },
+        },
+    });
 
-    };
+    table.on('click', 'td', function (e) {
+        let tr = e.target.closest('tr');
+        let row = table.row(tr);
+        if (row.child.isShown()) {
+            row.child.hide();
+        }
+        else {
+            row.child(format_ppt(row.data())).show();
+        }
+    });
+
+    return table;
+}
+
+function dt(id, searchCols, hideCols, lookupCols, queStatusCol, aptStatusCol) {
+
 
     let table = new DataTable(id, {
         fixedHeader: true,
         layout: {
-            topStart: 'buttons',
+            topStart: {
+                buttons: [
+                    {
+                        extend: 'searchPanes',
+                        config: {
+                            cascadePanes: true,
+                            combiner: 'or',
+                            collapse: true,
+                            controls: false,
+                            viewTotal: true,
+                            columns: searchCols,
+                        }
+                    }
+                ]
+            },
         },
-        buttons: [panes],
         language: {
             searchPanes: {
                 collapse: '<i class="fa fa-filter fa-lg"></i>&nbsp;&nbsp;Filter'
@@ -28,21 +83,39 @@ function dt(id, searchCols, hideCols, aptStatusCol, queStatusCol) {
             {
                 visible: false,
                 targets: hideCols,
-            }
+            },
+            {
+                searchable: true,
+                targets: lookupCols,
+            },
+            {
+                searchable: false,
+                targets: '_all',
+            },
         ],
         rowCallback: (row, data) => {
-            if (queStatusCol) {
-                c = format_que_status(data[2])
+            if (typeof queStatusCol !== "undefined") {
+                c = format_que_status(data[queStatusCol])
                 $('td:eq(2)', row).css('color', c);
             }
-            if (aptStatusCol) {
+            if (typeof aptStatusCol !== "undefined") {
                 c = format_apt_status(data[aptStatusCol])
                 $('td:eq(2)', row).css('color', c);
             }
-
         },
     });
     return table;
+}
+
+function format_que_status(x) {
+    switch (x) {
+        case 'Estimated':
+            return '#d62728'
+        case 'Calculated':
+            return '#0ea844'
+        default:
+            return '#000000'
+    }
 }
 
 function format_apt_status(x) {
@@ -60,16 +133,7 @@ function format_apt_status(x) {
     }
 }
 
-function format_que_status(x) {
-    switch (x) {
-        case 'Estimated':
-            return '#d62728'
-        case 'Calculated':
-            return '#0ea844'
-        default:
-            return '#000000'
-    }
-}
+
 
 
 function format_ppt(d) {
