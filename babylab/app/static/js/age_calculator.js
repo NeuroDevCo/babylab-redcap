@@ -1,20 +1,34 @@
-function get_age(birth, test) {
-    let date_birth = new Date(date = moment(birth));
-    let date_test = new Date(date = moment(test));
+// const { default: moment } = await import("moment");
 
-    console.log(date_birth)
-    console.log(date_test)
+function get_age(date1, date2, units = "md") {
 
-    let diff = date_test - date_birth;
-    console.log(diff)
+    let d1 = new Date(moment(date1));
+    let d2 = new Date(moment(date2));
+    let diff = d2 - d1;
 
-    let mm = Math.floor(diff / 1000 / 60) % 60;
-    let hh = Math.floor(diff / 1000 / 60 / 60);
-    let dd = Math.floor(diff / 1000 / 60 / 60 / 24);
-    let mo = Math.floor(diff / 1000 / 60 / 60 / 24 / 30.34) % 30.34;
+    if (units == "md") {
+        let d = Math.floor(diff / (1000 * 60 * 60 * 24));
+        let m = Math.floor(d / 30.34);
+        d = Math.floor(d % 30.34);
+        if (isNaN(m) || isNaN(d)) {
+            return "Incorrect dates provided."
+        }
+        return `${m} months, ${d} days`
+    }
+    if (units == "hm") {
+        let d1 = new Date(moment(date1));
+        let d2 = new Date(moment(date2));
+        let diff = d2 - d1;
+        let m = Math.floor(diff / (1000 * 60));
+        let h = Math.floor(m / 60);
+        m = Math.floor(m % 60);
+        if (isNaN(h) || isNaN(m)) {
+            return "Incorrect dates provided."
+        }
+        return `${h} hours, ${m} minutes`
+    }
 
-    output = `${mo}mo, ${dd}d, ${hh}h, ${mm}min`
-    console.log(output);
-    return output
-};
+
+}
+
 

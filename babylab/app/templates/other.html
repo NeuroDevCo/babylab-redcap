@@ -85,6 +85,15 @@
                         <span class="input-group-text" id="date2-label">Date 2</span>
                         <input type="datetime-local" id="date2" name="date2" />
                     </div>
+                    <br>
+                    <div class="input-group mb-3">
+                        <span class="input-group-text" id="units-addon">Units</span>
+                        <select id="units" class="form-select" aria-describedby="units-addon" aria-label="Select units">
+                            <option value="md" selected>Months and days</option>
+                            <option value="hm">Hours and minutes</option>
+                        </select>
+                        <br>
+                    </div>
                     <button type="button" class="btn btn-dark" onclick="calculate()">Calculate</button>
                 </div>
                 <div class="card-footer" id="result-footer">
@@ -107,7 +116,8 @@
         function calculate() {
             result = get_age(
                 document.getElementById("date1").value,
-                document.getElementById("date2").value
+                document.getElementById("date2").value,
+                units = document.getElementById("units").value,
             )
             document.getElementById("result-footer").style.display = "block"
             document.getElementById("result").textContent = result
