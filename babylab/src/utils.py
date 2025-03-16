@@ -241,28 +241,20 @@ def get_age_timestamp(
     if timestamp not in ["date", "date_created"]:
         raise ValueError("timestamp must be 'date' or 'date_created'")
     date_format = "%Y-%m-%d %H:%M" if timestamp == "date" else "%Y-%m-%d %H:%M:%S"
-    months_new = []
-    days_new = []
+    m_new = []
+    d_new = []
     for v in apt_records.values():
+        d = ppt_records[v.record_id].data
         if timestamp == "date_created":
-            t = datetime.datetime.strptime(
-                ppt_records[v.record_id].data[timestamp],
-                date_format,
-            )
+            t = datetime.datetime.now()
+            t = datetime.datetime.strptime(d[timestamp], date_format)
         else:
-            t = datetime.datetime.strptime(
-                v.data["date"],
-                "%Y-%m-%d %H:%M",
-            )
-        months = ppt_records[v.record_id].data["age_now_months"]
-        days = ppt_records[v.record_id].data["age_now_days"]
-        age_now = api.get_age(
-            birth_date=api.get_birth_date(age=(months, days)),
-            timestamp=t,
-        )
-        months_new.append(int(age_now[0]))
-        days_new.append(int(age_now[1]))
-    return months_new, days_new
+            t = datetime.datetime.strptime(v.data["date"], "%Y-%m-%d %H:%M")
+        age = (d["age_now_months"], d["age_now_days"])
+        age_now = api.get_age(birth_date=api.get_birth_date(age), timestamp=t)
+        m_new.append(int(age_now[0]))
+        d_new.append(int(age_now[1]))
+    return m_new, d_new
 
 
 def get_participants_table(records: api.Records, data_dict: dict) -> DataFrame:
