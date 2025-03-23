@@ -574,47 +574,27 @@ def redcap_backup(dirpath: str = "tmp", **kwargs) -> dict:
     Returns:
         dict: A dictionary with the key data and metadata of the project.
     """
-    project = json.loads(
-        post_request(
-            fields={"content": "project", "format": "json", "returnFormat": "json"},
-            **kwargs,
-        ).text
-    )
-    fields = json.loads(
-        post_request(
-            fields={
-                "content": "metadata",
-                "format": "json",
-                "returnFormat": "json",
-            },
-            **kwargs,
-        ).text
-    )
-    instruments = json.loads(
-        post_request(
-            fields={"content": "instrument", "format": "json", "returnFormat": "json"},
-            **kwargs,
-        ).text
-    )
+    pl = {}
+    for k in ["project", "metadata", "instrument"]:
+        pl[k] = {"format": "json", "returnFormat": "json", "content": k}
+    d = {k: json.loads(post_request(v, **kwargs).text) for k, v in pl.items()}
     records = [datetimes_to_strings(r) for r in get_records(**kwargs)]
     backup = {
-        "project": project,
-        "instruments": instruments,
-        "fields": fields,
+        "project": d["project"],
+        "instruments": d["instrument"],
+        "fields": d["metadata"],
         "records": records,
     }
+
     if not os.path.exists(dirpath):
         os.mkdir(dirpath)
     for k, v in backup.items():
-        fpath = os.path.join(dirpath, k + ".json")
-        with open(fpath, "w", encoding="utf-8") as f:
+        path = os.path.join(dirpath, k + ".json")
+        with open(path, "w", encoding="utf-8") as f:
             json.dump(v, f)
-    file = (
-        "backup_"
-        + datetime.datetime.strftime(datetime.datetime.now(), "%Y-%m-%d-%H-%M-%S")
-        + ".zip"
-    )
-    file = os.path.join(dirpath, file)
+
+    timestamp = datetime.datetime.strftime(datetime.datetime.now(), "%Y-%m-%d-%H-%M-%S")
+    file = os.path.join(dirpath, "backup_" + timestamp + ".zip")
     for root, _, files in os.walk(dirpath, topdown=False):
         with zipfile.ZipFile(file, "w", zipfile.ZIP_DEFLATED) as z:
             for f in files:
@@ -629,32 +609,30 @@ class Records:
     def __init__(self, record_id: str | list = None, **kwargs):
 
         records = get_records(record_id, **kwargs)
-        participants = {}
-        appointments = {}
-        questionnaires = {}
+        ppt, apt, que = {}, {}, {}
         for r in records:
             ppt_id = r["record_id"]
             repeat_id = r["redcap_repeat_instance"]
 
             if repeat_id and r["appointment_status"]:
                 r["appointment_id"] = make_id(ppt_id, repeat_id)
-                appointments[r["appointment_id"]] = Appointment(r)
+                apt[r["appointment_id"]] = Appointment(r)
             if repeat_id and r["language_lang1"]:
                 r["questionnaire_id"] = make_id(ppt_id, repeat_id)
-                questionnaires[r["questionnaire_id"]] = Questionnaire(r)
+                que[r["questionnaire_id"]] = Questionnaire(r)
             if not r["redcap_repeat_instrument"]:
-                participants[ppt_id] = Participant(r)
+                ppt[ppt_id] = Participant(r)
 
         # add appointments and questionnaires to each participant
-        for p, v in participants.items():
-            apps = {k: v for k, v in appointments.items() if v.record_id == p}
-            v.appointments = RecordList(apps)
-            ques = {k: v for k, v in questionnaires.items() if v.record_id == p}
+        for p, v in ppt.items():
+            apts = {k: v for k, v in apt.items() if v.record_id == p}
+            v.appointments = RecordList(apts)
+            ques = {k: v for k, v in que.items() if v.record_id == p}
             v.questionnaires = RecordList(ques)
 
-        self.participants = RecordList(participants)
-        self.appointments = RecordList(appointments)
-        self.questionnaires = RecordList(questionnaires)
+        self.participants = RecordList(ppt)
+        self.appointments = RecordList(apt)
+        self.questionnaires = RecordList(que)
 
     def __repr__(self):
         """Print class in console.
