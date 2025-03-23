@@ -482,11 +482,12 @@ def prepare_email(ppt_id: str, apt_id: str, data: dict, data_dict: dict) -> dict
     Returns:
         dict: Email data.
     """
+    timestamp = datetime.datetime.strptime(data["date"], "%Y-%m-%d %H:%M").isoformat()
     email = {
         "record_id": ppt_id,
         "id": apt_id,
         "status": data["status"],
-        "date": datetime.datetime.strptime(data["date"], "%Y-%m-%d %H:%M").isoformat(),
+        "date": timestamp,
         "study": data["study"],
         "taxi_address": data["taxi_address"],
         "taxi_isbooked": data["taxi_isbooked"],

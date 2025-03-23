@@ -574,46 +574,32 @@ def redcap_backup(dirpath: str = "tmp", **kwargs) -> dict:
     Returns:
         dict: A dictionary with the key data and metadata of the project.
     """
-    project = json.loads(
-        post_request(
-            fields={"content": "project", "format": "json", "returnFormat": "json"},
-            **kwargs,
-        ).text
-    )
-    fields = json.loads(
-        post_request(
-            fields={
-                "content": "metadata",
-                "format": "json",
-                "returnFormat": "json",
-            },
-            **kwargs,
-        ).text
-    )
-    instruments = json.loads(
-        post_request(
-            fields={"content": "instrument", "format": "json", "returnFormat": "json"},
-            **kwargs,
-        ).text
-    )
+    payload = {"content": "project", "format": "json", "returnFormat": "json"}
+    project = json.loads(post_request(fields=payload, **kwargs).text)
+    payload = {"content": "metadata", "format": "json", "returnFormat": "json"}
+    fields = json.loads(post_request(fields=payload, **kwargs).text)
+    payload = {"content": "instrument", "format": "json", "returnFormat": "json"}
+    instruments = json.loads(post_request(fields=payload, **kwargs).text)
+
     records = [datetimes_to_strings(r) for r in get_records(**kwargs)]
+
     backup = {
         "project": project,
         "instruments": instruments,
         "fields": fields,
         "records": records,
     }
+
     if not os.path.exists(dirpath):
         os.mkdir(dirpath)
+
     for k, v in backup.items():
         fpath = os.path.join(dirpath, k + ".json")
         with open(fpath, "w", encoding="utf-8") as f:
             json.dump(v, f)
-    file = (
-        "backup_"
-        + datetime.datetime.strftime(datetime.datetime.now(), "%Y-%m-%d-%H-%M-%S")
-        + ".zip"
-    )
+
+    timestamp = datetime.datetime.strftime(datetime.datetime.now(), "%Y-%m-%d-%H-%M-%S")
+    file = "backup_" + timestamp + ".zip"
     file = os.path.join(dirpath, file)
     for root, _, files in os.walk(dirpath, topdown=False):
         with zipfile.ZipFile(file, "w", zipfile.ZIP_DEFLATED) as z:
