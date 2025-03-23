@@ -269,15 +269,9 @@ def participants_routes(app):
                 "participants_complete": "2",
             }
             try:
-                api.add_participant(
-                    data,
-                    modifying=False,
-                    token=app.config["API_KEY"],
-                )
+                api.add_participant(data, modifying=False, token=token)
                 flash(f"Participant added! ({ ppt_id })", "success")
-                app.config["RECORDS"] = conf.get_records_or_index(
-                    token=app.config["API_KEY"]
-                )
+                app.config["RECORDS"] = conf.get_records_or_index(token=token)
                 return redirect(url_for("que_new", ppt_id=ppt_id))
             except requests.exceptions.HTTPError as e:
                 flash(f"Something went wrong! {e}", "error")
@@ -303,8 +297,6 @@ def participants_routes(app):
                 "record_id": ppt_id,
                 "participant_date_updated": date_now,
                 "participant_name": finput["inputName"],
-                # "participant_age_created_months": ppt.data["age_created_months"],
-                # "participant_age_created_days": ppt.data["age_created_days"],
                 "participant_sex": finput["inputSex"],
                 "participant_source": finput["inputSource"],
                 "participant_twin": finput["inputTwinID"],
