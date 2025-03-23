@@ -130,13 +130,14 @@ def prepare_dashboard(records: api.Records = None, data_dict: dict = None) -> di
         include_lowest=True,
     )
     time_fmt = "%Y-%m-%d %H:%M:%S"
-    current_week = get_week_number(dt.today())
     n_ppts_week = sum(
-        get_week_number(dt.strptime(v.data["date_created"], time_fmt)) == current_week
+        get_week_number(dt.strptime(v.data["date_created"], time_fmt))
+        == get_week_number(dt.today())
         for v in records.participants.records.values()
     )
     n_apts_week = sum(
-        get_week_number(dt.strptime(v.data["date_created"], time_fmt)) == current_week
+        get_week_number(dt.strptime(v.data["date_created"], time_fmt))
+        == get_week_number(dt.today())
         for v in records.appointments.records.values()
     )
 
