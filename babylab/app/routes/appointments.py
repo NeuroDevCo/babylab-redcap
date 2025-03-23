@@ -108,6 +108,7 @@ def appointments_routes(app):
         data["age_apt_months"], data["age_apt_days"] = api.get_age(
             date_birth, datetime.datetime.strptime(data["date"], "%Y-%m-%d %H:%M")
         )
+        ppt.data = utils.replace_labels(ppt.data, data_dict)
         ppt.data["age_now_months"] = str(ppt.data["age_now_months"])
         ppt.data["age_now_days"] = str(ppt.data["age_now_days"])
         data["age_apt_months"] = str(data["age_apt_months"])
