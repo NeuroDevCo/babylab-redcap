@@ -574,33 +574,27 @@ def redcap_backup(dirpath: str = "tmp", **kwargs) -> dict:
     Returns:
         dict: A dictionary with the key data and metadata of the project.
     """
-    payload = {"content": "project", "format": "json", "returnFormat": "json"}
-    project = json.loads(post_request(fields=payload, **kwargs).text)
-    payload = {"content": "metadata", "format": "json", "returnFormat": "json"}
-    fields = json.loads(post_request(fields=payload, **kwargs).text)
-    payload = {"content": "instrument", "format": "json", "returnFormat": "json"}
-    instruments = json.loads(post_request(fields=payload, **kwargs).text)
-
+    pl = {}
+    for k in ["project", "metadata", "instrument"]:
+        pl[k] = {"format": "json", "returnFormat": "json", "content": k}
+    d = {k: json.loads(post_request(v, **kwargs).text) for k, v in pl.items()}
     records = [datetimes_to_strings(r) for r in get_records(**kwargs)]
-
     backup = {
-        "project": project,
-        "instruments": instruments,
-        "fields": fields,
+        "project": d["project"],
+        "instruments": d["instrument"],
+        "fields": d["metadata"],
         "records": records,
     }
 
     if not os.path.exists(dirpath):
         os.mkdir(dirpath)
-
     for k, v in backup.items():
-        fpath = os.path.join(dirpath, k + ".json")
-        with open(fpath, "w", encoding="utf-8") as f:
+        path = os.path.join(dirpath, k + ".json")
+        with open(path, "w", encoding="utf-8") as f:
             json.dump(v, f)
 
     timestamp = datetime.datetime.strftime(datetime.datetime.now(), "%Y-%m-%d-%H-%M-%S")
-    file = "backup_" + timestamp + ".zip"
-    file = os.path.join(dirpath, file)
+    file = os.path.join(dirpath, "backup_" + timestamp + ".zip")
     for root, _, files in os.walk(dirpath, topdown=False):
         with zipfile.ZipFile(file, "w", zipfile.ZIP_DEFLATED) as z:
             for f in files:
