@@ -10,7 +10,7 @@ import json
 import zipfile
 from dataclasses import dataclass
 from collections import OrderedDict
-from datetime import datetime, timedelta
+from datetime import datetime
 from dateutil.relativedelta import relativedelta
 import pytz
 import requests
