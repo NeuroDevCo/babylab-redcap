@@ -104,7 +104,7 @@ def questionnaires_routes(app):
             try:
                 api.delete_questionnaire(
                     data={"record_id": ppt_id, "redcap_repeat_instance": repeat_id},
-                    token=app.config["API_KEY"],
+                    token=token,
                 )
                 flash("Questionnaire deleted!", "success")
                 return redirect(url_for("que_all"))
@@ -137,23 +137,21 @@ def questionnaires_routes(app):
                 "redcap_repeat_instrument": "language",
                 "language_date_created": date_now,
                 "language_date_updated": date_now,
-                "language_isestimated": (
-                    "1" if "inputIsEstimated" in finput.keys() else "0"
-                ),
+                "language_isestimated": ("1" if "inputIsEstimated" in finput else "0"),
                 "language_lang1": (
-                    finput["inputLang1"] if "inputLang1" in finput.keys() else "0"
+                    finput["inputLang1"] if "inputLang1" in finput else "0"
                 ),
                 "language_lang1_exp": finput["inputLang1Exp"],
                 "language_lang2": (
-                    finput["inputLang2"] if "inputLang2" in finput.keys() else "0"
+                    finput["inputLang2"] if "inputLang2" in finput else "0"
                 ),
                 "language_lang2_exp": finput["inputLang2Exp"],
                 "language_lang3": (
-                    finput["inputLang3"] if "inputLang3" in finput.keys() else "0"
+                    finput["inputLang3"] if "inputLang3" in finput else "0"
                 ),
                 "language_lang3_exp": finput["inputLang3Exp"],
                 "language_lang4": (
-                    finput["inputLang4"] if "inputLang4" in finput.keys() else "0"
+                    finput["inputLang4"] if "inputLang4" in finput else "0"
                 ),
                 "language_lang4_exp": finput["inputLang4Exp"],
                 "language_comments": finput["inputComments"],

@@ -8,11 +8,12 @@ import os
 import re
 import json
 import zipfile
-import datetime
 from dataclasses import dataclass
 from collections import OrderedDict
+from datetime import datetime
+from dateutil.relativedelta import relativedelta
+import pytz
 import requests
-from dateutil import relativedelta
 import pandas as pd
 
 
@@ -47,11 +48,10 @@ class Participant:
             for k, v in data.items()
             if k.startswith("participant_") or k == "record_id"
         }
-        age_now = (data["age_created_months"], data["age_created_days"])
+        age_created = (data["age_created_months"], data["age_created_days"])
         time_fmt = "%Y-%m-%d %H:%M:%S"
-        timestamp = datetime.datetime.strptime(data["date_created"], time_fmt)
-        date_birth = get_birth_date(age_now, timestamp)
-        data["age_now_months"], data["age_now_days"] = get_age(date_birth)
+        ts = datetime.strptime(data["date_created"], time_fmt)
+        data["age_now_months"], data["age_now_days"] = get_age(age_created, ts)
         self.record_id = data["record_id"]
         self.data = data
         self.appointments = apt
@@ -296,10 +296,10 @@ def datetimes_to_strings(data: dict):
         dict: Dictionary with datetimes formatted as strings.
     """  # pylint: disable=line-too-long
     for k, v in data.items():
-        if isinstance(v, datetime.datetime):
-            data[k] = datetime.datetime.strftime(v, "%Y-%m-%d %H:%M:%S")
+        if isinstance(v, datetime):
+            data[k] = datetime.strftime(v, "%Y-%m-%d %H:%M:%S")
             if not v.second:
-                data[k] = datetime.datetime.strftime(v, "%Y-%m-%d %H:%M")
+                data[k] = datetime.strftime(v, "%Y-%m-%d %H:%M")
     return data
 
 
@@ -593,7 +593,7 @@ def redcap_backup(dirpath: str = "tmp", **kwargs) -> dict:
         with open(path, "w", encoding="utf-8") as f:
             json.dump(v, f)
 
-    timestamp = datetime.datetime.strftime(datetime.datetime.now(), "%Y-%m-%d-%H-%M-%S")
+    timestamp = datetime.strftime(datetime.now(), "%Y-%m-%d-%H-%M-%S")
     file = os.path.join(dirpath, "backup_" + timestamp + ".zip")
     for root, _, files in os.walk(dirpath, topdown=False):
         with zipfile.ZipFile(file, "w", zipfile.ZIP_DEFLATED) as z:
@@ -711,27 +711,6 @@ class Records:
             self.questionnaires.records[record_id] = Questionnaire(r[1])
 
 
-def get_age(
-    birth_date: datetime.datetime,
-    timestamp: datetime.datetime = datetime.datetime.now(),
-):
-    """Estimate age in months and days at some timestamp based on date of birth.
-
-    Args:
-        birth_date (datetime.datetime): Birth date as ``datetime.datetime`` type.
-        timestamp (datetime.datetime, optional): Time for which the age is calculated. Defaults to current date (``datetime.datetime.now()``).
-
-    Returns:
-        tuple[int, int]: Age in months and days in the ``(months, days)`` format.
-    """  # pylint: disable=line-too-long
-    if not isinstance(timestamp, datetime.datetime):
-        raise ValueError("`birth_date` must be of type `datetime.datetime`")
-    if not isinstance(birth_date, datetime.datetime):
-        raise ValueError("`timestamp` must be of type `datetime.datetime`")
-    delta = relativedelta.relativedelta(timestamp, birth_date)
-    return delta.months, delta.days
-
-
 class BadAgeFormat(Exception):
     """If age des not follow the right format."""
 
@@ -760,19 +739,33 @@ def parse_age(age: tuple) -> tuple[int, int]:
         raise BadAgeFormat(age) from e
 
 
-def get_birth_date(
-    age: str | tuple, timestamp: str | datetime.datetime = datetime.datetime.now()
-):
-    """Calculate date of birth based on age at some timestamp.
+def get_age(age: str | tuple, ts: datetime, ts_new: datetime = None):
+    """Calculate the age of a person in months and days at a new timestamp.
 
     Args:
-        age (tuple): Age in months and days as a tuple of type ``(months, days)``.
-        timestamp (str | datetime, optional): Time at which age was calculated. Defaults to ``datetime.datetime.now()``.
+        age (tuple): Age in months and days as a tuple of type (months, days).
+        ts (datetime): Birth date as ``datetime.datetime`` type.
+        ts_new (datetime.datetime, optional): Time for which the age is calculated. Defaults to current date (``datetime.datetime.now()``).
 
     Returns:
-        datetime.datetime: Birth date of the participant.
+        tuple: Age in at ``new_timestamp``.
     """  # pylint: disable=line-too-long
-    months, days = parse_age(age)
-    if not isinstance(timestamp, datetime.datetime):
-        raise ValueError("timestamp must be a `datetime.datetime`")
-    return timestamp - relativedelta.relativedelta(months=months, days=days)
+    if ts_new is None:
+        ts_new = datetime.now(pytz.UTC)
+
+    if ts.tzinfo is None or ts.tzinfo.utcoffset(ts) is None:
+        ts = pytz.UTC.localize(ts, True)
+    if ts_new.tzinfo is None or ts_new.tzinfo.utcoffset(ts_new) is None:
+        ts_new = pytz.UTC.localize(ts_new, True)
+
+    tdiff = relativedelta(ts_new, ts)
+    age = parse_age(age)
+    new_age_months = age[0] + tdiff.years * 12 + tdiff.months
+    new_age_days = age[1] + tdiff.days
+
+    if new_age_days >= 30:
+        additional_months = new_age_days // 30
+        new_age_months += additional_months
+        new_age_days %= 30
+
+    return new_age_months, new_age_days
