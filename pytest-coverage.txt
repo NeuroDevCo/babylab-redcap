@@ -3,14 +3,14 @@ platform win32 -- Python 3.12.9, pytest-8.3.4, pluggy-1.5.0
 rootdir: D:\a\babylab-redcap\babylab-redcap
 configfile: pyproject.toml
 plugins: cov-6.0.0, flask-1.3.0
-collected 59 items
+collected 58 items
 
 tests\functional\test_appointments.py ......                             [ 10%]
-tests\functional\test_general.py ........                                [ 23%]
-tests\functional\test_participants.py ......                             [ 33%]
+tests\functional\test_general.py ........                                [ 24%]
+tests\functional\test_participants.py ......                             [ 34%]
 tests\functional\test_questionnaires.py ......                           [ 44%]
-tests\unit\test_api.py ...................                               [ 76%]
-tests\unit\test_calendar.py ..                                           [ 79%]
+tests\unit\test_api.py ...................                               [ 77%]
+tests\unit\test_calendar.py .                                            [ 79%]
 tests\unit\test_models.py ..........                                     [ 96%]
 tests\unit\test_utils.py ..                                              [100%]
 
@@ -21,19 +21,18 @@ Name                                   Stmts   Miss Branch BrPart  Cover   Missi
 ----------------------------------------------------------------------------------
 babylab\app\__init__.py                   20      1      2      1    91%   13
 babylab\app\config.py                     61     17     10      3    66%   15-16, 23-24, 34-41, 44, 94-95, 105-106
-babylab\app\routes\appointments.py        98     13     10      3    85%   117-126, 139->141, 172-174, 185->187, 226-228
+babylab\app\routes\appointments.py        98     13     10      3    85%   116-125, 138->140, 171-173, 184->186, 225-227
 babylab\app\routes\general.py            153     18     28      3    88%   195, 200, 205, 223-224, 240->242, 243, 315-317, 324-328, 334-336, 341
-babylab\app\routes\participants.py       113     14     14      3    87%   193->199, 216-223, 282-284, 294->296, 339-341
-babylab\app\routes\questionnaires.py      88     13     10      3    84%   104-113, 125->127, 168-170, 182->184, 218-220
-babylab\src\api.py                       290     36     76      4    85%   164-169, 177, 185, 334-337, 430-431, 448-449, 589->591, 674-711, 728, 777
-babylab\src\utils.py                     155     11     74      7    91%   116, 164->166, 222, 242, 312, 355, 408, 470-471, 485-496
+babylab\app\routes\participants.py       113     14     14      3    87%   191->197, 214-221, 274-276, 286->288, 329-331
+babylab\app\routes\questionnaires.py      88     13     10      3    84%   104-113, 125->127, 166-168, 180->182, 216-218
+babylab\src\api.py                       294     34     78      3    86%   164-169, 177, 185, 334-337, 430-431, 448-449, 589->591, 674-711, 756->758
+babylab\src\utils.py                     154     11     74      7    91%   116, 164->166, 222, 242, 309, 349, 402, 464-465, 479-490
 tests\conftest.py                         59      1      0      0    98%   47
 tests\unit\test_api.py                   128      4      2      0    95%   200-203
-tests\unit\test_calendar.py               36      4      0      0    89%   32-35
 tests\utils.py                            94      4     14      1    94%   312-315, 321->323
 ----------------------------------------------------------------------------------
-TOTAL                                   1547    136    240     28    89%
+TOTAL                                   1532    130    242     27    90%
 
-11 files skipped due to complete coverage.
+12 files skipped due to complete coverage.
 
-======================= 59 passed in 548.12s (0:09:08) ========================
+======================= 58 passed in 439.23s (0:07:19) ========================
