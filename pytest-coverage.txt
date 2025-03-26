@@ -21,10 +21,10 @@ Name                                   Stmts   Miss Branch BrPart  Cover   Missi
 ----------------------------------------------------------------------------------
 babylab\app\__init__.py                   20      1      2      1    91%   13
 babylab\app\config.py                     61     17     10      3    66%   15-16, 23-24, 34-41, 44, 94-95, 105-106
-babylab\app\routes\appointments.py        98     13     10      3    85%   116-125, 138->140, 171-173, 184->186, 225-227
+babylab\app\routes\appointments.py        98     13     10      3    85%   116-125, 138->140, 169-171, 182->184, 221-223
 babylab\app\routes\general.py            153     18     28      3    88%   195, 200, 205, 223-224, 240->242, 243, 315-317, 324-328, 334-336, 341
-babylab\app\routes\participants.py       113     14     14      3    87%   191->197, 214-221, 274-276, 286->288, 329-331
-babylab\app\routes\questionnaires.py      88     13     10      3    84%   104-113, 125->127, 166-168, 180->182, 216-218
+babylab\app\routes\participants.py       113     14     14      3    87%   191->197, 214-221, 272-274, 284->286, 325-327
+babylab\app\routes\questionnaires.py      88     13     10      3    84%   102-111, 123->125, 162-164, 176->178, 210-212
 babylab\src\api.py                       285     27     76      3    88%   29, 310-313, 405-406, 423-424, 565->567, 648-685, 730->732
 babylab\src\utils.py                     154     11     74      7    91%   116, 164->166, 222, 242, 309, 349, 402, 464-465, 479-490
 tests\conftest.py                         59      1      0      0    98%   47
@@ -35,4 +35,4 @@ TOTAL                                   1523    123    240     27    90%
 
 12 files skipped due to complete coverage.
 
-======================= 58 passed in 659.87s (0:10:59) ========================
+======================= 58 passed in 427.33s (0:07:07) ========================
