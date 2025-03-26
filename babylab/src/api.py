@@ -5,25 +5,32 @@ Functions to interact with the REDCap API.
 """
 
 import os
-import re
+from typing import Self, Iterable
 import json
 import zipfile
-import datetime
-from dataclasses import dataclass
 from collections import OrderedDict
+from datetime import datetime
+from dateutil.relativedelta import relativedelta
+import pytz
 import requests
-from dateutil import relativedelta
 import pandas as pd
 
 
-@dataclass
 class RecordList:
     """List of records"""
 
-    records: dict
+    def __init__(self: Self, records: dict) -> Self:
+        self.records: dict = records
 
-    def to_df(self) -> pd.DataFrame:
-        """Transform a dictionary dataset to a Pandas DataFrame.
+    def __len__(self: Self) -> int:
+        return len(self.records)
+
+    def __repr__(self: Self) -> str:
+        return f"RecordList with {len(self)} records"
+
+    def to_df(self: Self) -> pd.DataFrame:
+        """Transforms a a RecordList to a Pandas DataFrame.
+
         Returns:
             pd.DataFrame: Tabular dataset.
         """
@@ -38,63 +45,76 @@ class RecordList:
         return df
 
 
+def filter_fields(data: dict, prefix: str, fields: Iterable[str]) -> dict:
+    """Filter a data dictionary based on a prefix and field names.
+
+    Args:
+        records (dict): Record data dictionary.
+        prefix (str): Prefix to look for.
+        fields (Iterable[str]): Field names to look for.
+
+    Returns:
+        dict: Filtered records.
+    """
+    return {
+        k.replace(prefix, ""): v
+        for k, v in data.items()
+        if k.startswith(prefix) or k in fields
+    }
+
+
 class Participant:
     """Participant in database"""
 
-    def __init__(self, data, apt: RecordList = None, que: RecordList = None):
-        data = {
-            re.sub("participant_", "", k): v
-            for k, v in data.items()
-            if k.startswith("participant_") or k == "record_id"
-        }
-        age_now = (data["age_created_months"], data["age_created_days"])
+    def __init__(
+        self: Self, data, apt: RecordList = None, que: RecordList = None
+    ) -> Self:
+        data = filter_fields(data, "participant_", ["record_id"])
         time_fmt = "%Y-%m-%d %H:%M:%S"
-        timestamp = datetime.datetime.strptime(data["date_created"], time_fmt)
-        date_birth = get_birth_date(age_now, timestamp)
-        data["age_now_months"], data["age_now_days"] = get_age(date_birth)
+        age_created = (data["age_created_months"], data["age_created_days"])
+        ts = datetime.strptime(data["date_created"], time_fmt)
+        data["age_now_months"], data["age_now_days"] = get_age(age_created, ts)
+
         self.record_id = data["record_id"]
         self.data = data
         self.appointments = apt
         self.questionnaires = que
 
-    def __repr__(self):
+    def __repr__(self: Self) -> str:
         """Print class in console.
 
         Returns:
             str: Description to print in console.
         """
-        n_apt = 0 if self.appointments is None else len(self.appointments.records)
-        n_que = 0 if self.questionnaires is None else len(self.questionnaires.records)
+        n_apt = 0 if self.appointments is None else len(self.appointments)
+        n_que = 0 if self.questionnaires is None else len(self.questionnaires)
         return f"Participant {self.record_id}: {str(n_apt)} appointments, {str(n_que)} questionnaires"  # pylint: disable=line-too-long
 
-    def __str__(self):
+    def __str__(self: Self) -> str:
         """Return class description as string.
 
         Returns:
             str: Description of class.
         """
-        n_apt = 0 if self.appointments is None else len(self.appointments.records)
-        n_que = 0 if self.questionnaires is None else len(self.questionnaires.records)
+        n_apt = 0 if self.appointments is None else len(self.appointments)
+        n_que = 0 if self.questionnaires is None else len(self.questionnaires)
         return f"Participant {self.record_id}: {str(n_apt)} appointments, {str(n_que)} questionnaires"  # pylint: disable=line-too-long
 
 
 class Appointment:
     """Appointment in database"""
 
-    def __init__(self, data):
-        data = {
-            re.sub("appointment_", "", k): v
-            for k, v in data.items()
-            if k.startswith("appointment_")
-            or k in ["record_id", "redcap_repeat_instance"]
-        }
+    def __init__(self: Self, data: dict) -> Self:
+        data = filter_fields(
+            data, "appointment_", ["record_id", "redcap_repeat_instance"]
+        )
         self.record_id = data["record_id"]
         self.data = data
         self.appointment_id = make_id(data["record_id"], data["redcap_repeat_instance"])
         self.status = data["status"]
         self.date = data["date"]
 
-    def __repr__(self):
+    def __repr__(self: Self) -> str:
         """Print class in console.
 
         Returns:
@@ -102,7 +122,7 @@ class Appointment:
         """
         return f"Appointment {self.appointment_id}, participant {self.record_id}, {self.date}, {self.status}"  # pylint: disable=line-too-long
 
-    def __str__(self):
+    def __str__(self: Self) -> str:
         """Return class description as string.
 
         Returns:
@@ -114,12 +134,8 @@ class Appointment:
 class Questionnaire:
     """Language questionnaire in database"""
 
-    def __init__(self, data):
-        data = {
-            re.sub("language_", "", k): v
-            for k, v in data.items()
-            if k.startswith("language_") or k in ["record_id", "redcap_repeat_instance"]
-        }
+    def __init__(self: Self, data: dict) -> Self:
+        data = filter_fields(data, "language_", ["record_id", "redcap_repeat_instance"])
         self.record_id = data["record_id"]
         self.questionnaire_id = make_id(self.record_id, data["redcap_repeat_instance"])
         self.isestimated = data["isestimated"]
@@ -128,7 +144,7 @@ class Questionnaire:
             l = f"lang{i}_exp"
             self.data[l] = int(self.data[l]) if self.data[l] else 0
 
-    def __repr__(self):
+    def __repr__(self: Self) -> str:
         """Print class in console.
 
         Returns:
@@ -142,7 +158,7 @@ class Questionnaire:
             + f"\n- L4 ({self.data['lang4']}) = {self.data['lang4_exp']}%"
         )  # pylint: disable=line-too-long
 
-    def __str__(self):
+    def __str__(self: Self) -> str:
         """Return class description as string.
 
         Returns:
@@ -155,51 +171,19 @@ class Questionnaire:
             + f"\n- L3 ({self.data['lang3']}) = {self.data['lang3_exp']}%"
             + f"\n- L4 ({self.data['lang4']}) = {self.data['lang4_exp']}%"
         )  # pylint: disable=line-too-long
-
-
-class User:
-    """User class"""
-
-    def __init__(self, **kwargs):
-        fields = {"content": "user", "format": "json", "returnFormat": "json"}
-        r = post_request(fields, **kwargs)
-        user = json.loads(r.content.decode())[0]
-        self.user = user["username"]
-        self.name = user["firstname"] + " " + user["lastname"]
-        self.email = user["email"]
-
-    def __repr__(self):
-        """Print class in console.
-
-        Returns:
-            str: Description to print in console.
-        """
-        return f"User {self.user} ({self.name}, {self.email})"
-
-    def __str__(self):
-        """Return class description as string.
-
-        Returns:
-            str: Description of class.
-        """
-        return f"User {self.user} ({self.name}, {self.email})"
 
 
 class BadTokenException(Exception):
     """If token is ill-formed."""
 
 
-def post_request(
-    fields: dict,
-    token: str,
-    timeout: int = (5, 10),
-) -> dict:
+def post_request(fields: dict, token: str, timeout: Iterable[int] = (5, 10)) -> dict:
     """Make a POST request to the REDCap database.
 
     Args:
         fields (dict): Fields to retrieve.
         token (str): API token.
-        timeout (int, optional): Timeout of HTTP request in seconds. Defaults to 10.
+        timeout (Iterable[int], optional): Timeout of HTTP request in seconds. Defaults to 10.
 
     Raises:
         requests.exceptions.HTTPError: If HTTP request fails.
@@ -223,33 +207,32 @@ def post_request(
         r.raise_for_status()
         return r
     except requests.exceptions.HTTPError as e:
-        print(f"{e}:\n{re.sub('<.*?>', '', r.text)}")
+        print(f"{e}:\n{r.text.replace("'<.*?>'", "")}")
     except BadTokenException:
         print("Token contains non-alphanumeric characters")
     return None
 
 
-def get_redcap_version(**kwargs) -> str:
+def get_redcap_version(**kwargs: any) -> str:
     """Get REDCap version.
     Args:
-        **kwargs: Arguments passed to ``post_request``.
+        **kwargs (any, optional): Arguments passed to ``post_request``.
     Returns:
         str: REDCAp version number.
     """
-    fields = {
-        "content": "version",
-    }
+    fields = {"content": "version"}
     r = post_request(fields=fields, **kwargs)
-    if r:
-        return r.content.decode("utf-8")
-    return None
+    return r.content.decode("utf-8") if r else None
 
 
-def get_data_dict(**kwargs):
+def get_data_dict(**kwargs: any) -> any:
     """Get data dictionaries for categorical variables
 
+    Args:
+        **kwargs (any, optional): Additional arguments passed tp ``post_request``.
+
     Returns:
-        **kwargs: Additional arguments passed tp ``post_request``.
+        dict: Data dictionary.
     """
     items = [
         "participant_sex",
@@ -263,11 +246,7 @@ def get_data_dict(**kwargs):
         "language_lang3",
         "language_lang4",
     ]
-    fields = {
-        "content": "metadata",
-        "format": "json",
-        "returnFormat": "json",
-    }
+    fields = {"content": "metadata", "format": "json", "returnFormat": "json"}
 
     for idx, i in enumerate(items):
         fields[f"fields[{idx}]"] = i
@@ -284,7 +263,7 @@ def get_data_dict(**kwargs):
     return dicts
 
 
-def datetimes_to_strings(data: dict):
+def datetimes_to_strings(data: dict) -> dict:
     """Return formatted datatimes as strings following the ISO 8061 date format.
 
     It first tries to format the date as Y-m-d H:M. If error, it assumes the Y-m-d H:M:S is due and tries to format it accordingly.
@@ -296,18 +275,19 @@ def datetimes_to_strings(data: dict):
         dict: Dictionary with datetimes formatted as strings.
     """  # pylint: disable=line-too-long
     for k, v in data.items():
-        if isinstance(v, datetime.datetime):
-            data[k] = datetime.datetime.strftime(v, "%Y-%m-%d %H:%M:%S")
+        if isinstance(v, datetime):
+            data[k] = datetime.strftime(v, "%Y-%m-%d %H:%M:%S")
             if not v.second:
-                data[k] = datetime.datetime.strftime(v, "%Y-%m-%d %H:%M")
+                data[k] = datetime.strftime(v, "%Y-%m-%d %H:%M")
     return data
 
 
-def get_next_id(**kwargs) -> str:
+def get_next_id(**kwargs: any) -> str:
     """Get next record_id in REDCap database.
 
     Args:
-        **kwargs: Additional arguments passed to ``post_request``.
+        **kwargs (any, optional): Additional arguments passed to ``post_request``.
+
     Returns:
         str: record_id of next record.
     """
@@ -315,33 +295,28 @@ def get_next_id(**kwargs) -> str:
     return str(post_request(fields=fields, **kwargs).json())
 
 
-def get_records(record_id: str | list = None, **kwargs):
+def get_records(record_id: str | list = None, **kwargs: any) -> dict:
     """Return records as JSON.
 
     Args:
-        kwargs (str): Additional arguments passed to ``post_request``.
+        kwargs  (any, optional): Additional arguments passed to ``post_request``.
 
     Returns:
         dict: REDCap records in JSON format.
     """
-    fields = {
-        "content": "record",
-        "format": "json",
-        "type": "flat",
-    }
+    fields = {"content": "record", "format": "json", "type": "flat"}
 
     if record_id:
         fields["records[0]"] = record_id
         if isinstance(record_id, list):
             for r in record_id:
                 fields[f"records[{record_id}]"] = r
-
     records = post_request(fields=fields, **kwargs).json()
     records = [datetimes_to_strings(r) for r in records]
     return records
 
 
-def make_id(ppt_id: str, repeat_id: str = None):
+def make_id(ppt_id: str, repeat_id: str = None) -> str:
     """Make a record ID.
 
     Args:
@@ -354,7 +329,7 @@ def make_id(ppt_id: str, repeat_id: str = None):
     ppt_id = str(ppt_id)
     if not ppt_id.isdigit():
         raise ValueError(f"`ppt_id`` must be a digit, but '{ppt_id}' was provided")
-    if repeat_id is None:
+    if not repeat_id:
         return ppt_id
     repeat_id = str(repeat_id)
     if not repeat_id.isdigit():
@@ -367,19 +342,19 @@ def make_id(ppt_id: str, repeat_id: str = None):
 class RecordNotFound(Exception):
     """If record is not found."""
 
-    def __init__(self, record_id):
+    def __init__(self, record_id) -> Self:
         super().__init__(f"Record '{record_id}' not found")
 
 
-def get_participant(ppt_id: str, **kwargs):
+def get_participant(ppt_id: str, **kwargs: any) -> Participant:
     """Get participant record.
 
     Args:
         ppt_id: ID of participant (record_id).
-        **kwargs: Additional arguments passed to ``post_request``
+        **kwargs (any, optional): Additional arguments passed to ``post_request``
 
     Returns:
-        api.Participant: Participant object.
+        Participant: Participant object.
     """
     fields = {
         "content": "record",
@@ -401,7 +376,7 @@ def get_participant(ppt_id: str, **kwargs):
     apt = {}
     que = {}
     for r in recs:
-        repeat_id = f"{str(r['record_id'])}:{str(r['redcap_repeat_instance'])}"
+        repeat_id = make_id(r["record_id"], r["redcap_repeat_instance"])
         form = r["redcap_repeat_instrument"]
         if form == "appointments":
             apt[repeat_id] = Appointment(r)
@@ -413,15 +388,15 @@ def get_participant(ppt_id: str, **kwargs):
         raise RecordNotFound(record_id=ppt_id) from exc
 
 
-def get_appointment(apt_id: str, **kwargs):
+def get_appointment(apt_id: str, **kwargs: any) -> Appointment:
     """Get appointment record.
 
     Args:
-        apt_id: ID of appointment (``redcap_repeated_id``).
-        **kwargs: Additional arguments passed to ``post_request``
+        apt_id (str): ID of appointment (``redcap_repeated_id``).
+        **kwargs (any, optional): Additional arguments passed to ``post_request``
 
     Returns:
-        api.Appointment: Appointment object.
+        Appointment: Appointment object.
     """
     ppt_id, _ = apt_id.split(":")
     ppt = get_participant(ppt_id, **kwargs)
@@ -431,15 +406,15 @@ def get_appointment(apt_id: str, **kwargs):
         raise RecordNotFound(record_id=apt_id) from exc
 
 
-def get_questionnaire(que_id: str, **kwargs):
+def get_questionnaire(que_id: str, **kwargs: any) -> Questionnaire:
     """Get questionnaire record.
 
     Args:
-        que_id: ID of appointment (``redcap_repeated_id``).
-        **kwargs: Additional arguments passed to ``post_request``
+        que_id (str): ID of appointment (``redcap_repeated_id``).
+        **kwargs (any, optional): Additional arguments passed to ``post_request``
 
     Returns:
-        api.Questionnaire: Appointment object.
+        Questionnaire: Appointment object.
     """
     ppt_id, _ = que_id.split(":")
     ppt = get_participant(ppt_id, **kwargs)
@@ -449,13 +424,13 @@ def get_questionnaire(que_id: str, **kwargs):
         raise RecordNotFound(record_id=que_id) from exc
 
 
-def add_participant(data: dict, modifying: bool = False, **kwargs):
+def add_participant(data: dict, modifying: bool = False, **kwargs: any):
     """Add new participant to REDCap database.
 
     Args:
         data (dict): Participant data.
         modifying (bool, optional): Modifying existent participant?
-        *kwargs: Additional arguments passed to ``post_request``.
+        *kwargs (any, optional): Additional arguments passed to ``post_request``.
     """
     fields = {
         "content": "record",
@@ -469,13 +444,13 @@ def add_participant(data: dict, modifying: bool = False, **kwargs):
     return post_request(fields=fields, **kwargs)
 
 
-def delete_participant(data: dict, **kwargs):
+def delete_participant(data: dict, **kwargs: any):
     """Delete participant from REDCap database.
 
     Args:
         data (dict): Participant data.
         modifying (bool, optional): Modifying existent participant?
-        *kwargs: Additional arguments passed to ``post_request``.
+        *kwargs (any, optional): Additional arguments passed to ``post_request``.
     """
     fields = {
         "content": "record",
@@ -487,13 +462,13 @@ def delete_participant(data: dict, **kwargs):
     return post_request(fields=fields, **kwargs)
 
 
-def add_appointment(data: dict, **kwargs):
+def add_appointment(data: dict, **kwargs: any):
     """Add new appointment to REDCap database.
 
     Args:
         record_id (dict): ID of participant.
         data (dict): Appointment data.
-        *kwargs: Additional arguments passed to ``post_request``.
+        **kwargs (any, optional): Additional arguments passed to ``post_request``.
     """
     fields = {
         "content": "record",
@@ -507,13 +482,13 @@ def add_appointment(data: dict, **kwargs):
     return post_request(fields=fields, **kwargs)
 
 
-def delete_appointment(data: dict, **kwargs):
+def delete_appointment(data: dict, **kwargs: any):
     """Delete appointment from REDCap database.
 
     Args:
         data (dict): Participant data.
         modifying (bool, optional): Modifying existent participant?
-        *kwargs: Additional arguments passed to ``post_request``.
+        **kwargs (any, optional): Additional arguments passed to ``post_request``.
     """
     fields = {
         "content": "record",
@@ -526,12 +501,12 @@ def delete_appointment(data: dict, **kwargs):
     return post_request(fields=fields, **kwargs)
 
 
-def add_questionnaire(data: dict, **kwargs):
+def add_questionnaire(data: dict, **kwargs: any):
     """Add new questionnaire to REDCap database.
 
     Args:
         data (dict): Questionnaire data.
-        *kwargs: Additional arguments passed to ``post_request``.
+        **kwargs (any, optional): Additional arguments passed to ``post_request``.
     """
     fields = {
         "content": "record",
@@ -546,13 +521,13 @@ def add_questionnaire(data: dict, **kwargs):
     return post_request(fields=fields, **kwargs)
 
 
-def delete_questionnaire(data: dict, **kwargs):
+def delete_questionnaire(data: dict, **kwargs: any):
     """Delete questionnaire from REDCap database.
 
     Args:
         data (dict): Participant data.
         modifying (bool, optional): Modifying existent participant?
-        *kwargs: Additional arguments passed to ``post_request``.
+        **kwargs (any, optional): Additional arguments passed to ``post_request``.
     """
     fields = {
         "content": "record",
@@ -565,56 +540,37 @@ def delete_questionnaire(data: dict, **kwargs):
     return post_request(fields=fields, **kwargs)
 
 
-def redcap_backup(dirpath: str = "tmp", **kwargs) -> dict:
+def redcap_backup(dirpath: str = "tmp", **kwargs: any) -> dict:
     """Download a backup of the REDCap database
 
     Args:
         dirpath (str, optional): Output directory. Defaults to "tmp".
+        **kwargs (any, optional): Additional arguments passed to ``post_request``.
 
     Returns:
         dict: A dictionary with the key data and metadata of the project.
     """
-    project = json.loads(
-        post_request(
-            fields={"content": "project", "format": "json", "returnFormat": "json"},
-            **kwargs,
-        ).text
-    )
-    fields = json.loads(
-        post_request(
-            fields={
-                "content": "metadata",
-                "format": "json",
-                "returnFormat": "json",
-            },
-            **kwargs,
-        ).text
-    )
-    instruments = json.loads(
-        post_request(
-            fields={"content": "instrument", "format": "json", "returnFormat": "json"},
-            **kwargs,
-        ).text
-    )
+    pl = {}
+    for k in ["project", "metadata", "instrument"]:
+        pl[k] = {"format": "json", "returnFormat": "json", "content": k}
+    d = {k: json.loads(post_request(v, **kwargs).text) for k, v in pl.items()}
     records = [datetimes_to_strings(r) for r in get_records(**kwargs)]
     backup = {
-        "project": project,
-        "instruments": instruments,
-        "fields": fields,
+        "project": d["project"],
+        "instruments": d["instrument"],
+        "fields": d["metadata"],
         "records": records,
     }
+
     if not os.path.exists(dirpath):
         os.mkdir(dirpath)
     for k, v in backup.items():
-        fpath = os.path.join(dirpath, k + ".json")
-        with open(fpath, "w", encoding="utf-8") as f:
+        path = os.path.join(dirpath, k + ".json")
+        with open(path, "w", encoding="utf-8") as f:
             json.dump(v, f)
-    file = (
-        "backup_"
-        + datetime.datetime.strftime(datetime.datetime.now(), "%Y-%m-%d-%H-%M-%S")
-        + ".zip"
-    )
-    file = os.path.join(dirpath, file)
+
+    timestamp = datetime.strftime(datetime.now(), "%Y-%m-%d-%H-%M-%S")
+    file = os.path.join(dirpath, "backup_" + timestamp + ".zip")
     for root, _, files in os.walk(dirpath, topdown=False):
         with zipfile.ZipFile(file, "w", zipfile.ZIP_DEFLATED) as z:
             for f in files:
@@ -626,37 +582,33 @@ def redcap_backup(dirpath: str = "tmp", **kwargs) -> dict:
 class Records:
     """REDCap records"""
 
-    def __init__(self, record_id: str | list = None, **kwargs):
-
+    def __init__(self: Self, record_id: str | list = None, **kwargs: any) -> Self:
         records = get_records(record_id, **kwargs)
-        participants = {}
-        appointments = {}
-        questionnaires = {}
+        ppt, apt, que = {}, {}, {}
         for r in records:
             ppt_id = r["record_id"]
             repeat_id = r["redcap_repeat_instance"]
-
             if repeat_id and r["appointment_status"]:
                 r["appointment_id"] = make_id(ppt_id, repeat_id)
-                appointments[r["appointment_id"]] = Appointment(r)
+                apt[r["appointment_id"]] = Appointment(r)
             if repeat_id and r["language_lang1"]:
                 r["questionnaire_id"] = make_id(ppt_id, repeat_id)
-                questionnaires[r["questionnaire_id"]] = Questionnaire(r)
+                que[r["questionnaire_id"]] = Questionnaire(r)
             if not r["redcap_repeat_instrument"]:
-                participants[ppt_id] = Participant(r)
+                ppt[ppt_id] = Participant(r)
 
         # add appointments and questionnaires to each participant
-        for p, v in participants.items():
-            apps = {k: v for k, v in appointments.items() if v.record_id == p}
-            v.appointments = RecordList(apps)
-            ques = {k: v for k, v in questionnaires.items() if v.record_id == p}
+        for p, v in ppt.items():
+            apts = {k: v for k, v in apt.items() if v.record_id == p}
+            v.appointments = RecordList(apts)
+            ques = {k: v for k, v in que.items() if v.record_id == p}
             v.questionnaires = RecordList(ques)
 
-        self.participants = RecordList(participants)
-        self.appointments = RecordList(appointments)
-        self.questionnaires = RecordList(questionnaires)
+        self.participants = RecordList(ppt)
+        self.appointments = RecordList(apt)
+        self.questionnaires = RecordList(que)
 
-    def __repr__(self):
+    def __repr__(self: Self) -> str:
         """Print class in console.
 
         Returns:
@@ -669,7 +621,7 @@ class Records:
             + f"\n- {len(self.questionnaires.records)} language questionnaires"  # pylint: disable=line-too-long
         )
 
-    def __str__(self):
+    def __str__(self: Self) -> str:
         """Return class description as string.
 
         Returns:
@@ -677,18 +629,18 @@ class Records:
         """
         return (
             "REDCap database:"
-            + f"\n- {len(self.participants.records)} participants"
-            + f"\n- {len(self.appointments.records)} appointments"
-            + f"\n- {len(self.questionnaires.records)} language questionnaires"  # pylint: disable=line-too-long
+            + f"\n- {len(self.participants)} participants"
+            + f"\n- {len(self.appointments)} appointments"
+            + f"\n- {len(self.questionnaires)} language questionnaires"
         )
 
-    def update_record(self, record_id: str, record_type: str, **kwargs):
+    def update_record(self: Self, record_id: str, record_type: str, **kwargs: any):
         """Fetch appointment information from REDCap database and updated Records.
 
         Args:
             record_id (str): ID of record.
             record_type (str): Type of record. Must be one of "participant", "appointment" or "questionnaire"
-            **kwargs: Additional arguments passed to ``post_request``.
+            **kwargs (any, optional): Additional arguments passed to ``post_request``.
 
         Raises:
             ValueError: If `record_type` is not one of "participant", "appointment", "questionnaire".
@@ -733,31 +685,10 @@ class Records:
             self.questionnaires.records[record_id] = Questionnaire(r[1])
 
 
-def get_age(
-    birth_date: datetime.datetime,
-    timestamp: datetime.datetime = datetime.datetime.now(),
-):
-    """Estimate age in months and days at some timestamp based on date of birth.
-
-    Args:
-        birth_date (datetime.datetime): Birth date as ``datetime.datetime`` type.
-        timestamp (datetime.datetime, optional): Time for which the age is calculated. Defaults to current date (``datetime.datetime.now()``).
-
-    Returns:
-        tuple[int, int]: Age in months and days in the ``(months, days)`` format.
-    """  # pylint: disable=line-too-long
-    if not isinstance(timestamp, datetime.datetime):
-        raise ValueError("`birth_date` must be of type `datetime.datetime`")
-    if not isinstance(birth_date, datetime.datetime):
-        raise ValueError("`timestamp` must be of type `datetime.datetime`")
-    delta = relativedelta.relativedelta(timestamp, birth_date)
-    return delta.months, delta.days
-
-
 class BadAgeFormat(Exception):
     """If age des not follow the right format."""
 
-    def __init__(self, age):
+    def __init__(self: Self, age: tuple[int, int]):
         super().__init__(f"`age` must follow the `(months, age)` format': { age }")
 
 
@@ -782,19 +713,33 @@ def parse_age(age: tuple) -> tuple[int, int]:
         raise BadAgeFormat(age) from e
 
 
-def get_birth_date(
-    age: str | tuple, timestamp: str | datetime.datetime = datetime.datetime.now()
-):
-    """Calculate date of birth based on age at some timestamp.
+def get_age(age: str | tuple, ts: datetime, ts_new: datetime = None):
+    """Calculate the age of a person in months and days at a new timestamp.
 
     Args:
-        age (tuple): Age in months and days as a tuple of type ``(months, days)``.
-        timestamp (str | datetime, optional): Time at which age was calculated. Defaults to ``datetime.datetime.now()``.
+        age (tuple): Age in months and days as a tuple of type (months, days).
+        ts (datetime): Birth date as ``datetime.datetime`` type.
+        ts_new (datetime.datetime, optional): Time for which the age is calculated. Defaults to current date (``datetime.datetime.now()``).
 
     Returns:
-        datetime.datetime: Birth date of the participant.
+        tuple: Age in at ``new_timestamp``.
     """  # pylint: disable=line-too-long
-    months, days = parse_age(age)
-    if not isinstance(timestamp, datetime.datetime):
-        raise ValueError("timestamp must be a `datetime.datetime`")
-    return timestamp - relativedelta.relativedelta(months=months, days=days)
+    if ts_new is None:
+        ts_new = datetime.now(pytz.UTC)
+
+    if ts.tzinfo is None or ts.tzinfo.utcoffset(ts) is None:
+        ts = pytz.UTC.localize(ts, True)
+    if ts_new.tzinfo is None or ts_new.tzinfo.utcoffset(ts_new) is None:
+        ts_new = pytz.UTC.localize(ts_new, True)
+
+    tdiff = relativedelta(ts_new, ts)
+    age = parse_age(age)
+    new_age_months = age[0] + tdiff.years * 12 + tdiff.months
+    new_age_days = age[1] + tdiff.days
+
+    if new_age_days >= 30:
+        additional_months = new_age_days // 30
+        new_age_months += additional_months
+        new_age_days %= 30
+
+    return new_age_months, new_age_days

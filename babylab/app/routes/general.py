@@ -1,8 +1,9 @@
 """Genera routes."""
 
 import os
-import datetime
 from collections import OrderedDict
+from datetime import date, timedelta
+from datetime import datetime as dt
 import requests
 import pandas as pd
 from flask import redirect, flash, render_template, url_for, request, send_file
@@ -70,38 +71,36 @@ def prepare_studies(records: api.Records, data_dict: dict, study: str = None):
         bold_rows=True,
     )
 
-    date = df["Date"].value_counts().to_dict()
-    date = OrderedDict(sorted(date.items()))
-    for idx, (k, v) in enumerate(date.items()):
+    timestamp = df["Date"].value_counts().to_dict()
+    timestamp = OrderedDict(sorted(timestamp.items()))
+    for idx, (k, v) in enumerate(timestamp.items()):
         if idx > 0:
-            date[k] = v + list(date.values())[idx - 1]
+            timestamp[k] = v + list(timestamp.values())[idx - 1]
 
     return {
         "n_apts": df.shape[0],
-        "date_labels": list(date.keys()),
-        "date_values": list(date.values()),
+        "date_labels": list(timestamp.keys()),
+        "date_values": list(timestamp.values()),
         "table": table,
     }
 
 
 def get_year_weeks(year: int):
     """Get week numbers of the year"""
-    date_first = datetime.date(year, 1, 1)
-    date_first += datetime.timedelta(days=6 - date_first.weekday())
+    date_first = date(year, 1, 1)
+    date_first += timedelta(days=6 - date_first.weekday())
     while date_first.year == year:
         yield date_first
-        date_first += datetime.timedelta(days=7)
+        date_first += timedelta(days=7)
 
 
-def get_week_number(date: datetime.date):
+def get_week_number(timestamp: dt.date):
     """Get current week number"""
     weeks = {}
-    for wn, d in enumerate(get_year_weeks(date.year)):
-        weeks[wn + 1] = [
-            (d + datetime.timedelta(days=k)).isoformat() for k in range(0, 7)
-        ]
+    for wn, d in enumerate(get_year_weeks(timestamp.year)):
+        weeks[wn + 1] = [(d + timedelta(days=k)).isoformat() for k in range(0, 7)]
     for k, v in weeks.items():
-        if datetime.datetime.strftime(date, "%Y-%m-%d") in v:
+        if dt.strftime(timestamp, "%Y-%m-%d") in v:
             return k
     return None
 
@@ -130,20 +129,15 @@ def prepare_dashboard(records: api.Records = None, data_dict: dict = None) -> di
         labels=labels[:-1],
         include_lowest=True,
     )
-
-    current_week = get_week_number(datetime.datetime.today())
+    time_fmt = "%Y-%m-%d %H:%M:%S"
     n_ppts_week = sum(
-        get_week_number(
-            datetime.datetime.strptime(v.data["date_created"], "%Y-%m-%d %H:%M:%S")
-        )
-        == current_week
+        get_week_number(dt.strptime(v.data["date_created"], time_fmt))
+        == get_week_number(dt.today())
         for v in records.participants.records.values()
     )
     n_apts_week = sum(
-        get_week_number(
-            datetime.datetime.strptime(v.data["date_created"], "%Y-%m-%d %H:%M:%S")
-        )
-        == current_week
+        get_week_number(dt.strptime(v.data["date_created"], time_fmt))
+        == get_week_number(dt.today())
         for v in records.appointments.records.values()
     )
 
@@ -152,10 +146,9 @@ def prepare_dashboard(records: api.Records = None, data_dict: dict = None) -> di
         months = k.split(":")[0]
         months = "0" + months if len(months) == 1 else months
         age_dist[months + ":" + k.split(":")[1]] = v
-    age_dist = dict(sorted(age_dist.items()))
 
     variables = {
-        "age_dist": age_dist,
+        "age_dist": dict(sorted(age_dist.items())),
         "sex_dist": utils.count_col(ppts, "sex", values_sort=True),
         "source_dist": utils.count_col(ppts, "source", values_sort=True),
         "ppts_date_created": utils.count_col(ppts, "date_created", cumulative=True),
@@ -214,21 +207,22 @@ def general_routes(app):
     @app.route("/", methods=["GET", "POST"])
     def index():
         """Index page"""
-        redcap_version = api.get_redcap_version(token=app.config["API_KEY"])
+        token = app.config["API_KEY"]
+        version = api.get_redcap_version(token=token)
         if request.method == "POST":
             finput = request.form
             token = finput["apiToken"]
             app.config["API_KEY"] = token
             try:
-                redcap_version = api.get_redcap_version(token=token)
-                if redcap_version:
+                version = api.get_redcap_version(token=token)
+                if version:
                     flash("Logged in.", "success")
                     app.config["RECORDS"] = api.Records(token=token)
-                    return render_template("index.html", redcap_version=redcap_version)
+                    return render_template("index.html", redcap_version=version)
                 flash("Incorrect token", "error")
             except ValueError as e:
                 flash(f"Incorrect token: {e}", "error")
-        return render_template("index.html", redcap_version=redcap_version)
+        return render_template("index.html", redcap_version=version)
 
     @app.route("/dashboard")
     @conf.token_required
@@ -270,16 +264,16 @@ def general_routes(app):
         }
         for apt in list(records.appointments.records.values()):
             data = utils.replace_labels(apt.data, data_dict)
-            start = datetime.datetime.strptime(data["date"], fmt_str)
-            end = start + datetime.timedelta(minutes=60)
+            start = dt.strptime(data["date"], fmt_str)
+            end = start + timedelta(minutes=60)
 
             events.append(
                 {
                     "title": f"{data['status']} | {data['id']}",
-                    "start": datetime.datetime.strftime(start, fmt_str),
-                    "end": datetime.datetime.strftime(end, fmt_str),
-                    "timeStart": datetime.datetime.strftime(start, "%H:%M"),
-                    "timeEnd": datetime.datetime.strftime(end, "%H:%M"),
+                    "start": dt.strftime(start, fmt_str),
+                    "end": dt.strftime(end, fmt_str),
+                    "timeStart": dt.strftime(start, "%H:%M"),
+                    "timeEnd": dt.strftime(end, "%H:%M"),
                     "groupID": data["study"],
                     "display": "block",
                     "location": "Barcelona",
@@ -295,22 +289,17 @@ def general_routes(app):
 
     @app.route("/studies", methods=["GET", "POST"])
     @conf.token_required
-    def studies(selected_study: str = None, data: dict = None):
+    def studies(study: str = None, data: dict = None):
         """Studies page"""
         token = app.config["API_KEY"]
+        recs = app.config["RECORDS"]
         data_dict = api.get_data_dict(token=token)
-
         if request.method == "POST":
             finput = request.form
-            selected_study = finput["inputStudy"]
-            data = prepare_studies(
-                app.config["RECORDS"], data_dict=data_dict, study=selected_study
-            )
+            study = finput["inputStudy"]
+            data = prepare_studies(recs, data_dict=data_dict, study=study)
             return render_template(
-                "studies.html",
-                data_dict=data_dict,
-                selected_study=selected_study,
-                data=data,
+                "studies.html", data_dict=data_dict, selected_study=study, data=data
             )
         return render_template("studies.html", data_dict=data_dict, data=data)
 
@@ -318,32 +307,25 @@ def general_routes(app):
     @conf.token_required
     def other():
         """Other pages"""
-        fname = datetime.datetime.strftime(
-            datetime.datetime.now(), "backup_%Y-%m-%d-%H-%M.zip"
-        )
+        token = app.config["API_KEY"]
+        timestamp = dt.now()
+        fn_fmt = "backup_%Y-%m-%d-%H-%M.zip"
+        fn = dt.strftime(timestamp, fn_fmt)
         if request.method == "post":
-            backup_file = api.redcap_backup(
-                dirpath=os.path.join("temp", fname), token=app.config["API_KEY"]
-            )
-            return send_file(
-                backup_file,
-                as_attachment=True,
-            )
-        return render_template(
-            "other.html",
-        )
+            path = os.path.join("temp", fn)
+            backup_file = api.redcap_backup(dirpath=path, token=token)
+            return send_file(backup_file, as_attachment=True)
+        return render_template("other.html")
 
     @app.route("/download_backup", methods=["GET", "POST"])
     @conf.token_required
     def download_backup():
         """Download backup"""
+        token = app.config["API_KEY"]
         utils.clean_tmp("tmp")
         utils.clean_tmp("../tmp")
-        backup_file = api.redcap_backup(dirpath="/tmp", token=app.config["API_KEY"])
-        return send_file(
-            backup_file,
-            as_attachment=False,
-        )
+        backup_file = api.redcap_backup(dirpath="/tmp", token=token)
+        return send_file(backup_file, as_attachment=False)
 
     @app.route("/logout", methods=["GET", "POST"])
     @conf.token_required

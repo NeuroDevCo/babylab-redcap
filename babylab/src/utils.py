@@ -245,21 +245,18 @@ def get_age_timestamp(
     days_new = []
     for v in apt_records.values():
         if timestamp == "date_created":
-            t = datetime.datetime.strptime(
+            ts = datetime.datetime.strptime(
                 ppt_records[v.record_id].data[timestamp],
                 date_format,
             )
         else:
-            t = datetime.datetime.strptime(
+            ts = datetime.datetime.strptime(
                 v.data["date"],
                 "%Y-%m-%d %H:%M",
             )
         months = ppt_records[v.record_id].data["age_now_months"]
         days = ppt_records[v.record_id].data["age_now_days"]
-        age_now = api.get_age(
-            birth_date=api.get_birth_date(age=(months, days)),
-            timestamp=t,
-        )
+        age_now = api.get_age(age=(months, days), ts=ts)
         months_new.append(int(age_now[0]))
         days_new.append(int(age_now[1]))
     return months_new, days_new
@@ -314,12 +311,9 @@ def get_participants_table(records: api.Records, data_dict: dict) -> DataFrame:
     new_age_months = []
     new_age_days = []
     for _, v in records.participants.records.items():
-        timestamp = datetime.datetime.strptime(
-            v.data["date_created"], "%Y-%m-%d %H:%M:%S"
-        )
+        ts = datetime.datetime.strptime(v.data["date_created"], "%Y-%m-%d %H:%M:%S")
         age_created = (v.data["age_created_months"], v.data["age_created_days"])
-        birth_date = api.get_birth_date(age=age_created, timestamp=timestamp)
-        age = api.get_age(birth_date=birth_date)
+        age = api.get_age(age_created, ts=ts)
         new_age_months.append(int(age[0]))
         new_age_days.append(int(age[1]))
 
@@ -482,11 +476,12 @@ def prepare_email(ppt_id: str, apt_id: str, data: dict, data_dict: dict) -> dict
     Returns:
         dict: Email data.
     """
+    timestamp = datetime.datetime.strptime(data["date"], "%Y-%m-%d %H:%M").isoformat()
     email = {
         "record_id": ppt_id,
         "id": apt_id,
         "status": data["status"],
-        "date": datetime.datetime.strptime(data["date"], "%Y-%m-%d %H:%M").isoformat(),
+        "date": timestamp,
         "study": data["study"],
         "taxi_address": data["taxi_address"],
         "taxi_isbooked": data["taxi_isbooked"],

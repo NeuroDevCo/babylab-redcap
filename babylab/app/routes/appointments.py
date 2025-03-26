@@ -101,13 +101,13 @@ def appointments_routes(app):
         data = utils.replace_labels(apt.data, data_dict)
 
         age_created = (ppt.data["age_created_months"], ppt.data["age_created_days"])
-        timestamp = datetime.datetime.strptime(
-            ppt.data["date_created"], "%Y-%m-%d %H:%M:%S"
-        )
-        date_birth = api.get_birth_date(age_created, timestamp=timestamp)
+        ts = datetime.datetime.strptime(ppt.data["date_created"], "%Y-%m-%d %H:%M:%S")
+        apt_date = datetime.datetime.strptime(data["date"], "%Y-%m-%d %H:%M")
         data["age_apt_months"], data["age_apt_days"] = api.get_age(
-            date_birth, datetime.datetime.strptime(data["date"], "%Y-%m-%d %H:%M")
+            age_created, ts=ts, ts_new=apt_date
         )
+
+        ppt.data = utils.replace_labels(ppt.data, data_dict)
         ppt.data["age_now_months"] = str(ppt.data["age_now_months"])
         ppt.data["age_now_days"] = str(ppt.data["age_now_days"])
         data["age_apt_months"] = str(data["age_apt_months"])
