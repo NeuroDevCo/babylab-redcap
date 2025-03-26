@@ -1,6 +1,6 @@
 """Participants routes."""
 
-import datetime
+from datetime import datetime
 import requests
 from flask import flash, redirect, render_template, url_for, request
 from babylab.src import api, utils
@@ -72,7 +72,7 @@ def prepare_record_id(ppt: api.Participant, data_dict: dict) -> dict:
         if kdict in data_dict:
             data[k] = data_dict[kdict][v] if v else ""
     age_created = (data["age_created_months"], data["age_created_days"])
-    ts = datetime.datetime.strptime(data["date_created"], "%Y-%m-%d %H:%M:%S")
+    ts = datetime.strptime(data["date_created"], "%Y-%m-%d %H:%M:%S")
     age = api.get_age(age_created, ts)
     data["age_now_months"] = str(age[0])
     data["age_now_days"] = str(age[1])
@@ -230,9 +230,7 @@ def participants_routes(app):
         ppt_id = api.get_next_id(token=token)
         if request.method == "POST":
             finput = request.form
-            date_now = datetime.datetime.strftime(
-                datetime.datetime.now(), "%Y-%m-%d %H:%M"
-            )
+            date_now = datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M")
             data = {
                 "record_id": "0",
                 "participant_date_created": date_now,
@@ -288,9 +286,7 @@ def participants_routes(app):
         ppt = api.get_participant(ppt_id, token=token)
         if request.method == "POST":
             finput = request.form
-            date_now = datetime.datetime.strftime(
-                datetime.datetime.now(), "%Y-%m-%d %H:%M"
-            )
+            date_now = datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M")
             data = {
                 "record_id": ppt_id,
                 "participant_date_updated": date_now,

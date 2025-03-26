@@ -1,6 +1,6 @@
 """Appointments routes."""
 
-import datetime
+from datetime import datetime
 import requests
 from flask import flash, redirect, render_template, url_for, request
 from babylab.src import api, utils
@@ -101,8 +101,8 @@ def appointments_routes(app):
         data = utils.replace_labels(apt.data, data_dict)
 
         age_created = (ppt.data["age_created_months"], ppt.data["age_created_days"])
-        ts = datetime.datetime.strptime(ppt.data["date_created"], "%Y-%m-%d %H:%M:%S")
-        apt_date = datetime.datetime.strptime(data["date"], "%Y-%m-%d %H:%M")
+        ts = datetime.strptime(ppt.data["date_created"], "%Y-%m-%d %H:%M:%S")
+        apt_date = datetime.strptime(data["date"], "%Y-%m-%d %H:%M")
         data["age_apt_months"], data["age_apt_days"] = api.get_age(
             age_created, ts=ts, ts_new=apt_date
         )
@@ -142,9 +142,7 @@ def appointments_routes(app):
         data_dict = api.get_data_dict(token=token)
         if request.method == "POST":
             finput = request.form
-            date_now = datetime.datetime.strftime(
-                datetime.datetime.now(), "%Y-%m-%d %H:%M:%S"
-            )
+            date_now = datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")
             data = {
                 "record_id": ppt_id,
                 "redcap_repeat_instance": "new",
@@ -189,9 +187,7 @@ def appointments_routes(app):
         data = utils.replace_labels(data, data_dict)
         if request.method == "POST":
             finput = request.form
-            date_now = datetime.datetime.strftime(
-                datetime.datetime.now(), "%Y-%m-%d %H:%M"
-            )
+            date_now = datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M")
             data = {
                 "record_id": ppt_id,
                 "redcap_repeat_instance": repeat_id,
