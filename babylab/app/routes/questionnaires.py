@@ -1,6 +1,6 @@
 """Questionnaires routes."""
 
-import datetime
+from datetime import datetime
 import requests
 from flask import flash, redirect, render_template, url_for, request
 from babylab.src import api, utils
@@ -61,7 +61,6 @@ def prepare_que(records: api.Records, data_dict: dict):
             "modify_button": "",
         }
     )
-
     table = df.to_html(
         classes=f'{classes}" id = "quetable',
         escape=False,
@@ -69,7 +68,6 @@ def prepare_que(records: api.Records, data_dict: dict):
         index=False,
         bold_rows=True,
     )
-
     return {"table": table}
 
 
@@ -128,9 +126,7 @@ def que_routes(app):
         data_dict = api.get_data_dict(token=token)
         if request.method == "POST":
             finput = request.form
-            date_now = datetime.datetime.strftime(
-                datetime.datetime.now(), "%Y-%m-%d %H:%M"
-            )
+            date_now = datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M")
             data = {
                 "record_id": ppt_id,
                 "redcap_repeat_instance": "new",
@@ -185,9 +181,7 @@ def que_routes(app):
         data = utils.replace_labels(data, data_dict)
         if request.method == "POST":
             finput = request.form
-            date_now = datetime.datetime.strftime(
-                datetime.datetime.now(), "%Y-%m-%d %H:%M"
-            )
+            date_now = datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M")
             data = {
                 "record_id": ppt_id,
                 "redcap_repeat_instance": repeat_id,
