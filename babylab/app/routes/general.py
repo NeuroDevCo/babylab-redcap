@@ -22,12 +22,12 @@ def prepare_studies(records: api.Records, data_dict: dict, study: str = None):
     Returns:
         dict: Parameters for the participants endpoint.
     """  # pylint: disable=line-too-long
-    df = utils.get_appointments_table(records, data_dict=data_dict, study=study)
+    df = utils.get_apt_table(records, data_dict=data_dict, study=study)
     classes = "table table-hover table-responsives"
-    df["appointment_id"] = [utils.format_apt_id(i) for i in df["appointment_id"]]
-    df["record_id"] = [utils.format_ppt_id(i) for i in df.index]
+    df["appointment_id"] = [utils.fmt_apt_id(i) for i in df["appointment_id"]]
+    df["record_id"] = [utils.fmt_ppt_id(i) for i in df.index]
     df["modify_button"] = [
-        utils.format_modify_button(p, a) for p, a in zip(df.index, df["appointment_id"])
+        utils.fmt_modify_button(p, a) for p, a in zip(df.index, df["appointment_id"])
     ]
 
     df = df[
@@ -46,7 +46,6 @@ def prepare_studies(records: api.Records, data_dict: dict, study: str = None):
         ]
     ]
     df = df.sort_values("date", ascending=False)
-
     df = df.rename(
         columns={
             "appointment_id": "Appointment",
@@ -71,16 +70,16 @@ def prepare_studies(records: api.Records, data_dict: dict, study: str = None):
         bold_rows=True,
     )
 
-    timestamp = df["Date"].value_counts().to_dict()
-    timestamp = OrderedDict(sorted(timestamp.items()))
-    for idx, (k, v) in enumerate(timestamp.items()):
+    ts = df["Date"].value_counts().to_dict()
+    ts = OrderedDict(sorted(ts.items()))
+    for idx, (k, v) in enumerate(ts.items()):
         if idx > 0:
-            timestamp[k] = v + list(timestamp.values())[idx - 1]
+            ts[k] = v + list(ts.values())[idx - 1]
 
     return {
         "n_apts": df.shape[0],
-        "date_labels": list(timestamp.keys()),
-        "date_values": list(timestamp.values()),
+        "date_labels": list(ts.keys()),
+        "date_values": list(ts.values()),
         "table": table,
     }
 
@@ -94,7 +93,7 @@ def get_year_weeks(year: int):
         date_first += timedelta(days=7)
 
 
-def get_week_number(timestamp: dt.date):
+def get_week_n(timestamp: dt.date):
     """Get current week number"""
     weeks = {}
     for wn, d in enumerate(get_year_weeks(timestamp.year)):
@@ -115,9 +114,9 @@ def prepare_dashboard(records: api.Records = None, data_dict: dict = None) -> di
     Returns:
         dict: Parameters for the dashboard endpoint.
     """  # pylint: disable=line-too-long
-    ppts = utils.get_participants_table(records, data_dict=data_dict)
-    apts = utils.get_appointments_table(records, data_dict=data_dict)
-    quest = utils.get_questionnaires_table(records, data_dict=data_dict)
+    ppts = utils.get_ppt_table(records, data_dict=data_dict)
+    apts = utils.get_apt_table(records, data_dict=data_dict)
+    quest = utils.get_que_table(records, data_dict=data_dict)
     ppts["age_days"] = round(
         ppts["age_now_days"] + (ppts["age_now_months"] * 30.437), None
     ).astype(int)
@@ -131,13 +130,13 @@ def prepare_dashboard(records: api.Records = None, data_dict: dict = None) -> di
     )
     time_fmt = "%Y-%m-%d %H:%M:%S"
     n_ppts_week = sum(
-        get_week_number(dt.strptime(v.data["date_created"], time_fmt))
-        == get_week_number(dt.today())
+        get_week_n(dt.strptime(v.data["date_created"], time_fmt))
+        == get_week_n(dt.today())
         for v in records.participants.records.values()
     )
     n_apts_week = sum(
-        get_week_number(dt.strptime(v.data["date_created"], time_fmt))
-        == get_week_number(dt.today())
+        get_week_n(dt.strptime(v.data["date_created"], time_fmt))
+        == get_week_n(dt.today())
         for v in records.appointments.records.values()
     )
 
