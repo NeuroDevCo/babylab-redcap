@@ -1,14 +1,44 @@
 """Genera routes."""
 
 import os
+from typing import Iterable
 from collections import OrderedDict
 from datetime import date, timedelta
-from datetime import datetime as dt
+from datetime import datetime
 import requests
 import pandas as pd
 from flask import redirect, flash, render_template, url_for, request, send_file
 from babylab.src import api, utils
 from babylab.app import config as conf
+
+
+def get_weekly_apts(
+    records: api.Records,
+    data_dict: dict,
+    study: Iterable | None = None,
+    status: Iterable | None = None,
+) -> dict:
+    available_studies = list(data_dict["appointment_study"].values())
+    if study is None:
+        study = available_studies
+    else:
+        if study not in available_studies:
+            raise ValueError("Study not available")
+
+    available_status = list(data_dict["appointment_status"].values())
+    if status is None:
+        status = available_status
+    else:
+        if not all(s in available_status for s in status):
+            raise ValueError("Status not available")
+
+    return sum(
+        get_week_n(datetime.strptime(v.data["date_created"], "%Y-%m-%d %H:%M:%S"))
+        == get_week_n(datetime.today())
+        for v in records.appointments.records.values()
+        if data_dict["appointment_status"][v.data["status"]] in status
+        and data_dict["appointment_study"][v.data["study"]] in study
+    )
 
 
 def prepare_studies(records: api.Records, data_dict: dict, study: str = None):
@@ -75,9 +105,38 @@ def prepare_studies(records: api.Records, data_dict: dict, study: str = None):
     for idx, (k, v) in enumerate(ts.items()):
         if idx > 0:
             ts[k] = v + list(ts.values())[idx - 1]
+    n_apts_week = {
+        x: get_weekly_apts(
+            records,
+            data_dict=data_dict,
+            study=data_dict["appointment_study"][x],
+        )
+        for x in data_dict["appointment_study"]
+    }
+    n_apts_week_succ = {
+        x: get_weekly_apts(
+            records,
+            data_dict=data_dict,
+            study=data_dict["appointment_study"][x],
+            status=["Successful"],
+        )
+        for x in data_dict["appointment_study"]
+    }
+    n_apts_week_canc = {
+        x: get_weekly_apts(
+            records,
+            data_dict=data_dict,
+            study=data_dict["appointment_study"][x],
+            status=["Cancelled - Reschedule", "Cancelled - Drop", "No show"],
+        )
+        for x in data_dict["appointment_study"]
+    }
 
     return {
         "n_apts": df.shape[0],
+        "n_apts_week": n_apts_week,
+        "n_apts_week_succ": n_apts_week_succ,
+        "n_apts_week_canc": n_apts_week_canc,
         "date_labels": list(ts.keys()),
         "date_values": list(ts.values()),
         "table": table,
@@ -93,13 +152,13 @@ def get_year_weeks(year: int):
         date_first += timedelta(days=7)
 
 
-def get_week_n(timestamp: dt.date):
+def get_week_n(timestamp: date):
     """Get current week number"""
     weeks = {}
     for wn, d in enumerate(get_year_weeks(timestamp.year)):
         weeks[wn + 1] = [(d + timedelta(days=k)).isoformat() for k in range(0, 7)]
     for k, v in weeks.items():
-        if dt.strftime(timestamp, "%Y-%m-%d") in v:
+        if datetime.strftime(timestamp, "%Y-%m-%d") in v:
             return k
     return None
 
@@ -130,13 +189,13 @@ def prepare_dashboard(records: api.Records = None, data_dict: dict = None) -> di
     )
     time_fmt = "%Y-%m-%d %H:%M:%S"
     n_ppts_week = sum(
-        get_week_n(dt.strptime(v.data["date_created"], time_fmt))
-        == get_week_n(dt.today())
+        get_week_n(datetime.strptime(v.data["date_created"], time_fmt))
+        == get_week_n(datetime.today())
         for v in records.participants.records.values()
     )
     n_apts_week = sum(
-        get_week_n(dt.strptime(v.data["date_created"], time_fmt))
-        == get_week_n(dt.today())
+        get_week_n(datetime.strptime(v.data["date_created"], time_fmt))
+        == get_week_n(datetime.today())
         for v in records.appointments.records.values()
     )
 
@@ -263,16 +322,16 @@ def general_routes(app):
         }
         for apt in list(records.appointments.records.values()):
             data = utils.replace_labels(apt.data, data_dict)
-            start = dt.strptime(data["date"], fmt_str)
+            start = datetime.strptime(data["date"], fmt_str)
             end = start + timedelta(minutes=60)
 
             events.append(
                 {
                     "title": f"{data['status']} | {data['id']}",
-                    "start": dt.strftime(start, fmt_str),
-                    "end": dt.strftime(end, fmt_str),
-                    "timeStart": dt.strftime(start, "%H:%M"),
-                    "timeEnd": dt.strftime(end, "%H:%M"),
+                    "start": datetime.strftime(start, fmt_str),
+                    "end": datetime.strftime(end, fmt_str),
+                    "timeStart": datetime.strftime(start, "%H:%M"),
+                    "timeEnd": datetime.strftime(end, "%H:%M"),
                     "groupID": data["study"],
                     "display": "block",
                     "location": "Barcelona",
@@ -307,9 +366,9 @@ def general_routes(app):
     def other():
         """Other pages"""
         token = app.config["API_KEY"]
-        timestamp = dt.now()
+        timestamp = datetime.now()
         fn_fmt = "backup_%Y-%m-%d-%H-%M.zip"
-        fn = dt.strftime(timestamp, fn_fmt)
+        fn = datetime.strftime(timestamp, fn_fmt)
         if request.method == "post":
             path = os.path.join("temp", fn)
             backup_file = api.redcap_backup(dirpath=path, token=token)
