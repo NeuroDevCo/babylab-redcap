@@ -7,11 +7,12 @@ from babylab.src import api
 timestamp = datetime(2024, 12, 17)
 
 
-def test_get_age():
+def test_get_age(benchmark):
     """Test ``get_age``"""
     ts = datetime(2024, 5, 1, 3, 4)
     ts_new = datetime(2025, 1, 4, 1, 2)
     age = (5, 5)
+
     # when only birth date is provided
     assert isinstance(api.get_age(age, ts), tuple)
     assert all(isinstance(d, int) for d in api.get_age(age, ts))
@@ -27,3 +28,8 @@ def test_get_age():
     assert all(d > 0 for d in api.get_age(age, ts, ts_new))
     with pytest.raises(api.BadAgeFormat):
         api.get_age(age="5, 4", ts=ts)
+
+    def _get_age():
+        api.get_age(age, ts, ts_new)
+
+    benchmark(_get_age)

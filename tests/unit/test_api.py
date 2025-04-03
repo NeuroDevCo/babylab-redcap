@@ -43,13 +43,19 @@ def test_datetimes_to_str():
     assert result["date_str"] == data["date_str"]
 
 
-def test_get_data_dict(token):
+def test_get_data_dict(benchmark, token):
     """Test ``get_records``."""
     data_dict = api.get_data_dict(token=token)
+
     assert isinstance(data_dict, dict)
     assert all(isinstance(v, dict) for v in data_dict.values())
     with pytest.raises(TypeError):
         api.get_data_dict()
+
+    def _get_data_dict():
+        api.get_data_dict(token=token)
+
+    benchmark(_get_data_dict)
 
 
 def test_make_id():
@@ -70,16 +76,22 @@ def test_make_id():
         api.make_id("1:1")
 
 
-def test_get_participant(ppt_record_mod, token):
+def test_get_participant(benchmark, ppt_record_mod, token):
     """Test ``get_participant``."""
     ppt_id = ppt_record_mod["record_id"]
     ppt = api.get_participant(ppt_id, token=token)
+
     assert isinstance(ppt, api.Participant)
     with pytest.raises(api.RecordNotFound):
         api.get_participant("BADID", token=token)
 
+    def _get_participant():
+        api.get_participant(ppt_id, token=token)
 
-def test_get_appointment(apt_record_mod, token):
+    benchmark(_get_participant)
+
+
+def test_get_appointment(benchmark, apt_record_mod, token):
     """Test ``get_participant``."""
     ppt_id = apt_record_mod["record_id"]
     repeat_id = apt_record_mod["redcap_repeat_instance"]
@@ -89,8 +101,13 @@ def test_get_appointment(apt_record_mod, token):
     with pytest.raises(api.RecordNotFound):
         api.get_appointment("f{ppt_id}:BADID", token=token)
 
+    def _get_appointment():
+        api.get_appointment(apt_id, token=token)
 
-def test_get_questionnaire(que_record_mod, token):
+    benchmark(_get_appointment)
+
+
+def test_get_questionnaire(benchmark, que_record_mod, token):
     """Test ``get_participant``."""
     ppt_id = que_record_mod["record_id"]
     repeat_id = que_record_mod["redcap_repeat_instance"]
@@ -100,14 +117,24 @@ def test_get_questionnaire(que_record_mod, token):
     with pytest.raises(api.RecordNotFound):
         api.get_questionnaire("f{que_id}:BADID", token=token)
 
+    def _get_questionnaire():
+        api.get_questionnaire(que_id, token=token)
 
-def test_get_records(token):
+    benchmark(_get_questionnaire)
+
+
+def test_get_records(benchmark, token):
     """Test ``get_records``."""
     records = api.get_records(token=token)
     assert isinstance(records, list)
     assert all(isinstance(r, dict) for r in records)
     with pytest.raises(TypeError):
         api.get_records()
+
+    def _get_records():
+        api.get_records(token=token)
+
+    benchmark(_get_records)
 
 
 def test_add_participant(ppt_record, token):
@@ -186,7 +213,7 @@ def test_delete_questionnaire(que_record_mod, token):
         api.delete_questionnaire(que_record_mod)
 
 
-def test_redcap_backup(token, tmp_path) -> dict:
+def test_redcap_backup(benchmark, token, tmp_path) -> dict:
     """Test ``redcap_backup``."""
     tmp_dir = tmp_path / "tmp"
     file = api.redcap_backup(dirpath=tmp_dir, token=token)
@@ -194,10 +221,20 @@ def test_redcap_backup(token, tmp_path) -> dict:
     with pytest.raises(TypeError):
         api.redcap_backup(dirpath=tmp_dir)
 
+    def _redcap_backup():
+        api.redcap_backup(dirpath=tmp_dir, token=token)
 
-def get_next_id(token, records: api.Records = None) -> str:
+    benchmark(_redcap_backup)
+
+
+def get_next_id(benchmark, token, records: api.Records = None) -> str:
     """Test ``get_next_id``."""
     if records is None:
         records = api.Records(token=token)
     next_id = api.get_next_id(token=token)
     assert next_id not in list(records.participants.records.keys())
+
+    def _get_next_id():
+        api.get_next_id(token=token)
+
+    benchmark(_get_next_id)
