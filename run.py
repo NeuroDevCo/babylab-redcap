@@ -3,8 +3,6 @@
 from waitress import serve
 from babylab.app import create_app
 
-if True:
-print("a")
 app = create_app(env="prod")
 
 if __name__ == "__main__":
