@@ -19,7 +19,7 @@ install:
 	python -m pip install -r requirements.txt
 
 test:
-	python -m pytest -v -p no:cacheprovider
+	python -m pytest -v -p no:cacheprovider --benchmark-time-unit="s" --benchmark-autosave
 
 cov:
 	python -m pytest -p no:cacheprovider --cov-report html --cov=babylab tests/
