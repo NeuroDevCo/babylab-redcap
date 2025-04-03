@@ -18,6 +18,20 @@ def get_weekly_apts(
     study: Iterable | None = None,
     status: Iterable | None = None,
 ) -> dict:
+    """Get weekly number of appointments.
+
+    Args:
+        records (api.Records): REDCap records, as returned by ``api.Records``.
+        data_dict (dict): Data dictionary as returned by ``api.get_data_dictionary``.
+        study (Iterable | None, optional): Study to filter for. Defaults to None.
+        status (Iterable | None, optional): Status to filter for. Defaults to None.
+
+    Raises:
+        ValueError: If `study` or `status` is not available.
+
+    Returns:
+        dict: Weekly number of appointment with for a given study and/or status.
+    """  # pylint: disable=lint-too-long
     available_studies = list(data_dict["appointment_study"].values())
     if study is None:
         study = available_studies
