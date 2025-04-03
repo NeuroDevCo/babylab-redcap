@@ -31,7 +31,7 @@ def get_weekly_apts(
 
     Returns:
         dict: Weekly number of appointment with for a given study and/or status.
-    """  # pylint: disable=lint-too-long
+    """  # pylint: disable=line-too-long
     available_studies = list(data_dict["appointment_study"].values())
     if study is None:
         study = available_studies
