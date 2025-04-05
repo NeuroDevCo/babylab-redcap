@@ -1,4 +1,9 @@
 @echo off
+
+set VERSION=pip show babylab 
+echo Updating...
+python -m pip install --upgrade babylab
+
 set URL=http://127.0.0.1:5000
 
 REM Try to open in Edge

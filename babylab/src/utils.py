@@ -4,6 +4,8 @@ Util functions for the app.
 
 import os
 import shutil
+from typing import Iterable
+from functools import singledispatch
 from datetime import datetime
 from copy import deepcopy
 from pandas import DataFrame
@@ -134,36 +136,22 @@ def fmt_modify_button(ppt_id: str = None, apt_id: str = None, que_id: str = None
     return f'<a href="/participants/{ppt_id}/participant_modify">{button_str}'
 
 
-def fmt_df(x: DataFrame, data_dict: dict, prefixes: list[str] = None) -> DataFrame:
+@singledispatch
+def fmt_labels(x: dict | DataFrame, prefixes: Iterable[str]):
     """Reformat dataframe.
 
     Args:
-        x (DataFrame): Dataframe to reformat.
+        x (dict | DataFrame): Dataframe to reformat.
         data_dict (dict): Data dictionary to labels to use, as returned by ``api.get_data_dict``.
-        prefixes (list[str]): List of prefixes to look for in variable names.
+        prefixes (Iterable[str]): List of prefixes to look for in variable names.
 
     Returns:
         DataFrame: A reformated Dataframe.
     """
-    if prefixes is None:
-        prefixes = ["participant", "appointment", "language"]
-    for col, val in x.items():
-        kdict = [x + "_" + col for x in prefixes]
-        for k in kdict:
-            if k in data_dict:
-                x[col] = [data_dict[k][v] if v else "" for v in val]
-        if "lang" in col:
-            x[col] = ["" if v == "None" else v for v in x[col]]
-        if "exp" in col:
-            x[col] = [fmt_percentage(v) for v in val]
-        if "taxi_isbooked" in col:
-            pairs = zip(x["taxi_address"], x[col])
-            x[col] = [fmt_taxi_isbooked(a, i) for a, i in pairs]
-        if "isestimated" in col:
-            x[col] = ["Estimated" if x == "1" else "Calculated" for x in x[col]]
-    return x
+    raise TypeError("`x` must be a dict or a pd.DataFrame")
 
 
+@fmt_labels.register(dict)
 def fmt_dict(x: dict, data_dict: dict) -> dict:
     """Reformat dictionary.
 
@@ -187,6 +175,28 @@ def fmt_dict(x: dict, data_dict: dict) -> dict:
     return y
 
 
+@fmt_labels.register(DataFrame)
+def _(x: DataFrame, data_dict: dict, prefixes: list[str] = None) -> DataFrame:
+
+    if prefixes is None:
+        prefixes = ["participant", "appointment", "language"]
+    for col, val in x.items():
+        kdict = [x + "_" + col for x in prefixes]
+        for k in kdict:
+            if k in data_dict:
+                x[col] = [data_dict[k][v] if v else "" for v in val]
+        if "lang" in col:
+            x[col] = ["" if v == "None" else v for v in x[col]]
+        if "exp" in col:
+            x[col] = [fmt_percentage(v) for v in val]
+        if "taxi_isbooked" in col:
+            pairs = zip(x["taxi_address"], x[col])
+            x[col] = [fmt_taxi_isbooked(a, i) for a, i in pairs]
+        if "isestimated" in col:
+            x[col] = ["Estimated" if x == "1" else "Calculated" for x in x[col]]
+    return x
+
+
 def replace_labels(x: DataFrame | dict, data_dict: dict) -> DataFrame:
     """Replace field values with labels.
 
@@ -197,11 +207,7 @@ def replace_labels(x: DataFrame | dict, data_dict: dict) -> DataFrame:
     Returns:
         DataFrame: A Pandas DataFrame with replaced labels.
     """  # pylint: disable=line-too-long
-    if isinstance(x, DataFrame):
-        return fmt_df(x, data_dict)
-    if isinstance(x, dict):
-        return fmt_dict(x, data_dict)
-    return None
+    return fmt_labels(x, data_dict)
 
 
 def get_age_timestamp(
