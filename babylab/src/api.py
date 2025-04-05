@@ -141,8 +141,8 @@ class Questionnaire:
         self.isestimated = data["isestimated"]
         self.data = data
         for i in range(1, 5):
-            l = f"lang{i}_exp"
-            self.data[l] = int(self.data[l]) if self.data[l] else 0
+            lang = f"lang{i}_exp"
+            self.data[lang] = int(self.data[lang]) if self.data[lang] else 0
 
     def __repr__(self: Self) -> str:
         """Print class in console.
@@ -645,7 +645,7 @@ class Records:
         Raises:
             ValueError: If `record_type` is not one of "participant", "appointment", "questionnaire".
         """  # pylint: disable=line-too-long
-        if not record_type in ["participant", "appointment", "questionnaire"]:
+        if record_type not in ["participant", "appointment", "questionnaire"]:
             raise ValueError(
                 "`record_type` must be one of 'participant', 'appointment', 'questionnaire'"
             )

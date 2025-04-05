@@ -1,4 +1,7 @@
 #!/bin/bash
+
+python3 -m pip install --upgrade babylab
+
 URL="http://127.0.0.1:5000"
 
 if open -a "Safari" "$URL" & python3 -m flask --app babylab.app run; then
