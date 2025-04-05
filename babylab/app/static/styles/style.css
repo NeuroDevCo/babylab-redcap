@@ -1,14 +1,15 @@
-@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
-
-
 body {
     background: url('../img/background.svg') no-repeat center center fixed;
     background-size: 100% auto;
     -webkit-background-size: cover;
     -moz-background-size: cover;
     -o-background-size: cover;
-    font-family: 'Roboto';
+    font-family: 'Roboto', sans-serif;
+    font-optical-sizing: auto;
     font-size: 20px;
+    font-style: normal;
+    font-variation-settings:
+      "wdth" 100;
     width: 100%;
     word-break: break-word;
 }
@@ -92,8 +93,8 @@ a.fc-daygrid-day-number {
 }
 
 .fc-daygrid-event-harness {
-    margin: 0em;
-    border-radius: 0%;
+    margin: 0;
+    border-radius: 0;
     padding: 0.1em;
 }
 
@@ -124,8 +125,6 @@ a.fc-event {
     margin: 1em;
 }
 
-
-
 .card-title {
     font-family: 'Ciutadella Bold', 'Roboto Bold', Fallback, sans-serif;
     font-size: larger;
@@ -137,7 +136,7 @@ a.fc-event {
     font-family: 'Ciutadella Medium', 'Roboto Medium', Fallback, sans-serif;
     font-size: larger;
     text-align: center;
-    border-radius: 0%;
+    border-radius: 0;
 }
 
 .card-footer{   
@@ -149,13 +148,12 @@ a.fc-event {
     background-color: #ffffff00;
     float: left;
     margin: 1em;
-    padding: 0%;
+    padding: 0;
 }
 
 .card-img-top {
     padding: 2em;
 }
-
 
 .card-plot {
     background-color: #ffffff83;
@@ -195,7 +193,6 @@ a.fc-event {
     vertical-align: middle;
     word-break: normal;
 }
-
 
 p.card-highlight {
     font-size: 50px;
@@ -259,7 +256,6 @@ dt-search {
     background-color: #ffffff83;
 }
 
-
 .error-container {
     font-size: 180px;
     font-weight: 800;
@@ -299,7 +295,7 @@ dt-search {
 .error-container>span:nth-of-type(2):before,
 .error-container>span:nth-of-type(2):after {
     animation: shadowsdancing 4s infinite;
-    border-radius: 0%;
+    border-radius: 0;
     box-shadow: inset 30px 0 0 rgba(209, 242, 165, 0.4),
         inset 0 30px 0 rgba(239, 250, 180, 0.4),
         inset -30px 0 0 rgba(255, 196, 140, 0.4),
@@ -323,7 +319,6 @@ dt-search {
     position: absolute;
     top: -9999em;
 }
-
 
 .itemgroup {
     float: left;
@@ -415,15 +410,13 @@ address {
       font-size: rem-calc(14);
     }
 }
-  
+
 .inline-list--logos li:first-child {
     position: relative;
     top: -4px;
 }
 
-
-
-a.more-link {
+.more-link {
     background-color: lightgray;
     border-radius: 0;
     display: inline-block;
@@ -455,18 +448,12 @@ a.more-link {
     margin-bottom: 5%;
     margin-top: 10%;
     overflow: hidden;
-    padding: 0%;
+    padding: 0;
     width: 60%;
-
 }
 
 #participantstable {
     float: none;
-} 
-
-* {
-    margin: 0;
-    padding: 0;
 }
 
 .loading {
@@ -483,13 +470,13 @@ a.more-link {
     border-radius: 50%;
     position: relative;
     animation: rotate 1s linear infinite
-  }
+}
 
 .loader::before, .loader::after {
     content: "";
     box-sizing: border-box;
     position: absolute;
-    inset: 0px;
+    inset: 0;
     border-radius: 50%;
     border: 10px solid #ea6212;
     animation: prixClipFix 2s linear infinite ;
@@ -501,7 +488,7 @@ a.more-link {
 }
 
 @keyframes rotate {
-    0%   {transform: rotate(0deg)}
+    0%   {transform: rotate(0)}
     100%   {transform: rotate(360deg)}
 }
 
@@ -510,4 +497,3 @@ a.more-link {
     50%  {clip-path:polygon(50% 50%,0 0,100% 0,100% 0,100% 0,100% 0)}
     75%, 100%  {clip-path:polygon(50% 50%,0 0,100% 0,100% 100%,100% 100%,100% 100%)}
 }
-
