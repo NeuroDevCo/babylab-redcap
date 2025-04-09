@@ -5,7 +5,7 @@ Functions to interact with the REDCap API.
 """
 
 import os
-from typing import Self, Iterable
+from typing import Iterable
 import json
 import zipfile
 from collections import OrderedDict
@@ -19,16 +19,16 @@ import pandas as pd
 class RecordList:
     """List of records"""
 
-    def __init__(self: Self, records: dict) -> Self:
+    def __init__(self, records: dict):
         self.records: dict = records
 
-    def __len__(self: Self) -> int:
+    def __len__(self) -> int:
         return len(self.records)
 
-    def __repr__(self: Self) -> str:
+    def __repr__(self) -> str:
         return f"RecordList with {len(self)} records"
 
-    def to_df(self: Self) -> pd.DataFrame:
+    def to_df(self) -> pd.DataFrame:
         """Transforms a a RecordList to a Pandas DataFrame.
 
         Returns:
@@ -66,9 +66,7 @@ def filter_fields(data: dict, prefix: str, fields: Iterable[str]) -> dict:
 class Participant:
     """Participant in database"""
 
-    def __init__(
-        self: Self, data, apt: RecordList = None, que: RecordList = None
-    ) -> Self:
+    def __init__(self, data, apt: RecordList = None, que: RecordList = None):
         data = filter_fields(data, "participant_", ["record_id"])
         time_fmt = "%Y-%m-%d %H:%M:%S"
         age_created = (data["age_created_months"], data["age_created_days"])
@@ -80,7 +78,7 @@ class Participant:
         self.appointments = apt
         self.questionnaires = que
 
-    def __repr__(self: Self) -> str:
+    def __repr__(self) -> str:
         """Print class in console.
 
         Returns:
@@ -90,7 +88,7 @@ class Participant:
         n_que = 0 if self.questionnaires is None else len(self.questionnaires)
         return f"Participant {self.record_id}: {str(n_apt)} appointments, {str(n_que)} questionnaires"  # pylint: disable=line-too-long
 
-    def __str__(self: Self) -> str:
+    def __str__(self) -> str:
         """Return class description as string.
 
         Returns:
@@ -104,7 +102,7 @@ class Participant:
 class Appointment:
     """Appointment in database"""
 
-    def __init__(self: Self, data: dict) -> Self:
+    def __init__(self, data: dict):
         data = filter_fields(
             data, "appointment_", ["record_id", "redcap_repeat_instance"]
         )
@@ -114,7 +112,7 @@ class Appointment:
         self.status = data["status"]
         self.date = data["date"]
 
-    def __repr__(self: Self) -> str:
+    def __repr__(self) -> str:
         """Print class in console.
 
         Returns:
@@ -122,7 +120,7 @@ class Appointment:
         """
         return f"Appointment {self.appointment_id}, participant {self.record_id}, {self.date}, {self.status}"  # pylint: disable=line-too-long
 
-    def __str__(self: Self) -> str:
+    def __str__(self) -> str:
         """Return class description as string.
 
         Returns:
@@ -134,7 +132,7 @@ class Appointment:
 class Questionnaire:
     """Language questionnaire in database"""
 
-    def __init__(self: Self, data: dict) -> Self:
+    def __init__(self, data: dict):
         data = filter_fields(data, "language_", ["record_id", "redcap_repeat_instance"])
         self.record_id = data["record_id"]
         self.questionnaire_id = make_id(self.record_id, data["redcap_repeat_instance"])
@@ -144,7 +142,7 @@ class Questionnaire:
             lang = f"lang{i}_exp"
             self.data[lang] = int(self.data[lang]) if self.data[lang] else 0
 
-    def __repr__(self: Self) -> str:
+    def __repr__(self) -> str:
         """Print class in console.
 
         Returns:
@@ -158,7 +156,7 @@ class Questionnaire:
             + f"\n- L4 ({self.data['lang4']}) = {self.data['lang4_exp']}%"
         )  # pylint: disable=line-too-long
 
-    def __str__(self: Self) -> str:
+    def __str__(self) -> str:
         """Return class description as string.
 
         Returns:
@@ -342,7 +340,7 @@ def make_id(ppt_id: str, repeat_id: str = None) -> str:
 class RecordNotFound(Exception):
     """If record is not found."""
 
-    def __init__(self, record_id) -> Self:
+    def __init__(self, record_id):
         super().__init__(f"Record '{record_id}' not found")
 
 
@@ -582,7 +580,7 @@ def redcap_backup(dirpath: str = "tmp", **kwargs: any) -> dict:
 class Records:
     """REDCap records"""
 
-    def __init__(self: Self, record_id: str | list = None, **kwargs: any) -> Self:
+    def __init__(self, record_id: str | list = None, **kwargs: any):
         records = get_records(record_id, **kwargs)
         ppt, apt, que = {}, {}, {}
         for r in records:
@@ -608,7 +606,7 @@ class Records:
         self.appointments = RecordList(apt)
         self.questionnaires = RecordList(que)
 
-    def __repr__(self: Self) -> str:
+    def __repr__(self) -> str:
         """Print class in console.
 
         Returns:
@@ -621,7 +619,7 @@ class Records:
             + f"\n- {len(self.questionnaires.records)} language questionnaires"  # pylint: disable=line-too-long
         )
 
-    def __str__(self: Self) -> str:
+    def __str__(self) -> str:
         """Return class description as string.
 
         Returns:
@@ -634,7 +632,7 @@ class Records:
             + f"\n- {len(self.questionnaires)} language questionnaires"
         )
 
-    def update_record(self: Self, record_id: str, record_type: str, **kwargs: any):
+    def update_record(self, record_id: str, record_type: str, **kwargs: any):
         """Fetch appointment information from REDCap database and updated Records.
 
         Args:
@@ -688,7 +686,7 @@ class Records:
 class BadAgeFormat(Exception):
     """If age des not follow the right format."""
 
-    def __init__(self: Self, age: tuple[int, int]):
+    def __init__(self, age: tuple[int, int]):
         super().__init__(f"`age` must follow the `(months, age)` format': { age }")
 
 
