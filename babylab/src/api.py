@@ -207,7 +207,7 @@ def post_request(fields: dict, token: str, timeout: Iterable[int] = (5, 10)) -> 
         r.raise_for_status()
         return r
     except requests.exceptions.HTTPError as e:
-        print(f"{e}:\n{r.text.replace("'<.*?>'", "")}")
+        print(str(e) + ":\n" + r.text.replace("'<.*?>'", ""))
     except BadTokenException:
         print("Token contains non-alphanumeric characters")
     return None
