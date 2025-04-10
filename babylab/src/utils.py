@@ -5,8 +5,8 @@ Util functions for the app.
 import os
 import shutil
 from typing import Iterable
+from datetime import date, timedelta, datetime
 from functools import singledispatch
-from datetime import datetime
 from copy import deepcopy
 from pandas import DataFrame
 from babylab.src import api
@@ -208,6 +208,34 @@ def replace_labels(x: DataFrame | dict, data_dict: dict) -> DataFrame:
         DataFrame: A Pandas DataFrame with replaced labels.
     """  # pylint: disable=line-too-long
     return fmt_labels(x, data_dict)
+
+
+def is_in_data_dict(
+    x: Iterable[str] | None, variable: str, data_dict: dict
+) -> Iterable[str]:
+    """Check that a value is an element in the data dictionary.
+
+    Args:
+        x (Iterable[str] | None): Value to look up in the data dictionary.
+        variable (str): Key in which to look for.
+        data_dict (dict): Data dictionary as returned by ``api.get_data_dictionary``.
+
+    Raises:
+        ValueError: _description_
+
+    Returns:
+        Iterable[str]: Values in data dict.
+    """
+    options = list(data_dict[variable].values())
+    if x is None:
+        return options
+    out = x
+    if isinstance(x, str):
+        out = [out]
+    for o in out:
+        if o not in options:
+            raise ValueError(f"{o} is not an option in {variable}")
+    return out
 
 
 def get_age_timestamp(
@@ -439,3 +467,55 @@ def clean_tmp(path: str = "tmp"):
     """
     if os.path.exists(path):
         shutil.rmtree(path)
+
+
+def get_year_weeks(year: int):
+    """Get week numbers of the year"""
+    date_first = date(year, 1, 1)
+    date_first += timedelta(days=6 - date_first.weekday())
+    while date_first.year == year:
+        yield date_first
+        date_first += timedelta(days=7)
+
+
+def get_week_n(timestamp: date):
+    """Get current week number"""
+    weeks = {}
+    for wn, d in enumerate(get_year_weeks(timestamp.year)):
+        weeks[wn + 1] = [(d + timedelta(days=k)).isoformat() for k in range(0, 7)]
+    for k, v in weeks.items():
+        if datetime.strftime(timestamp, "%Y-%m-%d") in v:
+            return k
+    return None
+
+
+def get_weekly_apts(
+    records: api.Records,
+    data_dict: dict,
+    study: Iterable | None = None,
+    status: Iterable | None = None,
+) -> dict:
+    """Get weekly number of appointments.
+
+    Args:
+        records (api.Records): REDCap records, as returned by ``api.Records``.
+        data_dict (dict): Data dictionary as returned by ``api.get_data_dictionary``.
+        study (Iterable | None, optional): Study to filter for. Defaults to None.
+        status (Iterable | None, optional): Status to filter for. Defaults to None.
+
+    Raises:
+        ValueError: If `study` or `status` is not available.
+
+    Returns:
+        dict: Weekly number of appointment with for a given study and/or status.
+    """  # pylint: disable=line-too-long
+    study = is_in_data_dict(study, "appointment_study", data_dict)
+    status = is_in_data_dict(status, "appointment_status", data_dict)
+    apts = records.appointments.records.values()
+    return sum(
+        get_week_n(datetime.strptime(v.data["date_created"], "%Y-%m-%d %H:%M:%S"))
+        == get_week_n(datetime.today())
+        for v in apts
+        if data_dict["appointment_status"][v.data["status"]] in status
+        and data_dict["appointment_study"][v.data["study"]] in study
+    )
