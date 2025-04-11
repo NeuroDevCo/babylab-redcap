@@ -1,8 +1,8 @@
 ---
 name: Language request
 about: Request adding a new language
-title: 'New language request'
-labels: enhancement
+title: 'Add language'
+labels: "enhancement, redcap"
 assignees: gongcastro
 type: feature
 ---
