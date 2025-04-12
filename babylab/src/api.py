@@ -253,11 +253,8 @@ def get_data_dict(**kwargs: any) -> any:
     dicts = {}
     for k, v in zip(items_ordered, r):
         options = v["select_choices_or_calculations"].split("|")
-        options_parsed = {}
-        for o in options:
-            x = o.split(", ")
-            options_parsed[x[0].strip()] = x[1].strip()
-        dicts[k] = options_parsed
+        options = [tuple(o.strip().split(", ")) for o in options]
+        dicts[k] = dict(sorted(options, key=lambda x: x[1]))
     return dicts
 
 
