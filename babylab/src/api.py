@@ -5,10 +5,10 @@ Functions to interact with the REDCap API.
 """
 
 import os
-from typing import Iterable
+from collections import OrderedDict
+from collections.abc import Iterable
 import json
 import zipfile
-from collections import OrderedDict
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 import pytz
