@@ -4,7 +4,7 @@ Util functions for the app.
 
 import os
 import shutil
-from typing import Iterable
+from collections.abc import Iterable
 from datetime import date, timedelta, datetime
 from functools import singledispatch
 from copy import deepcopy
