@@ -9,7 +9,7 @@ body {
     font-size: 20px;
     font-style: normal;
     font-variation-settings:
-      "wdth" 100;
+        "wdth" 100;
     width: 100%;
     word-break: break-word;
 }
@@ -37,7 +37,9 @@ nav {
     font-size: larger;
 }
 
-td, tr, th {
+td,
+tr,
+th {
     background-color: #ffffff83;
 }
 
@@ -45,7 +47,11 @@ td {
     user-select: all;
 }
 
-td, option, select, input, textarea {
+td,
+option,
+select,
+input,
+textarea {
     font-size: 18px;
     font-family: 'Roboto';
     vertical-align: text-bottom;
@@ -102,7 +108,8 @@ a.fc-event {
     color: black;
 }
 
-.fc-event-title, .fc-event-time {
+.fc-event-title,
+.fc-event-time {
     font-family: 'Roboto';
 }
 
@@ -132,14 +139,14 @@ a.fc-event {
     text-align: center;
 }
 
-.card-header { 
+.card-header {
     font-family: 'Ciutadella Medium', 'Roboto Medium', Fallback, sans-serif;
     font-size: larger;
     text-align: center;
     border-radius: 0;
 }
 
-.card-footer{   
+.card-footer {
     font-family: 'Ciutadella', 'Roboto', Fallback, sans-serif;
     font-size: larger;
 }
@@ -344,70 +351,85 @@ dt-search {
 .main-footer {
     text-align: center;
     margin-top: 0.1 * 2;
+
     &.collapsed {
-      margin-top: 0;
+        margin-top: 0;
     }
+
     &--1 {
-      color: #fff;
-      background-color: #313131;
-      padding: 0.1 * 2 0;
-      a:not(.btn) {
         color: #fff;
-      }
-      .column > * {
-        margin-bottom: 0.1 * 1.5;
-      }
+        background-color: #313131;
+        padding: 0.1 * 2 0;
+
+        a:not(.btn) {
+            color: #fff;
+        }
+
+        .column>* {
+            margin-bottom: 0.1 * 1.5;
+        }
     }
+
     &--2 {
-      padding: 0.1 * 2 0;
-      a {
-        color: #000;
-      }
-      .cerca {
-        text-align: left;
-        h3 {
-          text-transform: uppercase;
-          text-align: left;
-          font-size: rem-calc(16);
+        padding: 0.1 * 2 0;
+
+        a {
+            color: #000;
         }
-        .inline-list--logos {
-          margin-left: 0;
-          li {
-            margin-left: 0;
-          }
+
+        .cerca {
+            text-align: left;
+
+            h3 {
+                text-transform: uppercase;
+                text-align: left;
+                font-size: rem-calc(16);
+            }
+
+            .inline-list--logos {
+                margin-left: 0;
+
+                li {
+                    margin-left: 0;
+                }
+            }
         }
-      }
     }
+
     a:not(.btn) {
-      text-decoration: none;
-      &:hover {
-        text-decoration: underline;
-      }
+        text-decoration: none;
+
+        &:hover {
+            text-decoration: underline;
+        }
     }
+
     ul,
     p {
-      font-size: rem-calc(14);
+        font-size: rem-calc(14);
     }
 }
 
 address {
     font-style: normal;
     font-size: rem-calc(14);
+
     p {
-      margin-bottom: 0;
+        margin-bottom: 0;
     }
 }
 
 .social li {
     margin-bottom: 0;
+
     &:last-child {
-      margin-bottom: 0;
+        margin-bottom: 0;
     }
 }
-  
+
 .legal {
     li {
-      font-size: rem-calc(14);
+        font-size: rem-calc(14);
     }
 }
 
@@ -425,12 +447,12 @@ address {
     line-height: 1.5;
     margin-bottom: 5px;
     margin-right: 5px;
-    margin-top: 50px;    
+    margin-top: 50px;
     padding: 10px 15px;
     text-decoration: none;
     text-transform: uppercase;
 }
-    
+
 #pills-participants-tab,
 #pills-appointments-tab,
 #pills-questionnaires-tab {
@@ -463,7 +485,7 @@ address {
     position: absolute;
     transform: translate(-50%, -50%);
 }
-  
+
 .loader {
     width: 200px;
     height: 200px;
@@ -472,28 +494,43 @@ address {
     animation: rotate 1s linear infinite
 }
 
-.loader::before, .loader::after {
+.loader::before,
+.loader::after {
     content: "";
     box-sizing: border-box;
     position: absolute;
     inset: 0;
     border-radius: 50%;
     border: 10px solid #ea6212;
-    animation: prixClipFix 2s linear infinite ;
+    animation: prixClipFix 2s linear infinite;
 }
 
-.loader::after{
-    transform: rotate3d(90, 90, 0, 180deg );
+.loader::after {
+    transform: rotate3d(90, 90, 0, 180deg);
     border-color: #ff001e;
 }
 
 @keyframes rotate {
-    0%   {transform: rotate(0)}
-    100%   {transform: rotate(360deg)}
+    0% {
+        transform: rotate(0)
+    }
+
+    100% {
+        transform: rotate(360deg)
+    }
 }
 
 @keyframes prixClipFix {
-    0%   {clip-path:polygon(50% 50%,0 0,0 0,0 0,0 0,0 0)}
-    50%  {clip-path:polygon(50% 50%,0 0,100% 0,100% 0,100% 0,100% 0)}
-    75%, 100%  {clip-path:polygon(50% 50%,0 0,100% 0,100% 100%,100% 100%,100% 100%)}
+    0% {
+        clip-path: polygon(50% 50%, 0 0, 0 0, 0 0, 0 0, 0 0)
+    }
+
+    50% {
+        clip-path: polygon(50% 50%, 0 0, 100% 0, 100% 0, 100% 0, 100% 0)
+    }
+
+    75%,
+    100% {
+        clip-path: polygon(50% 50%, 0 0, 100% 0, 100% 100%, 100% 100%, 100% 100%)
+    }
 }
