@@ -82,9 +82,7 @@ def apt_routes(app):
         data_dict = api.get_data_dict(token=token)
         data = prepare_apt(records, data_dict=data_dict)
         return render_template(
-            "apt_all.html",
-            data=data,
-            n_apt=len(records.appointments.records),
+            "apt_all.html", data=data, n_apt=len(records.appointments)
         )
 
     @app.route("/appointments/<string:apt_id>", methods=["GET", "POST"])
