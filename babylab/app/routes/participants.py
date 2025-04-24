@@ -196,7 +196,7 @@ def ppt_routes(app):
             ppt_options=ppt_list,
             data=data,
             data_dict=data_dict,
-            n_ppt=len(records.participants.records),
+            n_ppt=len(records.participants),
         )
 
     @app.route("/participants/<string:ppt_id>", methods=["GET", "POST"])

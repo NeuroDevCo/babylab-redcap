@@ -85,7 +85,7 @@ def que_routes(app):
             "que_all.html",
             data=data,
             data_dict=data_dict,
-            n_que=len(records.questionnaires.records),
+            n_que=len(records.questionnaires),
         )
 
     @app.route("/questionnaires/<string:que_id>", methods=["GET", "POST"])
