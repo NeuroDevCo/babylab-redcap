@@ -2,85 +2,152 @@
 {% block header %}
 {% endblock header %}
 {% block content %}
-<header>
-  <div class="jumbotron jumbotron-fluid">
-    <div class="container">
-      <h1 class="display-4">Appointment {{ apt_id }}&nbsp;&nbsp;<i class="fa fa-calendar"></i></h1>
-      <p class="lead">Modifying details about appointment {{ apt_id }}. Hit the "Submit" button when finished.</p>
-    </div>
-  </div>
-  <hr class="my-4">
-</header>
-
-<body>
-  <form class="form needs-validation" method="post" novalidate>
-    <div class="div-center">
-      <div class="row">
-        <div class="col">
-          <div class="btn-group" role="group" aria-label="Basic example">
-            <button type="submit" class="btn btn-warning">
-              <i class=" fa fa-pen"></i>&nbsp;&nbsp;Submit
-            </button>
-          </div>
-        </div>
+  <header>
+    <div class="jumbotron jumbotron-fluid">
+      <div class="container">
+        <h1 class="display-4">
+          Appointment {{ apt_id }}&nbsp;&nbsp;<i class="fa fa-calendar"></i>
+        </h1>
+        <p class="lead">Modifying details about appointment {{ apt_id }}. Hit the "Submit" button when finished.</p>
       </div>
     </div>
-    <div class="div-center">
-      <div class="card card-input">
-        <div class="card-header ">Appointment information</div>
-        <div class="card-body">
+    <hr class="my-4">
+  </header>
+  <body>
+    <form class="form needs-validation" method="post" novalidate>
+      <div class="div-center">
+        <div class="row">
           <div class="col">
-            <input type="hidden" class="form-group" name="inputId" value="{{ ppt_id }}" readonly>
-            <input type="hidden" class="form-group" name="inputAptId" value="{{ apt_id }}" readonly>
-            <label for="inputStudy" class="form-label">
-              Study&nbsp;&nbsp;<i class="fa  fa-flask"></i>
-            </label>
-            <select class="form-select" name="inputStudy" required>
-              <option disabled selected value>-- Select one --</option>
-              {% for k, v in data_dict["appointment_study"].items() %}
-              <option {% if data["study"]==v %}selected{% endif %} value="{{ k }}">{{ v }}</option>
-              value="{{ k }}">{{ v }}
-              {% endfor %}
-            </select>
-            <label for="inputStatus" class="form-label">
-              Appointment status&nbsp;&nbsp;<i class="fa  fa-check"></i>
-            </label>
-            <select class="form-select" name="inputStatus" required>
-              <option disabled selected value>-- Select one --</option>
-              {% for k, v in data_dict["appointment_status"].items() %}
-              <option {% if data["status"]==v %}selected{% endif %} value="{{ k }}">{{ v }}</option>
-              {% endfor %}
-            </select>
-          </div>
-          <div class="form-group">
-            <label class="form-label" for="inputDate">
-              Appointment date&nbsp;&nbsp;<i class="fa  fa-calendar"></i>
-            </label>
-            <input type="datetime-local" name="inputDate" placeholder="{{ data['date'] }}" value="{{ data['date'] }}"
-              required>
-          </div>
-          <label for="inputTaxiAddress" class="form-label">
-            Taxi address&nbsp;&nbsp;<i class="fa fa-car"></i>
-          </label>
-          <input type="text" class="form-control" name="inputTaxiAddress" rows="3" value="{{ data['taxi_address'] }}"
-            placeholder="{{ data['taxi_address'] }}" />
-          <div class="form-check form-check-inline">
-            <input class="form-check-input" type="checkbox" name="inputTaxiIsbooked" id="inputTaxiIsbooked" {% if
-              data['taxi_isbooked']=='1' %}checked{% endif %}>
-            <label class="form-check-label" for="inputTaxiIsbooked">Taxi booked</label>
-          </div>
-          <div class="form-group">
-            <label for="inputComments" class="form-label">
-              Comments&nbsp;&nbsp;<i class="fa  fa-comment"></i>
-            </label>
-            <input type="text" class="form-control" name="inputComments" rows="3" value="{{ data['comments'] }}"
-              placeholder="{{ data['comments'] }}" />
+            <div class="btn-group" role="group" aria-label="Basic example">
+              <button type="submit" class="btn btn-warning">
+                <i class=" fa fa-pen"></i>&nbsp;&nbsp;Submit
+              </button>
+            </div>
           </div>
         </div>
       </div>
+      <div class="div-center">
+        <div class="card card-input">
+          <div class="card-header ">Appointment information</div>
+          <div class="card-body">
+            <div class="col">
+              <input type="hidden"
+                     class="form-group"
+                     name="inputId"
+                     value="{{ ppt_id }}"
+                     readonly>
+              <input type="hidden"
+                     class="form-group"
+                     name="inputAptId"
+                     value="{{ apt_id }}"
+                     readonly>
+              <label for="inputStudy" class="form-label">
+                Study&nbsp;&nbsp;<i class="fa fa-flask"></i>
+              </label>
+              <select class="form-select" name="inputStudy" required>
+                <option disabled selected value>-- Select one --</option>
+                {% for k, v in data_dict["appointment_study"].items() %}
+                  <option {% if data["study"]==v %}selected{% endif %} value="{{ k }}">{{ v }}</option>
+                  value="{{ k }}">{{ v }}
+                {% endfor %}
+              </select>
+              <label for="inputStatus" class="form-label">
+                Appointment status&nbsp;&nbsp;<i class="fa  fa-check"></i>
+                <a href="#statusInfo"
+                   role="button"
+                   data-bs-toggle="offcanvas"
+                   aria-controls="statusInfo">
+                  <i class="fa fa-info-circle" aria-hidden="true"></i>
+                </a>
+              </label>
+              <select class="form-select" name="inputStatus" required>
+                <option disabled selected value>-- Select one --</option>
+                {% for k, v in data_dict["appointment_status"].items() %}
+                  <option {% if data["status"]==v %}selected{% endif %} value="{{ k }}">{{ v }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="inputDate">
+                Appointment date&nbsp;&nbsp;<i class="fa  fa-calendar"></i>
+              </label>
+              <input type="datetime-local"
+                     name="inputDate"
+                     placeholder="{{ data['date'] }}"
+                     value="{{ data['date'] }}"
+                     required>
+            </div>
+            <label for="inputTaxiAddress" class="form-label">
+              Taxi address&nbsp;&nbsp;<i class="fa fa-car"></i>
+            </label>
+            <input type="text"
+                   class="form-control"
+                   name="inputTaxiAddress"
+                   rows="3"
+                   value="{{ data['taxi_address'] }}"
+                   placeholder="{{ data['taxi_address'] }}" />
+            <div class="form-check form-check-inline">
+              <input class="form-check-input"
+                     type="checkbox"
+                     name="inputTaxiIsbooked"
+                     id="inputTaxiIsbooked"
+                     {% if data['taxi_isbooked']=='1' %}checked{% endif %}>
+              <label class="form-check-label" for="inputTaxiIsbooked">Taxi booked</label>
+            </div>
+            <div class="form-group">
+              <label for="inputComments" class="form-label">
+                Comments&nbsp;&nbsp;<i class="fa  fa-comment"></i>
+              </label>
+              <input type="text"
+                     class="form-control"
+                     name="inputComments"
+                     rows="3"
+                     value="{{ data['comments'] }}"
+                     placeholder="{{ data['comments'] }}" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+    <div class="offcanvas offcanvas-end w-25"
+         tabindex="-1"
+         id="statusInfo"
+         aria-labelledby="statusInfoLabel">
+      <div class="offcanvas-header">
+        <h5 class="offcanvas-title" id="statusInfoLabel">Appointment status</h5>
+        <button type="button"
+                class="btn-close"
+                data-bs-dismiss="offcanvas"
+                aria-label="Close"></button>
+      </div>
+      <div class="offcanvas-body">
+        <p>Please, specify the appointment status based on the following guidelines:</p>
+        <div>
+          <ol>
+            <li>
+              <b>Scheduled</b>: The participant has agreed to an appointment with specific date and time. No appointment can be made without specific date and/or time.
+            </li>
+            <li>
+              <b>Confirmed</b>: The appointment has been successfully confirmed with the participant via call or e-mail, ideally the day before the appointment takes place.
+            </li>
+            <li>
+              <b>Successful</b>: During the appointment, the participant has signed the consent form, and their ID should be present in the experiment participant sheet. No data should be collected before the consent form is signed. Every time the consent form has been signed, the appointment will be marked as Successful (even if no data were collected afterwards), with the only exception that the participant withdraws consent during the appointment.
+            </li>
+            <li>
+              <b>Cancelled - Reschedule</b>: Upon participant's or experimenter's request, the appointment will nottake place, and will
+              be/has been rescheduled instead.
+            </li>
+            <li>
+              <b>Cancelled - Drop</b>: Upon participant or experimenter's request, the appointment will not take place, and will not be rescheduled. If the participant withdraws consent during the appointment, the appointment should be marked as Cancelled - Drop.
+            </li>
+            <li>
+              <b>No show</b>: The appointment has not taken place because the participant has not showed up, without communicating it to the experimenter. If no rescheduling attempts are to be made (which would possible result in a Cancelled - Reschedule status), the appointment should be classified as No show.
+            </li>
+          </ol>
+        </div>
+      </div>
     </div>
-  </form>
-  <script>
+    <script>
     (function () {
       'use strict';
       window.addEventListener('load', function () {
@@ -96,6 +163,6 @@
         });
       }, false);
     })();
-  </script>
-</body>
+    </script>
+  </body>
 {% endblock content %}
