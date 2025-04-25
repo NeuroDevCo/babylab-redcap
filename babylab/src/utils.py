@@ -9,6 +9,7 @@ from datetime import date, timedelta, datetime
 from functools import singledispatch
 from copy import deepcopy
 from pandas import DataFrame
+from markupsafe import Markup
 from babylab.src import api
 
 
@@ -197,6 +198,29 @@ def _(x: DataFrame, data_dict: dict, prefixes: list[str] = None) -> DataFrame:
     return x
 
 
+def fmt_apt_status(x: str, markup: bool = True) -> str:
+    """format appointment status using custom CSS class.
+
+    Args:
+        x (str): Appointment status value (label).
+        markup (bool, optional): Should the string be markup-safe? defaults to True.
+
+    Returns:
+        str: HTML-CSS formatted appointment status label.
+    """
+    status_css = {
+        "Scheduled": "scheduled",
+        "Confirmed": "confirmed",
+        "Successful": "successful",
+        "Successful - Good": "good",
+        "Cancelled - Reschedule": "reschedule",
+        "Cancelled - Drop": "drop",
+        "No show": "drop",
+    }
+    out = f"<p class='status-{status_css[x]}'><span>{x}</span></p>"
+    return Markup(out) if markup else out
+
+
 def replace_labels(x: DataFrame | dict, data_dict: dict) -> DataFrame:
     """Replace field values with labels.
 
@@ -273,12 +297,15 @@ def get_age_timestamp(
     return months_new, days_new
 
 
-def get_ppt_table(records: api.Records, data_dict: dict) -> DataFrame:
+def get_ppt_table(
+    records: api.Records, data_dict: dict, relabel: bool = True
+) -> DataFrame:
     """Get participants table
 
     Args:
         records (api.Records): REDCap records, as returned by ``api.Records``.
         data_dict (dict, optional): Data dictionary as returned by ``api.get_data_dictionary``.
+        relabel (bool, optional): Should columns be relabeled? Defaults to True.
 
     Returns:
         DataFrame: Table of partcicipants.
@@ -330,11 +357,16 @@ def get_ppt_table(records: api.Records, data_dict: dict) -> DataFrame:
 
     df = records.participants.to_df()
     df["age_now_months"], df["age_now_days"] = new_age_months, new_age_days
-    return replace_labels(df, data_dict)
+    if relabel:
+        df = replace_labels(df, data_dict)
+    return df
 
 
 def get_apt_table(
-    records: api.Records, data_dict: dict = None, study: str = None
+    records: api.Records,
+    data_dict: dict = None,
+    study: str = None,
+    relabel: bool = True,
 ) -> DataFrame:
     """Get appointments table.
 
@@ -384,17 +416,21 @@ def get_apt_table(
     df["age_apt_months"], df["age_apt_days"] = get_age_timestamp(
         apt_records, ppt_records, "date"
     )
+    if relabel:
+        df = replace_labels(df, data_dict)
+    return df
 
-    return replace_labels(df, data_dict)
 
-
-def get_que_table(records: api.Records, data_dict: dict) -> DataFrame:
+def get_que_table(
+    records: api.Records, data_dict: dict, relabel: bool = True
+) -> DataFrame:
     """Get questionnaires table.
 
     Args:
         records (api.Records): REDCap records, as returned by ``api.Records``.
         data_dict (dict): Data dictionary as returned by ``api.get_data_dictionary``.
         study (str, optional): Study to filter for. Defaults to None.
+        relabel (bool, optional): Should columns be relabeled? Defaults to True.
 
     Returns:
         DataFrame: A formated Pandas DataFrame.
@@ -424,7 +460,9 @@ def get_que_table(records: api.Records, data_dict: dict) -> DataFrame:
     df["questionnaire_id"] = [
         api.make_id(p, q) for p, q in zip(df.index, df["redcap_repeat_instance"])
     ]
-    return replace_labels(df, data_dict)
+    if relabel:
+        replace_labels(df, data_dict)
+    return df
 
 
 def count_col(

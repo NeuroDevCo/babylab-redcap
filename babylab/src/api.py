@@ -306,8 +306,7 @@ def get_records(record_id: str | list = None, **kwargs: any) -> dict:
         for r in record_id:
             fields[f"records[{record_id}]"] = r
     records = post_request(fields=fields, **kwargs).json()
-    records = [datetimes_to_strings(r) for r in records]
-    return records
+    return [datetimes_to_strings(r) for r in records]
 
 
 def make_id(ppt_id: str, repeat_id: str = None) -> str:
