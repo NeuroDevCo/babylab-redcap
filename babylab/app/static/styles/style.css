@@ -510,6 +510,60 @@ address {
     border-color: #ff001e;
 }
 
+.status-scheduled span {
+    border-radius: 5px;
+    border-width: 3px;
+    border-style: solid;
+    border-color:#f0cc84;
+    color: black;
+    padding: 10px;
+    vertical-align: text-top;
+}
+
+.status-confirmed span {
+    border-radius: 5px;
+    background-color: #f0cc84;
+    color: black;
+    padding: 10px;
+    vertical-align: text-top;
+}
+
+.status-successful span {
+    border-radius: 5px;
+    border-width: 3px;
+    border-style: solid;
+    border-color:#70d488;
+    color: black;
+    padding: 10px;
+    vertical-align: text-top;
+}
+
+.status-good span {
+    border-radius: 5px;
+    background-color: #70d488;
+    color: black;
+    padding: 10px;
+    vertical-align: text-top;
+}
+
+.status-reschedule span {
+    border-radius: 5px;
+    border-width: 3px;
+    border-style: solid;
+    border-color:#db6577;
+    color: black;
+    padding: 10px;
+    vertical-align: text-top;
+}
+
+.status-drop span {
+    border-radius: 5px;
+    background-color: #db6577;
+    color: white;
+    padding: 10px;
+    vertical-align: text-top;
+}
+
 @keyframes rotate {
     0% {
         transform: rotate(0)
