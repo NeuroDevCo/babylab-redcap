@@ -92,6 +92,34 @@
   <br>
   <div class="div-center">
     <div class="card card-plot">
+      <div class="card-title">Appointment status</div>
+      <div class="card-body">
+        <canvas id="statusDist">
+          <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+          <script
+            src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+          <script type="text/javascript" src="{{ url_for('static', filename='js/plots.js') }}"></script>
+          <script>
+            circlePlot(
+              {{ data["status_dist_labels"] | safe }},
+              {{ data["status_dist_values"] | safe }},
+              "statusDist",
+              [
+                "#4bc0c0",
+                "#ffcd56",
+                "#ff6384",
+                "#9966ff",
+                "#36a2eb",
+              ],
+              "Appointment status"
+            );
+          </script>
+        </canvas>
+      </div>
+    </div>
+  </div>
+  <div class="div-center">
+    <div class="card card-plot">
       <div class="card-title">Appointments</div>
       <div class="card-body">
         <canvas id="studies1" width="850" height="500">

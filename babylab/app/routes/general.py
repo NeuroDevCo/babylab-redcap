@@ -28,7 +28,6 @@ def prepare_studies(records: api.Records, data_dict: dict, study: str = None):
     df["modify_button"] = [
         utils.fmt_modify_button(p, a) for p, a in zip(df.index, df["appointment_id"])
     ]
-
     df = df[
         [
             "appointment_id",
@@ -60,8 +59,8 @@ def prepare_studies(records: api.Records, data_dict: dict, study: str = None):
             "modify_button": "",
         }
     )
-
-    table = df.to_html(
+    table = utils.replace_labels(df, data_dict)
+    table = table.to_html(
         classes=f'{classes}" id = "apttable',
         escape=False,
         justify="left",
@@ -87,7 +86,7 @@ def prepare_studies(records: api.Records, data_dict: dict, study: str = None):
             records,
             data_dict=data_dict,
             study=data_dict["appointment_study"][x],
-            status=["Successful"],
+            status=["Successful", "Successful - Good"],
         )
         for x in data_dict["appointment_study"]
     }
@@ -100,6 +99,9 @@ def prepare_studies(records: api.Records, data_dict: dict, study: str = None):
         )
         for x in data_dict["appointment_study"]
     }
+    variables = {
+        "status_dist": utils.count_col(df, "Appointment status", values_sort=True),
+    }
 
     return {
         "n_apts": df.shape[0],
@@ -108,6 +110,8 @@ def prepare_studies(records: api.Records, data_dict: dict, study: str = None):
         "n_apts_week_canc": n_apts_week_canc,
         "date_labels": list(ts.keys()),
         "date_values": list(ts.values()),
+        "status_dist_labels": list(variables["status_dist"].keys()),
+        "status_dist_values": list(variables["status_dist"].values()),
         "table": table,
     }
 
@@ -265,6 +269,7 @@ def general_routes(app):
             "Scheduled": "black",
             "Confirmed": "black",
             "Successful": "black",
+            "Successful - Good": "black",
             "Cancelled - Reschedule": "red",
             "No show": "grey",
             "Cancelled - Drop": "grey",
@@ -301,6 +306,7 @@ def general_routes(app):
         token = app.config["API_KEY"]
         recs = app.config["RECORDS"]
         data_dict = api.get_data_dict(token=token)
+
         if request.method == "POST":
             finput = request.form
             study = finput["inputStudy"]

@@ -5,6 +5,8 @@ from datetime import datetime
 import pytest
 from babylab.src import api
 
+IS_GIHTUB_ACTIONS = os.getenv("GITHUB_ACTIONS") == "true"
+
 
 def test_post_request(token):
     """Test ``post_request``."""
@@ -151,6 +153,7 @@ def test_add_participant_modifying(ppt_record_mod, token):
         api.add_participant(ppt_record_mod)
 
 
+@pytest.mark.skipif(IS_GIHTUB_ACTIONS, reason="Only local testing")
 def test_delete_participant(ppt_record_mod, token):
     """Test ``add_participant``."""
     api.delete_participant(ppt_record_mod, token=token)
@@ -175,6 +178,7 @@ def test_add_appointment_modifying(apt_record_mod, token):
         api.add_participant(apt_record_mod)
 
 
+@pytest.mark.skipif(IS_GIHTUB_ACTIONS, reason="Only local testing")
 def test_delete_appointment(apt_record_mod, token):
     """Test ``add_appointment`` ."""
     apt_id = api.make_id(
@@ -201,6 +205,7 @@ def test_add_questionnaire_mod(que_record_mod, token):
         api.add_questionnaire(que_record_mod)
 
 
+@pytest.mark.skipif(IS_GIHTUB_ACTIONS, reason="Only local testing")
 def test_delete_questionnaire(que_record_mod, token):
     """Test ``delete_questionnaire``."""
     que_id = api.make_id(

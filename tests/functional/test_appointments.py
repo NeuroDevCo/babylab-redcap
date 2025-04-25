@@ -1,9 +1,6 @@
 """Test appointments endpoints."""
 
-import os
 from babylab.src import api
-
-IS_GIHTUB_ACTIONS = os.getenv("GITHUB_ACTIONS") == "true"
 
 
 def test_apt_all(client):
