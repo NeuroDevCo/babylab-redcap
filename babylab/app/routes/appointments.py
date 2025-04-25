@@ -3,6 +3,7 @@
 from datetime import datetime
 import requests
 from flask import flash, redirect, render_template, url_for, request
+from markupsafe import Markup
 from babylab.src import api, utils
 from babylab.app import config as conf
 
@@ -42,6 +43,7 @@ def prepare_apt(records: api.Records, data_dict: dict = None, study: str = None)
         ]
     ]
     df = df.sort_values("date_updated", ascending=False)
+    df["status"] = [utils.fmt_apt_status(s) for s in df["status"]]
 
     df = df.rename(
         columns={
@@ -58,7 +60,6 @@ def prepare_apt(records: api.Records, data_dict: dict = None, study: str = None)
             "modify_button": "",
         }
     )
-
     table = df.to_html(
         classes=f'{classes}" id = "apttable',
         escape=False,
@@ -108,6 +109,20 @@ def apt_routes(app):
         ppt.data["age_now_days"] = str(ppt.data["age_now_days"])
         data["age_apt_months"] = str(data["age_apt_months"])
         data["age_apt_days"] = str(data["age_apt_days"])
+
+        status_css = {
+            "Scheduled": "scheduled",
+            "Confirmed": "confirmed",
+            "Successful": "successful",
+            "Successful - Good": "good",
+            "Cancelled - Reschedule": "reschedule",
+            "Cancelled - Drop": "drop",
+            "No show": "drop",
+        }
+        status_css_tag = status_css[data["status"]]
+        data["status"] = Markup(
+            f"<p class='status-{status_css_tag}'><span>{data['status']}</span></p>"
+        )
         if request.method == "POST":
             try:
                 api.delete_appointment(
