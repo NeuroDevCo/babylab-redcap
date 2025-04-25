@@ -84,8 +84,8 @@ class Participant:
         Returns:
             str: Description to print in console.
         """
-        n_apt = 0 if self.appointments is None else len(self.appointments)
-        n_que = 0 if self.questionnaires is None else len(self.questionnaires)
+        n_apt = 0 if not self.appointments else len(self.appointments)
+        n_que = 0 if not self.questionnaires else len(self.questionnaires)
         return f"Participant {self.record_id}: {str(n_apt)} appointments, {str(n_que)} questionnaires"  # pylint: disable=line-too-long
 
     def __str__(self) -> str:
@@ -94,8 +94,8 @@ class Participant:
         Returns:
             str: Description of class.
         """
-        n_apt = 0 if self.appointments is None else len(self.appointments)
-        n_que = 0 if self.questionnaires is None else len(self.questionnaires)
+        n_apt = 0 if not self.appointments else len(self.appointments)
+        n_que = 0 if not self.questionnaires else len(self.questionnaires)
         return f"Participant {self.record_id}: {str(n_apt)} appointments, {str(n_que)} questionnaires"  # pylint: disable=line-too-long
 
 
@@ -301,11 +301,10 @@ def get_records(record_id: str | list = None, **kwargs: any) -> dict:
     """
     fields = {"content": "record", "format": "json", "type": "flat"}
 
-    if record_id:
+    if record_id and isinstance(record_id, list):
         fields["records[0]"] = record_id
-        if isinstance(record_id, list):
-            for r in record_id:
-                fields[f"records[{record_id}]"] = r
+        for r in record_id:
+            fields[f"records[{record_id}]"] = r
     records = post_request(fields=fields, **kwargs).json()
     records = [datetimes_to_strings(r) for r in records]
     return records
