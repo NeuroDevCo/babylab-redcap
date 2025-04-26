@@ -68,11 +68,10 @@ class Participant:
 
     def __init__(self, data, apt: RecordList = None, que: RecordList = None):
         data = filter_fields(data, "participant_", ["record_id"])
-        time_fmt = "%Y-%m-%d %H:%M:%S"
         age_created = (data["age_created_months"], data["age_created_days"])
-        ts = datetime.strptime(data["date_created"], time_fmt)
-        data["age_now_months"], data["age_now_days"] = get_age(age_created, ts)
-
+        data["age_now_months"], data["age_now_days"] = get_age(
+            age_created, data["date_created"]
+        )
         self.record_id = data["record_id"]
         self.data = data
         self.appointments = apt
@@ -118,6 +117,7 @@ class Appointment:
         Returns:
             str: Description to print in console.
         """
+
         return f"Appointment {self.appointment_id}, participant {self.record_id}, {self.date}, {self.status}"  # pylint: disable=line-too-long
 
     def __str__(self) -> str:
@@ -258,10 +258,28 @@ def get_data_dict(**kwargs: any) -> any:
     return dicts
 
 
-def datetimes_to_strings(data: dict) -> dict:
-    """Return formatted datatimes as strings following the ISO 8061 date format.
+def strings_to_datetimes(data: dict) -> dict:
+    """Parse strings in a dictionary as formatted datetimes.
 
-    It first tries to format the date as Y-m-d H:M. If error, it assumes the Y-m-d H:M:S is due and tries to format it accordingly.
+    It first tries to format the date as "Y-m-d H:M:S". If error, it assumes the "Y-m-d H:M" is due and tries to format it accordingly.
+
+    Args:
+        data (dict): Dictionary that may contain string formatted datetimes.
+
+    Returns:
+        dict: Dictionary with strings parsed as datetimes.
+    """  # pylint: disable=line-too-long
+    for k, v in data.items():
+        if v and "date" in k:
+            try:
+                data[k] = datetime.strptime(data[k], "%Y-%m-%d %H:%M:%S")
+            except ValueError:
+                data[k] = datetime.strptime(data[k], "%Y-%m-%d %H:%M")
+    return data
+
+
+def datetimes_to_strings(data: dict) -> dict:
+    """Format datatimes in a dictionary as strings following the ISO 8061 date format.
 
     Args:
         data (dict): Dictionary that may contain datetimes.
@@ -271,9 +289,7 @@ def datetimes_to_strings(data: dict) -> dict:
     """  # pylint: disable=line-too-long
     for k, v in data.items():
         if isinstance(v, datetime):
-            data[k] = datetime.strftime(v, "%Y-%m-%d %H:%M:%S")
-            if not v.second:
-                data[k] = datetime.strftime(v, "%Y-%m-%d %H:%M")
+            data[k] = data[k].isoformat()
     return data
 
 
@@ -306,7 +322,7 @@ def get_records(record_id: str | list = None, **kwargs: any) -> dict:
         for r in record_id:
             fields[f"records[{record_id}]"] = r
     records = post_request(fields=fields, **kwargs).json()
-    return [datetimes_to_strings(r) for r in records]
+    return [strings_to_datetimes(r) for r in records]
 
 
 def make_id(ppt_id: str, repeat_id: str = None) -> str:
@@ -366,14 +382,14 @@ def get_participant(ppt_id: str, **kwargs: any) -> Participant:
     for i, f in enumerate(["participants", "appointments", "language"]):
         fields[f"forms[{i}]"] = f
     recs = post_request(fields, **kwargs).json()
+    recs = [strings_to_datetimes(r) for r in recs]
     apt = {}
     que = {}
     for r in recs:
         repeat_id = make_id(r["record_id"], r["redcap_repeat_instance"])
-        form = r["redcap_repeat_instrument"]
-        if form == "appointments":
+        if r["redcap_repeat_instrument"] == "appointments":
             apt[repeat_id] = Appointment(r)
-        if form == "language":
+        if r["redcap_repeat_instrument"] == "language":
             que[repeat_id] = Questionnaire(r)
     try:
         return Participant(recs[0], apt=RecordList(apt), que=RecordList(que))
@@ -562,7 +578,7 @@ def redcap_backup(dirpath: str = "tmp", **kwargs: any) -> dict:
         with open(path, "w", encoding="utf-8") as f:
             json.dump(v, f)
 
-    timestamp = datetime.strftime(datetime.now(), "%Y-%m-%d-%H-%M-%S")
+    timestamp = datetime.strftime(datetime.now(), "%Y-%m-%d-%H-%M")
     file = os.path.join(dirpath, "backup_" + timestamp + ".zip")
     for root, _, files in os.walk(dirpath, topdown=False):
         with zipfile.ZipFile(file, "w", zipfile.ZIP_DEFLATED) as z:
@@ -719,7 +735,6 @@ def get_age(age: str | tuple, ts: datetime, ts_new: datetime = None):
     """  # pylint: disable=line-too-long
     if ts_new is None:
         ts_new = datetime.now(pytz.UTC)
-
     if ts.tzinfo is None or ts.tzinfo.utcoffset(ts) is None:
         ts = pytz.UTC.localize(ts, True)
     if ts_new.tzinfo is None or ts_new.tzinfo.utcoffset(ts_new) is None:
@@ -736,3 +751,9 @@ def get_age(age: str | tuple, ts: datetime, ts_new: datetime = None):
         new_age_days %= 30
 
     return new_age_months, new_age_days
+
+
+if __name__ == "__main__":
+    from babylab.app.config import get_api_key
+
+    RECS = Records(token=get_api_key())
