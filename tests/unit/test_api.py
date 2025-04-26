@@ -8,26 +8,24 @@ from babylab.src import api
 IS_GIHTUB_ACTIONS = os.getenv("GITHUB_ACTIONS") == "true"
 
 
-def test_post_request(token):
+def test_post_request(token_fixture):
     """Test ``post_request``."""
     assert api.post_request(
-        fields={
-            "content": "version",
-        },
-        token=token,
+        fields={"content": "version"},
+        token=token_fixture,
     ).ok
 
 
-def test_redcap_version(token):
+def test_redcap_version(token_fixture):
     """Test ``redcap_version``."""
-    version = api.get_redcap_version(token=token)
+    version = api.get_redcap_version(token=token_fixture)
     assert version
     assert isinstance(version, str)
     assert len(version.split(".")) == 3
     with pytest.raises(TypeError):
         api.get_redcap_version()
     with pytest.raises(TypeError):
-        api.get_redcap_version(token)  # pylint: disable=too-many-function-args
+        api.get_redcap_version(token_fixture)  # pylint: disable=too-many-function-args
     assert not api.get_redcap_version(token="wrongtoken")
     assert not api.get_redcap_version(token="bad#token")
 
@@ -56,9 +54,9 @@ def test_strings_to_datetimes():
     assert result["date_today"] == datetime(2024, 5, 12, 5, 34)
 
 
-def test_get_data_dict(benchmark, token):
+def test_get_data_dict(benchmark, token_fixture):
     """Test ``get_records``."""
-    data_dict = api.get_data_dict(token=token)
+    data_dict = api.get_data_dict(token=token_fixture)
 
     assert isinstance(data_dict, dict)
     assert all(isinstance(v, dict) for v in data_dict.values())
@@ -66,7 +64,7 @@ def test_get_data_dict(benchmark, token):
         api.get_data_dict()
 
     def _get_data_dict():
-        api.get_data_dict(token=token)
+        api.get_data_dict(token=token_fixture)
 
     benchmark(_get_data_dict)
 
@@ -89,168 +87,168 @@ def test_make_id():
         api.make_id("1:1")
 
 
-def test_get_participant(benchmark, ppt_record_mod, token):
+def test_get_participant(benchmark, ppt_record_mod, token_fixture):
     """Test ``get_participant``."""
     ppt_id = ppt_record_mod["record_id"]
-    ppt = api.get_participant(ppt_id, token=token)
+    ppt = api.get_participant(ppt_id, token=token_fixture)
 
     assert isinstance(ppt, api.Participant)
     with pytest.raises(api.RecordNotFound):
-        api.get_participant("BADID", token=token)
+        api.get_participant("BADID", token=token_fixture)
 
     def _get_participant():
-        api.get_participant(ppt_id, token=token)
+        api.get_participant(ppt_id, token=token_fixture)
 
     benchmark(_get_participant)
 
 
-def test_get_appointment(benchmark, apt_record_mod, token):
+def test_get_appointment(benchmark, apt_record_mod, token_fixture):
     """Test ``get_participant``."""
     ppt_id = apt_record_mod["record_id"]
     repeat_id = apt_record_mod["redcap_repeat_instance"]
     apt_id = api.make_id(ppt_id, repeat_id)
-    apt = api.get_appointment(apt_id, token=token)
+    apt = api.get_appointment(apt_id, token=token_fixture)
     assert isinstance(apt, api.Appointment)
     with pytest.raises(api.RecordNotFound):
-        api.get_appointment("f{ppt_id}:BADID", token=token)
+        api.get_appointment("f{ppt_id}:BADID", token=token_fixture)
 
     def _get_appointment():
-        api.get_appointment(apt_id, token=token)
+        api.get_appointment(apt_id, token=token_fixture)
 
     benchmark(_get_appointment)
 
 
-def test_get_questionnaire(benchmark, que_record_mod, token):
+def test_get_questionnaire(benchmark, que_record_mod, token_fixture):
     """Test ``get_participant``."""
     ppt_id = que_record_mod["record_id"]
     repeat_id = que_record_mod["redcap_repeat_instance"]
     que_id = api.make_id(ppt_id, repeat_id)
-    que = api.get_questionnaire(que_id, token=token)
+    que = api.get_questionnaire(que_id, token=token_fixture)
     assert isinstance(que, api.Questionnaire)
     with pytest.raises(api.RecordNotFound):
-        api.get_questionnaire("f{que_id}:BADID", token=token)
+        api.get_questionnaire("f{que_id}:BADID", token=token_fixture)
 
     def _get_questionnaire():
-        api.get_questionnaire(que_id, token=token)
+        api.get_questionnaire(que_id, token=token_fixture)
 
     benchmark(_get_questionnaire)
 
 
-def test_get_records(benchmark, token):
+def test_get_records(benchmark, token_fixture):
     """Test ``get_records``."""
-    records = api.get_records(token=token)
+    records = api.get_records(token=token_fixture)
     assert isinstance(records, list)
     assert all(isinstance(r, dict) for r in records)
     with pytest.raises(TypeError):
         api.get_records()
 
     def _get_records():
-        api.get_records(token=token)
+        api.get_records(token=token_fixture)
 
     benchmark(_get_records)
 
 
-def test_add_participant(ppt_record, token):
+def test_add_participant(ppt_record, token_fixture):
     """Test ``add_participant``."""
-    api.add_participant(ppt_record, token=token)
+    api.add_participant(ppt_record, token=token_fixture)
     with pytest.raises(TypeError):
         api.add_participant(ppt_record)
 
 
-def test_add_participant_modifying(ppt_record_mod, token):
+def test_add_participant_modifying(ppt_record_mod, token_fixture):
     """Test ``add_participant`` with ``modifying=True``."""
-    api.add_participant(ppt_record_mod, token=token)
+    api.add_participant(ppt_record_mod, token=token_fixture)
     with pytest.raises(TypeError):
         api.add_participant(ppt_record_mod)
 
 
 @pytest.mark.skipif(IS_GIHTUB_ACTIONS, reason="Only local testing")
-def test_delete_participant(ppt_record_mod, token):
+def test_delete_participant(ppt_record_mod, token_fixture):
     """Test ``add_participant``."""
-    api.delete_participant(ppt_record_mod, token=token)
-    recs = api.Records(token=token)
+    api.delete_participant(ppt_record_mod, token=token_fixture)
+    recs = api.Records(token=token_fixture)
     assert ppt_record_mod["record_id"] not in recs.appointments.records
-    api.delete_participant(ppt_record_mod, token=token)
+    api.delete_participant(ppt_record_mod, token=token_fixture)
     with pytest.raises(TypeError):
         api.delete_participant(ppt_record_mod)
 
 
-def test_add_appointment(apt_record, token):
+def test_add_appointment(apt_record, token_fixture):
     """Test ``add_appointment`` ."""
-    api.add_appointment(apt_record, token=token)
+    api.add_appointment(apt_record, token=token_fixture)
     with pytest.raises(TypeError):
         api.add_appointment(apt_record)
 
 
-def test_add_appointment_modifying(apt_record_mod, token):
+def test_add_appointment_modifying(apt_record_mod, token_fixture):
     """Test ``add_appointment`` with ``modifying=True``."""
-    api.add_appointment(apt_record_mod, token=token)
+    api.add_appointment(apt_record_mod, token=token_fixture)
     with pytest.raises(TypeError):
         api.add_participant(apt_record_mod)
 
 
 @pytest.mark.skipif(IS_GIHTUB_ACTIONS, reason="Only local testing")
-def test_delete_appointment(apt_record_mod, token):
+def test_delete_appointment(apt_record_mod, token_fixture):
     """Test ``add_appointment`` ."""
     apt_id = api.make_id(
         apt_record_mod["record_id"], apt_record_mod["redcap_repeat_instance"]
     )
-    api.delete_appointment(apt_record_mod, token=token)
-    recs = api.Records(token=token)
+    api.delete_appointment(apt_record_mod, token=token_fixture)
+    recs = api.Records(token=token_fixture)
     assert apt_id not in recs.appointments.records
     with pytest.raises(TypeError):
         api.delete_appointment(apt_record_mod)
 
 
-def test_add_questionnaire(que_record, token):
+def test_add_questionnaire(que_record, token_fixture):
     """Test ``add_appointment``."""
-    api.add_questionnaire(que_record, token=token)
+    api.add_questionnaire(que_record, token=token_fixture)
     with pytest.raises(TypeError):
         api.add_questionnaire(que_record)
 
 
-def test_add_questionnaire_mod(que_record_mod, token):
+def test_add_questionnaire_mod(que_record_mod, token_fixture):
     """Test ``add_questionaire`` with ``modifying=True``."""
-    api.add_questionnaire(que_record_mod, token=token)
+    api.add_questionnaire(que_record_mod, token=token_fixture)
     with pytest.raises(TypeError):
         api.add_questionnaire(que_record_mod)
 
 
 @pytest.mark.skipif(IS_GIHTUB_ACTIONS, reason="Only local testing")
-def test_delete_questionnaire(que_record_mod, token):
+def test_delete_questionnaire(que_record_mod, token_fixture):
     """Test ``delete_questionnaire``."""
     que_id = api.make_id(
         que_record_mod["record_id"], que_record_mod["redcap_repeat_instance"]
     )
-    api.delete_questionnaire(que_record_mod, token=token)
-    recs = api.Records(token=token)
+    api.delete_questionnaire(que_record_mod, token=token_fixture)
+    recs = api.Records(token=token_fixture)
     assert que_id not in recs.questionnaires.records
     with pytest.raises(TypeError):
         api.delete_questionnaire(que_record_mod)
 
 
-def test_redcap_backup(benchmark, token, tmp_path) -> dict:
+def test_redcap_backup(benchmark, token_fixture, tmp_path) -> dict:
     """Test ``redcap_backup``."""
     tmp_dir = tmp_path / "tmp"
-    file = api.redcap_backup(dirpath=tmp_dir, token=token)
+    file = api.redcap_backup(dirpath=tmp_dir, token=token_fixture)
     assert os.path.exists(file)
     with pytest.raises(TypeError):
         api.redcap_backup(dirpath=tmp_dir)
 
     def _redcap_backup():
-        api.redcap_backup(dirpath=tmp_dir, token=token)
+        api.redcap_backup(dirpath=tmp_dir, token=token_fixture)
 
     benchmark(_redcap_backup)
 
 
-def get_next_id(benchmark, token, records: api.Records = None) -> str:
+def get_next_id(benchmark, token_fixture, records: api.Records = None) -> str:
     """Test ``get_next_id``."""
     if records is None:
-        records = api.Records(token=token)
-    next_id = api.get_next_id(token=token)
+        records = api.Records(token=token_fixture)
+    next_id = api.get_next_id(token=token_fixture)
     assert next_id not in list(records.participants.records.keys())
 
     def _get_next_id():
-        api.get_next_id(token=token)
+        api.get_next_id(token=token_fixture)
 
     benchmark(_get_next_id)
