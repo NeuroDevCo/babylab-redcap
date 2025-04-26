@@ -37,12 +37,23 @@ def test_datetimes_to_str():
     data = {
         "date_now": datetime(2024, 10, 24, 8, 48, 34, 685496),
         "date_today": datetime(2024, 10, 24, 8, 48),
-        "date_str": "2024-05-12 5:12",
+        "date_str": "2024-05-12T5:12",
     }
     result = api.datetimes_to_strings(data)
-    assert result["date_now"] == "2024-10-24 08:48:34"
-    assert result["date_today"] == "2024-10-24 08:48"
+    assert result["date_now"] == "2024-10-24T08:48:34.685496"
+    assert result["date_today"] == "2024-10-24T08:48:00"
     assert result["date_str"] == data["date_str"]
+
+
+def test_strings_to_datetimes():
+    """Test ``test_datetimes_to_str`` function."""
+    data = {
+        "date_now": "2024-05-12 05:34:15",
+        "date_today": "2024-05-12 05:34",
+    }
+    result = api.strings_to_datetimes(data)
+    assert result["date_now"] == datetime(2024, 5, 12, 5, 34, 15)
+    assert result["date_today"] == datetime(2024, 5, 12, 5, 34)
 
 
 def test_get_data_dict(benchmark, token):

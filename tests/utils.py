@@ -1,6 +1,6 @@
 """Utils for testing suite."""
 
-import datetime
+from datetime import datetime
 from string import digits, ascii_lowercase
 from random import choice, choices
 from babylab.src import api
@@ -184,8 +184,8 @@ def create_record_ppt(is_new: bool = True) -> dict:
     ppt_id = choice(list(recs.participants.records.keys()))
     return {
         "record_id": "0" if is_new else ppt_id,
-        "participant_date_created": "2024-12-16 11:13:00",
-        "participant_date_updated": "2024-12-16 11:13:00",
+        "participant_date_created": datetime(2024, 12, 16, 11, 13, 0),
+        "participant_date_updated": datetime(2024, 12, 16, 11, 13, 0),
         "participant_name": generate_str(),
         "participant_age_created_months": choice(range(12)),
         "participant_age_created_days": choice(range(31)),
@@ -237,7 +237,6 @@ def create_record_apt(is_new: bool = True) -> dict:
         ppt_id = choice(ppd_id_list)
         apt_recs = recs.participants.records[ppt_id].appointments.records
     apt_id = choice(list(apt_recs.keys()))
-    date_fmt = "%Y-%m-%d %H:%M:%S"
     return {
         "record_id": ppt_id,
         "redcap_repeat_instrument": "appointments",
@@ -245,15 +244,9 @@ def create_record_apt(is_new: bool = True) -> dict:
             api.get_next_id(token=token) if is_new else apt_id.split(":")[1]
         ),
         "appointment_study": choice(list(ddict["appointment_study"].keys())),
-        "appointment_date_created": datetime.datetime.strptime(
-            "2024-12-12 14:09:00", date_fmt
-        ),
-        "appointment_date_updated": datetime.datetime.strptime(
-            "2024-12-14 12:08:00", date_fmt
-        ),
-        "appointment_date": datetime.datetime.strptime(
-            "2024-12-31 14:09", "%Y-%m-%d %H:%M"
-        ),
+        "appointment_date_created": datetime(2024, 12, 12, 14, 9, 0),
+        "appointment_date_updated": datetime(2024, 12, 14, 12, 8, 0),
+        "appointment_date": datetime(2024, 12, 31, 14, 9, 0),
         "appointment_taxi_address": generate_str(),
         "appointment_taxi_isbooked": choice(["0", "1"]),
         "appointment_status": choice(list(ddict["appointment_status"].keys())),
@@ -283,16 +276,15 @@ def create_record_que(is_new: bool = True) -> dict:
         que_recs = recs.participants.records[ppt_id].questionnaires.records
     que_id = choice(list(que_recs.keys()))
 
-    date_fmt = "%Y-%m-%d %H:%M:%S"
-    date = "2024-12-12 14:24:00"
+    date = datetime(2024, 12, 12, 14, 24, 0)
     return {
         "record_id": ppt_id,
         "redcap_repeat_instrument": "language",
         "redcap_repeat_instance": (
             api.get_next_id(token=token) if is_new else que_id.split(":")[1]
         ),
-        "language_date_created": datetime.datetime.strptime(date, date_fmt),
-        "language_date_updated": datetime.datetime.strptime(date, date_fmt),
+        "language_date_created": date,
+        "language_date_updated": date,
         "language_isestimated": choice(["0", "1"]),
         "language_lang1": choice(list(ddict["language_lang1"].keys())),
         "language_lang1_exp": lang_exp[0],
