@@ -751,9 +751,3 @@ def get_age(age: str | tuple, ts: datetime, ts_new: datetime = None):
         new_age_days %= 30
 
     return new_age_months, new_age_days
-
-
-if __name__ == "__main__":
-    from babylab.app.config import get_api_key
-
-    RECS = Records(token=get_api_key())
