@@ -280,18 +280,16 @@ def get_age_timestamp(
     """
     if dtype not in ["date", "date_created"]:
         raise ValueError("timestamp must be 'date' or 'date_created'")
-    fmt_hms = "%Y-%m-%d %H:%M:%S"
-    fmt_hm = "%Y-%m-%d %H:%M"
-    fmt = fmt_hm if dtype == "date" else fmt_hms
+
     months_new, days_new = [], []
     for v in apt_records.values():
-        if dtype == "date_created":
-            ts = datetime.strptime(ppt_records[v.record_id].data[dtype], fmt)
-        else:
-            ts = datetime.strptime(v.data["date"], fmt_hm)
-        months = ppt_records[v.record_id].data["age_now_months"]
-        days = ppt_records[v.record_id].data["age_now_days"]
-        age_now = api.get_age(age=(months, days), ts=ts)
+        ppt_data = ppt_records[v.record_id].data
+        months = ppt_data["age_now_months"]
+        days = ppt_data["age_now_days"]
+        age_now = api.get_age(
+            age=(months, days),
+            ts=ppt_data[dtype] if dtype == "date_created" else v.data["date"],
+        )
         months_new.append(int(age_now[0]))
         days_new.append(int(age_now[1]))
     return months_new, days_new
@@ -348,10 +346,9 @@ def get_ppt_table(
 
     new_age_months = []
     new_age_days = []
-    for _, v in records.participants.records.items():
-        ts = datetime.strptime(v.data["date_created"], "%Y-%m-%d %H:%M:%S")
+    for v in records.participants.records.values():
         age_created = (v.data["age_created_months"], v.data["age_created_days"])
-        age = api.get_age(age_created, ts=ts)
+        age = api.get_age(age_created, ts=v.data["date_created"])
         new_age_months.append(int(age[0]))
         new_age_days.append(int(age[1]))
 
@@ -551,8 +548,7 @@ def get_weekly_apts(
     status = is_in_data_dict(status, "appointment_status", data_dict)
     apts = records.appointments.records.values()
     return sum(
-        get_week_n(datetime.strptime(v.data["date_created"], "%Y-%m-%d %H:%M:%S"))
-        == get_week_n(datetime.today())
+        get_week_n(v.data["date_created"]) == get_week_n(datetime.today())
         for v in apts
         if data_dict["appointment_status"][v.data["status"]] in status
         and data_dict["appointment_study"][v.data["study"]] in study

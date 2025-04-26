@@ -75,19 +75,21 @@ def test_get_week_n():
     assert isinstance(utils.get_week_n(datetime.today()), int)
 
 
-def test_get_weekly_apts(data_dict, records):
+def test_get_weekly_apts(data_dict, records_fixture):
     """Test get_weekly_apts."""
-    assert isinstance(utils.get_weekly_apts(data_dict=data_dict, records=records), int)
+    assert isinstance(
+        utils.get_weekly_apts(data_dict=data_dict, records=records_fixture), int
+    )
     assert isinstance(
         utils.get_weekly_apts(
-            data_dict=data_dict, records=records, study="mop_newborns_1_nirs"
+            data_dict=data_dict, records=records_fixture, study="mop_newborns_1_nirs"
         ),
         int,
     )
     assert isinstance(
         utils.get_weekly_apts(
             data_dict=data_dict,
-            records=records,
+            records=records_fixture,
             study="mop_newborns_1_nirs",
             status="Successful",
         ),
@@ -96,7 +98,7 @@ def test_get_weekly_apts(data_dict, records):
     assert isinstance(
         utils.get_weekly_apts(
             data_dict=data_dict,
-            records=records,
+            records=records_fixture,
             study=["mop_newborns_1_nirs", "mop_infants_1_hpp"],
         ),
         int,
@@ -104,7 +106,7 @@ def test_get_weekly_apts(data_dict, records):
     assert isinstance(
         utils.get_weekly_apts(
             data_dict=data_dict,
-            records=records,
+            records=records_fixture,
             study=["mop_newborns_1_nirs", "mop_infants_1_hpp"],
             status=["Successful", "Confirmed"],
         ),

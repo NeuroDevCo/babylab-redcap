@@ -55,9 +55,9 @@ def test_questionnaire_class(que_record):
     assert "questionnaire " in str(q)
 
 
-def test_records_class(token):
+def test_records_class(token_fixture):
     """Test participant class."""
-    records = api.Records(token=token)
+    records = api.Records(token=token_fixture)
     assert hasattr(records, "appointments")
     assert hasattr(records, "participants")
     assert hasattr(records, "questionnaires")
@@ -71,53 +71,55 @@ def test_records_class(token):
     assert "REDCap database" in str(records)
 
 
-def test_recordlist_class_participants(token):
+def test_recordlist_class_participants(token_fixture):
     """Test RecordList class with participants."""
-    records = api.Records(token=token).participants
+    records = api.Records(token=token_fixture).participants
     assert isinstance(records.records, dict)
     assert isinstance(records.to_df(), DataFrame)
 
 
-def test_recordlist_class_appointments(token):
+def test_recordlist_class_appointments(token_fixture):
     """Test RecordList class with appointments."""
-    records = api.Records(token=token).appointments
+    records = api.Records(token=token_fixture).appointments
     assert isinstance(records.records, dict)
     assert isinstance(records.to_df(), DataFrame)
 
 
-def test_recordlist_class_questionnaires(token):
+def test_recordlist_class_questionnaires(token_fixture):
     """Test RecordList class with questionnaires."""
-    records = api.Records(token=token).questionnaires
+    records = api.Records(token=token_fixture).questionnaires
     assert isinstance(records.records, dict)
     assert isinstance(records.to_df(), DataFrame)
 
 
-def test_records_class_participants(records):
+def test_records_class_participants(records_fixture):
     """Test records class (Participants)"""
-    assert hasattr(records.participants, "records")
-    assert hasattr(records.participants, "to_df")
-    assert isinstance(records.participants.records, dict)
+    assert hasattr(records_fixture.participants, "records")
+    assert hasattr(records_fixture.participants, "to_df")
+    assert isinstance(records_fixture.participants.records, dict)
     assert all(
-        isinstance(r, api.Participant) for r in records.participants.records.values()
+        isinstance(r, api.Participant)
+        for r in records_fixture.participants.records.values()
     )
 
 
-def test_records_class_appointments(records):
+def test_records_class_appointments(records_fixture):
     """Test records class (Appointments)"""
-    assert hasattr(records.appointments, "records")
-    assert hasattr(records.appointments, "to_df")
-    assert isinstance(records.appointments.records, dict)
+    assert hasattr(records_fixture.appointments, "records")
+    assert hasattr(records_fixture.appointments, "to_df")
+    assert isinstance(records_fixture.appointments.records, dict)
     assert all(
-        isinstance(r, api.Appointment) for r in records.appointments.records.values()
+        isinstance(r, api.Appointment)
+        for r in records_fixture.appointments.records.values()
     )
 
 
-def test_records_class_questionnaires(records):
+def test_records_class_questionnaires(records_fixture):
     """Test records class (Questionnaires)"""
-    assert hasattr(records.questionnaires, "records")
-    assert hasattr(records.questionnaires, "to_df")
-    assert isinstance(records.questionnaires.records, dict)
+    assert hasattr(records_fixture.questionnaires, "records")
+    assert hasattr(records_fixture.questionnaires, "to_df")
+    assert isinstance(records_fixture.questionnaires.records, dict)
     assert all(
         isinstance(r, api.Questionnaire)
-        for r in records.questionnaires.records.values()
+        for r in records_fixture.questionnaires.records.values()
     )

@@ -98,10 +98,8 @@ def apt_routes(app):
         data = utils.replace_labels(apt.data, data_dict)
 
         age_created = (ppt.data["age_created_months"], ppt.data["age_created_days"])
-        ts = datetime.strptime(ppt.data["date_created"], "%Y-%m-%d %H:%M:%S")
-        apt_date = datetime.strptime(data["date"], "%Y-%m-%d %H:%M")
         data["age_apt_months"], data["age_apt_days"] = api.get_age(
-            age_created, ts=ts, ts_new=apt_date
+            age_created, ts=ppt.data["date_created"], ts_new=data["date"]
         )
 
         ppt.data = utils.replace_labels(ppt.data, data_dict)

@@ -140,15 +140,12 @@ def prepare_dashboard(records: api.Records = None, data_dict: dict = None) -> di
         labels=labels[:-1],
         include_lowest=True,
     )
-    time_fmt = "%Y-%m-%d %H:%M:%S"
     n_ppts_week = sum(
-        utils.get_week_n(datetime.strptime(v.data["date_created"], time_fmt))
-        == utils.get_week_n(datetime.today())
+        utils.get_week_n(v.data["date_created"]) == utils.get_week_n(datetime.today())
         for v in records.participants.records.values()
     )
     n_apts_week = sum(
-        utils.get_week_n(datetime.strptime(v.data["date_created"], time_fmt))
-        == utils.get_week_n(datetime.today())
+        utils.get_week_n(v.data["date_created"]) == utils.get_week_n(datetime.today())
         for v in records.appointments.records.values()
     )
 
@@ -276,7 +273,7 @@ def general_routes(app):
         }
         for apt in list(records.appointments.records.values()):
             data = utils.replace_labels(apt.data, data_dict)
-            start = datetime.strptime(data["date"], fmt_str)
+            start = data["date"]
             end = start + timedelta(minutes=60)
 
             events.append(
