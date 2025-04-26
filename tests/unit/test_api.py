@@ -227,6 +227,7 @@ def test_delete_questionnaire(que_record_mod, token_fixture):
         api.delete_questionnaire(que_record_mod)
 
 
+@pytest.mark.skipif(IS_GIHTUB_ACTIONS, reason="Only local testing")
 def test_redcap_backup(benchmark, token_fixture, tmp_path) -> dict:
     """Test ``redcap_backup``."""
     tmp_dir = tmp_path / "tmp"
