@@ -6,7 +6,14 @@
       <h1 class="display-4">
         Participant {{ ppt_id }}&nbsp;&nbsp;<i class="fa fa-user"></i>
       </h1>
-      <p class="lead">Showing details from participant {{ ppt_id }}.</p>
+      <p class="lead">
+        Showing details from participant {{ ppt_id }}.
+      </p>
+      {% if data["data"]["isdropout"]=="1" %}
+      <p class="warning">Do not contact &nbsp;<i class="fa-solid fa-triangle-exclamation"></i>
+      </p>
+      {% endif %}
+      </p>
     </div>
   </div>
   <hr class="my-4">

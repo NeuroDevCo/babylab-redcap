@@ -214,13 +214,26 @@ p.card-highlight {
 }
 
 .form-label,
+.form-check-label,
 .form-group,
 .list-group-item {
     font-family: 'Ciutadella Semibold', 'Roboto', Fallback, sans-serif;
-    margin-top: 0.5em;
     font-size: medium;
-
+    vertical-align: top;
 }
+
+.form-check-input{
+    width: 1.25em;
+    height: 1.25em;
+    margin-right: 0.5em;
+    border-color: #313131;
+}
+
+.warning {
+    background-color: #ff001e;
+    color: white;
+}
+
 
 .btn {
     font-family: 'Ciutadella Semibold', 'Roboto', Fallback, sans-serif;
