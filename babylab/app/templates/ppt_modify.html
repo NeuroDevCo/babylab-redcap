@@ -9,8 +9,13 @@
     <div class="container">
       <h1 class="display-4">Participant {{ ppt_id }}&nbsp;&nbsp;<i class="fa fa-user-pen"></i></h1>
       <p class="lead">Modify the corresponding values and hit the submit button.</p>
+      {% if data["isdropout"]=="1" %}
+      <p class="warning">Do not contact &nbsp;<i class="fa-solid fa-triangle-exclamation"></i>
+      </p>
+      {% endif %}
     </div>
   </div>
+
   <hr class="my-4">
   <form class="form needs-validation" method="post" novalidate>
     <div class="div-center">
@@ -124,6 +129,11 @@
       <div class="card card-input">
         <div class="card-header ">Contact information</div>
         <div class="card-body">
+          <input class="form-check-input" type="checkbox" name="inputIsDropout" id="inputIsDropout" {% if
+            data['isdropout']=='1' %}checked{% endif %}>
+          <label class="form-check-label" for="inputIsDropout">
+            This family should <em>not</em> be contacted again
+          </label>
           <div class="form-group">
             <label for="inputEmail1" class="form-label">
               E-mail 1&nbsp;&nbsp;<i class="fa  fa-envelope"></i>

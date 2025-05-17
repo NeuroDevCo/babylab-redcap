@@ -321,6 +321,7 @@ def get_ppt_table(
         "twin",
         "parent1_name",
         "parent1_surname",
+        "isdroput",
         "email1",
         "phone1",
         "parent2_name",
