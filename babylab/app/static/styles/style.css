@@ -28,6 +28,10 @@ th {
     font-family: 'Ciutadella Bold', 'Roboto Bold', Fallback, sans-serif;
 }
 
+b {
+    font-family: 'Ciutadella Bold';
+}
+
 hr {
     margin: auto 220px
 }
@@ -120,7 +124,7 @@ a.fc-event {
 
 .nav-link {
     color: white;
-    font-family: 'Ciutadella Medium', 'Roboto Medium', Fallback, sans-serif;
+    font-family: 'Ciutadella Semibold', 'Roboto Bold', Fallback, sans-serif;
     margin-left: 0.5em;
 }
 
@@ -133,7 +137,7 @@ a.fc-event {
 }
 
 .card-title {
-    font-family: 'Ciutadella Bold', 'Roboto Bold', Fallback, sans-serif;
+    font-family: 'Ciutadella Semibold', 'Roboto Bold', Fallback, sans-serif;
     font-size: larger;
     padding-top: 1em;
     text-align: center;
