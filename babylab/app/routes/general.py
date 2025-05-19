@@ -23,11 +23,11 @@ def prepare_studies(records: api.Records, data_dict: dict, study: str = None):
     """  # pylint: disable=line-too-long
     df = utils.get_apt_table(records, data_dict=data_dict, study=study)
     classes = "table table-hover table-responsives"
-    df["appointment_id"] = [utils.fmt_apt_id(i) for i in df["appointment_id"]]
-    df["record_id"] = [utils.fmt_ppt_id(i) for i in df.index]
     df["modify_button"] = [
         utils.fmt_modify_button(p, a) for p, a in zip(df.index, df["appointment_id"])
     ]
+    df["appointment_id"] = [utils.fmt_apt_id(i) for i in df["appointment_id"]]
+    df["record_id"] = [utils.fmt_ppt_id(i) for i in df.index]
     df = df[
         [
             "appointment_id",
@@ -45,7 +45,6 @@ def prepare_studies(records: api.Records, data_dict: dict, study: str = None):
     ]
     df = df.sort_values("date", ascending=False)
     variables = {"status_dist": utils.count_col(df, "status", values_sort=True)}
-
     df["status"] = [utils.fmt_apt_status(s) for s in df["status"]]
     df = df.rename(
         columns={
