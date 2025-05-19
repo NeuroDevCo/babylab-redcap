@@ -44,6 +44,9 @@ def prepare_studies(records: api.Records, data_dict: dict, study: str = None):
         ]
     ]
     df = df.sort_values("date", ascending=False)
+    variables = {"status_dist": utils.count_col(df, "status", values_sort=True)}
+
+    df["status"] = [utils.fmt_apt_status(s) for s in df["status"]]
     df = df.rename(
         columns={
             "appointment_id": "Appointment",
@@ -99,17 +102,14 @@ def prepare_studies(records: api.Records, data_dict: dict, study: str = None):
         )
         for x in data_dict["appointment_study"]
     }
-    variables = {
-        "status_dist": utils.count_col(df, "Appointment status", values_sort=True),
-    }
 
     return {
         "n_apts": df.shape[0],
         "n_apts_week": n_apts_week,
         "n_apts_week_succ": n_apts_week_succ,
         "n_apts_week_canc": n_apts_week_canc,
-        "date_labels": list(ts.keys()),
-        "date_values": list(ts.values()),
+        "date_labels": [str(d) for d in ts.keys()],
+        "date_values": [str(d) for d in ts.values()],
         "status_dist_labels": list(variables["status_dist"].keys()),
         "status_dist_values": list(variables["status_dist"].values()),
         "table": table,
@@ -169,6 +169,9 @@ def prepare_dashboard(records: api.Records = None, data_dict: dict = None) -> di
             quest, "lang2", values_sort=True, missing_label="None"
         ),
     }
+
+    for var in ["ppts_date_created", "apts_date_created"]:
+        variables[var] = {str(k): v for k, v in variables[var].items()}
 
     return {
         "n_ppts": ppts.shape[0],
