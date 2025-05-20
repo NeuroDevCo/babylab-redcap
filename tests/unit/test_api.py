@@ -227,17 +227,17 @@ def test_delete_questionnaire(que_record_mod, token_fixture):
         api.delete_questionnaire(que_record_mod)
 
 
-@pytest.mark.skipif(True, reason="Only local testing")
+# @pytest.mark.skipif(False, reason="Only local testing")
 def test_redcap_backup(benchmark, token_fixture, tmp_path) -> dict:
     """Test ``redcap_backup``."""
     tmp_dir = tmp_path / "tmp"
-    file = api.redcap_backup(dirpath=tmp_dir, token=token_fixture)
+    file = api.redcap_backup(path=tmp_dir, token=token_fixture)
     assert os.path.exists(file)
     with pytest.raises(TypeError):
-        api.redcap_backup(dirpath=tmp_dir)
+        api.redcap_backup(path=tmp_dir)
 
     def _redcap_backup():
-        api.redcap_backup(dirpath=tmp_dir, token=token_fixture)
+        api.redcap_backup(path=tmp_dir, token=token_fixture)
 
     benchmark(_redcap_backup)
 
