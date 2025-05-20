@@ -549,42 +549,48 @@ def delete_questionnaire(data: dict, **kwargs: any):
     return post_request(fields=fields, **kwargs)
 
 
-def redcap_backup(dirpath: str = "tmp", **kwargs: any) -> dict:
+def redcap_backup(path: str = "tmp", **kwargs: any) -> dict:
     """Download a backup of the REDCap database
 
     Args:
-        dirpath (str, optional): Output directory. Defaults to "tmp".
+        path (str, optional): Output directory. Defaults to "tmp".
         **kwargs (any, optional): Additional arguments passed to ``post_request``.
 
     Returns:
         dict: A dictionary with the key data and metadata of the project.
     """
+    if not os.path.exists(path):
+        os.mkdir(path)
     pl = {}
     for k in ["project", "metadata", "instrument"]:
         pl[k] = {"format": "json", "returnFormat": "json", "content": k}
     d = {k: json.loads(post_request(v, **kwargs).text) for k, v in pl.items()}
-    records = [datetimes_to_strings(r) for r in get_records(**kwargs)]
-    backup = {
+    with open(os.path.join(path, "records.csv"), "w+", encoding="utf-8") as f:
+        fields = {
+            "content": "record",
+            "action": "export",
+            "format": "csv",
+            "csvDelimiter": ",",
+            "returnFormat": "json",
+        }
+        records = post_request(fields, **kwargs).content.decode().split("\n")
+        records = [r + "\n" for r in records]
+        f.writelines(records)
+
+    b = {
         "project": d["project"],
         "instruments": d["instrument"],
         "fields": d["metadata"],
-        "records": records,
     }
-
-    if not os.path.exists(dirpath):
-        os.mkdir(dirpath)
-    for k, v in backup.items():
-        path = os.path.join(dirpath, k + ".json")
-        with open(path, "w", encoding="utf-8") as f:
+    for k, v in b.items():
+        with open(os.path.join(path, k + ".json"), "w", encoding="utf-8") as f:
             json.dump(v, f)
-
     timestamp = datetime.strftime(datetime.now(), "%Y-%m-%d-%H-%M")
-    file = os.path.join(dirpath, "backup_" + timestamp + ".zip")
-    for root, _, files in os.walk(dirpath, topdown=False):
+    file = os.path.join(path, "backup_" + timestamp + ".zip")
+    for root, _, files in os.walk(path, topdown=False):
         with zipfile.ZipFile(file, "w", zipfile.ZIP_DEFLATED) as z:
             for f in files:
                 z.write(os.path.join(root, f))
-
     return file
 
 
