@@ -23,149 +23,16 @@
       </div>
     </form>
   </div>
+  <div class="jumbotron jumbotron-fluid">
+    <div class="container">
+      <h3 class="display-5">{{ data_dict["appointment_study"][selected_study] }}</h3>
+    </div>
+  </div>
   <br>
   {% if selected_study %}
-  <div class="container col-12">
-    <div class="jumbotron jumbotron-fluid">
-      <div class="container">
-        <h3 class="display-4">{{ data_dict["appointment_study"][selected_study] }}</h3>
-        <p class="lead">Showing study details.</p>
-      </div>
-    </div>
-    <hr class="my-4">
-    <br>
-    <div class="row">
-      <div class="col">
-        <div class="card text-bg-success">
-          <div class="card-header">Appointments</div>
-          <div class="card-body">
-            <div class="card-text">
-              <h1>
-                {{ data["n_apts"] }}&nbsp;&nbsp;<i class="fa-solid fa-calendar"></i>
-              </h1>
-            </div>
-          </div>
-          <div class="card-footer text-bg-success">In total</div>
-        </div>
-      </div>
-      <div class="col">
-        <div class="card text-bg-warning">
-          <div class="card-header">Appointments</div>
-          <div class="card-body">
-            <div class="card-text">
-              <h1>
-                {{ data["n_apts_week"][selected_study] }}&nbsp;&nbsp;<i class="fa-solid fa-calendar"></i>
-              </h1>
-            </div>
-          </div>
-          <div class="card-footer text-bg-warning">This week</div>
-        </div>
-      </div>
-      <div class="col">
-        <div class="card text-bg-primary">
-          <div class="card-header">Successful appointments</div>
-          <div class="card-body">
-            <div class="card-text">
-              <h1>
-                {{ data["n_apts_week_succ"][selected_study] }}&nbsp;&nbsp;<i class="fa-solid fa-calendar"></i>
-              </h1>
-            </div>
-          </div>
-          <div class="card-footer text-bg-primary">This week</div>
-        </div>
-      </div>
-      <div class="col">
-        <div class="card text-bg-danger">
-          <div class="card-header">Cancelled appointments</div>
-          <div class="card-body">
-            <div class="card-text">
-              <h1>
-                {{ data["n_apts_week_canc"][selected_study] }}&nbsp;&nbsp;<i class="fa-solid fa-calendar"></i>
-              </h1>
-            </div>
-          </div>
-          <div class="card-footer text-bg-danger">This week</div>
-        </div>
-      </div>
-    </div>
-  </div>
+  <hr class="my-4">
   <br>
-  <div class="div-center">
-    <div class="card card-plot">
-      <div class="card-title">Appointment status</div>
-      <div class="card-body">
-        <canvas id="statusDist">
-          <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-          <script
-            src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
-          <script type="text/javascript" src="{{ url_for('static', filename='js/plots.js') }}"></script>
-          <script>
-            circlePlot(
-              {{ data["status_dist_labels"] | safe }},
-              {{ data["status_dist_values"] | safe }},
-              "statusDist",
-              [
-                "#4bc0c0",
-                "#ffcd56",
-                "#ff6384",
-                "#9966ff",
-                "#36a2eb",
-              ],
-              "Appointment status"
-            );
-          </script>
-        </canvas>
-      </div>
-    </div>
-  </div>
-  <div class="div-center">
-    <div class="card card-plot">
-      <div class="card-title">Appointments</div>
-      <div class="card-body">
-        <canvas id="studies1" width="850" height="500">
-          <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-          <script
-            src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
-          <script type="text/javascript" src="{{ url_for('static', filename='js/plots.js') }}"></script>
-          <script>
-            dateLinePlot(
-              {{ data["date_labels"] | safe }},
-              {{ data["date_values"] | safe }},
-              "studies1",
-              "#4BC0C0",
-              "Date created"
-            );
-          </script>
-        </canvas>
-      </div>
-    </div>
-  </div>
-  <div class="div-center">
-    <div class="card">
-      <h5 class="card-title">Appointments: {{ data_dict["appointment_study"][selected_study] }}</h5>
-      <div class="card-body">
-        <h6 class="card-subtitle mb-2 text-muted">Click IDs to see a participant's profile</h6>
-        <div width="10%">{{ data["table"]|safe }}</div>
-      </div>
-    </div>
-  </div>
+  {% include "_dashboard.html" %}
   {% endif %}
-  <script
-    src="https://cdn.datatables.net/v/bs5/jq-3.7.0/dt-2.2.2/b-3.2.1/fh-4.0.1/sp-2.3.3/sl-3.0.0/datatables.min.js"></script>
-  <script type="text/javascript" src="{{ url_for('static', filename='js/tables.js') }}">
-  </script>
-  <script>
-    let table = new dt("#apttable", searchCols = [3, 4], hideCols = [6, 7, 8, 10], statusCol = 4)
-
-    table.on('click', 'td', function (e) {
-      let tr = e.target.closest('tr');
-      let row = table.row(tr);
-      if (row.child.isShown()) {
-        row.child.hide();
-      }
-      else {
-        row.child(format_apt(row.data())).show();
-      }
-    });  </script>
+  {% endblock %}
 </body>
-{% endblock %}
