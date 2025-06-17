@@ -37,8 +37,9 @@ hr {
 }
 
 nav {
-    font-family: 'Ciutadella Bold', 'Roboto Bold', Fallback, sans-serif;
+    font-family: 'Roboto', Fallback, sans-serif;
     font-size: larger;
+    font-weight: 400;
 }
 
 td,
@@ -128,8 +129,8 @@ a.fc-event {
 }
 
 .nav-link {
-    color: white;
-    font-family: 'Ciutadella Semibold', 'Roboto Bold', Fallback, sans-serif;
+    color: #1e1e1f;
+    font-family: 'Roboto', Fallback, sans-serif;
     margin-left: 0.5em;
 }
 
