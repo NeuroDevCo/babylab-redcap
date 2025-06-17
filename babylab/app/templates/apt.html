@@ -8,7 +8,9 @@
       <h1 class="display-4">
         {{ _("Appointment") }} {{ apt_id }}&nbsp;&nbsp;<i class="fa fa-calendar"></i>
       </h1>
-      <p class="lead">{{ _("Showing details for appointment") }} {{ apt_id }}.</p>
+      <p class="lead">
+        {{ _("Showing details for appointment") }} {{ apt_id }}.
+      </p>
     </div>
     <hr class="my-4">
 </header>
@@ -25,7 +27,8 @@
           </a>
           <a href="{{ url_for('apt_modify', apt_id = apt_id, ppt_id = ppt_id) }}">
             <button type="button" class="btn btn-warning">
-              <i class="fa fa-pen"></i>&nbsp;&nbsp;{{ _("Modify appointment") }} </button>
+              <i class="fa fa-pen"></i>&nbsp;&nbsp;{{ _("Modify appointment") }}
+            </button>
           </a>
           <a href="{{ url_for('que_new', ppt_id = ppt_id) }}">
             <button type="button" class="btn btn-primary">
@@ -46,7 +49,9 @@
   <br>
   <div class="div-center">
     <div class="card card-info">
-      <div class="card-header ">{{ _("Appointment information") }}</div>
+      <div class="card-header ">
+        {{ _("Appointment information") }}
+      </div>
       <div class="card-body">
         <table class="table table-hover table-borderless table-responsive">
           <tbody>
@@ -119,7 +124,9 @@
       </div>
     </div>
     <div class="card card-info">
-      <div class="card-header ">{{ _("Participant information") }}</div>
+      <div class="card-header ">
+        {{ _("Participant information") }}
+      </div>
       <div class="card-body">
         <table class="table table-hover table-borderless table-responsive">
           <tbody>
@@ -164,7 +171,9 @@
       </div>
     </div>
     <div class="card card-info">
-      <div class="card-header ">{{ _("Contact details") }}</div>
+      <div class="card-header ">
+        {{ _("Contact details") }}
+      </div>
       <div class="card-body">
         <table class="table table-hover table-borderless table-responsive">
           <tbody>

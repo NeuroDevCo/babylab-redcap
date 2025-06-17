@@ -6,8 +6,12 @@
 <header>
     <div class="jumbotron jumbotron-fluid">
         <div class="container">
-            <h1 class="display-4">{{ _("Other")</h1>
-            <p class="lead">{{ _("Other actions.") }}</p>
+            <h1 class="display-4">
+                {{ _("Other") }}
+            </h1>
+            <p class="lead">
+                {{ _("Other actions.") }}
+            </p>
         </div>
     </div>
 </header>
@@ -24,8 +28,9 @@
                     {{ _("Download a backup of the REDCap project metadata, item, fields, and records") }}.
                     <br>
                     <a href="{{ url_for('download_backup') }}">
-                        <button name="backupButton" class="btn btn-secondary"><i
-                                class="fa fa-download"></i>&nbsp;&nbsp;{{ _("Download backup") }}</button>
+                        <button name="backupButton" class="btn btn-secondary">
+                            <i class="fa fa-download"></i>&nbsp;&nbsp;{{ _("Download backup") }}
+                        </button>
                     </a>
                 </div>
             </div>
@@ -41,8 +46,10 @@
                     following the link below:") }}
                     <br>
                     <a href="https://github.com/NeuroDevComp/babylab-redcap/issues/new/choose" target="_blank">
-                        <button name="Issue" class="btn btn-secondary"><i class="fa-brands fa-github"></i>&nbsp;&nbsp;{{
-                            _("Report an issue") }}</button>
+                        <button name="Issue" class="btn btn-secondary">
+                            <i class="fa-brands fa-github"></i>&nbsp;&nbsp;{{
+                            _("Report an issue") }}
+                        </button>
                     </a>
                 </div>
             </div>
@@ -116,7 +123,9 @@
                 </div>
                 <div class="card-body">
                     <div class="input-group date">
-                        <span class="input-group-text" id="date1-label">{{ _("Timestamp") }}</span>
+                        <span class="input-group-text" id="date1-label">
+                            {{ _("Timestamp") }}
+                        </span>
                         <input type="datetime-local" id="timestamp" name="timestamp" />
                     </div>
                     <br>

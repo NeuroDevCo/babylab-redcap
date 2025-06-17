@@ -245,9 +245,10 @@ p.card-highlight {
 }
 
 
-.btn {
+.btn:not([width]){
     font-family: 'Ciutadella Semibold', 'Roboto', Fallback, sans-serif;
-    margin: 1em;
+    margin: 0.5em;
+    width: 65px;
     padding-left: 0.5em;
     padding-right: 0.5em;
 }

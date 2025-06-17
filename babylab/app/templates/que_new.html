@@ -30,7 +30,9 @@
         </div>
       </div>
       <div class="card">
-        <h5 class="card-header ">{{ _("Language information") }}</h5>
+        <h5 class="card-header ">
+          {{ _("Language information") }}
+        </h5>
         <div class="card-body">
           <div class="form-check form-check-inline">
             <input class="form-check-input" type="checkbox" name="inputIsEstimated" id="inputIsEstimated">
@@ -52,14 +54,19 @@
             <div class="col-8">
               <div class="input-group">
                 <div class="input-group-prepend">
-                  <span class="input-group-text" id="lang1addon">L1</span>
+                  <span class="input-group-text" id="lang1addon">
+                    L1
+                  </span>
                 </div>
                 <select class="form-select" name="inputLang1" aria-describedby="lang1addon" required>
                   <option selected value="0">
                     -- {{ _("Select one") }} --
                   </option>
                   {% for k, v in data_dict["language_lang1"].items() %}
-                  {% if k!="0" %}<option value="{{ k }}">{{ v }}</option>{% endif %}
+                  {% if k!="0" %}
+                  <option value="{{ k }}">
+                    {{ v }}
+                  </option>{% endif %}
                   {% endfor %}
                 </select>
               </div>
@@ -72,7 +79,9 @@
             <div class="col-8">
               <div class="input-group">
                 <div class="input-group-prepend">
-                  <span class="input-group-text" id="lang2addon">L2</span>
+                  <span class="input-group-text" id="lang2addon">
+                    L2
+                  </span>
                 </div>
                 <select class="form-select" name="inputLang2">
                   <option selected value="0">
@@ -80,7 +89,9 @@
                   </option>
                   {% for k, v in data_dict["language_lang1"].items() %}
                   {% if k!="0" %}
-                  <option value="{{ k }}">{{ v }}</option>
+                  <option value="{{ k }}">
+                    {{ v }}
+                  </option>
                   {% endif %}
                   {% endfor %}
                 </select>
@@ -95,12 +106,20 @@
             <div class="col-8">
               <div class="input-group">
                 <div class="input-group-prepend">
-                  <span class="input-group-text" id="lang2addon">L3</span>
+                  <span class="input-group-text" id="lang2addon">
+                    L3
+                  </span>
                 </div>
                 <select class="form-select" name="inputLang3">
-                  <option selected value="0">-- {{ _("Select one") }} --</option>
+                  <option selected value="0">
+                    -- {{ _("Select one") }} --
+                  </option>
                   {% for k, v in data_dict["language_lang1"].items() %}
-                  {% if k!="0" %}<option value="{{ k }}">{{ v }}</option>{% endif %}
+                  {% if k!="0" %}
+                  <option value="{{ k }}">
+                    {{ v }}
+                  </option>
+                  {% endif %}
                   {% endfor %}
                 </select>
               </div>
@@ -113,14 +132,20 @@
             <div class="col-8">
               <div class="input-group">
                 <div class="input-group-prepend">
-                  <span class="input-group-text" id="lang2addon">L4</span>
+                  <span class="input-group-text" id="lang2addon">
+                    L4
+                  </span>
                 </div>
                 <select class="form-select" name="inputLang4">
                   <option selected value="0">
                     -- {{ _("Select one") }} --
                   </option>
                   {% for k, v in data_dict["language_lang1"].items() %}
-                  {% if k!="0" %}<option value="{{ k }}">{{ v }}</option>{% endif %}
+                  {% if k!="0" %}
+                  <option value="{{ k }}">
+                    {{ v }}
+                  </option>
+                  {% endif %}
                   {% endfor %}
                 </select>
               </div>

@@ -7,7 +7,9 @@
 <body>
   <div class="jumbotron jumbotron-fluid">
     <div class="container">
-      <h1 class="display-4">{{ _("Participant") }} {{ ppt_id }}&nbsp;&nbsp;<i class="fa fa-user-pen"></i></h1>
+      <h1 class="display-4">
+        {{ _("Participant") }} {{ ppt_id }}&nbsp;&nbsp;<i class="fa fa-user-pen"></i>
+      </h1>
       <p class="lead">
         {{ _("Modify the corresponding values and hit the submit button.") }}
       </p>
@@ -34,7 +36,9 @@
     </div>
     <div class="div-center">
       <div class="card card-input">
-        <div class="card-header ">{{ _("Participant information") }}</div>
+        <div class="card-header ">
+          {{ _("Participant information") }}
+        </div>
         <div class="card-body">
           <div class="form-group">
             <div class="row">
@@ -44,7 +48,9 @@
                 </label>
                 <select class="form-select" name="inputSource">
                   {% for k, v in data_dict["participant_source"].items() %}
-                  <option value="{{ k }}" {% if data["source"]==k %}selected{% endif %}>{{ v }}</option>
+                  <option value="{{ k }}" {% if data["source"]==k %}selected{% endif %}>
+                    {{ v }}
+                  </option>
                   {% endfor %}
                 </select>
               </div>
@@ -61,7 +67,9 @@
                 </label>
                 <select class="form-select" name="inputSex" required>
                   {% for k, v in data_dict["participant_sex"].items() %}
-                  <option value="{{ k }}" {% if data["sex"]==k %}selected{% endif %}>{{ v }}</option>
+                  <option value="{{ k }}" {% if data["sex"]==k %}selected{% endif %}>
+                    {{ v }}
+                  </option>
                   {% endfor %}
                 </select>
               </div>

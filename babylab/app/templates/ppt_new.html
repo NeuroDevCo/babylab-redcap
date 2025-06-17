@@ -7,8 +7,12 @@
 <body>
   <div class="jumbotron jumbotron-fluid">
     <div class="container">
-      <h1 class="display-4">{{ _("Participants") }}&nbsp;&nbsp;<i class="fa fa-user-plus"></i></h1>
-      <p class="lead">{{ _("Adding a new participant") }}.</p>
+      <h1 class="display-4">
+        {{ _("Participants") }}&nbsp;&nbsp;<i class="fa fa-user-plus"></i>
+      </h1>
+      <p class="lead">
+        {{ _("Adding a new participant") }}.
+      </p>
     </div>
   </div>
   <hr class="my-4">
@@ -16,7 +20,7 @@
     <div class="row">
       <div class="col">
         <div class="div-center">
-          <div class=" btn-group" role="group">
+          <div class="btn-group" role="group">
             <button type="submit" class="btn btn-warning">
               <i class="fa fa-pen"></i>&nbsp;&nbsp;{{ _("Submit") }}
             </button>
@@ -27,16 +31,21 @@
     <br>
     <div class="div-center">
       <div class="card card-input">
-        <div class="card-header ">{{ _("Participant information") }}</div>
+        <div class="card-header ">
+          {{ _("Participant information") }}
+        </div>
         <div class="card-body">
           <div class="form-group">
             <label for="inputSource" class="form-label">
               Source&nbsp;&nbsp;<i class="fa fa-database"></i>
             </label>
             <select class="form-select" name="inputSource" required>
-              <option disabled selected value>-- {{ _("Select one") }} --</option>
-              {% for k, v in data_dict["participant_source"].items() %}<option value="{{ k }}">{{ v }}</option>{% endfor
-              %}
+              <option disabled selected value>
+                -- {{ _("Select one") }} --
+              </option>
+              {% for k, v in data_dict["participant_source"].items() %}<option value="{{ k }}">
+                {{ v }}
+              </option>{% endfor %}
             </select>
             <div class="row">
               <div class="col">
@@ -50,10 +59,14 @@
                   {{ _("Sex") }}&nbsp;&nbsp;<i class="fa fa-venus-mars"></i>
                 </label>
                 <select class="form-select" name="inputSex" required>
-                  <option disabled selected value>-- {{ _("Select one") }} --</option>
-                  {% for k, v in data_dict["participant_sex"].items() %}<option value="{{ k }}">{{ v }}</option>{%
-                  endfor
-                  %}
+                  <option disabled selected value>
+                    -- {{ _("Select one") }} --
+                  </option>
+                  {% for k, v in data_dict["participant_sex"].items() %}
+                  <option value="{{ k }}">
+                    {{ v }}
+                  </option>
+                  {% endfor %}
                 </select>
               </div>
             </div>
@@ -104,7 +117,9 @@
             </label>
             <select class="form-select" name="inputNormalHearing">
               {% for k, v in data_dict["participant_hearing"].items() %}
-              <option value="{{ k }}" {% if v=="Not available" %}selected{% endif %}>{{ v }}</option>
+              <option value="{{ k }}" {% if v=="Not available" %}selected{% endif %}>
+                {{ v }}
+              </option>
               {% endfor %}
             </select>
             <label for="inputTwinID" class="form-label">
@@ -119,7 +134,9 @@
         </div>
       </div>
       <div class="card card-input">
-        <div class="card-header ">{{ _("Contact information") }}</div>
+        <div class="card-header ">
+          {{ _("Contact information") }}
+        </div>
         <div class="card-body">
           <input class="form-check-input" type="checkbox" name="inputIsDropout" id="inputIsDropout">
           <label class="form-check-label" for="inputIsDropout">
@@ -136,7 +153,7 @@
             </label>
             <input type="tel" class="form-control" name="inputPhone1" placeholder="Enter phone" required>
             <label for="inputEmail2" class="form-label">
-              {{ _("E-mail 2") }}&nbsp;&nbsp;<i class="fa  fa-envelope"></i>
+              {{ _("E-mail 2") }}&nbsp;&nbsp;<i class="fa fa-envelope"></i>
             </label>
             <input type="email" class="form-control" name="inputEmail2" placeholder="email@address.com"
               pattern="/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$">
@@ -145,7 +162,7 @@
             </label>
             <input type="tel" class="form-control" name="inputPhone2" placeholder="Enter phone">
             <label for="inputAddress" class="form-label">
-              {{ _("Home address") }}&nbsp;&nbsp;<i class="fa  fa-house"></i>
+              {{ _("Home address") }}&nbsp;&nbsp;<i class="fa fa-house"></i>
             </label>
             <input type="text" class="form-control" name="inputAddress" />
             <label for="inputCity" class="form-label">
@@ -156,12 +173,16 @@
               {{ _("Postcode") }}&nbsp;&nbsp;<i class="fa fa-city"></i>
             </label>
             <input type="text" class="form-control" name="inputPostcode" rows="1" pattern="[0-9]{5}">
-            <div class="invalid-feedback">{{ _("Postcode must be 5 digits!") }}</div>
+            <div class="invalid-feedback">
+              {{ _("Postcode must be 5 digits!") }}
+            </div>
           </div>
         </div>
       </div>
       <div class="card card-input">
-        <div class="card-header ">{{ _("Birth information") }}</div>
+        <div class="card-header ">
+          {{ _("Birth information") }}
+        </div>
         <div class="card-body">
           <div class="form-group">
             <div class="row">
@@ -183,7 +204,9 @@
             </label>
             <select class="form-select" name="inputDeliveryType">
               {% for k, v in data_dict["participant_birth_type"].items() %}
-              <option value="{{ k }}" {% if v=="Not available" %}selected{% endif %}>{{ v }}</option>
+              <option value="{{ k }}" {% if v=="Not available" %}selected{% endif %}>
+                {{ v }}
+              </option>
               {% endfor %}
             </select>
             <div class="col">
