@@ -108,10 +108,10 @@ def fmt_new_button(record: str, ppt_id: str = None):
             f"`record` must be 'Appointment' or 'Questionnaire', but {record} was provided"
         )
     status = "success" if record == "Appointment" else "primary"
-    button_str = f'<button type="button" class="btn btn-{status}"><i class="fa-solid fa-plus"></i>&nbsp;&nbsp;{record}</button></a>'
     if record == "Appointment":
+        button_str = f'<button type="button" class="btn btn-{status}"><i class="fa-solid fa-plus"></i>&nbsp;&nbsp;<i class="fa-solid fa-calendar"></i></button></a>'
         return f'<a href="/appointments/appointment_new?ppt_id={ppt_id}">{button_str}'
-
+    button_str = f'<button type="button" class="btn btn-{status}"><i class="fa-solid fa-plus"></i>&nbsp;&nbsp;<i class="fa-solid fa-language"></i></button></a>'
     return f'<a href="/questionnaires/questionnaire_new?ppt_id={ppt_id}">{button_str}'
 
 
@@ -126,7 +126,7 @@ def fmt_modify_button(ppt_id: str = None, apt_id: str = None, que_id: str = None
     Returns:
         str: Formatted HTML string.
     """  # pylint: disable=line-too-long
-    button_str = '<button type="button" class="btn btn-warning"><i class="fa-solid fa-pen"></i>&nbsp;&nbsp;Modify</button></a>'
+    button_str = '<button type="button" class="btn btn-warning"><i class="fa-solid fa-pen"></i></button></a>'
 
     if apt_id:
         return f'<a href="/appointments/{apt_id}/appointment_modify">{button_str}'
