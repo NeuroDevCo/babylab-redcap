@@ -4,7 +4,15 @@ import os
 from dataclasses import dataclass
 from functools import wraps
 from dotenv import load_dotenv
-from flask import flash, redirect, url_for, current_app, render_template
+from flask import (
+    flash,
+    redirect,
+    session,
+    request,
+    url_for,
+    current_app,
+    render_template,
+)
 from babylab.src import api
 
 
@@ -105,3 +113,19 @@ def get_records_or_index(token: str, **kwargs):
     except Exception:  # pylint: disable=broad-exception-caught
         return render_template("index.html", redcap_version=redcap_version)
     return records
+
+
+def get_locale():
+    """Check if the language query parameter is set and valid.
+
+    If not set via query, check if we have it stored in the session.
+    Otherwise, use the browser's preferred language.
+    """
+    if "lang" in request.args:
+        lang = request.args.get("lang")
+        if lang in ["en", "es", "ca"]:
+            session["lang"] = lang
+            return session["lang"]
+    elif "lang" in session:
+        return session.get("lang")
+    return request.accept_languages.best_match(["en", "es", "ca"])

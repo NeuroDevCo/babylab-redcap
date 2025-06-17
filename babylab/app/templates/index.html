@@ -5,7 +5,7 @@
 <body>
   <div class="div-center">
     <div class="card card-index" id="indexCardMain">
-      <div class="card-header" id="indexCardHeader">Welcome!</div>
+      <div class="card-header" id="indexCardHeader">{{ _("Welcome!") }} {{ current_locale }}</div>
       <div class="card-body" id="indexCardBody">
         <div class="jumbotron jumbotron-fluid">
           <h3 class="display-4">babylab-redcap</h3>
@@ -22,9 +22,9 @@
         <hr>
         <br>
         <p>
-          This app provides an interface to the <b>REDCap database</b> to
+          {{ _("This app provides an interface to the <b>REDCap database</b> to
           consult participant and appointment information conveniently. This is a work in progress, feel free to
-          report issues and provide feed-back (<a href=" mailto:gonzalo.garcia@sjd.es">gonzalo.garcia@sjd.es</a>).
+          report issues and provide feed-back") }} (<a href=" mailto:gonzalo.garcia@sjd.es">gonzalo.garcia@sjd.es</a>).
         </p>
         <img src="{{ url_for('static', filename='img/ndc-logo.svg') }}" id="img-ndc-logo" width="--" height="--"
           alt="NDC logo">
@@ -34,7 +34,7 @@
     <div class="card card-index" id="indexCardLogin">
       <h4 class="card-header">Log in</h4>
       <div class="card-body">
-        <p>Please, provide your API token to access the database:</p>
+        <p>{{ _("Please, provide your API token to access the database") }}:</p>
         <form class="form" method="post" action='{{ url_for("index") }}'>
           <div class="input-group">
             <div class="input-group-prepend">
@@ -43,10 +43,10 @@
             <input type="password" class="form-control" id="apiToken" name="apiToken" aria-describedby="token-addon"
               placeholder="">
           </div>
-          <button type="submit" class="btn btn-primary" onclick="spinner()">Submit</button>
+          <button type="submit" class="btn btn-primary" onclick="spinner()">{{ _("Submit") }}</button>
         </form>
       </div>
-      <div class="card-footer">You can find your <b>API token</b> at REDCap.</div>
+      <div class="card-footer">{{ _("You can find your <b>API token</b> at REDCap.") }}</div>
     </div>
     <div class="loading">
       <div class="loader">
@@ -62,10 +62,10 @@
     <div class="card card-index" id="indexCardLogin">
       <h4 class="card-header">Log in</h4>
       <div class="card-body">
-        <h5>Welcome!</h5>
-        You have successfully logged in.
+        <h5>{{ _("Welcome!") }}</h5>
+        {{ _("You have successfully logged in") }}.
       </div>
-      <div class="card-footer">You can find your <b>API token</b> at REDCap.</div>
+      <div class="card-footer">{{ _("You can find your <b>API token</b> at REDCap.") }}</div>
     </div>
     {% endif %}
 </body>

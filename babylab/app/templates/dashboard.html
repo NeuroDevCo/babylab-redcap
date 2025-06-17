@@ -9,7 +9,7 @@
       <h1 class="display-4">
         Dashboard&nbsp;&nbsp;<i class="fa fa-rocket"></i>
       </h1>
-      <p class="lead">Showing the current status of the project.</p>
+      <p class="lead">{{ _("Showing the current status of the project") }}.</p>
     </div>
   </div>
   <hr>
@@ -21,7 +21,7 @@
     <div class="row">
       <div class="col">
         <div class="card text-bg-primary mb-4">
-          <div class="card-header">Participants</div>
+          <div class="card-header">{{ _("Participants") }}</div>
           <div class="card-body">
             <div class="card-text">
               <h1>
@@ -29,12 +29,12 @@
               </h1>
             </div>
           </div>
-          <div class="card-footer text-bg-primary">In total</div>
+          <div class="card-footer text-bg-primary">{{ _("In total") }}</div>
         </div>
       </div>
       <div class="col">
         <div class="card text-bg-warning">
-          <div class="card-header text-black">Appointments</div>
+          <div class="card-header text-black">{{ _("Appointments") }}</div>
           <div class="card-body">
             <div class="card-text">
               <h1>
@@ -42,12 +42,12 @@
               </h1>
             </div>
           </div>
-          <div class="card-footer text-bg-warning">In total</div>
+          <div class="card-footer text-bg-warning">{{ _("In total") }}</div>
         </div>
       </div>
       <div class="col">
         <div class="card text-bg-success">
-          <div class="card-header">Participants</div>
+          <div class="card-header">{{ _("Participants") }}</div>
           <div class="card-body">
             <div class="card-text">
               <h1>
@@ -55,12 +55,12 @@
               </h1>
             </div>
           </div>
-          <div class="card-footer text-bg-success">This week</div>
+          <div class="card-footer text-bg-success">{{ _("This week") }}</div>
         </div>
       </div>
       <div class="col">
         <div class="card text-bg-danger">
-          <div class="card-header">Appointments</div>
+          <div class="card-header">{{ _("Appointments") }}</div>
           <div class="card-body">
             <div class="card-text">
               <h1>
@@ -68,7 +68,7 @@
               </h1>
             </div>
           </div>
-          <div class="card-footer text-bg-danger">This week</div>
+          <div class="card-footer text-bg-danger">{{ _("This week") }}</div>
         </div>
       </div>
     </div>
@@ -79,16 +79,17 @@
     <li class="nav-item" role="presentation">
       <button class="nav-link active" id="pills-participants-tab" data-bs-toggle="pill"
         data-bs-target="#pills-participants" type="button" role="tab" aria-controls="pills-participants"
-        aria-selected="true">Participants</button>
+        aria-selected="true">{{ _("Participants") }}</button>
     </li>
     <li class="nav-item" role="appointments">
       <button class="nav-link" id="pills-appointments-tab" data-bs-toggle="pill" data-bs-target="#pills-appointments"
-        type="button" role="tab" aria-controls="pills-appointments" aria-selected="false">Appointments</button>
+        type="button" role="tab" aria-controls="pills-appointments" aria-selected="false">{{ _("Appointments")
+        }}</button>
     </li>
     <li class="nav-item" role="presentation">
       <button class="nav-link" id="pills-questionnaires-tab" data-bs-toggle="pill"
         data-bs-target="#pills-questionnaires" type="button" role="tab" aria-controls="pills-questionnaires"
-        aria-selected="false">Questionnaires</button>
+        aria-selected="false">{{ _("Questionnaires") }}</button>
     </li>
   </ul>
   <div class="tab-content" id="pills-tabContent">
@@ -96,7 +97,7 @@
       aria-labelledby="pills-participants-tab" tabindex="0">
       <div class="div-center">
         <div class="card card-plot">
-          <div class="card-title">Age distribution</div>
+          <div class="card-title">{{ _("Age distribution") }}</div>
           <div class="card-body">
             <canvas id="ageDist">
               <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -116,7 +117,7 @@
       </div>
       <div class="div-center">
         <div class="card card-plot">
-          <div class="card-title">Sex distribution</div>
+          <div class="card-title">{{ _("Sex distribution") }}</div>
           <div class="card-body">
             <canvas id="sexDist">
               <script>
@@ -140,7 +141,7 @@
       </div>
       <div class="div-center">
         <div class="card card-plot">
-          <div class="card-title">Participant influx</div>
+          <div class="card-title">{{ _("Participant influx") }}</div>
           <div class="card-body">
             <canvas id="influx">
               <script
@@ -160,7 +161,7 @@
       </div>
       <div class="div-center">
         <div class="card card-plot">
-          <div class="card-title">Source of participants</div>
+          <div class="card-title">{{ _("Source of participants") }}</div>
           <div class="card-body">
             <canvas id="sourceDist">
               <script>
@@ -187,7 +188,7 @@
       tabindex="1">
       <div class="div-center">
         <div class="card card-plot">
-          <div class="card-title">Appointments made</div>
+          <div class="card-title">{{ _("Appointments made") }}</div>
           <div class="card-body">
             <canvas id="appointments">
               <script>
@@ -205,7 +206,7 @@
       </div>
       <div class="div-center">
         <div class="card card-plot">
-          <div class="card-title">Appointment status</div>
+          <div class="card-title">{{ _("Appointment status") }}</div>
           <div class="card-body">
             <canvas id="statusDist">
               <script>
@@ -232,7 +233,7 @@
       tabindex="2">
       <div class="div-center">
         <div class="card card-plot">
-          <div class="card-title">First language distribution</div>
+          <div class="card-title">{{ _("First language distribution") }}</div>
           <div class="card-body">
             <canvas id="l1Dist">
               <script>
@@ -250,7 +251,7 @@
       </div>
       <div class="div-center">
         <div class="card card-plot">
-          <div class="card-title">Second language distribution</div>
+          <div class="card-title">{{ _("Second language distribution") }}</div>
           <div class="card-body">
             <canvas id="l2Dist">
               <script>

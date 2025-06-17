@@ -6,9 +6,9 @@
   <div class="jumbotron jumbotron-fluid">
     <div class="container">
       <h1 class="display-4">
-        Appointment {{ apt_id }}&nbsp;&nbsp;<i class="fa fa-calendar"></i>
+        {{ _("Appointment") }} {{ apt_id }}&nbsp;&nbsp;<i class="fa fa-calendar"></i>
       </h1>
-      <p class="lead">Showing details for appointment {{ apt_id }}.</p>
+      <p class="lead">{{ _("Showing details for appointment") }} {{ apt_id }}.</p>
     </div>
     <hr class="my-4">
 </header>
@@ -20,19 +20,16 @@
         <div class="btn-group" role="group">
           <a href="{{ url_for('ppt', ppt_id = ppt_id) }}">
             <button type="button" class="btn btn-info">
-              <i class="fa fa-user"></i>&nbsp;&nbsp;See participant
+              <i class="fa fa-user"></i>&nbsp;&nbsp;{{ _("See participant") }}
             </button>
           </a>
           <a href="{{ url_for('apt_modify', apt_id = apt_id, ppt_id = ppt_id) }}">
             <button type="button" class="btn btn-warning">
-              <i class="fa fa-pen"></i>&nbsp;&nbsp;Modify
-              appointment
-            </button>
+              <i class="fa fa-pen"></i>&nbsp;&nbsp;{{ _("Modify appointment") }} </button>
           </a>
           <a href="{{ url_for('que_new', ppt_id = ppt_id) }}">
             <button type="button" class="btn btn-primary">
-              <i class="fa-regular fa-clipboard"></i>&nbsp;&nbsp;Add language
-              questionnaire
+              <i class="fa-regular fa-clipboard"></i>&nbsp;&nbsp;{{ _("Add language questionnaire") }}
             </button>
           </a>
           <a>
@@ -49,31 +46,31 @@
   <br>
   <div class="div-center">
     <div class="card card-info">
-      <div class="card-header ">Appointment information</div>
+      <div class="card-header ">{{ _("Appointment information") }}</div>
       <div class="card-body">
         <table class="table table-hover table-borderless table-responsive">
           <tbody>
             <tr>
               <th width="47%">
-                Date&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-clock"></i>
+                {{ _("Date") }}&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-clock"></i>
               </th>
               <td>{{ data["date"] }}</td>
             </tr>
             <tr>
               <th width="47%">
-                Participant&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-person"></i>
+                {{ _("Participant") }}&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-person"></i>
               </th>
               <td user-select-all>{{ ppt_id }}</td>
             </tr>
             <tr>
               <th>
-                Appointment&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-calendar"></i>
+                {{ _("Appointment") }}&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-calendar"></i>
               </th>
               <td>{{ apt_id }}</td>
             </tr>
             <tr>
               <th>
-                Status&nbsp;&nbsp;&nbsp;&nbsp;
+                {{ _("Status") }}&nbsp;&nbsp;&nbsp;&nbsp;
                 <i class="fa fa-check"></i>&nbsp;&nbsp;
                 <a href="#statusInfo" role="button" data-bs-toggle="offcanvas" aria-controls="statusInfo">
                   <i class="fa fa-info-circle" aria-hidden="true"></i>
@@ -83,37 +80,37 @@
             </tr>
             <tr>
               <th>
-                Study&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-flask"></i>
+                {{ _("Study") }}&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-flask"></i>
               </th>
               <td>{{ data["study"] }}</td>
             </tr>
             <tr>
               <th>
-                Made on the&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-calendar"></i>
+                {{ _("Made on the") }}&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-calendar"></i>
               </th>
               <td>{{ data["date_created"] }}</td>
             </tr>
             <tr>
               <th>
-                Last updated&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-pen"></i>
+                {{ _("Last updated") }}&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-pen"></i>
               </th>
               <td>{{ data["date_updated"] }}</td>
             </tr>
             <tr>
               <th>
-                Taxi address&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-car"></i>
+                {{ _("Taxi address") }}&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-car"></i>
               </th>
               <td>{{ data["taxi_address"] }}</td>
             </tr>
             <tr>
               <th>
-                Taxi booked?&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-check"></i>
+                {{ _("Taxi booked?") }}&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-check"></i>
               </th>
               <td>{{ data["taxi_isbooked"] | safe }}</td>
             </tr>
             <tr>
               <th>
-                Comments?&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-comment"></i>
+                {{ _("Comments") }}&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-comment"></i>
               </th>
               <td>{{ data["comments"] }}</td>
             </tr>
@@ -122,43 +119,43 @@
       </div>
     </div>
     <div class="card card-info">
-      <div class="card-header ">Participant information</div>
+      <div class="card-header ">{{ _("Participant information") }}</div>
       <div class="card-body">
         <table class="table table-hover table-borderless table-responsive">
           <tbody>
             <tr>
               <th width="48%">
-                Name&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-person"></i>
+                {{ _("Name") }}&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-person"></i>
               </th>
               <td user-select-all>{{ participant["name"] }}</td>
             </tr>
             <tr>
               <th>
-                Added on&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-calendar"></i>
+                {{ _("Added on") }}&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-calendar"></i>
               </th>
               <td>{{ participant["date_created"] }}</td>
             </tr>
             <tr>
               <th>
-                Age now&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-hourglass-start"></i>
+                {{ _("Age now") }}&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-hourglass-start"></i>
               </th>
               <td>{{ participant["age_now_months"] + ":" + participant["age_now_days"] }}</td>
             </tr>
             <tr>
               <th>
-                Age at appointment&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-hourglass-finish"></i>
+                {{ _("Age at appointment") }}&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-hourglass-finish"></i>
               </th>
               <td>{{ data["age_apt_months"] + ":" + data["age_apt_days"] }}</td>
             </tr>
             <tr>
               <th>
-                Sex&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-venus-mars"></i>
+                {{ _("Sex") }}&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-venus-mars"></i>
               </th>
               <td>{{ participant["sex"] }}</td>
             </tr>
             <tr>
               <th>
-                Comments&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-comment"></i>
+                {{ _("Comments") }}&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-comment"></i>
               </th>
               <td>{{ participant["comments"] }}</td>
             </tr>
@@ -167,49 +164,49 @@
       </div>
     </div>
     <div class="card card-info">
-      <div class="card-header ">Contact details</div>
+      <div class="card-header ">{{ _("Contact details") }}</div>
       <div class="card-body">
         <table class="table table-hover table-borderless table-responsive">
           <tbody>
             <tr>
               <th width="48%">
-                Phone&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-phone"></i>
+                {{ _("Phone") }}&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-phone"></i>
               </th>
               <td user-select-all>{{ participant["phone1"] }}</td>
             </tr>
             <tr>
               <th>
-                E-mail&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-envelope"></i>
+                {{ _("E-mail") }}&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-envelope"></i>
               </th>
               <td>{{ participant["email1"] }}</td>
             </tr>
             <tr>
               <th>
-                Phone 2&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-phone"></i>
+                {{ _("Phone 2") }}&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-phone"></i>
               </th>
               <td user-select-all>{{ participant["phone2"] }}</td>
             </tr>
             <tr>
               <th>
-                E-mail 2&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-envelope"></i>
+                {{ _("E-mail 2") }}&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-envelope"></i>
               </th>
               <td>{{ participant["email2"] }}</td>
             </tr>
             <tr>
               <th>
-                Taxi address&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-house"></i>
+                {{ _("Taxi address") }}&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-house"></i>
               </th>
               <td>{{ participant["house"] }}</td>
             </tr>
             <tr>
               <th>
-                Postcode&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-city"></i>
+                {{ _("Postcode") }}&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-city"></i>
               </th>
               <td>{{ data["postcode"] }}</td>
             </tr>
             <tr>
               <th>
-                City&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-city"></i>
+                {{ _("City") }}&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-city"></i>
               </th>
               <td>{{ participant["city"] }}</td>
             </tr>
@@ -218,63 +215,8 @@
       </div>
     </div>
   </div>
-  <div class="offcanvas offcanvas-end w-25" tabindex="-1" id="statusInfo" aria-labelledby="statusInfoLabel">
-    <div class="offcanvas-header">
-      <h5 class="offcanvas-title" id="statusInfoLabel">Appointment status</h5>
-      <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-    </div>
-    <div class="offcanvas-body">
-      <p>Please, specify the appointment status based on the following guidelines:</p>
-      <div>
-        <ol>
-          <li>
-            <p class="status-scheduled"><span>Scheduled</span></p>
-            <p>The participant has agreed to an appointment with
-              specific date and time. No appointment can be made without specific date and/or time.</p>
-          </li>
-          <li>
-            <p class="status-confirmed"><span>Confirmed</span></p>
-            <p>The appointment has been successfully confirmed with the participant via call or e-mail,
-              ideally the day before the appointment takes place.</p>
-          </li>
-          <li>
-            <p class="status-successful"><span>Successful</span></p>
-            <p>During the appointment, the participant has signed the consent form, and their ID should
-              be present in the experiment participant sheet. No data should be collected before the consent form is
-              signed. Every time the consent form has been signed, the appointment will be marked as Successful (even if
-              no data were collected afterwards), with the only exception that the participant withdraws consent during
-              the appointment.</p>
-          </li>
-          <li>
-            <p class="status-good"><span>Successful - Good</span></p>
-            <p>Not only the appointment has been successful, the resulting data is good enough for the participant to be
-              included in the study's data analyses. This status may be changed back to 'Successful' if the data is
-              later considered unfit for data analysis. The motivation behind this status label is to keep track of how
-              many appointments generate valid data, and how close we are to finishing data collection for the study.
-            </p>
-          </li>
-          <li>
-            <p class="status-reschedule"><span>Cancelled - Reschedule</span></p>
-            <p>Upon participant's or experimenter's request, the appointment will nottake
-              place, and will
-              be/has been rescheduled instead.</p>
-          </li>
-          <li>
-            <p class="status-drop"><span>Cancelled - Drop</span></p>
-            <p>Upon participant or experimenter's request, the appointment will not take place,
-              and will not be rescheduled. If the participant withdraws consent during the appointment, the appointment
-              should be marked as Cancelled - Drop.</p>
-          </li>
-          <li>
-            <p class="status-drop"><span>No show</span></p>
-            <p class="status-drop">The appointment has not taken place because the participant has not showed up,
-              without
-              communicating it to the experimenter. If no rescheduling attempts are to be made (which would possible
-              result in a Cancelled - Reschedule status), the appointment should be classified as No show.</p>
-          </li>
-        </ol>
-      </div>
-    </div>
+  <div class="offcanvas-body">
+    {% include "_status-info.html" %}
   </div>
 </body>
 {% endblock content %}

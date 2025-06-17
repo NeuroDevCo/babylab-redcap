@@ -6,8 +6,8 @@
 <header>
     <div class="jumbotron jumbotron-fluid">
         <div class="container">
-            <h1 class="display-4">Other</h1>
-            <p class="lead">Other actions.</p>
+            <h1 class="display-4">{{ _("Other")</h1>
+            <p class="lead">{{ _("Other actions.") }}</p>
         </div>
     </div>
 </header>
@@ -18,15 +18,14 @@
         <div class="col">
             <div class="card">
                 <div class="card-header">
-                    Backup&nbsp;&nbsp;<i class="fa fa-download"></i>
+                    {{ _("Backup") }}&nbsp;&nbsp;<i class="fa fa-download"></i>
                 </div>
                 <div class="card-body">
-                    Download a backup of the REDCap project metadata, item, fields, and records.
+                    {{ _("Download a backup of the REDCap project metadata, item, fields, and records") }}.
                     <br>
                     <a href="{{ url_for('download_backup') }}">
                         <button name="backupButton" class="btn btn-secondary"><i
-                                class="fa fa-download"></i>&nbsp;&nbsp;Download
-                            backup</button>
+                                class="fa fa-download"></i>&nbsp;&nbsp;{{ _("Download backup") }}</button>
                     </a>
                 </div>
             </div>
@@ -34,17 +33,16 @@
         <div class="col">
             <div class="card">
                 <div class="card-header">
-                    Help&nbsp;&nbsp;<i class="fa fa-question"></i>
+                    {{ _("Help") }}&nbsp;&nbsp;<i class="fa fa-question"></i>
                 </div>
                 <div class="card-body">
-                    If you have run into an error, need help, or want to provide feed-back, please open a GitHub issue
-                    following the link below:
+                    {{ _("If you have run into an error, need help, or want to provide feed-back, please open a GitHub
+                    issue
+                    following the link below:") }}
                     <br>
                     <a href="https://github.com/NeuroDevComp/babylab-redcap/issues/new/choose" target="_blank">
-                        <button name="Issue" class="btn btn-secondary"><i
-                                class="fa-brands fa-github"></i>&nbsp;&nbsp;Report
-                            an
-                            issue</button>
+                        <button name="Issue" class="btn btn-secondary"><i class="fa-brands fa-github"></i>&nbsp;&nbsp;{{
+                            _("Report an issue") }}</button>
                     </a>
                 </div>
             </div>
@@ -55,12 +53,13 @@
                     REDCap&nbsp;&nbsp;<i class="fa fa-database"></i>
                 </div>
                 <div class="card-body">
-                    Link to REDCap database
+                    {{ _("Link to REDCap database") }}
                     <br>
                     <a href="https://apps.sjdhospitalbarcelona.org/redcap/" target="_blank">
-                        <button name="Issue" class="btn btn-secondary"><i class="fa fa-database"></i>&nbsp;&nbsp;Go to
-                            the
-                            database</button>
+                        <button name="Issue" class="btn btn-secondary">
+                            <i class="fa fa-database"></i>
+                            &nbsp;&nbsp;{{ _("Go to the database") }}
+                        </button>
                     </a>
                 </div>
             </div>
@@ -71,29 +70,39 @@
         <div class="col">
             <div class="card text-center">
                 <div class="card-header">
-                    Age calculator&nbsp;&nbsp;<i class="fa fa-calculator"></i>
+                    {{ _("Age calculator") }}&nbsp;&nbsp;<i class="fa fa-calculator"></i>
                 </div>
                 <div class="card-body">
                     <div class="input-group date">
-                        <span class="input-group-text" id="date1-label">Date 1</span>
+                        <span class="input-group-text" id="date1-label">
+                            {{ _("Date 1") }}
+                        </span>
                         <input type="datetime-local" id="date1" name="date1" />
                     </div>
                     <br>
                     <div class="input-group date">
-                        <span class="input-group-text" id="date2-label">Date 2</span>
+                        <span class="input-group-text" id="date2-label">
+                            {{ _("Date 2") }}
+                        </span>
                         <input type="datetime-local" id="date2" name="date2" />
                     </div>
                     <br>
                     <div class="input-group mb-3">
-                        <span class="input-group-text" id="units-addon">Units</span>
+                        <span class="input-group-text" id="units-addon">
+                            {{ _("Units") }}
+                        </span>
                         <select id="units1" class="form-select" aria-describedby="units-addon"
                             aria-label="Select units">
-                            <option value="md" selected>Months and days</option>
-                            <option value="hm">Hours and minutes</option>
+                            <option value="md" selected>
+                                {{ _("Months and days") }}
+                            </option>
+                            <option value="hm">
+                                {{ _("Hours and minutes") }}
+                            </option>
                         </select>
                         <br>
                     </div>
-                    <button type="button" class="btn btn-dark" onclick="calculate1()">Calculate</button>
+                    <button type="button" class="btn btn-dark" onclick="calculate1()">{{ _("Calculate") }}</button>
                 </div>
                 <div class="card-footer" id="result1-footer">
                     <span id="result1"></span>
@@ -103,35 +112,47 @@
         <div class="col">
             <div class="card text-center">
                 <div class="card-header">
-                    Age calculator&nbsp;&nbsp;<i class="fa fa-calculator"></i>
+                    {{ _("Age calculator") }}&nbsp;&nbsp;<i class="fa fa-calculator"></i>
                 </div>
                 <div class="card-body">
                     <div class="input-group date">
-                        <span class="input-group-text" id="date1-label">Timestamp</span>
+                        <span class="input-group-text" id="date1-label">{{ _("Timestamp") }}</span>
                         <input type="datetime-local" id="timestamp" name="timestamp" />
                     </div>
                     <br>
                     <div class="row">
                         <div class="col">
-                            <label id="months-label">Months</label>
+                            <label id="months-label">
+                                {{ _("Months") }}
+                            </label>
                             <input class="form-control" type="number" id="months" name="months" value="0" />
                         </div>
                         <div class="col">
-                            <label id="days-label">Days</label>
+                            <label id="days-label">
+                                {{ _("Days") }}
+                            </label>
                             <input class="form-control" type="number" id="days" name="days" value="0" />
                         </div>
                     </div>
                     <br>
                     <div class="input-group mb-3">
-                        <span class="input-group-text" id="units-addon">Units</span>
+                        <span class="input-group-text" id="units-addon">
+                            {{ _("Units") }}
+                        </span>
                         <select id="units2" class="form-select" aria-describedby="units-addon"
                             aria-label="Select units">
-                            <option value="md" selected>Months and days</option>
-                            <option value="hm">Hours and minutes</option>
+                            <option value="md" selected>
+                                {{ _("Months and days") }}
+                            </option>
+                            <option value="hm">
+                                {{ _("Hours and minutes") }}
+                            </option>
                         </select>
                         <br>
                     </div>
-                    <button type="button" class="btn btn-dark" onclick="calculate2()">Calculate</button>
+                    <button type="button" class="btn btn-dark" onclick="calculate2()">
+                        {{ _("Calculate") }}
+                    </button>
                 </div>
                 <div class="card-footer" id="result2-footer">
                     <span id="result2"></span>

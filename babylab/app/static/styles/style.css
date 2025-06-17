@@ -87,6 +87,11 @@ button {
     padding-right: 0.5em;
 }
 
+.language-selector {
+    float: right;
+    border-radius: 10;
+}
+
 .fc-timegrid-slot-label-cushion,
 .fc-scrollgrid-sync-inner,
 .fc-scrollgrid-shrink-cushion {
