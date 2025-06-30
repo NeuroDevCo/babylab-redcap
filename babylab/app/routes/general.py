@@ -10,6 +10,39 @@ from babylab.src import api, utils
 from babylab.app import config as conf
 
 
+def add_binned_age(df: pd.DataFrame, name: str = "age_days_binned") -> pd.DataFrame:
+    """Add a binned age column to Data Frame.
+
+    Args:
+        df (pd.DataFrame): Data frame to add the column to.
+        name (str, optional): Name of the output column. Defaults to "age_days_binned".
+
+    Returns:
+        pd.DataFrame: Data Frame with the added column.
+    """
+    bins = list(range(0, max(df["age_days"]), 15))
+    labs = [f"{int(a // 30)}:{int(a % 30)}" for a in bins]
+    df[name] = pd.cut(df["age_days"], bins=bins, labels=labs[:-1], include_lowest=True)
+    return df
+
+
+def get_age_dist(df: pd.DataFrame) -> pd.DataFrame:
+    """Get distribution of ages.
+
+    Args:
+        df (pd.DataFrame): _description_
+
+    Returns:
+        pd.DataFrame: _description_
+    """
+    out = {}
+    for k, v in utils.count_col(df, "age_days_binned").items():
+        months = k.split(":")[0]
+        months = "0" + months if len(months) == 1 else months
+        out[months + ":" + k.split(":")[1]] = v
+    return out
+
+
 def prepare_studies(records: api.Records, data_dict: dict, study: str = None):
     """Prepare appointments page.
 
@@ -27,15 +60,7 @@ def prepare_studies(records: api.Records, data_dict: dict, study: str = None):
     ppts["age_days"] = round(
         ppts["age_now_days"] + (ppts["age_now_months"] * 30.437), None
     ).astype(int)
-    age_bins = list(range(0, max(ppts["age_days"]), 15))
-    labels = [f"{int(a // 30)}:{int(a % 30)}" for a in age_bins]
-    ppts["age_days_binned"] = pd.cut(
-        ppts["age_days"],
-        bins=age_bins,
-        labels=labels[:-1],
-        include_lowest=True,
-    )
-    classes = "table table-hover table-responsives"
+    ppts = add_binned_age(ppts)
     apts["modify_button"] = [
         utils.fmt_modify_button(p, a)
         for p, a in zip(apts.index, apts["appointment_id"])
@@ -58,14 +83,8 @@ def prepare_studies(records: api.Records, data_dict: dict, study: str = None):
         ]
     ]
     apts = apts.sort_values("date", ascending=False)
-    age_dist = {}
-    for k, v in utils.count_col(ppts, "age_days_binned").items():
-        months = k.split(":")[0]
-        months = "0" + months if len(months) == 1 else months
-        age_dist[months + ":" + k.split(":")[1]] = v
-
     variables = {
-        "age_dist": dict(sorted(age_dist.items())),
+        "age_dist": dict(sorted(get_age_dist(ppts).items())),
         "sex_dist": utils.count_col(ppts, "sex", values_sort=True),
         "status_dist": utils.count_col(apts, "status", values_sort=True),
         "lang1_dist": utils.count_col(
@@ -75,7 +94,6 @@ def prepare_studies(records: api.Records, data_dict: dict, study: str = None):
             quest, "lang2", values_sort=True, missing_label="None"
         ),
     }
-
     apts["status"] = [utils.fmt_apt_status(s) for s in apts["status"]]
     apts = apts.rename(
         columns={
@@ -92,17 +110,14 @@ def prepare_studies(records: api.Records, data_dict: dict, study: str = None):
             "modify_button": "",
         }
     )
-    table = utils.replace_labels(apts, data_dict)
-    table = table.to_html(
-        classes=f'{classes}" id = "apttable',
+    table = utils.replace_labels(apts, data_dict).to_html(
+        classes='table table-hover table-responsives id="apttable"',
         escape=False,
         justify="left",
         index=False,
         bold_rows=True,
     )
-
-    ts = apts["Date"].value_counts().to_dict()
-    ts = OrderedDict(sorted(ts.items()))
+    ts = OrderedDict(sorted(apts["Date"].value_counts().to_dict().items()))
     for idx, (k, v) in enumerate(ts.items()):
         if idx > 0:
             ts[k] = v + list(ts.values())[idx - 1]
