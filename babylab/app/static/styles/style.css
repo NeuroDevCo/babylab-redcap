@@ -24,9 +24,7 @@ th {
     font-family: 'Ciutadella Bold', 'Roboto Bold', Fallback, sans-serif;
 }
 
-.card-footer:b {
-    font-family: 'Ciutadella Bold', 'Roboto Bold', Fallback, sans-serif;
-}
+
 
 b {
     font-family: 'Ciutadella Bold';
@@ -172,9 +170,16 @@ a.fc-event {
     border-radius: 0;
 }
 
+
+.card-footer:b {
+    font-family: 'Ciutadella Bold', 'Roboto Bold', Fallback, sans-serif;
+    background-color: white;
+}
+
 .card-footer {
     font-family: 'Ciutadella', 'Roboto', Fallback, sans-serif;
     font-size: larger;
+    background-color: white;
 }
 
 .card-body {
@@ -510,6 +515,12 @@ address {
     font-family: 'Ciutadella Semibold', 'Roboto', Fallback, sans-serif;
     margin-left: 0.5em;
 }
+
+.nav-link.active {
+    --bs-nav-pills-link-active-bg: #212529;
+    color: white !important;
+}
+
 
 #img-ndc-logo {
     background-color: white;

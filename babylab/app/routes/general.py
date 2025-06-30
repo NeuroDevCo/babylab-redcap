@@ -101,12 +101,11 @@ def prepare_studies(records: api.Records, data_dict: dict, study: str = None):
         )
         for x in data_dict["appointment_study"]
     }
-
     return {
         "n_apts": df.shape[0],
-        "n_apts_week": n_apts_week,
-        "n_apts_week_succ": n_apts_week_succ,
-        "n_apts_week_canc": n_apts_week_canc,
+        "n_apts_week": n_apts_week[study],
+        "n_apts_week_succ": n_apts_week_succ[study],
+        "n_apts_week_canc": n_apts_week_canc[study],
         "date_labels": [str(d) for d in ts.keys()],
         "date_values": [str(d) for d in ts.values()],
         "status_dist_labels": list(variables["status_dist"].keys()),
