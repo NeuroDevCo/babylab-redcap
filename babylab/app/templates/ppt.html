@@ -20,36 +20,24 @@
 </header>
 
 <body>
-  <div class="div-center">
-    <div class="row">
-      <div class="col">
-        <div class="btn-group" role="group" aria-label="Basic example">
-          <a href="{{ url_for('apt_new', ppt_id = ppt_id) }}">
-            <button type="button" class="btn btn-success">
-              <i class="fa fa-calendar-plus"></i>&nbsp;&nbsp;&nbsp;&nbsp;{{ _("New appointment") }}
-            </button>
-          </a>
-          <a href="{{ url_for('ppt_modify', ppt_id = ppt_id) }}">
-            <button type="button" class="btn btn-warning">
-              <i class="fa fa-user-pen"></i>&nbsp;&nbsp;&nbsp;&nbsp;{{ _("Modify participant") }}
-            </button>
-          </a>
-          <a href="{{ url_for('que_new', ppt_id = ppt_id) }}">
-            <button type="button" class="btn btn-primary">
-              <i class="fa-solid fa-file-circle-plus"></i>&nbsp;&nbsp;&nbsp;&nbsp;{{ _("Add questionnaire") }}
-            </button>
-          </a>
-          <a>
-            <form method="post">
-              <input type="submit" name="deleteParticipant" class="btn btn-danger"
-                value="×&nbsp;&nbsp;&nbsp;&nbsp;Delete participant">
-            </form>
-          </a>
-        </div>
+  <div class="container">
+    <form>
+      <div class="btn-group" role="group" aria-label="Basic example">
+        <a class="btn btn-success" href="{{ url_for('apt_new', ppt_id = ppt_id) }}">
+          <i class="fa fa-calendar-plus"></i>&nbsp;&nbsp;&nbsp;&nbsp;{{ _("New appointment") }}
+        </a>
+        <a class="btn btn-warning" href="{{ url_for('ppt_modify', ppt_id = ppt_id) }}">
+          <i class="fa fa-user-pen"></i>&nbsp;&nbsp;&nbsp;&nbsp;{{ _("Modify participant") }}
+        </a>
+        <a class="btn btn-primary" href="{{ url_for('que_new', ppt_id = ppt_id) }}"">
+          <i class=" fa-solid fa-file-circle-plus"></i>&nbsp;&nbsp;&nbsp;&nbsp;{{ _("Add questionnaire") }}
+        </a>
+        <button type="submit" name="deleteParticipant" class="btn btn-danger">
+          <i class="fa fa-delete-left"></i>&nbsp;&nbsp;&nbsp;&nbsp;{{ _("Delete participant") }}
+        </button>
       </div>
-    </div>
+    </form>
   </div>
-  <br>
   <div class="row col-12">
     <div class="div-center">
       <div class="card card-info">
@@ -170,7 +158,9 @@
         </div>
       </div>
       <div class="card card-info">
-        <div class="card-header ">{{ _("Birth information") }}</div>
+        <div class="card-header ">
+          {{ _("Birth information") }}
+        </div>
         <div class="card-body">
           <table class="table table-hover table-borderless table-responsive">
             <tbody>

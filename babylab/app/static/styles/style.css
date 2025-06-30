@@ -124,6 +124,7 @@ a.fc-event {
 }
 
 .div-center {
+    width: 100%;
     display: flex;
     justify-content: center;
 }
@@ -244,6 +245,11 @@ p.card-highlight {
     color: white;
 }
 
+.btn-group {
+    display: flex;
+    width: 100%;
+    justify-content: center;
+}
 
 .btn:not([width]){
     font-family: 'Ciutadella Semibold', 'Roboto', Fallback, sans-serif;
@@ -251,6 +257,10 @@ p.card-highlight {
     width: 65px;
     padding-left: 0.5em;
     padding-right: 0.5em;
+}
+
+.width-100 {
+    width: 100px;
 }
 
 .btn,

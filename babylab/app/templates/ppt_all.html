@@ -16,14 +16,14 @@
 </header>
 
 <body>
-  <div class="div-center">
-    <a href="{{ url_for('ppt_new') }}">
-      <button type="button" class="btn btn-lg btn-dark" width="100px">
+  <div class="container">
+    <div class="btn-group" role="group">
+      <a href="{{ url_for('ppt_new') }}" class="btn btn-lg btn-dark">
         <i class="fa fa-user-plus"></i>&nbsp;&nbsp;{{ _("New participant") }}
-      </button>
-    </a>
+      </a>
+    </div>
   </div>
-  <div class="div-center ">
+  <div class="div-center">
     <div class="card-table">
       {{ data["table"] | safe }}
     </div>

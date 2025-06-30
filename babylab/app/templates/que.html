@@ -18,28 +18,17 @@
 </header>
 
 <body>
-  <div class="div-center">
-    <div class="row">
-      <div class="col">
-        <div class="btn-group" role="group">
-          <a href="{{ url_for('ppt', ppt_id = ppt_id) }}">
-            <button type="button" class="btn btn-info">
-              <i class="fa fa-user"></i>&nbsp;&nbsp;{{ _("See participant") }}
-            </button>
-          </a>
-          <a href="{{ url_for('que_modify', ppt_id = ppt_id, que_id = que_id) }}">
-            <button type="button" class="btn btn-warning">
-              <i class="fa fa-pen"></i>&nbsp;&nbsp;{{ _("Modify questionnaire") }}
-            </button>
-          </a>
-          <a>
-            <form method="post">
-              <input type="submit" name="deleteQuestionnaire" class="btn btn-danger"
-                value="×&nbsp;&nbsp;&nbsp;&nbsp;Delete questionnaire">
-            </form>
-          </a>
-        </div>
-      </div>
+  <div class="container">
+    <div class="btn-group" role="group">
+      <a class="btn btn-info" href="{{ url_for('ppt', ppt_id = ppt_id) }}">
+        <i class="fa fa-user"></i>&nbsp;&nbsp;{{ _("See participant") }}
+      </a>
+      <a class="btn btn-warning" href="{{ url_for('que_modify', ppt_id = ppt_id, que_id = que_id) }}">
+        <i class="fa fa-pen"></i>&nbsp;&nbsp;{{ _("Modify questionnaire") }}
+      </a>
+      <button type="submit" name="deleteQuestionnaire" class="btn btn-danger">
+        <i class="fa fa-delete-left"></i>&nbsp;&nbsp;&nbsp;&nbsp;{{ _("Delete questionnaire") }}
+      </button>
     </div>
   </div>
   <br>
