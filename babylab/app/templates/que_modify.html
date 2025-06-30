@@ -6,8 +6,12 @@
 <header>
   <div class="jumbotron jumbotron-fluid">
     <div class="container">
-      <h1 class="display-4">Language questionnaires&nbsp;&nbsp;<i class="fa fa-file-pen"></i></h1>
-      <p class="lead">Modifying language questionnaire {{ que_id }} for participant {{ ppt_id }}</p>
+      <h1 class="display-4">
+        {{ _("Language questionnaires") }}&nbsp;&nbsp;<i class="fa fa-file-pen"></i>
+      </h1>
+      <p class="lead">
+        {{ _("Modifying language questionnaire") }} {{ que_id }} {{ _("for participant") }} {{ ppt_id }}
+      </p>
     </div>
   </div>
   <hr class="my-4">
@@ -16,34 +20,34 @@
 <body>
   <form name="questionnaire-input" class="form-inline needs-validation" method="post" onsubmit="return validateForm()"
     novalidate>
-    <div class="div-center">
-      <div class="row">
-        <div class="col">
-          <div class="btn-group" role="group" aria-label="Basic example">
-            <button type="submit" class="btn btn-warning">
-              <i class="fa fa-pen"></i>&nbsp;&nbsp;Submit
-            </button>
-          </div>
-        </div>
+    <div class="container">
+      <div class="btn-group" role="group">
+        <button type="submit" class="btn btn-lg btn-dark">
+          {{ _("Submit") }}
+        </button>
       </div>
     </div>
     <div class="div-center">
       <div class="card card-input col-12">
-        <div class="card-header ">Language information</div>
+        <div class="card-header ">
+          {{ _("Language information") }}
+        </div>
         <div class="card-body">
           <div class="form-check form-check-inline">
             <input class="form-check-input" type="checkbox" name="inputIsEstimated" id="inputIsEstimated" {% if
               data['isestimated']=='1' %}checked{% endif %}>
-            <label class="form-check-label" for="inputIsEstimated">Language profile is an estimation</label>
+            <label class="form-check-label" for="inputIsEstimated">
+              {{ _("Language profile is an estimation") }}
+            </label>
           </div>
           <br>
           <br>
           <div class="row">
             <div class="col-7">
-              <label>Language</label>
+              <label>{{ _("Language") }}</label>
             </div>
             <div class="col-5">
-              <label>Exposure (%)</label>
+              <label>{{ _("Exposure (%)") }}</label>
             </div>
           </div>
           <br>
@@ -51,13 +55,19 @@
             <div class="col-7">
               <div class="input-group">
                 <div class="input-group-prepend">
-                  <span class="input-group-text" id="lang1addon">L1</span>
+                  <span class="input-group-text" id="lang1addon">
+                    L1
+                  </span>
                 </div>
                 <select class="form-select" name="inputLang1" autocomplete="off" required>
-                  <option selected="selected" value="0">-- Select one --</option>
+                  <option selected="selected" value="0">
+                    -- {{ _("Select one") }} --
+                  </option>
                   {% for k, v in data_dict["language_lang1"].items() %}
                   {% if k!="0" %}
-                  <option value="{{ k }}" {% if data["lang1"]==v %}selected="selected" {% endif %}>{{ v }}</option>
+                  <option value="{{ k }}" {% if data["lang1"]==v %}selected="selected" {% endif %}>
+                    {{ v }}
+                  </option>
                   {% endif %}
                   {% endfor %}
                 </select>
@@ -72,13 +82,19 @@
             <div class="col-7">
               <div class="input-group">
                 <div class="input-group-prepend">
-                  <span class="input-group-text" id="lang2addon">L2</span>
+                  <span class="input-group-text" id="lang2addon">
+                    L2
+                  </span>
                 </div>
                 <select class="form-select" name="inputLang2" autocomplete="off">
-                  <option selected="selected" value="0">-- Select one --</option>
+                  <option selected="selected" value="0">
+                    -- {{ _("Select one") }} --
+                  </option>
                   {% for k, v in data_dict["language_lang2"].items() %}
                   {% if k!="0" %}
-                  <option value="{{ k }}" {% if data["lang2"]==v %}selected="selected" {% endif %}>{{ v }}</option>
+                  <option value="{{ k }}" {% if data["lang2"]==v %}selected="selected" {% endif %}>
+                    {{ v }}
+                  </option>
                   {% endif %}
                   {% endfor %}
                 </select>
@@ -93,13 +109,19 @@
             <div class="col-7">
               <div class="input-group">
                 <div class="input-group-prepend">
-                  <span class="input-group-text" id="lang3addon">L3</span>
+                  <span class="input-group-text" id="lang3addon">
+                    L3
+                  </span>
                 </div>
                 <select class="form-select" name="inputLang3" autocomplete="off">
-                  <option selected="selected" value="0">-- Select one --</option>
+                  <option selected="selected" value="0">
+                    -- {{ _("Select one") }} --
+                  </option>
                   {% for k, v in data_dict["language_lang3"].items() %}
                   {% if k!="0" %}
-                  <option value="{{ k }}" {% if data["lang3"]==v %}selected="selected" {% endif %}>{{ v }}</option>
+                  <option value="{{ k }}" {% if data["lang3"]==v %}selected="selected" {% endif %}>
+                    {{ v }}
+                  </option>
                   {% endif %}
                   {% endfor %}
                 </select>
@@ -114,15 +136,20 @@
             <div class="col-7">
               <div class="input-group">
                 <div class="input-group-prepend">
-                  <span class="input-group-text" id="lang4addon">L4</span>
+                  <span class="input-group-text" id="lang4addon">
+                    L4
+                  </span>
                 </div>
                 <select class="form-select" name="inputLang4" autocomplete="off">
-                  <option selected="selected" value="0">-- Select one --</option>
+                  <option selected="selected" value="0">
+                    -- {{ _("Select one") }} --
+                  </option>
                   {% for k, v in data_dict["language_lang4"].items() %}
                   {% if k!="0" %}
-                  <option if value="{{ k }}" {% if data["lang4"]==v %}selected="selected" {% endif %}>{{ v }}</option>
-                  {%
-                  endif %}
+                  <option if value="{{ k }}" {% if data["lang4"]==v %}selected="selected" {% endif %}>
+                    {{ v }}
+                  </option>
+                  {% endif %}
                   {% endfor %}
                 </select>
               </div>
@@ -133,7 +160,9 @@
             </div>
           </div>
           <br>
-          <label for="inputComments" class="form-label">Comments</label>
+          <label for="inputComments" class="form-label">
+            {{ _("Comments") }}
+          </label>
           <input type="text" class="form-control" name="inputComments" rows="3" value="{{ data['comments'] }}"
             placeholder="{{ data['comments'] }}" />
         </div>

@@ -37,8 +37,9 @@ hr {
 }
 
 nav {
-    font-family: 'Ciutadella Bold', 'Roboto Bold', Fallback, sans-serif;
+    font-family: 'Roboto', Fallback, sans-serif;
     font-size: larger;
+    font-weight: 400;
 }
 
 td,
@@ -87,6 +88,26 @@ button {
     padding-right: 0.5em;
 }
 
+.language-selector {
+	display: inline-block;
+	width: 100%;
+	cursor: pointer;
+    margin-left: 2em;
+  	padding: 7px 10px;
+  	height: 42px;
+    right: 0;
+  	outline: 1; 
+	background: none;
+	color: black;
+	font-size: 20px;
+    font-family: 'Roboto', Fallback, sans-serif;
+	border:1px solid rgba(0,0,0,0.2);
+    border-radius: 2.5px;
+    position: relative;
+    transition: all 0.25s ease;
+}
+
+
 .fc-timegrid-slot-label-cushion,
 .fc-scrollgrid-sync-inner,
 .fc-scrollgrid-shrink-cushion {
@@ -118,13 +139,14 @@ a.fc-event {
 }
 
 .div-center {
+    width: 100%;
     display: flex;
     justify-content: center;
 }
 
 .nav-link {
-    color: white;
-    font-family: 'Ciutadella Semibold', 'Roboto Bold', Fallback, sans-serif;
+    color: #1e1e1f;
+    font-family: 'Roboto', Fallback, sans-serif;
     margin-left: 0.5em;
 }
 
@@ -238,12 +260,23 @@ p.card-highlight {
     color: white;
 }
 
+.btn-group {
+    display: flex;
+    width: 100%;
+    justify-content: center;
+}
 
-.btn {
+.btn:not([width]){
     font-family: 'Ciutadella Semibold', 'Roboto', Fallback, sans-serif;
-    margin: 1em;
+    margin: 0.5em;
+    width: 65px;
     padding-left: 0.5em;
     padding-right: 0.5em;
+}
+
+
+.width-100 {
+    width: 100px;
 }
 
 .btn,

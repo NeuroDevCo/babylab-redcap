@@ -4,23 +4,26 @@
 <header>
   <div class="jumbotron jumbotron-fluid">
     <div class="container">
-      <h1 class="display-4">Participants&nbsp;&nbsp;<i class="fa fa-users"></i></h1>
-      <p class="lead">There is a total of {{ n_ppt }} participants in the database.</p>
+      <h1 class="display-4">
+        {{ _("Participants") }}&nbsp;&nbsp;<i class="fa fa-users"></i>
+      </h1>
+      <p class="lead">
+        {{ _("There is a total of") }} {{ n_ppt }} {{ _("participants in the database.") }}
+      </p>
     </div>
   </div>
   <hr class="my-4">
 </header>
 
 <body>
-  <div class="div-center">
-    <a href="{{ url_for('ppt_new') }}">
-      <button type="button" class="btn btn-lg btn-dark">
-        <i class="fa fa-user-plus"></i>&nbsp;&nbsp;New
-        participant
-      </button>
-    </a>
+  <div class="container">
+    <div class="btn-group" role="group">
+      <a href="{{ url_for('ppt_new') }}" class="btn btn-lg btn-dark">
+        <i class="fa fa-user-plus"></i>&nbsp;&nbsp;{{ _("New participant") }}
+      </a>
+    </div>
   </div>
-  <div class="div-center ">
+  <div class="div-center">
     <div class="card-table">
       {{ data["table"] | safe }}
     </div>

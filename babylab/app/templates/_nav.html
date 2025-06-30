@@ -1,46 +1,72 @@
-<nav class="navbar sticky-top navbar-expand-lg bg-dark border-bottom border-body"
-     data-bs-theme="dark">
-  <div class=" container-fluid">
+<nav class="navbar fixed sticky-top navbar-expand-lg bg-light shadow py-2" data-bs-theme="light">
+  <div class="container-fluid">
     <a class="navbar-brand" href="{{ url_for('index') }}">
       <i class="fa fa-house"></i>
     </a>
-    <button class="navbar-toggler"
-            type="button"
-            data-bs-toggle="collapse"
-            data-bs-target="#navbarNavDropdown"
-            aria-controls="navbarNavDropdown"
-            aria-expanded="false"
-            aria-label="Toggle navigation">
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown"
+      aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarNavDropdown">
-      <ul class="navbar-nav">
+      <ul class="navbar-nav justify-content-center">
         <li class="nav-item">
-          <a class="nav-link" href="{{ url_for('dashboard') }}"><i class="fas fa-rocket"></i>&nbsp;&nbsp;Dashboard</a>
+          <a class="nav-link" href="{{ url_for('dashboard') }}">
+            <i class="fas fa-rocket"></i>
+            &nbsp;&nbsp;Dashboard</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="{{ url_for('ppt_all') }}"><i class="fa fa-user"></i>&nbsp;&nbsp;Participants</a>
+          <a class="nav-link" href="{{ url_for('ppt_all') }}">
+            <i class="fa fa-user"></i>
+            &nbsp;&nbsp;{{ _("Participants")
+            }}
+          </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="{{ url_for('apt_all') }}"><i class="fa fa-calendar"></i>&nbsp;&nbsp;Appointments</a>
+          <a class="nav-link" href="{{ url_for('apt_all') }}">
+            <i class="fa fa-calendar"></i>
+            &nbsp;&nbsp;{{ _("Appointments") }}
+          </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="{{ url_for('calendar') }}"><i class="fa-regular fa-calendar-days"></i>&nbsp;&nbsp;Calendar</a>
+          <a class="nav-link" href="{{ url_for('calendar') }}">
+            <i class="fa-regular fa-calendar-days"></i>
+            &nbsp;&nbsp;{{
+            _("Calendar") }}
+          </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="{{ url_for('studies') }}"><i class="fa fa-flask"></i>&nbsp;&nbsp;Studies</a>
+          <a class="nav-link" href="{{ url_for('studies') }}">
+            <i class="fa fa-flask"></i>
+            &nbsp;&nbsp;{{ _("Studies") }}
+          </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="{{ url_for('que_all') }}"><i class="fa-regular fa-clipboard"></i>&nbsp;&nbsp;Questionnaires</a>
+          <a class="nav-link" href="{{ url_for('que_all') }}"><i class="fa-regular fa-clipboard"></i>
+            &nbsp;&nbsp;{{ _("Questionnaires") }}</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="{{ url_for('other') }}"><i class="fa-solid fa-bars"></i>&nbsp;&nbsp;Help/Others
-          &nbsp;</a>
+          <a class="nav-link" href="{{ url_for('other') }}">
+            <i class="fa-solid fa-bars"></i>
+            &nbsp;&nbsp;{{ _("Help/Others") }} &nbsp;
+          </a>
         </li>
         <li class="nav-item">
           <a class="nav-link" href="{{ url_for('logout') }}">
-            <i class="fa-solid fa-right-from-bracket"></i>&nbsp;&nbsp;Logout
+            <i class="fa-solid fa-right-from-bracket"></i>
+            &nbsp;&nbsp;{{ _("Log out") }}
           </a>
+        </li>
+      </ul>
+      <ul class="navbar-nav w-32 justify-content-right">
+        <li class="nav-item">
+          <select onchange="location = '/setlang?lang=' + this.value;" class="language-selector">
+            <option value="en" {{ 'selected' if get_locale()=='en' else '' }}>
+              English
+            </option>
+            <option value="es" {{ 'selected' if get_locale()=='es' else '' }}>
+              Español
+            </option>
+          </select>
         </li>
       </ul>
     </div>

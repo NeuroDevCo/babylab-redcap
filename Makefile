@@ -60,3 +60,9 @@ docker-build:
 
 docker-run:
 	docker run -d -p 5000:5000 babylab-redcap
+
+babel-extract:
+	pybabel extract -F babel.cfg -o messages.pot .
+
+babel-es:
+	pybabel init -i messages.pot -d translations -l es

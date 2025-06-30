@@ -5,7 +5,7 @@ from collections import OrderedDict
 from datetime import datetime, timedelta
 import requests
 import pandas as pd
-from flask import redirect, flash, render_template, url_for, request, send_file
+from flask import redirect, flash, session, render_template, url_for, request, send_file
 from babylab.src import api, utils
 from babylab.app import config as conf
 
@@ -199,6 +199,13 @@ def prepare_dashboard(records: api.Records = None, data_dict: dict = None) -> di
 def general_routes(app):
     """General routes."""
 
+    @app.route("/setlang")
+    def setlang():
+        """Language selector."""
+        lang = request.args.get("lang", "en")
+        session["lang"] = lang
+        return redirect(request.referrer)
+
     @app.errorhandler(404)
     def error_404(error):
         """Error 404 page."""
@@ -232,7 +239,10 @@ def general_routes(app):
                 flash("Incorrect token", "error")
             except ValueError as e:
                 flash(f"Incorrect token: {e}", "error")
-        return render_template("index.html", redcap_version=version)
+
+        return render_template(
+            "index.html", redcap_version=version, current_locale=conf.get_locale()
+        )
 
     @app.route("/dashboard")
     @conf.token_required

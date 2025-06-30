@@ -4,7 +4,15 @@ import os
 from dataclasses import dataclass
 from functools import wraps
 from dotenv import load_dotenv
-from flask import flash, redirect, url_for, current_app, render_template
+from flask import (
+    flash,
+    redirect,
+    url_for,
+    current_app,
+    render_template,
+    request,
+    session,
+)
 from babylab.src import api
 
 
@@ -105,3 +113,21 @@ def get_records_or_index(token: str, **kwargs):
     except Exception:  # pylint: disable=broad-exception-caught
         return render_template("index.html", redcap_version=redcap_version)
     return records
+
+
+def get_locale():
+    """Try to guess the language from the user accept
+    header the browser transmits.  We support de/fr/en in this
+    example. The best match wins.
+
+    Returns:
+        _type_: _description_
+    """
+    if "lang" in request.args:
+        lang = request.args.get("lang")
+        if lang in ["en", "es"]:
+            session["lang"] = lang
+            return session["lang"]
+    elif "lang" in session:
+        return session.get("lang")
+    return request.accept_languages.best_match(["en", "es"])

@@ -7,7 +7,7 @@ from babylab.app import config as conf
 
 def test_index_page():
     """Test index page."""
-    app = create_app(env="prod")
+    app = create_app(env_="prod")
     with app.test_client() as client:
         response = client.get("/")
         assert response.status_code == 200
@@ -18,7 +18,7 @@ def test_index_page():
 
 def test_index_page_token():
     """Test index page."""
-    app = create_app(env="prod")
+    app = create_app(env_="prod")
     with app.test_client() as client:
         response = client.post("/", data={"apiToken": conf.get_api_key()})
         assert response.status_code == 200

@@ -6,10 +6,13 @@
   <div class="jumbotron jumbotron-fluid">
     <div class="container">
       <h1 class="display-4">
-        Appointments&nbsp;&nbsp;<i class="fa fa-calendar-plus"></i>
+        {{ _("Appointments") }}&nbsp;&nbsp;<i class="fa fa-calendar-plus"></i>
       </h1>
       <p class="lead">
-        New appointment for participant <a href="{{ url_for('ppt', ppt_id = ppt_id) }}">{{ ppt_id }}</a>
+        {{ _("New appointment for participant") }}
+        <a href="{{ url_for('ppt', ppt_id = ppt_id) }}">
+          {{ ppt_id }}
+        </a>
       </p>
     </div>
   </div>
@@ -18,12 +21,18 @@
 
 <body>
   <form class="form needs-validation" method="post" novalidate>
-    <div class="div-center">
-      <button type="submit" class="btn btn-primary">Submit</button>
+    <div class="container">
+      <div class="btn-group" role="group">
+        <button type="submit" class="btn btn-lg btn-dark">
+          {{ _("Submit") }}
+        </button>
+      </div>
     </div>
     <div class="div-center">
       <div class="card card-input">
-        <div class="card-header ">Appointment information</div>
+        <div class="card-header ">
+          {{ _("Appointment information") }}
+        </div>
         <div class="card-body">
           <div class="col">
             <input type="hidden" class="form-group" name="inputId" value="{{ ppt_id }}" readonly>
@@ -31,42 +40,52 @@
               Study&nbsp;&nbsp;<i class="fa  fa-flask"></i>
             </label>
             <select class="form-select" name="inputStudy" required>
-              <option disabled selected value>-- Select one --</option>
+              <option disabled selected value>
+                -- {{ _("Select one") }} --
+              </option>
               {% for k, v in data_dict["appointment_study"].items() %}
-              <option value="{{ k }}">{{ v }}</option>
+              <option value="{{ k }}">
+                {{ v }}
+              </option>
               {% endfor
               %}
             </select>
             <label for="inputStatus" class="form-label">
-              Appointment status&nbsp;&nbsp;<i class="fa fa-check"></i>&nbsp;&nbsp;
+              {{ _("Appointment status") }} &nbsp;&nbsp;<i class="fa fa-check"></i>&nbsp;&nbsp;
               <a href="#statusInfo" role="button" data-bs-toggle="offcanvas" aria-controls="statusInfo">
                 <i class="fa fa-info-circle" aria-hidden="true"></i>
               </a>
             </label>
             <select class="form-select" name="inputStatus" required>
-              <option disabled selected value>-- Select one --</option>
+              <option disabled selected value>
+                -- {{ _("Select one") }} --
+              </option>
               {% for k, v in data_dict["appointment_status"].items() %}
-              <option value="{{ k }}" {% if v=="Scheduled" %}selected{% endif %}>{{ v }}</option>
+              <option value="{{ k }}" {% if v=="Scheduled" %}selected{% endif %}>
+                {{ v }}
+              </option>
               {% endfor %}
             </select>
           </div>
           <div class="form-group">
             <label class="form-label" for="inputDate">
-              Appointment date&nbsp;&nbsp;<i class="fa  fa-calendar"></i>
+              {{ _("Appointment date") }}&nbsp;&nbsp;<i class="fa  fa-calendar"></i>
             </label>
             <input type="datetime-local" name="inputDate" required>
           </div>
           <label for="inputTaxiAddress" class="form-label">
-            Taxi address&nbsp;&nbsp;<i class="fa fa-car"></i>
+            {{ _("Taxi address") }}&nbsp;&nbsp;<i class="fa fa-car"></i>
           </label>
           <input type="text" class="form-control" name="inputTaxiAddress" />
           <div class="form-check form-check-inline">
             <input class="form-check-input" type="checkbox" name="inputTaxiIsbooked" id="inputTaxiIsbooked" value="1">
-            <label class="form-check-label" for="inputTaxiIsbooked">Taxi booked?</label>
+            <label class="form-check-label" for="inputTaxiIsbooked">
+              {{ _("Taxi booked?") }}
+            </label>
           </div>
           <div class="form-group">
             <label for="inputComments" class="form-label">
-              Comments&nbsp;&nbsp;<i class="fa  fa-user-comment"></i>
+              {{ _("Comments") }}&nbsp;&nbsp;<i class="fa  fa-user-comment"></i>
             </label>
             <input type="text" class="form-control" name="inputComments" />
           </div>
@@ -74,64 +93,7 @@
       </div>
     </div>
   </form>
-  <div class="offcanvas offcanvas-end w-25" tabindex="-1" id="statusInfo" aria-labelledby="statusInfoLabel">
-    <div class="offcanvas-header">
-      <h5 class="offcanvas-title" id="statusInfoLabel">Appointment status</h5>
-      <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-    </div>
-    <div class="offcanvas-body">
-      <p>Please, specify the appointment status based on the following guidelines:</p>
-      <div>
-        <ol>
-          <li>
-            <p class="status-scheduled"><span>Scheduled</span></p>
-            <p>The participant has agreed to an appointment with
-              specific date and time. No appointment can be made without specific date and/or time.</p>
-          </li>
-          <li>
-            <p class="status-confirmed"><span>Confirmed</span></p>
-            <p>The appointment has been successfully confirmed with the participant via call or e-mail,
-              ideally the day before the appointment takes place.</p>
-          </li>
-          <li>
-            <p class="status-successful"><span>Successful</span></p>
-            <p>During the appointment, the participant has signed the consent form, and their ID should
-              be present in the experiment participant sheet. No data should be collected before the consent form is
-              signed. Every time the consent form has been signed, the appointment will be marked as Successful (even if
-              no data were collected afterwards), with the only exception that the participant withdraws consent during
-              the appointment.</p>
-          </li>
-          <li>
-            <p class="status-good"><span>Successful - Good</span></p>
-            <p>Not only the appointment has been successful, the resulting data is good enough for the participant to be
-              included in the study's data analyses. This status may be changed back to 'Successful' if the data is
-              later considered unfit for data analysis. The motivation behind this status label is to keep track of how
-              many appointments generate valid data, and how close we are to finishing data collection for the study.
-            </p>
-          </li>
-          <li>
-            <p class="status-reschedule"><span>Cancelled - Reschedule</span></p>
-            <p>Upon participant's or experimenter's request, the appointment will nottake
-              place, and will
-              be/has been rescheduled instead.</p>
-          </li>
-          <li>
-            <p class="status-drop"><span>Cancelled - Drop</span></p>
-            <p>Upon participant or experimenter's request, the appointment will not take place,
-              and will not be rescheduled. If the participant withdraws consent during the appointment, the appointment
-              should be marked as Cancelled - Drop.</p>
-          </li>
-          <li>
-            <p class="status-drop"><span>No show</span></p>
-            <p class="status-drop">The appointment has not taken place because the participant has not showed up,
-              without
-              communicating it to the experimenter. If no rescheduling attempts are to be made (which would possible
-              result in a Cancelled - Reschedule status), the appointment should be classified as No show.</p>
-          </li>
-        </ol>
-      </div>
-    </div>
-  </div>
+  {% include "_status-info.html" %}
   <script>
     (function () {
       'use strict';

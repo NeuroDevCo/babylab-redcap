@@ -17,6 +17,6 @@ que = tutils.create_record_que()
 ppt_finput = tutils.create_finput_ppt()
 apt_finput = tutils.create_finput_apt()
 que_finput = tutils.create_finput_que()
-app = create_app(env="test")
+app = create_app(env_="test")
 client = app.test_client()
 app.config["API_KEY"] = token
