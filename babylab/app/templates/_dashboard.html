@@ -1,50 +1,77 @@
-<div class="container col-2">
-    <div class="row">
-        {% if "n_ppts" in data %}
-        <div class="col">
-            <div class="card">
-                <div class="card-header">{{ _("Participants") }}</div>
-                <div class="card-body">
-                    <div class="card-text">
-                        <h1>
-                            {{ data["n_ppts"] }}&nbsp;&nbsp;<i class="fa-solid fa-user"></i>
-                        </h1>
+<div class="div-center">
+    <div class="container">
+        <div class="row">
+            {% if "n_ppts" in data %}
+            <div class="col-sm-6">
+                <div class="card">
+                    <div class="card-header">
+                        {{ _("Participants") }}
+                    </div>
+                    <div class="card-body">
+                        <div class="card-text">
+                            <h1>
+                                {{ data["n_ppts"] }}&nbsp;&nbsp;<i class="fa-solid fa-user"></i>
+                            </h1>
+                        </div>
+                    </div>
+                    <div class="card-footer text-bg-white">
+                        {{ data["n_ppts_week"] }} {{ _("this week") }}
                     </div>
                 </div>
-                <div class="card-footer text-bg-white">{{ data["n_ppts_week"] }} {{ _("this week") }}</div>
             </div>
-        </div>
-        {% endif %}
-        {% if "n_apts" in data %}
-        <div class="col">
-            <div class="card">
-                <div class="card-header text-black">{{ _("Appointments") }}</div>
-                <div class="card-body">
-                    <div class="card-text">
-                        <h1>
-                            {{ data["n_apts"] }}&nbsp;&nbsp;<i class="fa-solid fa-calendar"></i>
-                        </h1>
+            {% endif %}
+            {% if "n_apts" in data %}
+            <div class="col-sm-4">
+                <div class="card">
+                    <div class="card-header text-black">{{ _("Appointments") }}</div>
+                    <div class="card-body">
+                        <div class="card-text">
+                            <h1>
+                                {{ data["n_apts"] }}&nbsp;&nbsp;<i class="fa-solid fa-calendar"></i>
+                            </h1>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        {{ data["n_apts_week"] }} {{ _("this week") }}
                     </div>
                 </div>
-                <div class="card-footer">{{ data["n_apts_week"] }} {{ _("this week") }}</div>
             </div>
-        </div>
-        {% endif %}
-        {% if "n_ppts" in data %}
-        <div class="col">
-            <div class="card">
-                <div class="card-header">{{ _("Participants") }}</div>
-                <div class="card-body">
-                    <div class="card-text">
-                        <h1>
-                            {{ data["n_ppts"] }}&nbsp;&nbsp;<i class="fa-solid fa-user"></i>
-                        </h1>
+            {% endif %}
+            {% if "n_apts_succ" in data %}
+            <div class="col-sm-4">
+                <div class="card">
+                    <div class="card-header text-black">{{ _("Successful appointments") }}</div>
+                    <div class="card-body">
+                        <div class="card-text">
+                            <h1>
+                                {{ data["n_apts_succ"] }}&nbsp;&nbsp;<i class="fa-solid fa-calendar"></i>
+                            </h1>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        {{ data["n_apts_week_succ"] }} {{ _("this week") }}
                     </div>
                 </div>
-                <div class="card-footer text-bg-white">{{ data["n_ppts_week"] }} {{ _("this week") }}</div>
             </div>
+            {% endif %}
+            {% if "n_apts_canc" in data %}
+            <div class="col-sm-4">
+                <div class="card">
+                    <div class="card-header text-black">{{ _("Cancelled appointments") }}</div>
+                    <div class="card-body">
+                        <div class="card-text">
+                            <h1>
+                                {{ data["n_apts_canc"] }}&nbsp;&nbsp;<i class="fa-solid fa-calendar"></i>
+                            </h1>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        {{ data["n_apts_week_canc"] }} {{ _("this week") }}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
         </div>
-        {% endif %}
     </div>
 </div>
 <br>
@@ -94,6 +121,7 @@
                 </div>
             </div>
         </div>
+        {% if "sex_dist_values" in data %}
         <div class="div-center">
             <div class="card card-plot">
                 <div class="card-title">
@@ -120,6 +148,8 @@
                 </div>
             </div>
         </div>
+        {% endif %}
+        {% if "ppts_date_created_values" in data %}
         <div class="div-center">
             <div class="card card-plot">
                 <div class="card-title">
@@ -142,6 +172,8 @@
                 </div>
             </div>
         </div>
+        {% endif %}
+        {% if "source_dist_values" in data %}
         <div class="div-center">
             <div class="card card-plot">
                 <div class="card-title">
@@ -168,9 +200,11 @@
                 </div>
             </div>
         </div>
+        {% endif %}
     </div>
     <div class="tab-pane fade show" id="pills-appointments" role="tabpanel" aria-labelledby="pills-appointments-tab"
         tabindex="1">
+        {% if "apts_date_created_values" in data %}
         <div class="div-center">
             <div class="card card-plot">
                 <div class="card-title">
@@ -191,6 +225,8 @@
                 </div>
             </div>
         </div>
+        {% endif %}
+        {% if "status_dist_values" in data %}
         <div class="div-center">
             <div class="card card-plot">
                 <div class="card-title">
@@ -217,9 +253,11 @@
                 </div>
             </div>
         </div>
+        {% endif %}
     </div>
     <div class="tab-pane fade show" id="pills-questionnaires" role="tabpanel" aria-labelledby="pills-questionnaires-tab"
         tabindex="2">
+        {% if "lang1_dist_values" in data %}
         <div class="div-center">
             <div class="card card-plot">
                 <div class="card-title">
@@ -240,6 +278,8 @@
                 </div>
             </div>
         </div>
+        {% endif %}
+        {% if "lang2_dist_values" in data %}
         <div class="div-center">
             <div class="card card-plot">
                 <div class="card-title">
@@ -260,6 +300,7 @@
                 </div>
             </div>
         </div>
+        {% endif %}
     </div>
     {% if "table" in data %}
     <div class="div-center">

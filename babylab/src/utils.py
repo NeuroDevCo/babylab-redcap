@@ -296,7 +296,10 @@ def get_age_timestamp(
 
 
 def get_ppt_table(
-    records: api.Records, data_dict: dict, relabel: bool = True
+    records: api.Records,
+    data_dict: dict,
+    relabel: bool = True,
+    study: str = None,
 ) -> DataFrame:
     """Get participants table
 
@@ -304,6 +307,7 @@ def get_ppt_table(
         records (api.Records): REDCap records, as returned by ``api.Records``.
         data_dict (dict, optional): Data dictionary as returned by ``api.get_data_dictionary``.
         relabel (bool, optional): Should columns be relabeled? Defaults to True.
+        study (str, optional): Study in which the participant in the records must have participated to be kept. Defaults to None.
 
     Returns:
         DataFrame: Table of partcicipants.
@@ -344,15 +348,20 @@ def get_ppt_table(
     ]
     if not records.participants.records:
         return DataFrame([], columns=cols)
-
+    ppt = records.participants
+    apt = records.appointments
+    if study:
+        target_ids = [
+            a.record_id for a in apt.records.values() if study in a.data["study"]
+        ]
+        ppt.records = {k: v for k, v in ppt.records.items() if k in target_ids}
     new_age_months = []
     new_age_days = []
-    for v in records.participants.records.values():
+    for v in ppt.records.values():
         age_created = (v.data["age_created_months"], v.data["age_created_days"])
         age = api.get_age(age_created, ts=v.data["date_created"])
         new_age_months.append(int(age[0]))
         new_age_days.append(int(age[1]))
-
     df = records.participants.to_df()
     df["age_now_months"], df["age_now_days"] = new_age_months, new_age_days
     if relabel:
