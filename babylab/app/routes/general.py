@@ -10,6 +10,39 @@ from babylab.src import api, utils
 from babylab.app import config as conf
 
 
+def add_binned_age(df: pd.DataFrame, name: str = "age_days_binned") -> pd.DataFrame:
+    """Add a binned age column to Data Frame.
+
+    Args:
+        df (pd.DataFrame): Data frame to add the column to.
+        name (str, optional): Name of the output column. Defaults to "age_days_binned".
+
+    Returns:
+        pd.DataFrame: Data Frame with the added column.
+    """
+    bins = list(range(0, max(df["age_days"]), 15))
+    labs = [f"{int(a // 30)}:{int(a % 30)}" for a in bins]
+    df[name] = pd.cut(df["age_days"], bins=bins, labels=labs[:-1], include_lowest=True)
+    return df
+
+
+def get_age_dist(df: pd.DataFrame) -> pd.DataFrame:
+    """Get distribution of ages.
+
+    Args:
+        df (pd.DataFrame): _description_
+
+    Returns:
+        pd.DataFrame: _description_
+    """
+    out = {}
+    for k, v in utils.count_col(df, "age_days_binned").items():
+        months = k.split(":")[0]
+        months = "0" + months if len(months) == 1 else months
+        out[months + ":" + k.split(":")[1]] = v
+    return out
+
+
 def prepare_studies(records: api.Records, data_dict: dict, study: str = None):
     """Prepare appointments page.
 
@@ -21,14 +54,20 @@ def prepare_studies(records: api.Records, data_dict: dict, study: str = None):
     Returns:
         dict: Parameters for the participants endpoint.
     """  # pylint: disable=line-too-long
-    df = utils.get_apt_table(records, data_dict=data_dict, study=study)
-    classes = "table table-hover table-responsives"
-    df["modify_button"] = [
-        utils.fmt_modify_button(p, a) for p, a in zip(df.index, df["appointment_id"])
+    apts = utils.get_apt_table(records, data_dict=data_dict, study=study)
+    ppts = utils.get_ppt_table(records, data_dict=data_dict, study=study)
+    quest = utils.get_que_table(records, data_dict=data_dict)
+    ppts["age_days"] = round(
+        ppts["age_now_days"] + (ppts["age_now_months"] * 30.437), None
+    ).astype(int)
+    ppts = add_binned_age(ppts)
+    apts["modify_button"] = [
+        utils.fmt_modify_button(p, a)
+        for p, a in zip(apts.index, apts["appointment_id"])
     ]
-    df["appointment_id"] = [utils.fmt_apt_id(i) for i in df["appointment_id"]]
-    df["record_id"] = [utils.fmt_ppt_id(i) for i in df.index]
-    df = df[
+    apts["appointment_id"] = [utils.fmt_apt_id(i) for i in apts["appointment_id"]]
+    apts["record_id"] = [utils.fmt_ppt_id(i) for i in apts.index]
+    apts = apts[
         [
             "appointment_id",
             "record_id",
@@ -43,10 +82,20 @@ def prepare_studies(records: api.Records, data_dict: dict, study: str = None):
             "modify_button",
         ]
     ]
-    df = df.sort_values("date", ascending=False)
-    variables = {"status_dist": utils.count_col(df, "status", values_sort=True)}
-    df["status"] = [utils.fmt_apt_status(s) for s in df["status"]]
-    df = df.rename(
+    apts = apts.sort_values("date", ascending=False)
+    variables = {
+        "age_dist": dict(sorted(get_age_dist(ppts).items())),
+        "sex_dist": utils.count_col(ppts, "sex", values_sort=True),
+        "status_dist": utils.count_col(apts, "status", values_sort=True),
+        "lang1_dist": utils.count_col(
+            quest, "lang1", values_sort=True, missing_label="None"
+        ),
+        "lang2_dist": utils.count_col(
+            quest, "lang2", values_sort=True, missing_label="None"
+        ),
+    }
+    apts["status"] = [utils.fmt_apt_status(s) for s in apts["status"]]
+    apts = apts.rename(
         columns={
             "appointment_id": "Appointment",
             "record_id": "Participant",
@@ -61,17 +110,14 @@ def prepare_studies(records: api.Records, data_dict: dict, study: str = None):
             "modify_button": "",
         }
     )
-    table = utils.replace_labels(df, data_dict)
-    table = table.to_html(
-        classes=f'{classes}" id = "apttable',
+    table = utils.replace_labels(apts, data_dict).to_html(
+        classes='table table-hover table-responsives id="apttable"',
         escape=False,
         justify="left",
         index=False,
         bold_rows=True,
     )
-
-    ts = df["Date"].value_counts().to_dict()
-    ts = OrderedDict(sorted(ts.items()))
+    ts = OrderedDict(sorted(apts["Date"].value_counts().to_dict().items()))
     for idx, (k, v) in enumerate(ts.items()):
         if idx > 0:
             ts[k] = v + list(ts.values())[idx - 1]
@@ -83,6 +129,7 @@ def prepare_studies(records: api.Records, data_dict: dict, study: str = None):
         )
         for x in data_dict["appointment_study"]
     }
+
     n_apts_week_succ = {
         x: utils.get_weekly_apts(
             records,
@@ -101,16 +148,33 @@ def prepare_studies(records: api.Records, data_dict: dict, study: str = None):
         )
         for x in data_dict["appointment_study"]
     }
-
     return {
-        "n_apts": df.shape[0],
-        "n_apts_week": n_apts_week,
-        "n_apts_week_succ": n_apts_week_succ,
-        "n_apts_week_canc": n_apts_week_canc,
+        "n_apts": apts.shape[0],
+        "n_apts_week": n_apts_week[study],
+        "n_apts_succ": sum(
+            v
+            for k, v in variables["status_dist"].items()
+            if k in ["Successful", "Successful - Good"]
+        ),
+        "n_apts_week_succ": n_apts_week_succ[study],
+        "n_apts_canc": sum(
+            v
+            for k, v in variables["status_dist"].items()
+            if k in ["Cancelled - Reschedule", "Cancelled - Drop", "No show"]
+        ),
+        "n_apts_week_canc": n_apts_week_canc[study],
         "date_labels": [str(d) for d in ts.keys()],
         "date_values": [str(d) for d in ts.values()],
         "status_dist_labels": list(variables["status_dist"].keys()),
         "status_dist_values": list(variables["status_dist"].values()),
+        "age_dist_labels": list(variables["age_dist"].keys()),
+        "age_dist_values": list(variables["age_dist"].values()),
+        "sex_dist_labels": list(variables["sex_dist"].keys()),
+        "sex_dist_values": list(variables["sex_dist"].values()),
+        "lang1_dist_labels": list(variables["lang1_dist"].keys())[:24],
+        "lang1_dist_values": list(variables["lang1_dist"].values())[:24],
+        "lang2_dist_labels": list(variables["lang2_dist"].keys())[:24],
+        "lang2_dist_values": list(variables["lang2_dist"].values())[:24],
         "table": table,
     }
 

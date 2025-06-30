@@ -1,0 +1,340 @@
+<div class="div-center">
+    <div class="container">
+        <div class="row">
+            {% if "n_ppts" in data %}
+            <div class="col-sm-6">
+                <div class="card">
+                    <div class="card-header">
+                        {{ _("Participants") }}
+                    </div>
+                    <div class="card-body">
+                        <div class="card-text">
+                            <h1>
+                                {{ data["n_ppts"] }}&nbsp;&nbsp;<i class="fa-solid fa-user"></i>
+                            </h1>
+                        </div>
+                    </div>
+                    <div class="card-footer text-bg-white">
+                        {{ data["n_ppts_week"] }} {{ _("this week") }}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            {% if "n_apts" in data %}
+            <div class="col-sm-4">
+                <div class="card">
+                    <div class="card-header text-black">{{ _("Appointments") }}</div>
+                    <div class="card-body">
+                        <div class="card-text">
+                            <h1>
+                                {{ data["n_apts"] }}&nbsp;&nbsp;<i class="fa-solid fa-calendar"></i>
+                            </h1>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        {{ data["n_apts_week"] }} {{ _("this week") }}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            {% if "n_apts_succ" in data %}
+            <div class="col-sm-4">
+                <div class="card">
+                    <div class="card-header text-black">{{ _("Successful appointments") }}</div>
+                    <div class="card-body">
+                        <div class="card-text">
+                            <h1>
+                                {{ data["n_apts_succ"] }}&nbsp;&nbsp;<i class="fa-solid fa-calendar"></i>
+                            </h1>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        {{ data["n_apts_week_succ"] }} {{ _("this week") }}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            {% if "n_apts_canc" in data %}
+            <div class="col-sm-4">
+                <div class="card">
+                    <div class="card-header text-black">{{ _("Cancelled appointments") }}</div>
+                    <div class="card-body">
+                        <div class="card-text">
+                            <h1>
+                                {{ data["n_apts_canc"] }}&nbsp;&nbsp;<i class="fa-solid fa-calendar"></i>
+                            </h1>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        {{ data["n_apts_week_canc"] }} {{ _("this week") }}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+<br>
+<br>
+<ul class="nav nav-pills mb-3 justify-content-center" id="pills-tab" role="tablist">
+    <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="pills-participants-tab" data-bs-toggle="pill"
+            data-bs-target="#pills-participants" type="button" role="tab" aria-controls="pills-participants"
+            aria-selected="true">{{ _("Participants") }}</button>
+    </li>
+    <li class="nav-item" role="appointments">
+        <button class="nav-link" id="pills-appointments-tab" data-bs-toggle="pill" data-bs-target="#pills-appointments"
+            type="button" role="tab" aria-controls="pills-appointments" aria-selected="false">
+            {{ _("Appointments") }}
+        </button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="pills-questionnaires-tab" data-bs-toggle="pill"
+            data-bs-target="#pills-questionnaires" type="button" role="tab" aria-controls="pills-questionnaires"
+            aria-selected="false">
+            {{ _("Questionnaires") }}
+        </button>
+    </li>
+</ul>
+<div class="tab-content" id="pills-tabContent">
+    <div class="tab-pane fade show active" id="pills-participants" role="tabpanel"
+        aria-labelledby="pills-participants-tab" tabindex="0">
+        <div class="div-center">
+            <div class="card card-plot">
+                <div class="card-title">
+                    {{ _("Age distribution") }}
+                </div>
+                <div class="card-body">
+                    <canvas id="ageDist">
+                        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+                        <script type="text/javascript" src="{{ url_for('static', filename='js/plots.js') }}"></script>
+                        <script>
+                            colPlot(
+                                {{ data["age_dist_labels"] | safe }},
+                                {{ data["age_dist_values"] | safe }},
+                                "ageDist",
+                                "#ff6384",
+                                "Age (months:days)"
+                            );
+                        </script>
+                    </canvas>
+                </div>
+            </div>
+        </div>
+        {% if "sex_dist_values" in data %}
+        <div class="div-center">
+            <div class="card card-plot">
+                <div class="card-title">
+                    {{ _("Sex distribution") }}
+                </div>
+                <div class="card-body">
+                    <canvas id="sexDist">
+                        <script>
+                            circlePlot(
+                                {{ data["sex_dist_labels"] | safe }},
+                                {{ data["sex_dist_values"] | safe }},
+                                "sexDist",
+                                [
+                                    "#4bc0c0",
+                                    "#ffcd56",
+                                    "#ff6384",
+                                    "#9966ff",
+                                    "#36a2eb",
+                                ],
+                                "Sex"
+                            );
+                        </script>
+                    </canvas>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        {% if "ppts_date_created_values" in data %}
+        <div class="div-center">
+            <div class="card card-plot">
+                <div class="card-title">
+                    {{ _("Participant influx") }}
+                </div>
+                <div class="card-body">
+                    <canvas id="influx">
+                        <script
+                            src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+                        <script>
+                            dateLinePlot(
+                                {{ data["ppts_date_created_labels"] | safe }},
+                                {{ data["ppts_date_created_values"] | safe }},
+                                "influx",
+                                "#1E90FF",
+                                "Date added"
+                            );
+                        </script>
+                    </canvas>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        {% if "source_dist_values" in data %}
+        <div class="div-center">
+            <div class="card card-plot">
+                <div class="card-title">
+                    {{ _("Source of participants") }}
+                </div>
+                <div class="card-body">
+                    <canvas id="sourceDist">
+                        <script>
+                            circlePlot(
+                                {{ data["source_dist_labels"] | safe }},
+                                {{ data["source_dist_values"] | safe }},
+                                "sourceDist",
+                                [
+                                    "#4bc0c0",
+                                    "#ffcd56",
+                                    "#ff6384",
+                                    "#9966ff",
+                                    "#36a2eb",
+                                ],
+                                "Source"
+                            );
+                        </script>
+                    </canvas>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    <div class="tab-pane fade show" id="pills-appointments" role="tabpanel" aria-labelledby="pills-appointments-tab"
+        tabindex="1">
+        {% if "apts_date_created_values" in data %}
+        <div class="div-center">
+            <div class="card card-plot">
+                <div class="card-title">
+                    {{ _("Appointments made") }}
+                </div>
+                <div class="card-body">
+                    <canvas id="appointments">
+                        <script>
+                            dateLinePlot(
+                                {{ data["apts_date_created_labels"] | safe }},
+                                {{ data["apts_date_created_values"] | safe }},
+                                "appointments",
+                                "#4BC0C0",
+                                "Date created"
+                            );
+                        </script>
+                    </canvas>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        {% if "status_dist_values" in data %}
+        <div class="div-center">
+            <div class="card card-plot">
+                <div class="card-title">
+                    {{ _("Appointment status") }}
+                </div>
+                <div class="card-body">
+                    <canvas id="statusDist">
+                        <script>
+                            circlePlot(
+                                {{ data["status_dist_labels"] | safe }},
+                                {{ data["status_dist_values"] | safe }},
+                                "statusDist",
+                                [
+                                    "#4bc0c0",
+                                    "#ffcd56",
+                                    "#ff6384",
+                                    "#9966ff",
+                                    "#36a2eb",
+                                ],
+                                "Appointment status"
+                            );
+                        </script>
+                    </canvas>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    <div class="tab-pane fade show" id="pills-questionnaires" role="tabpanel" aria-labelledby="pills-questionnaires-tab"
+        tabindex="2">
+        {% if "lang1_dist_values" in data %}
+        <div class="div-center">
+            <div class="card card-plot">
+                <div class="card-title">
+                    {{ _("First language distribution") }}
+                </div>
+                <div class="card-body">
+                    <canvas id="l1Dist">
+                        <script>
+                            colPlot(
+                                {{ data["lang1_dist_labels"] | safe }},
+                                {{ data["lang1_dist_values"] | safe }},
+                                "l1Dist",
+                                'rgba(255, 205, 86, 1)',
+                                "First language"
+                            );
+                        </script>
+                    </canvas>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        {% if "lang2_dist_values" in data %}
+        <div class="div-center">
+            <div class="card card-plot">
+                <div class="card-title">
+                    {{ _("Second language distribution") }}
+                </div>
+                <div class="card-body">
+                    <canvas id="l2Dist">
+                        <script>
+                            colPlot(
+                                {{ data["lang2_dist_labels"] | safe }},
+                                {{ data["lang2_dist_values"] | safe }},
+                                "l2Dist",
+                                "#4BC0C0",
+                                "Second language"
+                            )
+                        </script>
+                    </canvas>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    {% if "table" in data %}
+    <div class="div-center">
+        <div class="card">
+            <h5 class="card-title">
+                {{ _("Appointments") }}
+            </h5>
+            <div class="card-body">
+                <h6 class="card-subtitle mb-2 text-muted">
+                    {{ _("Click IDs to see a participant's profile") }}
+                </h6>
+                <div width="10%">
+                    {{ data["table"]|safe }}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+<script
+    src="https://cdn.datatables.net/v/bs5/jq-3.7.0/dt-2.2.2/b-3.2.1/fh-4.0.1/sp-2.3.3/sl-3.0.0/datatables.min.js"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='js/tables.js') }}">
+</script>
+<script>
+    let table = new dt("#apttable", searchCols = [3, 4], hideCols = [6, 7, 8, 10], statusCol = 4)
+
+    table.on('click', 'td', function (e) {
+        let tr = e.target.closest('tr');
+        let row = table.row(tr);
+        if (row.child.isShown()) {
+            row.child.hide();
+        }
+        else {
+            row.child(format_apt(row.data())).show();
+        }
+    }); 
+</script>

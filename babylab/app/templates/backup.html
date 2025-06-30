@@ -1,0 +1,115 @@
+<div class="row">
+    <div class="col">
+        <div class="card text-bg-success">
+            <div class="card-header">Appointments</div>
+            <div class="card-body">
+                <div class="card-text">
+                    <h1>
+                        {{ data["n_apts"] }}&nbsp;&nbsp;<i class="fa-solid fa-calendar"></i>
+                    </h1>
+                </div>
+            </div>
+            <div class="card-footer text-bg-success">In total</div>
+        </div>
+    </div>
+    <div class="col">
+        <div class="card text-bg-warning">
+            <div class="card-header">Appointments</div>
+            <div class="card-body">
+                <div class="card-text">
+                    <h1>
+                        {{ data["n_apts_week"][selected_study] }}&nbsp;&nbsp;<i class="fa-solid fa-calendar"></i>
+                    </h1>
+                </div>
+            </div>
+            <div class="card-footer text-bg-warning">This week</div>
+        </div>
+    </div>
+    <div class="col">
+        <div class="card text-bg-primary">
+            <div class="card-header">Successful appointments</div>
+            <div class="card-body">
+                <div class="card-text">
+                    <h1>
+                        {{ data["n_apts_week_succ"][selected_study] }}&nbsp;&nbsp;<i class="fa-solid fa-calendar"></i>
+                    </h1>
+                </div>
+            </div>
+            <div class="card-footer text-bg-primary">This week</div>
+        </div>
+    </div>
+    <div class="col">
+        <div class="card text-bg-danger">
+            <div class="card-header">Cancelled appointments</div>
+            <div class="card-body">
+                <div class="card-text">
+                    <h1>
+                        {{ data["n_apts_week_canc"][selected_study] }}&nbsp;&nbsp;<i class="fa-solid fa-calendar"></i>
+                    </h1>
+                </div>
+            </div>
+            <div class="card-footer text-bg-danger">This week</div>
+        </div>
+    </div>
+</div>
+</div>
+<br>
+<div class="div-center">
+    <div class="card card-plot">
+        <div class="card-title">Appointment status</div>
+        <div class="card-body">
+            <canvas id="statusDist">
+                <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+                <script
+                    src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+                <script type="text/javascript" src="{{ url_for('static', filename='js/plots.js') }}"></script>
+                <script>
+                    circlePlot(
+                        {{ data["status_dist_labels"] | safe }},
+                        {{ data["status_dist_values"] | safe }},
+                        "statusDist",
+                        [
+                            "#4bc0c0",
+                            "#ffcd56",
+                            "#ff6384",
+                            "#9966ff",
+                            "#36a2eb",
+                        ],
+                        "Appointment status"
+                    );
+                </script>
+            </canvas>
+        </div>
+    </div>
+</div>
+<div class="div-center">
+    <div class="card card-plot">
+        <div class="card-title">Appointments</div>
+        <div class="card-body">
+            <canvas id="studies1" width="850" height="500">
+                <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+                <script
+                    src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+                <script type="text/javascript" src="{{ url_for('static', filename='js/plots.js') }}"></script>
+                <script>
+                    dateLinePlot(
+                        {{ data["date_labels"] | safe }},
+                        {{ data["date_values"] | safe }},
+                        "studies1",
+                        "#4BC0C0",
+                        "Date created"
+                    );
+                </script>
+            </canvas>
+        </div>
+    </div>
+</div>
+<div class="div-center">
+    <div class="card">
+        <h5 class="card-title">Appointments: {{ data_dict["appointment_study"][selected_study] }}</h5>
+        <div class="card-body">
+            <h6 class="card-subtitle mb-2 text-muted">Click IDs to see a participant's profile</h6>
+            <div width="10%">{{ data["table"]|safe }}</div>
+        </div>
+    </div>
+</div>
