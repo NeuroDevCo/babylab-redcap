@@ -7,11 +7,11 @@ from dotenv import load_dotenv
 from flask import (
     flash,
     redirect,
-    session,
-    request,
     url_for,
     current_app,
     render_template,
+    request,
+    session,
 )
 from babylab.src import api
 
@@ -116,16 +116,18 @@ def get_records_or_index(token: str, **kwargs):
 
 
 def get_locale():
-    """Check if the language query parameter is set and valid.
+    """Try to guess the language from the user accept
+    header the browser transmits.  We support de/fr/en in this
+    example. The best match wins.
 
-    If not set via query, check if we have it stored in the session.
-    Otherwise, use the browser's preferred language.
+    Returns:
+        _type_: _description_
     """
     if "lang" in request.args:
         lang = request.args.get("lang")
-        if lang in ["en", "es", "ca"]:
+        if lang in ["en", "es"]:
             session["lang"] = lang
             return session["lang"]
     elif "lang" in session:
         return session.get("lang")
-    return request.accept_languages.best_match(["en", "es", "ca"])
+    return request.accept_languages.best_match(["en", "es"])

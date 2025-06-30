@@ -1,17 +1,13 @@
-# Catalan translations for PROJECT.
-# Copyright (C) 2025 ORGANIZATION
-# This file is distributed under the same license as the PROJECT project.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
-#
+
 msgid ""
 msgstr ""
-"Project-Id-Version: PROJECT VERSION\n"
+"Project-Id-Version:  babylab-redcap\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-06-17 11:07+0200\n"
-"PO-Revision-Date: 2025-06-17 11:08+0200\n"
+"POT-Creation-Date: 2025-06-30 10:23+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language: ca\n"
-"Language-Team: ca <LL@li.org>\n"
+"Language: es\n"
+"Language-Team: es <LL@li.org>\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
@@ -21,14 +17,14 @@ msgstr ""
 #: babylab/app/templates/404.html:11 babylab/app/templates/443.html:15
 #: babylab/app/templates/500.html:14
 msgid "Go back to the main page"
-msgstr ""
+msgstr "Regresar a la página principal"
 
 #: babylab/app/templates/_nav.html:16 babylab/app/templates/dashboard.html:24
 #: babylab/app/templates/dashboard.html:50
 #: babylab/app/templates/dashboard.html:82 babylab/app/templates/ppt_all.html:8
 #: babylab/app/templates/ppt_new.html:10
 msgid "Participants"
-msgstr ""
+msgstr "Participantes"
 
 #: babylab/app/templates/_nav.html:21 babylab/app/templates/apt_all.html:6
 #: babylab/app/templates/apt_new.html:9 babylab/app/templates/dashboard.html:37
@@ -38,29 +34,29 @@ msgstr ""
 #: babylab/app/templates/studies.html:137
 #: babylab/app/templates/studies.html:160
 msgid "Appointments"
-msgstr ""
+msgstr "Citas"
 
 #: babylab/app/templates/_nav.html:25 babylab/app/templates/calendar.html:21
 msgid "Calendar"
-msgstr ""
+msgstr "Calendario"
 
 #: babylab/app/templates/_nav.html:28 babylab/app/templates/studies.html:7
 msgid "Studies"
-msgstr ""
+msgstr "Estudios"
 
 #: babylab/app/templates/_nav.html:33 babylab/app/templates/dashboard.html:92
 msgid "Questionnaires"
-msgstr ""
+msgstr "Cuestionarios"
 
 #: babylab/app/templates/_nav.html:37
 msgid "Help/Others"
-msgstr ""
+msgstr "Ayuda/Otros"
 
 #: babylab/app/templates/_nav.html:42 babylab/app/templates/que.html:59
 #: babylab/app/templates/que_modify.html:51
 #: babylab/app/templates/que_new.html:45
 msgid "Language"
-msgstr ""
+msgstr "Idioma"
 
 #: babylab/app/templates/_status-info.html:3
 #: babylab/app/templates/apt_modify.html:49
@@ -68,15 +64,17 @@ msgstr ""
 #: babylab/app/templates/dashboard.html:209
 #: babylab/app/templates/studies.html:109
 msgid "Appointment status"
-msgstr ""
+msgstr "Estado de la cita"
 
 #: babylab/app/templates/_status-info.html:6
 msgid "Please, specify the appointment status based on the following guidelines:"
 msgstr ""
+"Por favor, especifica el estado de la cita teniendo en cuenta las "
+"siguientes pautas:"
 
 #: babylab/app/templates/_status-info.html:10
 msgid "Scheduled"
-msgstr ""
+msgstr "Agendada"
 
 #: babylab/app/templates/_status-info.html:11
 msgid ""
@@ -84,10 +82,12 @@ msgid ""
 "                    specific date and time. No appointment can be made "
 "without specific date and/or time."
 msgstr ""
+"El participante ha acordado una cita con fecha y hora específica. Ninguna"
+" cita se pude agendar sin fecha y/u hora específica."
 
 #: babylab/app/templates/_status-info.html:15
 msgid "Confirmed"
-msgstr ""
+msgstr "Confirmado"
 
 #: babylab/app/templates/_status-info.html:16
 msgid ""
@@ -96,10 +96,13 @@ msgid ""
 "                    ideally\n"
 "                    the day before the appointment takes place."
 msgstr ""
+"La cita ha sido confirmada por el participante a través de una llamada a "
+"un correo electrónico, idealmente el día anterior al día de la cita "
+"agendada."
 
 #: babylab/app/templates/_status-info.html:21
 msgid "Successful"
-msgstr ""
+msgstr "Exitosa"
 
 #: babylab/app/templates/_status-info.html:22
 msgid ""
@@ -116,10 +119,18 @@ msgid ""
 "                    during\n"
 "                    the appointment."
 msgstr ""
+"Durante la cita, el participante ha firmado el formulario de "
+"consentimiento, y su ID correspondiente debería estar en la hoja del "
+"participantes del experimento. Ningún dato debería recogerse antes de que"
+" el formulario de consentimiento se haya firmado. Cada vez que el el "
+"formulario de consentimiento se haya firmado, la cita se marcará como "
+"Exitosa (incluso si no se recogieron datos después), con la única "
+"excepción de que el participante haya retirado su consentimiento durante "
+"la cita."
 
 #: babylab/app/templates/_status-info.html:32
 msgid "Successful - Good"
-msgstr ""
+msgstr "Exitosa - Buena"
 
 #: babylab/app/templates/_status-info.html:33
 msgid ""
@@ -137,10 +148,17 @@ msgid ""
 "we are to finishing data collection for the\n"
 "                    study."
 msgstr ""
+"La cita ha sido exitosa y los datos recolectados son lo suficiente buenos"
+" para incluir al participante en el análisis de datos del estudio. \n"
+"El estado se puede cambiar a \"Exitoso\" si los datos se consideran "
+"posteriormente no válidos para el análisis de datos.\n"
+"El razón de esta etiqueta es mantener el seguimiento de cuántas citas "
+"generan datos válidos, y cuan cerca estamos de terminar la recolección de"
+" datos para el estudio."
 
 #: babylab/app/templates/_status-info.html:46
 msgid "Cancelled Reschedule"
-msgstr ""
+msgstr "Cancelada Reagendada"
 
 #: babylab/app/templates/_status-info.html:47
 msgid ""
@@ -149,10 +167,12 @@ msgid ""
 "                    be/has\n"
 "                    been rescheduled instead."
 msgstr ""
+"A petición del participante o del investigador, la cita no se realizará, "
+"y en su lugar, será/ha sido reagendada"
 
 #: babylab/app/templates/_status-info.html:52
 msgid "Cancelled - Drop"
-msgstr ""
+msgstr "Cancelado - Baja"
 
 #: babylab/app/templates/_status-info.html:53
 msgid ""
@@ -163,10 +183,13 @@ msgid ""
 "                    appointment\n"
 "                    should be marked as Cancelled - Drop."
 msgstr ""
+"A petición del participante o del investigador, la cita no se llevará a "
+"cabo y no se reprogramará. Si el participante retira su consentimiento "
+"durante la cita, esta debe marcarse como Cancelado - Baja."
 
 #: babylab/app/templates/_status-info.html:59
 msgid "No show"
-msgstr ""
+msgstr "Ausencia sin aviso"
 
 #: babylab/app/templates/_status-info.html:60
 msgid ""
@@ -180,67 +203,71 @@ msgid ""
 "the appointment should be classified as No\n"
 "                    show."
 msgstr ""
+"La cita no se ha realizado porque el participante no se ha presentado y "
+"no lo ha comunicado al investigador. Si no se va a hacer una "
+"reprogramación (lo cual resultará Cancelado - Reprogramado), la cita debe"
+" clasificarse como Ausencia sin aviso."
 
 #: babylab/app/templates/apt.html:9 babylab/app/templates/apt.html:67
 #: babylab/app/templates/apt_modify.html:9
 msgid "Appointment"
-msgstr ""
+msgstr "Cita"
 
 #: babylab/app/templates/apt.html:11
 msgid "Showing details for appointment"
-msgstr ""
+msgstr "Mostrando detalles de la cita"
 
 #: babylab/app/templates/apt.html:23 babylab/app/templates/que.html:27
 msgid "See participant"
-msgstr ""
+msgstr "Ver participante"
 
 #: babylab/app/templates/apt.html:28
 msgid "Modify appointment"
-msgstr ""
+msgstr "Modificar la cita"
 
 #: babylab/app/templates/apt.html:32
 msgid "Add language questionnaire"
-msgstr ""
+msgstr "Ver participante"
 
 #: babylab/app/templates/apt.html:49 babylab/app/templates/apt_modify.html:33
 #: babylab/app/templates/apt_new.html:26
 msgid "Appointment information"
-msgstr ""
+msgstr "Información de la cita"
 
 #: babylab/app/templates/apt.html:55
 msgid "Date"
-msgstr ""
+msgstr "Fecha"
 
 #: babylab/app/templates/apt.html:61 babylab/app/templates/ppt.html:7
 #: babylab/app/templates/ppt_modify.html:10
 msgid "Participant"
-msgstr ""
+msgstr "Participante"
 
 #: babylab/app/templates/apt.html:73
 msgid "Status"
-msgstr ""
+msgstr "Estado"
 
 #: babylab/app/templates/apt.html:83 babylab/app/templates/studies.html:19
 msgid "Study"
-msgstr ""
+msgstr "Estudio"
 
 #: babylab/app/templates/apt.html:89
 msgid "Made on the"
-msgstr ""
+msgstr "Creado el"
 
 #: babylab/app/templates/apt.html:95 babylab/app/templates/ppt.html:80
 msgid "Last updated"
-msgstr ""
+msgstr "Última actualización"
 
 #: babylab/app/templates/apt.html:101 babylab/app/templates/apt.html:197
 #: babylab/app/templates/apt_modify.html:69
 #: babylab/app/templates/apt_new.html:60
 msgid "Taxi address"
-msgstr ""
+msgstr "Dirección del taxi"
 
 #: babylab/app/templates/apt.html:107 babylab/app/templates/apt_new.html:65
 msgid "Taxi booked?"
-msgstr ""
+msgstr "¿Taxi reservado?"
 
 #: babylab/app/templates/apt.html:113 babylab/app/templates/apt.html:158
 #: babylab/app/templates/apt_modify.html:80
@@ -250,95 +277,95 @@ msgstr ""
 #: babylab/app/templates/que_modify.html:152
 #: babylab/app/templates/que_new.html:133
 msgid "Comments"
-msgstr ""
+msgstr "Comentarios"
 
 #: babylab/app/templates/apt.html:122 babylab/app/templates/ppt.html:56
 #: babylab/app/templates/ppt_modify.html:37
 #: babylab/app/templates/ppt_new.html:30
 msgid "Participant information"
-msgstr ""
+msgstr "Información del participante"
 
 #: babylab/app/templates/apt.html:128 babylab/app/templates/ppt.html:68
 msgid "Name"
-msgstr ""
+msgstr "Nombre"
 
 #: babylab/app/templates/apt.html:134
 msgid "Added on"
-msgstr ""
+msgstr "Añadido el"
 
 #: babylab/app/templates/apt.html:140
 msgid "Age now"
-msgstr ""
+msgstr "Edad ahora"
 
 #: babylab/app/templates/apt.html:146
 msgid "Age at appointment"
-msgstr ""
+msgstr "Edad el día de la cita"
 
 #: babylab/app/templates/apt.html:152 babylab/app/templates/ppt.html:95
 #: babylab/app/templates/ppt_modify.html:60
 #: babylab/app/templates/ppt_new.html:50
 msgid "Sex"
-msgstr ""
+msgstr "Sexo"
 
 #: babylab/app/templates/apt.html:167 babylab/app/templates/ppt.html:110
 msgid "Contact details"
-msgstr ""
+msgstr "Detalles de contacto"
 
 #: babylab/app/templates/apt.html:173 babylab/app/templates/ppt.html:123
 msgid "Phone"
-msgstr ""
+msgstr "Teléfono"
 
 #: babylab/app/templates/apt.html:179 babylab/app/templates/ppt.html:129
 msgid "E-mail"
-msgstr ""
+msgstr "Correo"
 
 #: babylab/app/templates/apt.html:185 babylab/app/templates/ppt.html:135
 #: babylab/app/templates/ppt_modify.html:169
 #: babylab/app/templates/ppt_new.html:144
 msgid "Phone 2"
-msgstr ""
+msgstr "Teléfono 2"
 
 #: babylab/app/templates/apt.html:191 babylab/app/templates/ppt.html:141
 #: babylab/app/templates/ppt_modify.html:164
 #: babylab/app/templates/ppt_new.html:139
 msgid "E-mail 2"
-msgstr ""
+msgstr "Correo 2"
 
 #: babylab/app/templates/apt.html:203 babylab/app/templates/ppt.html:153
 #: babylab/app/templates/ppt_modify.html:185
 #: babylab/app/templates/ppt_new.html:156
 msgid "Postcode"
-msgstr ""
+msgstr "Código postal"
 
 #: babylab/app/templates/apt.html:209 babylab/app/templates/ppt.html:159
 msgid "City"
-msgstr ""
+msgstr "Ciudad"
 
 #: babylab/app/templates/apt_all.html:7 babylab/app/templates/ppt_all.html:11
 #: babylab/app/templates/que_all.html:9
 msgid "There is a total of"
-msgstr ""
+msgstr "Hay un total de"
 
 #: babylab/app/templates/apt_all.html:7
 msgid "appointments in the database."
-msgstr ""
+msgstr "citas en la base de datos"
 
 #: babylab/app/templates/apt_modify.html:11
 msgid "Modifying details about appointment"
-msgstr ""
+msgstr "Modificando los detalles de la cita"
 
 #: babylab/app/templates/apt_modify.html:11
 msgid ""
 "Hit the 'Submit' button when\n"
 "        finished."
-msgstr ""
+msgstr "Haz clic en el botón 'Guardar' cuando hayas terminado."
 
 #: babylab/app/templates/apt_modify.html:25 babylab/app/templates/index.html:46
 #: babylab/app/templates/ppt_modify.html:29
 #: babylab/app/templates/ppt_new.html:21
 #: babylab/app/templates/que_modify.html:28
 msgid "Submit"
-msgstr ""
+msgstr "Guardar"
 
 #: babylab/app/templates/apt_modify.html:42
 #: babylab/app/templates/apt_modify.html:55
@@ -352,73 +379,73 @@ msgstr ""
 #: babylab/app/templates/que_new.html:101
 #: babylab/app/templates/que_new.html:120
 msgid "Select one"
-msgstr ""
+msgstr "Selecciona uno"
 
 #: babylab/app/templates/apt_modify.html:63
 #: babylab/app/templates/apt_new.html:55
 msgid "Appointment date"
-msgstr ""
+msgstr "Fecha de la cita"
 
 #: babylab/app/templates/apt_modify.html:76
 msgid "Taxi booked"
-msgstr ""
+msgstr "Taxi reservado"
 
 #: babylab/app/templates/apt_new.html:12
 msgid "New appointment for participant"
-msgstr ""
+msgstr "Nueva cita para el participante"
 
 #: babylab/app/templates/calendar.html:22
 msgid "Showing appointments in calendar"
-msgstr ""
+msgstr "Mostrando citas en el calendario"
 
 #: babylab/app/templates/dashboard.html:12
 msgid "Showing the current status of the project"
-msgstr ""
+msgstr "Mostrando el estado actual del proyecto"
 
 #: babylab/app/templates/dashboard.html:32
 #: babylab/app/templates/dashboard.html:45
 #: babylab/app/templates/studies.html:62
 msgid "In total"
-msgstr ""
+msgstr "En total"
 
 #: babylab/app/templates/dashboard.html:58
 #: babylab/app/templates/dashboard.html:71
 #: babylab/app/templates/studies.html:75 babylab/app/templates/studies.html:88
 #: babylab/app/templates/studies.html:101
 msgid "This week"
-msgstr ""
+msgstr "Esta semana"
 
 #: babylab/app/templates/dashboard.html:100
 msgid "Age distribution"
-msgstr ""
+msgstr "Distribución por edad"
 
 #: babylab/app/templates/dashboard.html:120
 msgid "Sex distribution"
-msgstr ""
+msgstr "Distribución por sexo"
 
 #: babylab/app/templates/dashboard.html:144
 msgid "Participant influx"
-msgstr ""
+msgstr "Afluencia de participantes"
 
 #: babylab/app/templates/dashboard.html:164
 msgid "Source of participants"
-msgstr ""
+msgstr "Fuente de los participantes"
 
 #: babylab/app/templates/dashboard.html:191
 msgid "Appointments made"
-msgstr ""
+msgstr "Citas realizadas"
 
 #: babylab/app/templates/dashboard.html:236
 msgid "First language distribution"
-msgstr ""
+msgstr "Distribución de la lengua materna"
 
 #: babylab/app/templates/dashboard.html:254
 msgid "Second language distribution"
-msgstr ""
+msgstr "Distribución de la segunda lengua materna"
 
 #: babylab/app/templates/index.html:8 babylab/app/templates/index.html:65
 msgid "Welcome!"
-msgstr ""
+msgstr "¡Bienvenido/a!"
 
 #: babylab/app/templates/index.html:25
 msgid ""
@@ -427,312 +454,318 @@ msgid ""
 "This is a work in progress, feel free to\n"
 "          report issues and provide feed-back"
 msgstr ""
+"Esta aplicación proporciona una interfaz con la <b>base de datos de "
+"REDCap</b> para consultar de forma práctica la información de "
+"participantes y citas. Este proyecto está en desarrollo, siéntete libre "
+"de informar sobre errores y enviar sugerencias."
 
 #: babylab/app/templates/index.html:37
 msgid "Please, provide your API token to access the database"
-msgstr ""
+msgstr "Por favor, proporciona tu API token para acceder a la base de datos"
 
 #: babylab/app/templates/index.html:49 babylab/app/templates/index.html:68
 msgid "You can find your <b>API token</b> at REDCap."
-msgstr ""
+msgstr "Puedes encontrar tu <b>API token</b> en REDCap."
 
 #: babylab/app/templates/index.html:66
 msgid "You have successfully logged in"
-msgstr ""
+msgstr "Has iniciado sesión correctamente"
 
 #: babylab/app/templates/ppt.html:10
 msgid "Showing details from participant"
-msgstr ""
+msgstr "Mostrando detalles del participante"
 
 #: babylab/app/templates/ppt.html:13 babylab/app/templates/ppt_modify.html:16
 msgid "Do not contact"
-msgstr ""
+msgstr "No contactar"
 
 #: babylab/app/templates/ppt.html:29
 msgid "New appointment"
-msgstr ""
+msgstr "Nueva cita"
 
 #: babylab/app/templates/ppt.html:34
 msgid "Modify participant"
-msgstr ""
+msgstr "Modificar participante"
 
 #: babylab/app/templates/ppt.html:39
 msgid "Add questionnaire"
-msgstr ""
+msgstr "Añadir cuestionario"
 
 #: babylab/app/templates/ppt.html:62 babylab/app/templates/ppt_modify.html:43
 msgid "Source"
-msgstr ""
+msgstr "Fuente"
 
 #: babylab/app/templates/ppt.html:74
 msgid "Added"
-msgstr ""
+msgstr "Añadido"
 
 #: babylab/app/templates/ppt.html:86
 msgid "Age"
-msgstr ""
+msgstr "Edad"
 
 #: babylab/app/templates/ppt.html:117
 msgid "Parent 1"
-msgstr ""
+msgstr "Padre 1/Tutor 1"
 
 #: babylab/app/templates/ppt.html:147
 msgid "Address"
-msgstr ""
+msgstr "Dirección"
 
 #: babylab/app/templates/ppt.html:169 babylab/app/templates/ppt_modify.html:194
 #: babylab/app/templates/ppt_new.html:164
 msgid "Birth information"
-msgstr ""
+msgstr "Información del nacimiento"
 
 #: babylab/app/templates/ppt.html:175 babylab/app/templates/ppt_modify.html:214
 #: babylab/app/templates/ppt_new.html:182
 msgid "Delivery type"
-msgstr ""
+msgstr "Tipo de parto"
 
 #: babylab/app/templates/ppt.html:181
 msgid "Gestation weeks"
-msgstr ""
+msgstr "Semanas de gestación"
 
 #: babylab/app/templates/ppt.html:187 babylab/app/templates/ppt_modify.html:200
 #: babylab/app/templates/ppt_new.html:170
 msgid "Birth weight (g)"
-msgstr ""
+msgstr "Peso al nacer (g)"
 
 #: babylab/app/templates/ppt.html:193
 msgid "Head circ. (cm)"
-msgstr ""
+msgstr "Perímetro craneal (cm)"
 
 #: babylab/app/templates/ppt.html:199
 msgid "Apgar"
-msgstr ""
+msgstr "Apgar"
 
 #: babylab/app/templates/ppt.html:211
 msgid "Hearing"
-msgstr ""
+msgstr "Audición"
 
 #: babylab/app/templates/ppt.html:217 babylab/app/templates/ppt_modify.html:252
 #: babylab/app/templates/ppt_new.html:216
 msgid "Diagnoses"
-msgstr ""
+msgstr "Diagnóstico"
 
 #: babylab/app/templates/ppt.html:237 babylab/app/templates/que_all.html:7
 #: babylab/app/templates/que_modify.html:10
 #: babylab/app/templates/que_new.html:9
 msgid "Language questionnaires"
-msgstr ""
+msgstr "Cuestionarios linguísticos"
 
 #: babylab/app/templates/ppt_all.html:11
 msgid "participants in the database."
-msgstr ""
+msgstr "participantes en la base de datos"
 
 #: babylab/app/templates/ppt_all.html:22
 msgid "New participant"
-msgstr ""
+msgstr "Nuevo participante"
 
 #: babylab/app/templates/ppt_modify.html:12
-msgid "Modify the corresponding values and hit the submit button."
-msgstr ""
+msgid "Modify the corresponding values and hit the 'Submit' button."
+msgstr "Modifica los valores correspondientes y haz clic en el botón de 'Guardar'."
 
 #: babylab/app/templates/ppt_modify.html:53
 msgid "Participant first name"
-msgstr ""
+msgstr "Nombre del participante"
 
 #: babylab/app/templates/ppt_modify.html:72
 #: babylab/app/templates/ppt_new.html:63
 msgid "Parent 1 name"
-msgstr ""
+msgstr "Nombre padre 1/tutor 1"
 
 #: babylab/app/templates/ppt_modify.html:79
 #: babylab/app/templates/ppt_new.html:69
 msgid "Parent 1 surname"
-msgstr ""
+msgstr "Apellido padre 1/tutor 1"
 
 #: babylab/app/templates/ppt_modify.html:88
 #: babylab/app/templates/ppt_new.html:77
 msgid "Parent 2 name"
-msgstr ""
+msgstr "Nombre padre 2/tutor 2"
 
 #: babylab/app/templates/ppt_modify.html:95
 #: babylab/app/templates/ppt_new.html:83
 msgid "Parent 2 surname"
-msgstr ""
+msgstr "Apellido padre 2/tutor2"
 
 #: babylab/app/templates/ppt_modify.html:105
 msgid "Age (months)"
-msgstr ""
+msgstr "Edad (meses)"
 
 #: babylab/app/templates/ppt_modify.html:113
 msgid "Age (days)"
-msgstr ""
+msgstr "Edad (días)"
 
 #: babylab/app/templates/ppt_modify.html:122
 #: babylab/app/templates/ppt_new.html:103
 msgid "Hearing test"
-msgstr ""
+msgstr "Test de audición"
 
 #: babylab/app/templates/ppt_modify.html:131
 #: babylab/app/templates/ppt_new.html:111
 msgid "Twin ID"
-msgstr ""
+msgstr "ID de gemelo"
 
 #: babylab/app/templates/ppt_modify.html:144
 #: babylab/app/templates/ppt_new.html:122
 msgid "Contact information"
-msgstr ""
+msgstr "Información de contacto"
 
 #: babylab/app/templates/ppt_modify.html:149
 #: babylab/app/templates/ppt_new.html:126
 msgid "This family should <em>not</em> be contacted again"
-msgstr ""
+msgstr "Esta família <em>no</em> debe ser contactada más veces"
 
 #: babylab/app/templates/ppt_modify.html:153
 #: babylab/app/templates/ppt_new.html:130
 msgid "E-mail 1"
-msgstr ""
+msgstr "Correo 1"
 
 #: babylab/app/templates/ppt_modify.html:159
 #: babylab/app/templates/ppt_new.html:135
 msgid "Phone 1"
-msgstr ""
+msgstr "Teléfono 1"
 
 #: babylab/app/templates/ppt_modify.html:175
 #: babylab/app/templates/ppt_new.html:148
 msgid "Home address"
-msgstr ""
+msgstr "Dirección de casa"
 
 #: babylab/app/templates/ppt_modify.html:180
 #: babylab/app/templates/ppt_new.html:152
 msgid "City/place of residence"
-msgstr ""
+msgstr "Ciudad/sitio de residencia"
 
 #: babylab/app/templates/ppt_modify.html:207
 #: babylab/app/templates/ppt_new.html:176
 msgid "Gestational weeks"
-msgstr ""
+msgstr "Semanas de gestación"
 
 #: babylab/app/templates/ppt_modify.html:223
 #: babylab/app/templates/ppt_new.html:191
 msgid "Head circumference (cm)"
-msgstr ""
+msgstr "Perímetro craneal (cm)"
 
 #: babylab/app/templates/ppt_modify.html:231
 #: babylab/app/templates/ppt_new.html:198
 msgid "Apgar 1"
-msgstr ""
+msgstr "Apgar 1"
 
 #: babylab/app/templates/ppt_modify.html:238
 #: babylab/app/templates/ppt_new.html:204
 msgid "Apgar 2"
-msgstr ""
+msgstr "Apgar 2"
 
 #: babylab/app/templates/ppt_modify.html:245
 #: babylab/app/templates/ppt_new.html:210
 msgid "Apgar 3"
-msgstr ""
+msgstr "Apgar 3"
 
 #: babylab/app/templates/ppt_new.html:11
 msgid "Adding a new participant"
-msgstr ""
+msgstr "Añadiendo nuevo participante"
 
 #: babylab/app/templates/ppt_new.html:44
 msgid "Participant name"
-msgstr ""
+msgstr "Nombre del participante"
 
 #: babylab/app/templates/ppt_new.html:91
 msgid "Age months"
-msgstr ""
+msgstr "Meses de edad"
 
 #: babylab/app/templates/ppt_new.html:97
 msgid "Age days"
-msgstr ""
+msgstr "Días de edad"
 
 #: babylab/app/templates/ppt_new.html:159
 msgid "Postcode must be 5 digits!"
-msgstr ""
+msgstr "¡Código postal tiene que ser de almenos 5 dígitos!"
 
 #: babylab/app/templates/que.html:9
 msgid "Language questionnaire"
-msgstr ""
+msgstr "Cuestionario linguístico"
 
 #: babylab/app/templates/que.html:12
 msgid "Showing details about language questionnaire"
-msgstr ""
+msgstr "Mostrar detalles del cuestionario linguístico"
 
 #: babylab/app/templates/que.html:12
 msgid ""
 "To modify, hit the 'Modify\n"
 "        questionnaire' button."
-msgstr ""
+msgstr "Para modificar, pulsa el botón 'Modificar cuestionario'."
 
 #: babylab/app/templates/que.html:32
 msgid "Modify questionnaire"
-msgstr ""
+msgstr "Modificar cuestionario"
 
 #: babylab/app/templates/que.html:50 babylab/app/templates/que_modify.html:37
 #: babylab/app/templates/que_new.html:33
 msgid "Language information"
-msgstr ""
+msgstr "Información linguística"
 
 #: babylab/app/templates/que.html:60
 msgid "Exposure"
-msgstr ""
+msgstr "Exposición"
 
 #: babylab/app/templates/que.html:88
 msgid "Created on the"
-msgstr ""
+msgstr "Creado el"
 
 #: babylab/app/templates/que.html:88
 msgid "last updated on the"
-msgstr ""
+msgstr "última actualización el"
 
 #: babylab/app/templates/que_all.html:9
 msgid "language questionnaires in the database"
-msgstr ""
+msgstr "cuestionarios lingüísticos en la base de datos"
 
 #: babylab/app/templates/que_modify.html:13
 msgid "Modifying language questionnaire"
-msgstr ""
+msgstr "Modificar el cuestionario lingüístico"
 
 #: babylab/app/templates/que_modify.html:13
 msgid "for participant"
-msgstr ""
+msgstr "para el participante"
 
 #: babylab/app/templates/que_modify.html:44
 #: babylab/app/templates/que_new.html:38
 msgid "Language profile is an estimation"
-msgstr ""
+msgstr "El perfil del lenguaje es una estimación"
 
 #: babylab/app/templates/que_modify.html:54
 #: babylab/app/templates/que_new.html:48
 msgid "Exposure (%)"
-msgstr ""
+msgstr "Exposición (%)"
 
 #: babylab/app/templates/que_new.html:12
 msgid "Adding a new language questionnaire for participant {{ ppt_id }}"
 msgstr ""
+"Añadiendo un nuevo cuestionario lingüístico para el participante {{ "
+"ppt_id }}"
 
 #: babylab/app/templates/studies.html:10
 msgid "Select a study to see details"
-msgstr ""
+msgstr "Selecciona un estudio para ver los detalles"
 
 #: babylab/app/templates/studies.html:25
 msgid "Select a study"
-msgstr ""
+msgstr "Selecciona un estudio"
 
 #: babylab/app/templates/studies.html:45
 msgid "Showing study details"
-msgstr ""
+msgstr "Mostrando detalles del estudio"
 
 #: babylab/app/templates/studies.html:80
 msgid "Successful appointments"
-msgstr ""
+msgstr "Citas realizadas con éxito"
 
 #: babylab/app/templates/studies.html:93
 msgid "Cancelled appointments"
-msgstr ""
+msgstr "Citas canceladas"
 
 #: babylab/app/templates/studies.html:164
 msgid "Click IDs to see a participant's profile"
-msgstr ""
+msgstr "Haz clic en los ID para ver el perfil del participante"
 
