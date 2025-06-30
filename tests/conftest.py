@@ -17,7 +17,7 @@ IS_GIHTUB_ACTIONS = os.getenv("GITHUB_ACTIONS") == "true"
 @pytest.fixture
 def app():
     """App factory for testing."""
-    yield create_app(env="test")
+    yield create_app(env_="test")
 
 
 @pytest.fixture
