@@ -12,7 +12,7 @@ coverage==7.6.9
 debugpy==1.8.11
 decorator==5.1.1
 executing==2.1.0
-Flask==3.1.0
+Flask==3.1.1
 flask-babel==4.0.0
 Flask-Caching==2.3.0
 gevent==24.11.1
