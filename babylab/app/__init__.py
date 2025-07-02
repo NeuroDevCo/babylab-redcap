@@ -4,6 +4,7 @@ import os
 import datetime
 from flask import Flask
 from flask_babel import Babel, lazy_gettext
+from flask_babel_js import BabelJS
 from babylab.app.routes import appointments, general, participants, questionnaires
 from babylab.app import config as conf
 
@@ -36,6 +37,8 @@ def create_app(env_: str = "prod"):
 
     # set up Babel for multilingual support
     Babel(app, locale_selector=conf.get_locale, timezone_selector=None)
+    babel_js = BabelJS(app)
+    babel_js.init_app(app=app)
 
     @app.context_processor
     def inject_babel():

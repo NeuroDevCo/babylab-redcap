@@ -66,3 +66,6 @@ babel-extract:
 
 babel-es:
 	pybabel init -i messages.pot -d translations -l es
+
+babel-compile:
+	pybabel compile -d babylab/translations
