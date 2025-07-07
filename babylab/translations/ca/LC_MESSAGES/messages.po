@@ -1,0 +1,885 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: POEditor.com\n"
+"Project-Id-Version: babylab-redcap\n"
+"Language: ca\n"
+
+#: babylab/app/templates/404.html:12 babylab/app/templates/443.html:16
+#: babylab/app/templates/500.html:15
+msgid "Go back to the main page"
+msgstr "Torna a la pàgina principal"
+
+#: babylab/app/templates/_dashboard.html:8
+#: babylab/app/templates/_dashboard.html:83 babylab/app/templates/_nav.html:20
+#: babylab/app/templates/ppt_all.html:8 babylab/app/templates/ppt_new.html:11
+msgid "Participants"
+msgstr "Participants"
+
+#: babylab/app/templates/_dashboard.html:26
+#: babylab/app/templates/_dashboard.html:88
+#: babylab/app/templates/_dashboard.html:309 babylab/app/templates/_nav.html:27
+#: babylab/app/templates/apt_all.html:7 babylab/app/templates/apt_new.html:9
+#: babylab/app/templates/ppt.html:224
+msgid "Appointments"
+msgstr "Cites"
+
+#: babylab/app/templates/_nav.html:34 babylab/app/templates/calendar.html:21
+msgid "Calendar"
+msgstr "Calendari"
+
+#: babylab/app/templates/_nav.html:40 babylab/app/templates/studies.html:7
+msgid "Studies"
+msgstr "Estudis"
+
+#: babylab/app/templates/_dashboard.html:95 babylab/app/templates/_nav.html:45
+msgid "Questionnaires"
+msgstr "Qüestionaris"
+
+#: babylab/app/templates/_nav.html:50
+msgid "Help/Others"
+msgstr "Ajuda/Altres"
+
+#: babylab/app/templates/que.html:48 babylab/app/templates/que_modify.html:47
+#: babylab/app/templates/que_new.html:45
+msgid "Language"
+msgstr "Llengua"
+
+#: babylab/app/templates/_dashboard.html:233
+#: babylab/app/templates/_status-info.html:3
+#: babylab/app/templates/apt_modify.html:50
+#: babylab/app/templates/apt_new.html:54
+msgid "Appointment status"
+msgstr "Estat de la cita"
+
+#: babylab/app/templates/_status-info.html:6
+msgid "Please, specify the appointment status based on the following guidelines:"
+msgstr "Si us plau, especifiqueu l'estat de la cita segons les directrius següents:"
+
+#: babylab/app/templates/_status-info.html:12
+msgid "Scheduled"
+msgstr "Scheduled"
+
+#: babylab/app/templates/_status-info.html:16
+msgid "The participant has agreed to an appointment with\n"
+"                    specific date and time. No appointment can be made without specific date and/or time."
+msgstr "El participant ha acceptat una cita amb una data i hora específiques. No es pot concertar cap cita sense una data i/o hora específiques."
+
+#: babylab/app/templates/_status-info.html:23
+msgid "Confirmed"
+msgstr "Confirmed"
+
+#: babylab/app/templates/_status-info.html:16
+msgid "The appointment has been successfully confirmed with the participant via call or e-mail,\n"
+"                    ideally\n"
+"                    the day before the appointment takes place."
+msgstr "La cita s'ha confirmat correctament amb el participant per trucada o correu electrònic,\n"
+"idealment\n"
+"el dia abans que tingui lloc la cita."
+
+#: babylab/app/templates/_status-info.html:34
+msgid "Successful"
+msgstr "Sucessful"
+
+#: babylab/app/templates/_status-info.html:22
+msgid "During the appointment, the participant has signed the consent form, and their ID should\n"
+"                    be present in the experiment participant sheet. No data should be collected before the consent form\n"
+"                    is\n"
+"                    signed. Every time the consent form has been signed, the appointment will be marked as Successful\n"
+"                    (even if\n"
+"                    no data were collected afterwards), with the only exception that the participant withdraws consent\n"
+"                    during\n"
+"                    the appointment."
+msgstr "Durant la cita, el participant ha signat el formulari de consentiment i el seu document d'identitat ha d'estar present al full de participant de l'experiment. No s'han de recollir dades abans que el formulari de consentiment\n"
+"es\n"
+"signi. Cada vegada que es signi el formulari de consentiment, la cita es marcarà com a Reeixida\n"
+"(fins i tot si\n"
+"no s'han recollit dades posteriorment), amb l'única excepció que el participant retiri el consentiment\n"
+"durant la cita."
+
+#: babylab/app/templates/_status-info.html:48
+msgid "Successful - Good"
+msgstr "Successful - Good"
+
+#: babylab/app/templates/_status-info.html:33
+msgid "Not only the appointment has been successful, the resulting data is good enough for the\n"
+"                    participant\n"
+"                    to be\n"
+"                    included in the study's data analyses. This status may be changed back to 'Successful' if the data\n"
+"                    is\n"
+"                    later considered unfit for data analysis. The motivation behind this status label is to keep track\n"
+"                    of how\n"
+"                    many appointments generate valid data, and how close we are to finishing data collection for the\n"
+"                    study."
+msgstr "No només la cita ha estat reeixida, sinó que les dades resultants són prou bones perquè el\n"
+"participant sigui inclòs a les anàlisis de dades de l'estudi. Aquest estat es pot tornar a canviar a \"Successful\" si les dades\n"
+"es consideren posteriorment no aptes per a l'anàlisi de dades. La motivació darrere d'aquesta etiqueta d'estat és fer un seguiment\n"
+"de quantes cites generen dades vàlides i de com de prop estem d'acabar la recopilació de dades per a l'\n"
+"estudi."
+
+#: babylab/app/templates/_status-info.html:63
+msgid "Cancelled Reschedule"
+msgstr "Cancelled - Reschedule"
+
+#: babylab/app/templates/_status-info.html:47
+msgid "Upon participant's or experimenter's request, the appointment will not take place, and will\n"
+"                    be/has\n"
+"                    been rescheduled instead."
+msgstr "A petició del participant o de l'experimentador, la cita no tindrà lloc i s'ha reprogramat."
+
+#: babylab/app/templates/_status-info.html:74
+msgid "Cancelled - Drop"
+msgstr "Cancelled - Drop"
+
+#: babylab/app/templates/_status-info.html:53
+msgid "Upon participant or experimenter's request, the appointment will not take place,\n"
+"                    and will not be rescheduled. If the participant withdraws consent during the appointment, the\n"
+"                    appointment\n"
+"                    should be marked as Cancelled - Drop."
+msgstr "A petició del participant o de l'experimentador, la cita no tindrà lloc,\n"
+"i no es reprogramarà. Si el participant retira el consentiment durant la cita,\n"
+"la cita\n"
+"s'ha de marcar com a Cancelled - Drop."
+
+#: babylab/app/templates/_status-info.html:86
+msgid "No show"
+msgstr "No show"
+
+#: babylab/app/templates/_status-info.html:60
+msgid "The appointment has not taken place because the participant has not showed\n"
+"                    up,\n"
+"                    without communicating it to the experimenter. If no rescheduling attempts are to be made (which\n"
+"                    would\n"
+"                    possible result in a Cancelled - Reschedule status), the appointment should be classified as No\n"
+"                    show."
+msgstr "La cita no s'ha celebrat perquè el participant no s'ha presentat\n"
+"\n"
+"sense comunicar-ho a l'experimentador. Si no es fan intents de reprogramació (cosa que\n"
+"\n"
+"possiblement resultaria en un estat Cancel·lat - Reprogramació), la cita s'ha de classificar com a No\n"
+"presentada."
+
+#: babylab/app/templates/apt.html:9 babylab/app/templates/apt.html:60
+#: babylab/app/templates/apt_modify.html:9
+msgid "Appointment"
+msgstr "Cita"
+
+#: babylab/app/templates/apt.html:12
+msgid "Showing details for appointment"
+msgstr "Mostrant els detalls de la cita"
+
+#: babylab/app/templates/apt.html:23 babylab/app/templates/que.html:24
+msgid "See participant"
+msgstr "Veure participant"
+
+#: babylab/app/templates/apt.html:26
+msgid "Modify appointment"
+msgstr "Modificar cita"
+
+#: babylab/app/templates/apt.html:32
+msgid "Add language questionnaire"
+msgstr "Afegeix un qüestionari d'idiomes"
+
+#: babylab/app/templates/apt.html:41 babylab/app/templates/apt_modify.html:31
+#: babylab/app/templates/apt_new.html:34
+msgid "Appointment information"
+msgstr "Informació de la cita"
+
+#: babylab/app/templates/apt.html:48
+msgid "Date"
+msgstr "Data"
+
+#: babylab/app/templates/apt.html:54 babylab/app/templates/ppt.html:7
+#: babylab/app/templates/ppt_modify.html:11
+msgid "Participant"
+msgstr "Participant"
+
+#: babylab/app/templates/apt.html:66
+msgid "Status"
+msgstr "Estat"
+
+#: babylab/app/templates/apt.html:76 babylab/app/templates/studies.html:19
+msgid "Study"
+msgstr "Estudi"
+
+#: babylab/app/templates/apt.html:82
+msgid "Made on the"
+msgstr "Fet a la"
+
+#: babylab/app/templates/apt.html:88 babylab/app/templates/ppt.html:70
+msgid "Last updated"
+msgstr "Última actualització"
+
+#: babylab/app/templates/apt.html:94 babylab/app/templates/apt.html:194
+#: babylab/app/templates/apt_modify.html:74
+#: babylab/app/templates/apt_new.html:77
+msgid "Taxi address"
+msgstr "Adreça del taxi"
+
+#: babylab/app/templates/apt.html:100 babylab/app/templates/apt_new.html:83
+msgid "Taxi booked?"
+msgstr "Taxi reservat?"
+
+#: babylab/app/templates/apt.html:106 babylab/app/templates/apt.html:153
+#: babylab/app/templates/apt_modify.html:87
+#: babylab/app/templates/apt_new.html:88 babylab/app/templates/ppt.html:91
+#: babylab/app/templates/ppt_modify.html:140
+#: babylab/app/templates/ppt_new.html:126
+#: babylab/app/templates/que_modify.html:164
+#: babylab/app/templates/que_new.html:156
+msgid "Comments"
+msgstr "Comentaris"
+
+#: babylab/app/templates/apt.html:116 babylab/app/templates/ppt.html:45
+#: babylab/app/templates/ppt_modify.html:36
+#: babylab/app/templates/ppt_new.html:31
+msgid "Participant information"
+msgstr "Informació del participant"
+
+#: babylab/app/templates/apt.html:123 babylab/app/templates/ppt.html:58
+msgid "Name"
+msgstr "Nom"
+
+#: babylab/app/templates/apt.html:129
+msgid "Added on"
+msgstr "Afegit el"
+
+#: babylab/app/templates/apt.html:135
+msgid "Age now"
+msgstr "Edat actual"
+
+#: babylab/app/templates/apt.html:141
+msgid "Age at appointment"
+msgstr "Edat en el moment de la cita"
+
+#: babylab/app/templates/apt.html:147 babylab/app/templates/ppt.html:85
+#: babylab/app/templates/ppt_modify.html:62
+#: babylab/app/templates/ppt_new.html:55
+msgid "Sex"
+msgstr "Sexe"
+
+#: babylab/app/templates/apt.html:163 babylab/app/templates/ppt.html:101
+msgid "Contact details"
+msgstr "Dades de contacte"
+
+#: babylab/app/templates/apt.html:170 babylab/app/templates/ppt.html:115
+msgid "Phone"
+msgstr "Telèfon"
+
+#: babylab/app/templates/apt.html:176 babylab/app/templates/ppt.html:121
+msgid "E-mail"
+msgstr "Correu electrònic"
+
+#: babylab/app/templates/apt.html:182 babylab/app/templates/ppt.html:127
+#: babylab/app/templates/ppt_modify.html:173
+#: babylab/app/templates/ppt_new.html:157
+msgid "Phone 2"
+msgstr "Telèfon 2"
+
+#: babylab/app/templates/apt.html:188 babylab/app/templates/ppt.html:133
+#: babylab/app/templates/ppt_modify.html:168
+#: babylab/app/templates/ppt_new.html:152
+msgid "E-mail 2"
+msgstr "Correu electrònic 2"
+
+#: babylab/app/templates/apt.html:200 babylab/app/templates/ppt.html:145
+#: babylab/app/templates/ppt_modify.html:189
+#: babylab/app/templates/ppt_new.html:169
+msgid "Postcode"
+msgstr "Codi postal"
+
+#: babylab/app/templates/apt.html:206 babylab/app/templates/ppt.html:151
+msgid "City"
+msgstr "Ciutat"
+
+#: babylab/app/templates/apt_all.html:10 babylab/app/templates/ppt_all.html:11
+#: babylab/app/templates/que_all.html:10
+msgid "There is a total of"
+msgstr "Hi ha un total de"
+
+#: babylab/app/templates/apt_all.html:10
+msgid "appointments in the database."
+msgstr "cites a la base de dades."
+
+#: babylab/app/templates/apt_modify.html:12
+msgid "Modifying details about appointment"
+msgstr "Modificació de detalls sobre la cita"
+
+#: babylab/app/templates/apt_modify.html:11
+msgid "Hit the 'Submit' button when\n"
+"        finished."
+msgstr "Premeu el botó «Desa» quan hàgiu acabat."
+
+#: babylab/app/templates/apt_modify.html:24
+#: babylab/app/templates/apt_new.html:27 babylab/app/templates/index.html:57
+#: babylab/app/templates/ppt_modify.html:29
+#: babylab/app/templates/ppt_new.html:23
+#: babylab/app/templates/que_modify.html:26
+#: babylab/app/templates/que_new.html:26
+msgid "Submit"
+msgstr "Desa"
+
+#: babylab/app/templates/apt_modify.html:42
+#: babylab/app/templates/apt_modify.html:57
+#: babylab/app/templates/apt_new.html:44 babylab/app/templates/apt_new.html:61
+#: babylab/app/templates/ppt_new.html:40 babylab/app/templates/ppt_new.html:59
+#: babylab/app/templates/que_modify.html:64
+#: babylab/app/templates/que_modify.html:91
+#: babylab/app/templates/que_modify.html:118
+#: babylab/app/templates/que_modify.html:145
+#: babylab/app/templates/que_new.html:61 babylab/app/templates/que_new.html:86
+#: babylab/app/templates/que_new.html:113
+#: babylab/app/templates/que_new.html:139
+msgid "Select one"
+msgstr "Selecciona'n un"
+
+#: babylab/app/templates/apt_modify.html:68
+#: babylab/app/templates/apt_new.html:72
+msgid "Appointment date"
+msgstr "Data de la cita"
+
+#: babylab/app/templates/apt_modify.html:82
+msgid "Taxi booked"
+msgstr "Taxi reservat"
+
+#: babylab/app/templates/apt_new.html:12
+msgid "New appointment for participant"
+msgstr "Nova cita per al participant"
+
+#: babylab/app/templates/calendar.html:22
+msgid "Showing appointments in calendar"
+msgstr "Mostrant cites al calendari"
+
+#: babylab/app/templates/dashboard.html:13
+msgid "Showing the current status of the project"
+msgstr "Mostrant l'estat actual del projecte"
+
+#: babylab/app/templates/dashboard.html:32
+#: babylab/app/templates/dashboard.html:45
+#: babylab/app/templates/studies.html:62
+msgid "In total"
+msgstr "En total"
+
+#: babylab/app/templates/dashboard.html:58
+#: babylab/app/templates/dashboard.html:71
+#: babylab/app/templates/studies.html:75 babylab/app/templates/studies.html:88
+#: babylab/app/templates/studies.html:101
+msgid "This week"
+msgstr "Aquesta setmana"
+
+#: babylab/app/templates/_dashboard.html:105
+msgid "Age distribution"
+msgstr "Distribució per edats"
+
+#: babylab/app/templates/_dashboard.html:128
+msgid "Sex distribution"
+msgstr "Distribució per sexe"
+
+#: babylab/app/templates/_dashboard.html:156
+msgid "Participant influx"
+msgstr "Afluència de participants"
+
+#: babylab/app/templates/_dashboard.html:180
+msgid "Source of participants"
+msgstr "Origen dels participants"
+
+#: babylab/app/templates/_dashboard.html:211
+msgid "Appointments made"
+msgstr "Cites fetes"
+
+#: babylab/app/templates/_dashboard.html:264
+msgid "First language distribution"
+msgstr "Distribució de la primera llengua"
+
+#: babylab/app/templates/_dashboard.html:286
+msgid "Second language distribution"
+msgstr "Distribució de segones llengües"
+
+#: babylab/app/templates/index.html:9 babylab/app/templates/index.html:82
+msgid "Welcome!"
+msgstr "Benvingut/da!"
+
+#: babylab/app/templates/index.html:29
+msgid "This app provides an interface to the <b>REDCap database</b> to\n"
+"          consult participant and appointment information conveniently. This is a work in progress, feel free to\n"
+"          report issues and provide feed-back"
+msgstr "Aquesta aplicació proporciona una interfície a la <b>base de dades REDCap</b> per consultar informació de participants i cites convenientment. Aquest és un treball en curs, no dubteu a informar de problemes i proporcionar comentaris."
+
+#: babylab/app/templates/index.html:44
+msgid "Please, provide your API token to access the database"
+msgstr "Si us plau, proporcioneu el vostre <em>API token</em> per accedir a la base de dades"
+
+#: babylab/app/templates/index.html:62 babylab/app/templates/index.html:87
+msgid "You can find your <b>API token</b> at REDCap."
+msgstr "Podeu trobar el vostre <b><em>API token</em></b> a REDCap."
+
+#: babylab/app/templates/index.html:84
+msgid "You have successfully logged in"
+msgstr "Has iniciat la sessió correctament"
+
+#: babylab/app/templates/ppt.html:10
+msgid "Showing details from participant"
+msgstr "Mostrant detalls del participant"
+
+#: babylab/app/templates/ppt.html:13 babylab/app/templates/ppt_modify.html:18
+msgid "Do not contact"
+msgstr "No contacteu"
+
+#: babylab/app/templates/ppt.html:27
+msgid "New appointment"
+msgstr "Nova cita"
+
+#: babylab/app/templates/ppt.html:30
+msgid "Modify participant"
+msgstr "Modifica participant"
+
+#: babylab/app/templates/apt.html:29 babylab/app/templates/ppt.html:33
+msgid "Add questionnaire"
+msgstr "Afegeix un qüestionari"
+
+#: babylab/app/templates/ppt.html:52 babylab/app/templates/ppt_modify.html:43
+msgid "Source"
+msgstr "Font"
+
+#: babylab/app/templates/ppt.html:64
+msgid "Added"
+msgstr "Afegit"
+
+#: babylab/app/templates/ppt.html:76
+msgid "Age"
+msgstr "Edat"
+
+#: babylab/app/templates/ppt.html:109
+msgid "Parent 1"
+msgstr "Pare 1"
+
+#: babylab/app/templates/ppt.html:139
+msgid "Address"
+msgstr "Adreça"
+
+#: babylab/app/templates/ppt.html:162 babylab/app/templates/ppt_modify.html:198
+#: babylab/app/templates/ppt_new.html:180
+msgid "Birth information"
+msgstr "Informació de naixement"
+
+#: babylab/app/templates/ppt.html:169 babylab/app/templates/ppt_modify.html:218
+#: babylab/app/templates/ppt_new.html:199
+msgid "Delivery type"
+msgstr "Tipus de lliurament"
+
+#: babylab/app/templates/ppt.html:175
+msgid "Gestation weeks"
+msgstr "Setmanes de gestació"
+
+#: babylab/app/templates/ppt.html:181 babylab/app/templates/ppt_modify.html:204
+#: babylab/app/templates/ppt_new.html:187
+msgid "Birth weight (g)"
+msgstr "Pes al néixer (g)"
+
+#: babylab/app/templates/ppt.html:187
+msgid "Head circ. (cm)"
+msgstr "Circumferència del cap (cm)"
+
+#: babylab/app/templates/ppt.html:193
+msgid "Apgar"
+msgstr "Apgar"
+
+#: babylab/app/templates/ppt.html:205
+msgid "Hearing"
+msgstr "Audiència"
+
+#: babylab/app/templates/ppt.html:211 babylab/app/templates/ppt_modify.html:256
+#: babylab/app/templates/ppt_new.html:235
+msgid "Diagnoses"
+msgstr "Diagnòstics"
+
+#: babylab/app/templates/ppt.html:231 babylab/app/templates/que_all.html:7
+#: babylab/app/templates/que_modify.html:10
+#: babylab/app/templates/que_new.html:9
+msgid "Language questionnaires"
+msgstr "Qüestionaris lingüístics"
+
+#: babylab/app/templates/ppt_all.html:11
+msgid "participants in the database."
+msgstr "participants a la base de dades."
+
+#: babylab/app/templates/ppt_all.html:22
+msgid "New participant"
+msgstr "Nou participant"
+
+#: babylab/app/templates/ppt_modify.html:14
+msgid "Modify the corresponding values and hit the submit button."
+msgstr "Modifiqueu els valors corresponents i premeu el botó 'Desa'."
+
+#: babylab/app/templates/ppt_modify.html:55
+msgid "Participant first name"
+msgstr "Nom del participant"
+
+#: babylab/app/templates/ppt_modify.html:76
+#: babylab/app/templates/ppt_new.html:72
+msgid "Parent 1 name"
+msgstr "Nom del pare/mare 1"
+
+#: babylab/app/templates/ppt_modify.html:83
+#: babylab/app/templates/ppt_new.html:78
+msgid "Parent 1 surname"
+msgstr "Cognom del pare/mare 1"
+
+#: babylab/app/templates/ppt_modify.html:92
+#: babylab/app/templates/ppt_new.html:86
+msgid "Parent 2 name"
+msgstr "Nom del pare/mare 2"
+
+#: babylab/app/templates/ppt_modify.html:99
+#: babylab/app/templates/ppt_new.html:92
+msgid "Parent 2 surname"
+msgstr "Cognom del pare/mare 2"
+
+#: babylab/app/templates/ppt_modify.html:109
+msgid "Age (months)"
+msgstr "Edat (mesos)"
+
+#: babylab/app/templates/ppt_modify.html:117
+msgid "Age (days)"
+msgstr "Edat (dies)"
+
+#: babylab/app/templates/ppt_modify.html:126
+#: babylab/app/templates/ppt_new.html:112
+msgid "Hearing test"
+msgstr "Prova d'audició"
+
+#: babylab/app/templates/ppt_modify.html:135
+#: babylab/app/templates/ppt_new.html:122
+msgid "Twin ID"
+msgstr "Identificació de bessons"
+
+#: babylab/app/templates/ppt_modify.html:148
+#: babylab/app/templates/ppt_new.html:134
+msgid "Contact information"
+msgstr "Informació de contacte"
+
+#: babylab/app/templates/ppt_modify.html:153
+#: babylab/app/templates/ppt_new.html:139
+msgid "This family should <em>not</em> be contacted again"
+msgstr "No s'hauria de tornar a contactar amb aquesta família"
+
+#: babylab/app/templates/ppt_modify.html:157
+#: babylab/app/templates/ppt_new.html:143
+msgid "E-mail 1"
+msgstr "Correu electrònic 1"
+
+#: babylab/app/templates/ppt_modify.html:163
+#: babylab/app/templates/ppt_new.html:148
+msgid "Phone 1"
+msgstr "Telèfon 1"
+
+#: babylab/app/templates/ppt_modify.html:179
+#: babylab/app/templates/ppt_new.html:161
+msgid "Home address"
+msgstr "Adreça postal"
+
+#: babylab/app/templates/ppt_modify.html:184
+#: babylab/app/templates/ppt_new.html:165
+msgid "City/place of residence"
+msgstr "Ciutat/lloc de residència"
+
+#: babylab/app/templates/ppt_modify.html:211
+#: babylab/app/templates/ppt_new.html:193
+msgid "Gestational weeks"
+msgstr "Setmanes gestacionals"
+
+#: babylab/app/templates/ppt_modify.html:227
+#: babylab/app/templates/ppt_new.html:210
+msgid "Head circumference (cm)"
+msgstr "circumferència del cap (cm)"
+
+#: babylab/app/templates/ppt_modify.html:235
+#: babylab/app/templates/ppt_new.html:217
+msgid "Apgar 1"
+msgstr "Apgar 1"
+
+#: babylab/app/templates/ppt_modify.html:242
+#: babylab/app/templates/ppt_new.html:223
+msgid "Apgar 2"
+msgstr "Apgar 2"
+
+#: babylab/app/templates/ppt_modify.html:249
+#: babylab/app/templates/ppt_new.html:229
+msgid "Apgar 3"
+msgstr "Apgar 3"
+
+#: babylab/app/templates/ppt_new.html:14
+msgid "Adding a new participant"
+msgstr "Afegint un nou participant"
+
+#: babylab/app/templates/ppt_new.html:49
+msgid "Participant name"
+msgstr "Nom del participant"
+
+#: babylab/app/templates/ppt_new.html:100
+msgid "Age months"
+msgstr "Mesos d'edat"
+
+#: babylab/app/templates/ppt_new.html:106
+msgid "Age days"
+msgstr "Dies d'edat"
+
+#: babylab/app/templates/ppt_new.html:173
+msgid "Postcode must be 5 digits!"
+msgstr "El codi postal ha de tenir 5 dígits!"
+
+#: babylab/app/templates/que.html:9
+msgid "Language questionnaire"
+msgstr "Qüestionari d'idiomes"
+
+#: babylab/app/templates/que.html:12
+msgid "Showing details about language questionnaire"
+msgstr "Mostrant detalls sobre el qüestionari d'idiomes"
+
+#: babylab/app/templates/que.html:12
+msgid "To modify, hit the 'Modify\n"
+"        questionnaire' button."
+msgstr "Per modificar-ho, feu clic al botó «Modifica\n"
+"qüestionari»."
+
+#: babylab/app/templates/que.html:27
+msgid "Modify questionnaire"
+msgstr "Modificar el qüestionari"
+
+#: babylab/app/templates/que.html:39 babylab/app/templates/que_modify.html:33
+#: babylab/app/templates/que_new.html:32
+msgid "Language information"
+msgstr "Informació sobre l'idioma"
+
+#: babylab/app/templates/que.html:49
+msgid "Exposure"
+msgstr "Exposició"
+
+#: babylab/app/templates/que.html:77
+msgid "Created on the"
+msgstr "Creat el"
+
+#: babylab/app/templates/que.html:77
+msgid "last updated on the"
+msgstr "darrera actualització el"
+
+#: babylab/app/templates/que_all.html:10
+msgid "language questionnaires in the database"
+msgstr "qüestionaris lingüístics a la base de dades"
+
+#: babylab/app/templates/que_modify.html:13
+msgid "Modifying language questionnaire"
+msgstr "Modificació del qüestionari d'idioma"
+
+#: babylab/app/templates/que_modify.html:13
+msgid "for participant"
+msgstr "per a participant"
+
+#: babylab/app/templates/que_modify.html:40
+#: babylab/app/templates/que_new.html:38
+msgid "Language profile is an estimation"
+msgstr "El perfil lingüístic és una estimació"
+
+#: babylab/app/templates/que_modify.html:50
+#: babylab/app/templates/que_new.html:48
+msgid "Exposure (%)"
+msgstr "Exposició (%)"
+
+#: babylab/app/templates/que_new.html:12
+msgid "Adding a new language questionnaire for participant {{ ppt_id }}"
+msgstr "Afegint un nou qüestionari d'idioma per al participant {{ ppt_id }}"
+
+#: babylab/app/templates/studies.html:10
+msgid "Select a study to see details"
+msgstr "Seleccioneu un estudi per veure els detalls"
+
+#: babylab/app/templates/studies.html:25
+msgid "Select a study"
+msgstr "Selecciona un estudi"
+
+#: babylab/app/templates/studies.html:45
+msgid "Showing study details"
+msgstr "Mostrant els detalls de l'estudi"
+
+#: babylab/app/templates/_dashboard.html:43
+msgid "Successful appointments"
+msgstr "Cites reeixides"
+
+#: babylab/app/templates/_dashboard.html:60
+msgid "Cancelled appointments"
+msgstr "Cites cancel·lades"
+
+#: babylab/app/templates/_dashboard.html:313
+msgid "Click IDs to see a participant's profile"
+msgstr "Feu clic als ID per veure el perfil d'un participant"
+
+#: babylab/app/static/js/plots.js:55 babylab/app/static/js/plots.js:86
+#: babylab/app/static/js/plots.js:118 babylab/app/static/js/plots.js:144
+msgid "# participants"
+msgstr "# participants"
+
+#: babylab/app/templates/_dashboard.html:18
+#: babylab/app/templates/_dashboard.html:35
+#: babylab/app/templates/_dashboard.html:52
+#: babylab/app/templates/_dashboard.html:69
+msgid "this week"
+msgstr "aquesta setmana"
+
+#: babylab/app/templates/_nav.html:56
+msgid "Log out"
+msgstr "Tanca la sessió"
+
+#: babylab/app/templates/_status-info.html:27
+msgid "The appointment has been successfully confirmed with the participant via call or e-mail,\n"
+"                    ideally the day before the appointment takes place."
+msgstr "La cita s'ha confirmat correctament amb el participant per trucada o correu electrònic, idealment el dia abans que tingui lloc la cita."
+
+#: babylab/app/templates/_status-info.html:38
+msgid "During the appointment, the participant has signed the consent form, and their ID should be\n"
+"                    present in the experiment participant sheet. No data should be collected before the consent form\n"
+"                    is signed. Every time the consent form has been signed, the appointment will be marked as Successful\n"
+"                    (even if no data were collected afterwards), with the only exception that the participant withdraws\n"
+"                    consent during the appointment."
+msgstr "Durant la cita, el participant ha signat el formulari de consentiment i el seu document d'identitat ha d'estar\n"
+"present al full de participant de l'experiment. No s'han de recollir dades abans que el formulari de consentiment\n"
+"sigui signat. Cada vegada que es signi el formulari de consentiment, la cita es marcarà com a Reeixida\n"
+"(fins i tot si no s'han recollit dades posteriorment), amb l'única excepció que el participant retiri\n"
+"el consentiment durant la cita."
+
+#: babylab/app/templates/_status-info.html:52
+msgid "Not only the appointment has been successful, the resulting data is good enough for the\n"
+"                    participant\n"
+"                    to be included in the study's data analyses. This status may be changed back to 'Successful' if the\n"
+"                    data is later considered unfit for data analysis. The motivation behind this status label is to keep\n"
+"                    track of how many appointments generate valid data, and how close we are to finishing data\n"
+"                    collection for the study."
+msgstr "No només la cita ha estat reeixida, sinó que les dades resultants són prou bones perquè el\n"
+"participant\n"
+"s'inclogui a les anàlisis de dades de l'estudi. Aquest estat es pot tornar a canviar a \"Successful\" si les\n"
+"dades es consideren posteriorment no aptes per a l'anàlisi de dades. La motivació darrere d'aquesta etiqueta d'estat és fer un seguiment de quantes cites generen dades vàlides i de com de prop estem d'acabar la recopilació de dades per a l'estudi."
+
+#: babylab/app/templates/_status-info.html:67
+msgid "Upon participant's or experimenter's request, the appointment will not take place, and will\n"
+"                    be/has been rescheduled instead."
+msgstr "A petició del participant o de l'experimentador, la cita no tindrà lloc i s'ha reprogramat."
+
+#: babylab/app/templates/_status-info.html:78
+msgid "Upon participant or experimenter's request, the appointment will not take place,\n"
+"                    and will not be rescheduled. If the participant withdraws consent during the appointment, the\n"
+"                    appointment should be marked as Cancelled - Drop."
+msgstr "A petició del participant o de l'experimentador, la cita no tindrà lloc,\n"
+"ni es reprogramarà. Si el participant retira el consentiment durant la cita,\n"
+"la cita s'ha de marcar com a Cancel·lada - Abandonada."
+
+#: babylab/app/templates/_status-info.html:90
+msgid "The appointment has not taken place because the participant has not showed up,\n"
+"                    without communicating it to the experimenter. If no rescheduling attempts are to be made (which\n"
+"                    would possible result in a Cancelled - Reschedule status), the appointment should be classified as\n"
+"                    No show."
+msgstr "La cita no s'ha celebrat perquè el participant no s'ha presentat,\n"
+"sense comunicar-ho a l'experimentador. Si no es fan intents de reprogramació (cosa que\n"
+"possiblement donaria lloc a l'estat \"Cancelled - Reschedule\"), la cita s'ha de classificar com a\n"
+"No presentada."
+
+#: babylab/app/templates/apt.html:32
+msgid "Delete appointment"
+msgstr "Suprimeix la cita"
+
+#: babylab/app/templates/apt_modify.html:12
+msgid "Hit the 'Submit' button when finished."
+msgstr "Premeu el botó \"Desa\" quan hàgiu acabat."
+
+#: babylab/app/templates/other.html:10
+msgid "Other"
+msgstr "Altres"
+
+#: babylab/app/templates/other.html:13
+msgid "Other actions."
+msgstr "Altres accions."
+
+#: babylab/app/templates/other.html:25
+msgid "Backup"
+msgstr "Còpia de seguretat"
+
+#: babylab/app/templates/other.html:28
+msgid "Download a backup of the REDCap project metadata, item, fields, and records"
+msgstr "Baixeu una còpia de seguretat de les metadades, els elements, els camps i els registres del projecte REDCap"
+
+#: babylab/app/templates/other.html:32
+msgid "Download backup"
+msgstr "Descarrega la còpia de seguretat"
+
+#: babylab/app/templates/other.html:41
+msgid "Help"
+msgstr "Ajuda"
+
+#: babylab/app/templates/other.html:44
+msgid "If you have run into an error, need help, or want to provide feed-back, please open a GitHub\n"
+"                    issue\n"
+"                    following the link below:"
+msgstr "Si heu trobat un error, necessiteu ajuda o voleu donar-nos la vostra opinió, obriu un <em>issue</em>de GitHub\n"
+"\n"
+"seguint l'enllaç següent:"
+
+#: babylab/app/templates/other.html:51
+msgid "Report an issue"
+msgstr "Informar d'un problema"
+
+#: babylab/app/templates/other.html:63
+msgid "Link to REDCap database"
+msgstr "Enllaç a la base de dades REDCap"
+
+#: babylab/app/templates/other.html:68
+msgid "Go to the database"
+msgstr "Anar a la base de dades"
+
+#: babylab/app/templates/other.html:80 babylab/app/templates/other.html:122
+msgid "Age calculator"
+msgstr "Calculadora d'edat"
+
+#: babylab/app/templates/other.html:85
+msgid "Date 1"
+msgstr "Data 1"
+
+#: babylab/app/templates/other.html:92
+msgid "Date 2"
+msgstr "Data 2"
+
+#: babylab/app/templates/other.html:99 babylab/app/templates/other.html:149
+msgid "Units"
+msgstr "Unitats"
+
+#: babylab/app/templates/other.html:104 babylab/app/templates/other.html:154
+msgid "Months and days"
+msgstr "Mesos i dies"
+
+#: babylab/app/templates/other.html:107 babylab/app/templates/other.html:157
+msgid "Hours and minutes"
+msgstr "Hores i minuts"
+
+#: babylab/app/templates/other.html:112 babylab/app/templates/other.html:163
+msgid "Calculate"
+msgstr "Calcula"
+
+#: babylab/app/templates/other.html:127
+msgid "Timestamp"
+msgstr "Marca de temps"
+
+#: babylab/app/templates/other.html:135
+msgid "Months"
+msgstr "Mesos"
+
+#: babylab/app/templates/other.html:141
+msgid "Days"
+msgstr "Dies"
+
+#: babylab/app/templates/ppt.html:36
+msgid "Delete participant"
+msgstr "Suprimeix participant"
+
+#: babylab/app/templates/que.html:30
+msgid "Delete questionnaire"
+msgstr "Suprimeix el qüestionari"
+
