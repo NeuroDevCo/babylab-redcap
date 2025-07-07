@@ -109,9 +109,9 @@ def fmt_new_button(record: str, ppt_id: str = None):
         )
     status = "success" if record == "Appointment" else "primary"
     if record == "Appointment":
-        button_str = f'<button type="button" class="btn btn-{status}"><i class="fa-solid fa-plus"></i>&nbsp;&nbsp;<i class="fa-solid fa-calendar"></i></button></a>'
+        button_str = f'<button type="button" class="btn-status btn-status-{status}"><i class="fa-solid fa-plus"></i>&nbsp;&nbsp;<i class="fa-solid fa-calendar"></i></button></a>'
         return f'<a href="/appointments/appointment_new?ppt_id={ppt_id}">{button_str}'
-    button_str = f'<button type="button" class="btn btn-{status}"><i class="fa-solid fa-plus"></i>&nbsp;&nbsp;<i class="fa-solid fa-language"></i></button></a>'
+    button_str = f'<button type="button" class="btn-status btn-status-{status}"><i class="fa-solid fa-plus"></i>&nbsp;&nbsp;<i class="fa-solid fa-language"></i></button></a>'
     return f'<a href="/questionnaires/questionnaire_new?ppt_id={ppt_id}">{button_str}'
 
 
@@ -217,7 +217,7 @@ def fmt_apt_status(x: str, markup: bool = True) -> str:
         "Cancelled - Drop": "drop",
         "No show": "drop",
     }
-    out = f"<p class='status-{status_css[x]}'><span>{x}</span></p>"
+    out = f"<p class='btn-status btn-status-{status_css[x]}'>{x}</p>"
     return Markup(out) if markup else out
 
 

@@ -571,58 +571,86 @@ address {
     border-color: #ff001e;
 }
 
-.status-scheduled span {
-    border-radius: 5px;
-    border-width: 3px;
-    border-style: solid;
-    border-color:#f0cc84;
-    color: black;
-    padding: 10px;
-    vertical-align: text-top;
+
+.btn-status {
+  align-items: center;
+  appearance: none;
+  background-size: calc(100% + 20px) calc(100% + 20px);
+  border-radius: 100px;
+  border-width: 0px;
+  box-shadow: none;
+  box-sizing: border-box;
+  color: black;
+  cursor: pointer;
+  display: inline-flex;
+  font-size: 1rem;
+  height: auto;
+  justify-content: center;
+  line-height: 1.5;
+  padding: 6px 20px;
+  position: relative;
+  text-align: center;
+  text-decoration: none;
+  transition: background-color .2s,background-position .2s;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  vertical-align: top;
+  white-space: nowrap;
 }
 
-.status-confirmed span {
-    border-radius: 5px;
-    background-color: #f0cc84;
-    color: black;
-    padding: 10px;
-    vertical-align: text-top;
+.btn-status:active,
+.btn-status:focus {
+  outline: none;
 }
 
-.status-successful span {
-    border-radius: 5px;
-    border-width: 3px;
-    border-style: solid;
-    border-color:#70d488;
-    color: black;
-    padding: 10px;
-    vertical-align: text-top;
+.btn-status:hover {
+  background-position: -20px -20px;
 }
 
-.status-good span {
-    border-radius: 5px;
+.btn-status:focus:not(:active) {
+  box-shadow: rgba(40, 170, 255, 0.25) 0 0 0 .125em;
+}
+
+.btn-status-scheduled {
+    border: 1px solid #1A1A1A;
+    border-width: 5px;
+    border-color: #ffae00;
+}
+
+.btn-status-confirmed {
+    background-color: #ffae00;
+    background-image: linear-gradient(1deg,#ffae00, #f0cc84 99%);
+}
+
+.btn-status-successful {
+    border: 1px solid #1A1A1A;
+    border-width: 5px;
+    border-color: #70d488;
+}
+
+.btn-status-good {
     background-color: #70d488;
-    color: black;
-    padding: 10px;
-    vertical-align: text-top;
+    background-image: linear-gradient(1deg,#70d488,#00aa66 99%);    
+    color: #ffffff
 }
 
-.status-reschedule span {
-    border-radius: 5px;
-    border-width: 3px;
-    border-style: solid;
-    border-color:#db6577;
-    color: black;
-    padding: 10px;
-    vertical-align: text-top;
-}
-
-.status-drop span {
-    border-radius: 5px;
+.btn-status-reschedule {
     background-color: #db6577;
+    background-image: linear-gradient(1deg,#db6577,rgb(221, 41, 68) 99%);    
     color: white;
-    padding: 10px;
-    vertical-align: text-top;
+}
+
+.btn-status-drop {
+    background-color: #807f7f;
+    background-image: linear-gradient(1deg,#b5b5b5,#807f7f 99%);    
+    color: white;
+}
+
+.btn-status-noshow {
+    background-color: #807f7f;
+    background-image: linear-gradient(1deg,#b5b5b5,#807f7f 99%);    
+    color: white;
 }
 
 @keyframes rotate {

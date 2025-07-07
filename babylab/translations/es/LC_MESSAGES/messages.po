@@ -511,6 +511,10 @@ msgstr "Padre 1/Tutor 1"
 msgid "Address"
 msgstr "Dirección"
 
+#: babylab/app/templates/apt.html:32
+msgid "Delete appointment"
+msgstr "Eliminar cita"
+
 #: babylab/app/templates/ppt.html:169 babylab/app/templates/ppt_modify.html:194
 #: babylab/app/templates/ppt_new.html:164
 msgid "Birth information"

@@ -1,4 +1,4 @@
-<div class="offcanvas offcanvas-end w-25" tabindex="-1" id="statusInfo" aria-labelledby="statusInfoLabel">
+<div class="offcanvas offcanvas-end w-25" tabindex="-1" overflow:auto id="statusInfo" aria-labelledby="statusInfoLabel">
     <div class="offcanvas-header">
         <h4 class="offcanvas-title" id="statusInfoLabel">{{ _("Appointment status") }}</h4>
         <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
@@ -7,33 +7,27 @@
     <div>
         <ol>
             <li>
-                <p class="status-scheduled">
-                    <span>
-                        {{ _("Scheduled") }}
-                    </span>
-                </p>
+                <button class="btn-status btn-status-scheduled">
+                    Scheduled
+                </button>
                 <p>
                     {{ _("The participant has agreed to an appointment with
                     specific date and time. No appointment can be made without specific date and/or time.") }}
                 </p>
             </li>
             <li>
-                <p class="status-confirmed">
-                    <span>
-                        {{ _("Confirmed") }}
-                    </span>
-                </p>
+                <button class="btn-status btn-status-confirmed">
+                    Confirmed
+                </button>
                 <p>
                     {{ _("The appointment has been successfully confirmed with the participant via call or e-mail,
                     ideally the day before the appointment takes place.") }}
                 </p>
             </li>
             <li>
-                <p class="status-successful">
-                    <span>
-                        {{ _("Successful") }}
-                    </span>
-                </p>
+                <button class="btn-status btn-status-successful">
+                    Successful
+                </button>
                 <p>
                     {{ _("During the appointment, the participant has signed the consent form, and their ID should be
                     present in the experiment participant sheet. No data should be collected before the consent form
@@ -43,11 +37,9 @@
                 </p>
             </li>
             <li>
-                <p class="status-good">
-                    <span>
-                        {{ _("Successful - Good") }}
-                    </span>
-                </p>
+                <button class="btn-status btn-status-good">
+                    Successful - Good
+                </button>
                 <p>
                     {{ _("Not only the appointment has been successful, the resulting data is good enough for the
                     participant
@@ -58,22 +50,18 @@
                 </p>
             </li>
             <li>
-                <p class="status-reschedule">
-                    <span>
-                        {{ _("Cancelled Reschedule") }}
-                    </span>
-                </p>
+                <button class="btn-status btn-status-reschedule">
+                    Cancelled - Reschedule
+                </button>
                 <p>
                     {{ _("Upon participant's or experimenter's request, the appointment will not take place, and will
                     be/has been rescheduled instead.") }}
                 </p>
             </li>
             <li>
-                <p class="status-drop">
-                    <span>
-                        {{ _("Cancelled - Drop") }}
-                    </span>
-                </p>
+                <button class="btn-status btn-status-drop">
+                    Cancelled - Drop
+                </button>
                 <p>
                     {{ _("Upon participant or experimenter's request, the appointment will not take place,
                     and will not be rescheduled. If the participant withdraws consent during the appointment, the
@@ -81,12 +69,10 @@
                 </p>
             </li>
             <li>
-                <p class="status-drop">
-                    <span>
-                        {{ _("No show") }}
-                    </span>
-                </p>
-                <p class="status-drop">
+                <button class="btn-status btn-status-noshow">
+                    No show
+                </button>
+                <p>
                     {{ _("The appointment has not taken place because the participant has not showed up,
                     without communicating it to the experimenter. If no rescheduling attempts are to be made (which
                     would possible result in a Cancelled - Reschedule status), the appointment should be classified as

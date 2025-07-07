@@ -1,6 +1,6 @@
 # babylab-redcap
 
-![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/NeuroDevComp/babylab-redcap/pytest.yml)
+![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/NeuroDevComp/babylab-redcap/lint-test.yml)
 ![GitHub Issues or Pull Requests](https://img.shields.io/github/issues/NeuroDevComp/babylab-redcap)
 ![PyPI - License](https://img.shields.io/pypi/l/babylab)
 ![PyPI - Status](https://img.shields.io/pypi/status/babylab)
