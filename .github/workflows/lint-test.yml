@@ -2,11 +2,15 @@ name: Pylint
 
 on:
   - push
+  - pull_request
 
 jobs:
   build:
-    runs-on:
-      - ubuntu-latest
+    strategy:
+      fail-fast: true
+      matrix:
+        os: ["windows-latest", "macos-latest"]
+    runs-on: ${{ matrix.os }}
 
     steps:
       - uses: actions/checkout@v4
@@ -28,3 +32,9 @@ jobs:
       - name: Analysing the code with pylint
         run: |
           uv run pylint $(git ls-files '*.py')
+
+      - name: Test with pytest
+        run: |
+          uv run pytest -v -p no:cacheprovider --exitfirst --benchmark-time-unit="s" --benchmark-autosave
+        env:
+          API_TEST_KEY: ${{ secrets.API_TEST_KEY }}
