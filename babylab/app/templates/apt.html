@@ -2,218 +2,243 @@
 {% block header %}
 {% endblock header %}
 {% block content %}
-<header>
-  <div class="jumbotron jumbotron-fluid">
-    <div class="container">
-      <h1 class="display-4">
-        {{ _("Appointment") }} {{ apt_id }}&nbsp;&nbsp;<i class="fa fa-calendar"></i>
-      </h1>
-      <p class="lead">
-        {{ _("Showing details for appointment") }} {{ apt_id }}.
-      </p>
+  <header>
+    <div class="jumbotron jumbotron-fluid">
+      <div class="container">
+        <h1 class="display-4">
+          {{ _("Appointment") }} {{ apt_id }}&nbsp;&nbsp;<i class="fa fa-calendar"></i>
+        </h1>
+        <p class="lead">
+          <button class="btn-status btn-status-scheduled">{{ data["status"] }}</button>
+        </p>
+      </div>
     </div>
     <hr class="my-4">
-</header>
-
-<body>
-  <div class="container">
-    <form>
-      <div class="btn-group" role="group" aria-label="Basic example">
-        <a class="btn btn-info" href="{{ url_for('ppt', ppt_id = ppt_id) }}">
-          <i class="fa fa-calendar-plus"></i>&nbsp;&nbsp;&nbsp;&nbsp;{{ _("See participant") }}
-        </a>
-        <a class="btn btn-warning" href="{{ url_for('apt_modify', apt_id = apt_id, ppt_id = ppt_id) }}">
-          <i class="fa fa-user-pen"></i>&nbsp;&nbsp;&nbsp;&nbsp;{{ _("Modify appointment") }}
-        </a>
-        <a class="btn btn-primary" href="{{ url_for('que_new', ppt_id = ppt_id) }}">
-          <i class=" fa-solid fa-file-circle-plus"></i>&nbsp;&nbsp;&nbsp;&nbsp;{{ _("Add questionnaire") }}
-        </a>
-        <button type="submit" name="deleteAppointment" class="btn btn-danger">
-          <i class="fa fa-delete-left"></i>&nbsp;&nbsp;&nbsp;&nbsp;{{ _("Delete appointment") }}
-        </button>
-      </div>
-    </form>
-  </div>
-  <br>
-  <div class="div-center">
-    <div class="card card-info">
-      <div class="card-header ">
-        {{ _("Appointment information") }}
-      </div>
-      <div class="card-body">
-        <table class="table table-hover table-borderless table-responsive">
-          <tbody>
-            <tr>
-              <th width="47%">
-                {{ _("Date") }}&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-clock"></i>
-              </th>
-              <td>{{ data["date"] }}</td>
-            </tr>
-            <tr>
-              <th width="47%">
-                {{ _("Participant") }}&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-person"></i>
-              </th>
-              <td user-select-all>{{ ppt_id }}</td>
-            </tr>
-            <tr>
-              <th>
-                {{ _("Appointment") }}&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-calendar"></i>
-              </th>
-              <td>{{ apt_id }}</td>
-            </tr>
-            <tr>
-              <th>
-                {{ _("Status") }}&nbsp;&nbsp;&nbsp;&nbsp;
-                <i class="fa fa-check"></i>&nbsp;&nbsp;
-                <a href="#statusInfo" role="button" data-bs-toggle="offcanvas" aria-controls="statusInfo">
-                  <i class="fa fa-info-circle" aria-hidden="true"></i>
-                </a>
-              </th>
-              <td>{{ data["status"] }}</td>
-            </tr>
-            <tr>
-              <th>
-                {{ _("Study") }}&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-flask"></i>
-              </th>
-              <td>{{ data["study"] }}</td>
-            </tr>
-            <tr>
-              <th>
-                {{ _("Made on the") }}&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-calendar"></i>
-              </th>
-              <td>{{ data["date_created"] }}</td>
-            </tr>
-            <tr>
-              <th>
-                {{ _("Last updated") }}&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-pen"></i>
-              </th>
-              <td>{{ data["date_updated"] }}</td>
-            </tr>
-            <tr>
-              <th>
-                {{ _("Taxi address") }}&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-car"></i>
-              </th>
-              <td>{{ data["taxi_address"] }}</td>
-            </tr>
-            <tr>
-              <th>
-                {{ _("Taxi booked?") }}&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-check"></i>
-              </th>
-              <td>{{ data["taxi_isbooked"] | safe }}</td>
-            </tr>
-            <tr>
-              <th>
-                {{ _("Comments") }}&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-comment"></i>
-              </th>
-              <td>{{ data["comments"] }}</td>
-            </tr>
-          </tbody>
-        </table>
+  </header>
+  <body>
+    <div class="container">
+      <form>
+        <div class="btn-group" role="group" aria-label="Basic example">
+          <a class="btn btn-info" href="{{ url_for('ppt', ppt_id = ppt_id) }}">
+            <i class="fa fa-calendar-plus"></i>&nbsp;&nbsp;&nbsp;&nbsp;{{ _("See participant") }}
+          </a>
+          <a class="btn btn-mod-apt"
+             href="{{ url_for('apt_modify', apt_id = apt_id, ppt_id = ppt_id) }}">
+            <i class="fa fa-user-pen"></i>&nbsp;&nbsp;&nbsp;&nbsp;{{ _("Modify appointment") }}
+          </a>
+          <a class="btn btn-new-que"
+             href="{{ url_for('que_new', ppt_id = ppt_id) }}">
+            <i class=" fa-solid fa-file-circle-plus"></i>&nbsp;&nbsp;&nbsp;&nbsp;{{ _("Add questionnaire") }}
+          </a>
+          <button type="submit" name="deleteAppointment" class="btn btn-del-apt">
+            <i class="fa fa-delete-left"></i>&nbsp;&nbsp;&nbsp;&nbsp;{{ _("Delete appointment") }}
+          </button>
+        </div>
+      </form>
+    </div>
+    <br>
+    <div class="container">
+      <div class="row justify-content-center">
+        <br>
+        <div class="col-lg-10">
+          <div class="contact-wrapper">
+            <div class="row g-0">
+              <div class="col-md-5">
+                <div class="contact-info h-100">
+                  <h3 class="mb-4">Contact details</h3>
+                  <div class="contact-item">
+                    <div class="contact-icon">
+                      <i class="fas fa-person-breastfeeding"></i>
+                    </div>
+                    <div>
+                      <h6 class="mb-0">{{ _("Parents") }}</h6>
+                      <p class="mb-0">{{ participant["parent1_name"] }} {{ participant["parent1_surname"] }}</p>
+                      <p class="mb-0">{{ participant["parent2_name"] }} {{ participant["parent2_surname"] }}</p>
+                    </div>
+                  </div>
+                  <div class="contact-item">
+                    <div class="contact-icon">
+                      <i class="fas fa-phone"></i>
+                    </div>
+                    <div>
+                      <h6 class="mb-0">{{ _("Phone") }}</h6>
+                      <p class="mb-0">{{ participant["phone1"] }}</p>
+                      <p class="mb-0">{{ participant["phone2"] }}</p>
+                    </div>
+                  </div>
+                  <div class="contact-item">
+                    <div class="contact-icon">
+                      <i class="fas fa-envelope"></i>
+                    </div>
+                    <div>
+                      <h6 class="mb-0">{{ _("E-mail") }}</h6>
+                      <p class="mb-0">{{ participant["email1"] }}</p>
+                      <p class="mb-0">{{ participant["email2"] }}</p>
+                    </div>
+                  </div>
+                  <div class="contact-item">
+                    <div class="contact-icon">
+                      <i class="fas fa-map-marker-alt"></i>
+                    </div>
+                    <div>
+                      <h6 class="mb-0">{{ _("Address") }}</h6>
+                      <p class="mb-0">{{ participant["address"] }}</p>
+                    </div>
+                  </div>
+                  <div class="contact-item">
+                    <div class="contact-icon">
+                      <i class="fas fa-house"></i>
+                    </div>
+                    <div>
+                      <h6 class="mb-0">{{ _("Postcode") }}</h6>
+                      <p class="mb-0">{{ participant["postcode"] }}</p>
+                    </div>
+                  </div>
+                  <div class="contact-item">
+                    <div class="contact-icon">
+                      <i class="fas fa-city"></i>
+                    </div>
+                    <div>
+                      <h6 class="mb-0">{{ _("City") }}</h6>
+                      <p class="mb-0">{{ participant["city"] }}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-7">
+                <div class="contact-form">
+                  <p>
+                    <b class="mb-4">{{ _("Name") }}</b>
+                    {{ participant["name"] }}    |
+                    <b class="mb-4">{{ _("Date") }}</b>
+                    {{ data["date"] }}
+                  </p>
+                  <div class="btn-group" role="group">
+                    <a class="btn btn-info" href="{{ url_for('ppt', ppt_id = ppt_id) }}">
+                      <i class="fa fa-calendar-plus"></i>&nbsp;&nbsp;&nbsp;&nbsp;{{ _("See participant") }}
+                    </a>
+                    <a class="btn btn-warning"
+                       href="{{ url_for('apt_modify', ppt_id = ppt_id, apt_id = apt_id) }}">
+                      <i class="fa fa-user-pen"></i>&nbsp;&nbsp;&nbsp;&nbsp;{{ _("Modify appointment") }}
+                    </a>
+                    <a class="btn btn-primary"
+                       href="{{ url_for('que_new', ppt_id = ppt_id) }}">
+                      <i class=" fa-solid fa-file-circle-plus"></i>&nbsp;&nbsp;&nbsp;&nbsp;{{ _("Add questionnaire") }}
+                    </a>
+                    <button type="submit" name="deleteApointment" class="btn btn-danger">
+                      <i class="fa fa-delete-left"></i>&nbsp;&nbsp;&nbsp;&nbsp;{{ _("Delete appointment") }}
+                    </button>
+                  </div>
+                  <br>
+                  <h3>{{ _("Participant information") }}</h3>
+                  <table class="table table-hover table-borderless table-responsive">
+                    <tbody>
+                      <tr>
+                        <th width="47%">
+                          {{ _("Age now") }}&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-hourglass-start"></i>
+                        </th>
+                        <td>{{ participant["age_now_months"] + ":" + participant["age_now_days"] }}</td>
+                      </tr>
+                      <tr>
+                        <th>
+                          {{ _("Age at appointment") }}&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-hourglass-finish"></i>
+                        </th>
+                        <td>{{ data["age_apt_months"] + ":" + data["age_apt_days"] }}</td>
+                      </tr>
+                      <tr>
+                        <th>
+                          {{ _("Sex") }}&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-venus-mars"></i>
+                        </th>
+                        <td>{{ participant["sex"] }}</td>
+                      </tr>
+                      <tr>
+                        <th>
+                          {{ _("Comments") }}&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-comment"></i>
+                        </th>
+                        <td>{{ participant["comments"] }}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                  <br>
+                  <h3>{{ _("Apointment information") }}</h3>
+                  <table class="table table-hover table-borderless table-responsive">
+                    <tbody>
+                      <tr>
+                        <th width="47%">
+                          {{ _("Date") }}&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-clock"></i>
+                        </th>
+                        <td>{{ data["date"] }}</td>
+                      </tr>
+                      <tr>
+                        <th width="47%">
+                          {{ _("Participant") }}&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-person"></i>
+                        </th>
+                        <td user-select-all>{{ ppt_id }}</td>
+                      </tr>
+                      <tr>
+                        <th>
+                          {{ _("Appointment") }}&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-calendar"></i>
+                        </th>
+                        <td>{{ apt_id }}</td>
+                      </tr>
+                      <tr>
+                        <th>
+                          {{ _("Status") }}&nbsp;&nbsp;&nbsp;&nbsp;
+                          <i class="fa fa-check"></i>&nbsp;&nbsp;
+                          <a href="#statusInfo"
+                             role="button"
+                             data-bs-toggle="offcanvas"
+                             aria-controls="statusInfo">
+                            <i class="fa fa-info-circle" aria-hidden="true"></i>
+                          </a>
+                        </th>
+                        <td>{{ data["status"] }}</td>
+                      </tr>
+                      <tr>
+                        <th>
+                          {{ _("Study") }}&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-flask"></i>
+                        </th>
+                        <td>{{ data["study"] }}</td>
+                      </tr>
+                      <tr>
+                        <th>
+                          {{ _("Made on the") }}&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-calendar"></i>
+                        </th>
+                        <td>{{ data["date_created"] }}</td>
+                      </tr>
+                      <tr>
+                        <th>
+                          {{ _("Last updated") }}&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-pen"></i>
+                        </th>
+                        <td>{{ data["date_updated"] }}</td>
+                      </tr>
+                      <tr>
+                        <th>
+                          {{ _("Taxi address") }}&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-car"></i>
+                        </th>
+                        <td>{{ data["taxi_address"] }}</td>
+                      </tr>
+                      <tr>
+                        <th>
+                          {{ _("Taxi booked?") }}&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-check"></i>
+                        </th>
+                        <td>{{ data["taxi_isbooked"] | safe }}</td>
+                      </tr>
+                      <tr>
+                        <th>
+                          {{ _("Comments") }}&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-comment"></i>
+                        </th>
+                        <td>{{ data["comments"] }}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
-    <div class="card card-info">
-      <div class="card-header ">
-        {{ _("Participant information") }}
-      </div>
-      <div class="card-body">
-        <table class="table table-hover table-borderless table-responsive">
-          <tbody>
-            <tr>
-              <th width="48%">
-                {{ _("Name") }}&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-person"></i>
-              </th>
-              <td user-select-all>{{ participant["name"] }}</td>
-            </tr>
-            <tr>
-              <th>
-                {{ _("Added on") }}&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-calendar"></i>
-              </th>
-              <td>{{ participant["date_created"] }}</td>
-            </tr>
-            <tr>
-              <th>
-                {{ _("Age now") }}&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-hourglass-start"></i>
-              </th>
-              <td>{{ participant["age_now_months"] + ":" + participant["age_now_days"] }}</td>
-            </tr>
-            <tr>
-              <th>
-                {{ _("Age at appointment") }}&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-hourglass-finish"></i>
-              </th>
-              <td>{{ data["age_apt_months"] + ":" + data["age_apt_days"] }}</td>
-            </tr>
-            <tr>
-              <th>
-                {{ _("Sex") }}&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-venus-mars"></i>
-              </th>
-              <td>{{ participant["sex"] }}</td>
-            </tr>
-            <tr>
-              <th>
-                {{ _("Comments") }}&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-comment"></i>
-              </th>
-              <td>{{ participant["comments"] }}</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-    <div class="card card-info">
-      <div class="card-header ">
-        {{ _("Contact details") }}
-      </div>
-      <div class="card-body">
-        <table class="table table-hover table-borderless table-responsive">
-          <tbody>
-            <tr>
-              <th width="48%">
-                {{ _("Phone") }}&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-phone"></i>
-              </th>
-              <td user-select-all>{{ participant["phone1"] }}</td>
-            </tr>
-            <tr>
-              <th>
-                {{ _("E-mail") }}&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-envelope"></i>
-              </th>
-              <td>{{ participant["email1"] }}</td>
-            </tr>
-            <tr>
-              <th>
-                {{ _("Phone 2") }}&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-phone"></i>
-              </th>
-              <td user-select-all>{{ participant["phone2"] }}</td>
-            </tr>
-            <tr>
-              <th>
-                {{ _("E-mail 2") }}&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-envelope"></i>
-              </th>
-              <td>{{ participant["email2"] }}</td>
-            </tr>
-            <tr>
-              <th>
-                {{ _("Taxi address") }}&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-house"></i>
-              </th>
-              <td>{{ participant["house"] }}</td>
-            </tr>
-            <tr>
-              <th>
-                {{ _("Postcode") }}&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-city"></i>
-              </th>
-              <td>{{ data["postcode"] }}</td>
-            </tr>
-            <tr>
-              <th>
-                {{ _("City") }}&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-city"></i>
-              </th>
-              <td>{{ participant["city"] }}</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-  <div class="offcanvas-body">
-    {% include "_status-info.html" %}
-  </div>
-</body>
+    <div class="offcanvas-body">{% include "_status-info.html" %}</div>
+  </body>
 {% endblock content %}

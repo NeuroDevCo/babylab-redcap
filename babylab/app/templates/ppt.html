@@ -1,231 +1,239 @@
 {% extends "_base.html" %}
 {% block content %}
-<header>
-  <div class="jumbotron jumbotron-fluid">
-    <div class="container">
-      <h1 class="display-4">
-        {{ _("Participant") }} {{ ppt_id }}&nbsp;&nbsp;<i class="fa fa-user"></i>
-      </h1>
-      <p class="lead">
-        {{ _("Showing details from participant") }} {{ ppt_id }}.
-      </p>
-      {% if data["data"]["isdropout"]=="1" %}
-      <p class="warning">{{ _("Do not contact") }} &nbsp;<i class="fa-solid fa-triangle-exclamation"></i>
-      </p>
-      {% endif %}
-      </p>
+  <header>
+    <div class="jumbotron jumbotron-fluid">
+      <div class="container">
+        <h1 class="display-4">
+          {{ _("Participant") }} {{ ppt_id }}&nbsp;&nbsp;<i class="fa fa-user"></i>
+        </h1>
+        <p class="lead">{{ _("Showing details from participant") }} {{ ppt_id }}.</p>
+        {% if data["data"]["isdropout"]=="1" %}
+          <p class="warning">
+            {{ _("Do not contact") }} &nbsp;<i class="fa-solid fa-triangle-exclamation"></i>
+          </p>
+        {% endif %}
+      </div>
     </div>
-  </div>
-  <hr class="my-4">
-</header>
-
-<body>
-  <div class="container">
-    <form>
-      <div class="btn-group" role="group" aria-label="Basic example">
-        <a class="btn btn-success" href="{{ url_for('apt_new', ppt_id = ppt_id) }}">
-          <i class="fa fa-calendar-plus"></i>&nbsp;&nbsp;&nbsp;&nbsp;{{ _("New appointment") }}
-        </a>
-        <a class="btn btn-warning" href="{{ url_for('ppt_modify', ppt_id = ppt_id) }}">
-          <i class="fa fa-user-pen"></i>&nbsp;&nbsp;&nbsp;&nbsp;{{ _("Modify participant") }}
-        </a>
-        <a class="btn btn-primary" href="{{ url_for('que_new', ppt_id = ppt_id) }}"">
-          <i class=" fa-solid fa-file-circle-plus"></i>&nbsp;&nbsp;&nbsp;&nbsp;{{ _("Add questionnaire") }}
-        </a>
-        <button type="submit" name="deleteParticipant" class="btn btn-danger">
-          <i class="fa fa-delete-left"></i>&nbsp;&nbsp;&nbsp;&nbsp;{{ _("Delete participant") }}
-        </button>
-      </div>
-    </form>
-  </div>
-  <div class="row col-12">
-    <div class="div-center">
-      <div class="card card-info">
-        <div class="card-header ">
-          {{ _("Participant information") }}
+    <hr class="my-4">
+  </header>
+  <body>
+    <div class="container">
+      <form>
+        <div class="btn-group" role="group" aria-label="Basic example">
+          <a class="btn btn-new-apt"
+             href="{{ url_for('apt_new', ppt_id = ppt_id) }}">
+            <i class="fa fa-calendar-plus"></i>&nbsp;&nbsp;&nbsp;&nbsp;{{ _("New appointment") }}
+          </a>
+          <a class="btn btn-mod-ppt"
+             href="{{ url_for('ppt_modify', ppt_id = ppt_id) }}">
+            <i class="fa fa-user-pen"></i>&nbsp;&nbsp;&nbsp;&nbsp;{{ _("Modify participant") }}
+          </a>
+          <a class="btn btn-new-que" href="{{ url_for('que_new', ppt_id = ppt_id) }}"">
+            <i class=" fa-solid fa-file-circle-plus"></i>&nbsp;&nbsp;&nbsp;&nbsp;{{ _("Add questionnaire") }}
+          </a>
+          <button type="submit" name="deleteParticipant" class="btn btn-del-ppt">
+            <i class="fa fa-delete-left"></i>&nbsp;&nbsp;&nbsp;&nbsp;{{ _("Delete participant") }}
+          </button>
         </div>
-        <div class="card-body">
-          <table class="table table-hover table-borderless table-responsive">
-            <tbody>
-              <tr>
-                <th width="47%">
-                  {{ _("Source") }}&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-database"></i>
-                </th>
-                <td user-select-all>{{ data["data"]["source"] }}</td>
-              </tr>
-              <tr>
-                <th width="47%">
-                  {{ _("Name") }}&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-person"></i>
-                </th>
-                <td user-select-all>{{ data["data"]["name"] }}</td>
-              </tr>
-              <tr>
-                <th>
-                  {{ _("Added") }}&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-calendar"></i>
-                </th>
-                <td>{{ data["data"]["date_created"] }}</td>
-              </tr>
-              <tr>
-                <th>
-                  {{ _("Last updated") }}&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-pen"></i>
-                </th>
-                <td>{{ data["data"]["date_updated"] }}</td>
-              </tr>
-              <tr>
-                <th>
-                  {{ _("Age") }}&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-hourglass-start"></i>
-                </th>
-                <td>
-                  {{ data["data"]["age_now_months"] + ":" +
-                  data["data"]["age_now_days"] }}
-                </td>
-              </tr>
-              <tr>
-                <th>
-                  {{ _("Sex") }}&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-venus-mars"></i>
-                </th>
-                <td>{{ data["data"]["sex"] }}</td>
-              </tr>
-              <tr>
-                <th>
-                  {{ _("Comments") }}&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-comments"></i>
-                </th>
-                <td>{{ data["data"]["comments"] }}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-      <div class="card card-info">
-        <div class="card-header ">
-          {{ _("Contact details") }}
-        </div>
-        <div class="card-body">
-          <div class="card-text">
-            <table class="table table-hover table-borderless table-responsive">
-              <tbody>
-                <tr>
-                  <th>
-                    {{ _("Parent 1") }}&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa-solid fa-person-breastfeeding"></i>
-                  </th>
-                  <td>{{ data["data"]["parent1_name"] }} {{ data["data"]["parent1_surname"] }}</td>
-                </tr>
-                <tr>
-                  <th>
-                    {{ _("Phone") }}&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-phone"></i>
-                  </th>
-                  <td>{{ data["data"]["phone1"] }}</td>
-                </tr>
-                <tr>
-                  <th>
-                    {{ _("E-mail") }}&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-envelope"></i>
-                  </th>
-                  <td>{{ data["data"]["email1"] }}</td>
-                </tr>
-                <tr>
-                  <th>
-                    {{ _("Phone 2") }}&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-phone"></i>
-                  </th>
-                  <td>{{ data["data"]["phone2"] }}</td>
-                </tr>
-                <tr>
-                  <th>
-                    {{ _("E-mail 2") }}&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-envelope"></i>
-                  </th>
-                  <td>{{ data["data"]["email2"] }}</td>
-                </tr>
-                <tr>
-                  <th>
-                    {{ _("Address") }}&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-house"></i>
-                  </th>
-                  <td>{{ data["data"]["address"] }}</td>
-                </tr>
-                <tr>
-                  <th>
-                    {{ _("Postcode") }}&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-city"></i>
-                  </th>
-                  <td>{{ data["data"]["postcode"] }}</td>
-                </tr>
-                <tr>
-                  <th>
-                    {{ _("City") }}&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-city"></i>
-                  </th>
-                  <td>{{ data["data"]["city"] }}</td>
-                </tr>
-              </tbody>
-            </table>
+      </form>
+    </div>
+    <br>
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-lg-10">
+          <div class="contact-wrapper">
+            <div class="row g-0">
+              <div class="col-md-5">
+                <div class="contact-info h-100">
+                  <h3 class="mb-4">Contact details</h3>
+                  <div class="contact-item">
+                    <div class="contact-icon">
+                      <i class="fas fa-person-breastfeeding"></i>
+                    </div>
+                    <div>
+                      <h6 class="mb-0">{{ _("Parents") }}</h6>
+                      <p class="mb-0">{{ data["data"]["parent1_name"] }} {{ data["data"]["parent1_surname"] }}</p>
+                      <p class="mb-0">{{ data["data"]["parent2_name"] }} {{ data["data"]["parent2_surname"] }}</p>
+                    </div>
+                  </div>
+                  <div class="contact-item">
+                    <div class="contact-icon">
+                      <i class="fas fa-phone"></i>
+                    </div>
+                    <div>
+                      <h6 class="mb-0">{{ _("Phone") }}</h6>
+                      <p class="mb-0">{{ data["data"]["phone1"] }}</p>
+                      <p class="mb-0">{{ data["data"]["phone2"] }}</p>
+                    </div>
+                  </div>
+                  <div class="contact-item">
+                    <div class="contact-icon">
+                      <i class="fas fa-envelope"></i>
+                    </div>
+                    <div>
+                      <h6 class="mb-0">{{ _("E-mail") }}</h6>
+                      <p class="mb-0">{{ data["data"]["email1"] }}</p>
+                      <p class="mb-0">{{ data["data"]["email2"] }}</p>
+                    </div>
+                  </div>
+                  <div class="contact-item">
+                    <div class="contact-icon">
+                      <i class="fas fa-map-marker-alt"></i>
+                    </div>
+                    <div>
+                      <h6 class="mb-0">{{ _("Address") }}</h6>
+                      <p class="mb-0">{{ data["data"]["address"] }}</p>
+                    </div>
+                  </div>
+                  <div class="contact-item">
+                    <div class="contact-icon">
+                      <i class="fas fa-house"></i>
+                    </div>
+                    <div>
+                      <h6 class="mb-0">{{ _("Postcode") }}</h6>
+                      <p class="mb-0">{{ data["data"]["postcode"] }}</p>
+                    </div>
+                  </div>
+                  <div class="contact-item">
+                    <div class="contact-icon">
+                      <i class="fas fa-city"></i>
+                    </div>
+                    <div>
+                      <h6 class="mb-0">{{ _("City") }}</h6>
+                      <p class="mb-0">{{ data["data"]["city"] }}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-7">
+                <div class="contact-form">
+                  <h1 class="mb-4">{{ _("Name") }}: {{ data["data"]["name"] }}</h1>
+                  <div class="btn-group" role="group" aria-label="Basic example">
+                    <a class="btn" href="{{ url_for('apt_new', ppt_id = ppt_id) }}">
+                      <i class="fa fa-calendar-plus"></i>&nbsp;&nbsp;&nbsp;&nbsp;{{ _("New appointment") }}
+                    </a>
+                    <a class="btn" href="{{ url_for('ppt_modify', ppt_id = ppt_id) }}">
+                      <i class="fa fa-user-pen"></i>&nbsp;&nbsp;&nbsp;&nbsp;{{ _("Modify participant") }}
+                    </a>
+                    <a class="btn" href="{{ url_for('que_new', ppt_id = ppt_id) }}">
+                      <i class=" fa-solid fa-file-circle-plus"></i>&nbsp;&nbsp;&nbsp;&nbsp;{{ _("Add questionnaire") }}
+                    </a>
+                    <button type="submit" name="deleteParticipant" class="btn">
+                      <i class="fa fa-delete-left"></i>&nbsp;&nbsp;&nbsp;&nbsp;{{ _("Delete participant") }}
+                    </button>
+                  </div>
+                  <br>
+                  <table class="table table-hover table-borderless table-responsive">
+                    <tbody>
+                      <tr>
+                        <th width="43%">
+                          {{ _("Added") }}&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-calendar"></i>
+                        </th>
+                        <td>{{ data["data"]["date_created"] }}</td>
+                      </tr>
+                      <tr>
+                        <th>
+                          {{ _("Last updated") }}&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-pen"></i>
+                        </th>
+                        <td>{{ data["data"]["date_updated"] }}</td>
+                      </tr>
+                      <tr>
+                        <th>
+                          {{ _("Age") }}&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-hourglass-start"></i>
+                        </th>
+                        <td>{{ data["data"]["age_now_months"] }} months, {{ data["data"]["age_now_days"] }} days</td>
+                      </tr>
+                      <tr>
+                        <th>
+                          {{ _("Sex") }}&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-venus-mars"></i>
+                        </th>
+                        <td>{{ data["data"]["sex"] }}</td>
+                      </tr>
+                      <tr>
+                        <th>
+                          {{ _("Source") }}&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-database"></i>
+                        </th>
+                        <td user-select-all>{{ data["data"]["source"] }}</td>
+                      </tr>
+                      <tr>
+                        <th>
+                          {{ _("Comments") }}&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-comments"></i>
+                        </th>
+                        <td>{{ data["data"]["comments"] }}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                  <hr class="my-12">
+                  <br>
+                  <h3>{{ _("Birth information") }}</h3>
+                  <table class="table table-hover table-borderless table-responsive">
+                    <tbody>
+                      <tr>
+                        <th width="43%">
+                          {{ _("Delivery type") }}&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-hospital"></i>
+                        </th>
+                        <td user-select-all>{{ data["data"]["birth_type"] }}</td>
+                      </tr>
+                      <tr>
+                        <th>
+                          {{ _("Gestation weeks") }}&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-clock"></i>
+                        </th>
+                        <td>{{ data["data"]["gest_weeks"] }}</td>
+                      </tr>
+                      <tr>
+                        <th>
+                          {{ _("Birth weight (g)") }}&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-weight-scale"></i>
+                        </th>
+                        <td>{{ data["data"]["birth_weight"] }}</td>
+                      </tr>
+                      <tr>
+                        <th>
+                          {{ _("Head circ. (cm)") }}&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-ruler"></i>
+                        </th>
+                        <td>{{ data["data"]["head_circumference"] }}</td>
+                      </tr>
+                      <tr>
+                        <th>
+                          {{ _("Apgar") }}&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-check"></i>
+                        </th>
+                        <td>
+                          {{ data["data"]["apgar1"] }}
+                          {% if data["data"]["apgar1"] and data["data"]["apgar2"] %}|{% endif %}
+                          {{ data["data"]["apgar2"] }}
+                          {% if data["data"]["apgar2"] and data["data"]["apgar3"] %}|{% endif %}
+                          {{ data["data"]["apgar3"] }}
+                        </td>
+                      </tr>
+                      <tr>
+                        <th>
+                          {{ _("Hearing") }}&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-headphones"></i>
+                        </th>
+                        <td>{{ data["data"]["hearing"] }}</td>
+                      </tr>
+                      <tr>
+                        <th>
+                          {{ _("Diagnoses") }}&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-user-doctor"></i>
+                        </th>
+                        <td class="tdbreak">{{ data["data"]["diagnoses"] }}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
-      <div class="card card-info">
-        <div class="card-header ">
-          {{ _("Birth information") }}
-        </div>
-        <div class="card-body">
-          <table class="table table-hover table-borderless table-responsive">
-            <tbody>
-              <tr>
-                <th width="60%">
-                  {{ _("Delivery type") }}&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-hospital"></i>
-                </th>
-                <td user-select-all>{{ data["data"]["birth_type"] }}</td>
-              </tr>
-              <tr>
-                <th>
-                  {{ _("Gestation weeks") }}&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-clock"></i>
-                </th>
-                <td>{{ data["data"]["gest_weeks"] }}</td>
-              </tr>
-              <tr>
-                <th>
-                  {{ _("Birth weight (g)") }}&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-weight-scale"></i>
-                </th>
-                <td>{{ data["data"]["birth_weight"] }}</td>
-              </tr>
-              <tr>
-                <th>
-                  {{ _("Head circ. (cm)") }}&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-ruler"></i>
-                </th>
-                <td>{{ data["data"]["head_circumference"] }}</td>
-              </tr>
-              <tr>
-                <th>
-                  {{ _("Apgar") }}&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-check"></i>
-                </th>
-                <td>
-                  {{ data["data"]["apgar1"] }}
-                  {% if data["data"]["apgar1"] and data["data"]["apgar2"] %}|{% endif %}
-                  {{ data["data"]["apgar2"] }}
-                  {% if data["data"]["apgar2"] and data["data"]["apgar3"] %}|{% endif %}
-                  {{ data["data"]["apgar3"] }}
-                </td>
-              </tr>
-              <tr>
-                <th>
-                  {{ _("Hearing") }}&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-headphones"></i>
-                </th>
-                <td>{{ data["data"]["hearing"] }}</td>
-              </tr>
-              <tr>
-                <th>
-                  {{ _("Diagnoses") }}&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-user-doctor"></i>
-                </th>
-                <td class="tdbreak">{{ data["data"]["diagnoses"] }}</td>
-              </tr>
-            </tbody>
-          </table>
+    </div>
+    <div class="container">
+      <div class="div-center">
+        <div class="card card-table">
+          <div class="card-header ">{{ _("Appointments") }}</div>
+          <div class="card-body">{{ data["table_appointments"] | safe }}</div>
         </div>
       </div>
     </div>
-  </div>
-  <div class="row col-12">
-    <div class="div-center">
-      <div class="card card-table">
-        <div class="card-header ">{{ _("Appointments") }}</div>
-        <div class="card-body">{{ data["table_appointments"] | safe }}</div>
-      </div>
-    </div>
-    <div class="row col-12">
+    <div class="container">
       <div class="div-center">
         <div class="card card-table">
           <div class="card-header ">{{ _("Language questionnaires") }}</div>
@@ -233,6 +241,5 @@
         </div>
       </div>
     </div>
-  </div>
-</body>
+  </body>
 {% endblock content %}
