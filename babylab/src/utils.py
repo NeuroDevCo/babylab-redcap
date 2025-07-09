@@ -8,7 +8,7 @@ from collections.abc import Iterable
 from datetime import date, timedelta, datetime
 from functools import singledispatch
 from copy import deepcopy
-from pandas import DataFrame
+from pandas import DataFrame, to_datetime
 from markupsafe import Markup
 from babylab.src import api
 
@@ -272,7 +272,7 @@ def get_age_timestamp(
         date_type (str, optional): Timestamp at which to calculate age. Defaults to "date".
 
     Raises:
-        ValueError: If tiemstamp is not "date" or "date_created".
+        ValueError: If timestamp is not "date" or "date_created".
 
     Returns:
         tuple[str, str]: Age at timestamp in months and days.
@@ -422,6 +422,8 @@ def get_apt_table(
     df["age_apt_months"], df["age_apt_days"] = get_age_timestamp(
         apt_records, ppt_records, "date"
     )
+    df["date"] = to_datetime(df.date)
+    df["date"] = df["date"].dt.strftime("%d/%m/%y %H:%M")
     if relabel:
         df = replace_labels(df, data_dict)
     return df
