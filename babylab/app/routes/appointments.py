@@ -182,7 +182,7 @@ def apt_routes(app):
                 records = conf.get_records_or_index(token=token)
                 app.config["RECORDS"] = records
                 flash(f"Appointment added! ({ppt_id})", "success")
-                return redirect(url_for("apt_all", records=records))
+                return redirect(url_for("ppt_all", records=records))
             except requests.exceptions.HTTPError as e:
                 flash(f"Something went wrong! {e}", "error")
                 return render_template("apt_new.html", data_dict=data_dict)

@@ -272,7 +272,7 @@ def ppt_routes(app):
                 api.add_participant(data, modifying=False, token=token)
                 flash(f"Participant added! ({ ppt_id })", "success")
                 app.config["RECORDS"] = conf.get_records_or_index(token=token)
-                return redirect(url_for("que_new", ppt_id=ppt_id))
+                return redirect(url_for("ppt", ppt_id=ppt_id))
             except requests.exceptions.HTTPError as e:
                 flash(f"Something went wrong! {e}", "error")
                 return redirect(url_for("ppt_new", data_dict=data_dict))
