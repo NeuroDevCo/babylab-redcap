@@ -76,8 +76,6 @@ def prepare_record_id(ppt: api.Participant, data_dict: dict) -> dict:
     data["age_now_months"], data["age_now_days"] = str(age[0]), str(age[1])
     data["parent1"] = data["parent1_name"] + " " + data["parent1_surname"]
     data["parent2"] = data["parent2_name"] + " " + data["parent2_surname"]
-    data["date_created"] = datetime.strftime(data["date_created"], "%d/%m/%y %H:%M:%S")
-    data["date_updated"] = datetime.strftime(data["date_updated"], "%d/%m/%y %H:%M:%S")
 
     classes = "table table-hover table-responsive"
 
@@ -173,7 +171,8 @@ def prepare_record_id(ppt: api.Participant, data_dict: dict) -> dict:
         index=False,
         bold_rows=True,
     )
-
+    data["date_created"] = datetime.strftime(data["date_created"], "%d/%m/%y %H:%M:%S")
+    data["date_updated"] = datetime.strftime(data["date_updated"], "%d/%m/%y %H:%M:%S")
     return {
         "data": data,
         "table_appointments": table_apt,

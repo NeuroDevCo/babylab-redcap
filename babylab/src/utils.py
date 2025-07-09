@@ -273,7 +273,7 @@ def get_age_timestamp(
         date_type (str, optional): Timestamp at which to calculate age. Defaults to "date".
 
     Raises:
-        ValueError: If tiemstamp is not "date" or "date_created".
+        ValueError: If timestamp is not "date" or "date_created".
 
     Returns:
         tuple[str, str]: Age at timestamp in months and days.
