@@ -1,43 +1,37 @@
 {% extends "_base.html" %}
-
 {% block content %}
-<header>
-  <div class="jumbotron jumbotron-fluid">
+  <header>
+    <div class="jumbotron jumbotron-fluid">
+      <div class="container">
+        <h1 class="display-4">
+          {{ _("Participants") }}&nbsp;&nbsp;<i class="fa fa-users"></i>
+        </h1>
+        <p class="lead">{{ _("There is a total of") }} {{ n_ppt }} {{ _("participants in the database.") }}</p>
+      </div>
+    </div>
+    <hr class="my-4">
+  </header>
+  <body>
     <div class="container">
-      <h1 class="display-4">
-        {{ _("Participants") }}&nbsp;&nbsp;<i class="fa fa-users"></i>
-      </h1>
-      <p class="lead">
-        {{ _("There is a total of") }} {{ n_ppt }} {{ _("participants in the database.") }}
-      </p>
+      <div class="btn-group" role="group">
+        <a href="{{ url_for('ppt_new') }}" class="btn btn-lg">
+          <i class="fa fa-user-plus"></i>&nbsp;&nbsp;{{ _("New participant") }}
+        </a>
+      </div>
     </div>
-  </div>
-  <hr class="my-4">
-</header>
-
-<body>
-  <div class="container">
-    <div class="btn-group" role="group">
-      <a href="{{ url_for('ppt_new') }}" class="btn btn-lg btn-dark">
-        <i class="fa fa-user-plus"></i>&nbsp;&nbsp;{{ _("New participant") }}
-      </a>
+    <div class="div-center">
+      <div class="card-table">{{ data["table"] | safe }}</div>
     </div>
-  </div>
-  <div class="div-center">
-    <div class="card-table">
-      {{ data["table"] | safe }}
-    </div>
-  </div>
-  <script
-    src="https://cdn.datatables.net/v/bs5/jq-3.7.0/dt-2.2.2/b-3.2.1/fh-4.0.1/sp-2.3.3/sl-3.0.0/datatables.min.js"></script>
-  <script type="text/javascript" src="{{ url_for('static', filename='js/tables.js') }}"></script>
-  <script>
+    <script src="https://cdn.datatables.net/v/bs5/jq-3.7.0/dt-2.2.2/b-3.2.1/fh-4.0.1/sp-2.3.3/sl-3.0.0/datatables.min.js"></script>
+    <script type="text/javascript"
+            src="{{ url_for('static', filename='js/tables.js') }}"></script>
+    <script>
     $("#ppttable").append("<tfoot><tr><th></th><th>record_id</th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th></tr></tfoot>")
 
     $("#ppttable tfoot th").each(function (index, value) {
       var title = $(this).text();
       if ([1].includes(index)) {
-        $(this).html(`<input type="text" placeholder="Search ID"/>`);
+        $(this).html(`<input type="text" placeholder="Search ID" />`);
       } else {
         $(this).html('');
       }
@@ -57,6 +51,6 @@
       });
     });
 
-  </script>
-</body>
+    </script>
+  </body>
 {% endblock content %}

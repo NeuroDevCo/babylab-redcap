@@ -87,19 +87,19 @@ button {
 }
 
 .language-selector {
-	display: inline-block;
-	width: 100%;
-	cursor: pointer;
+    display: inline-block;
+    width: 100%;
+    cursor: pointer;
     margin-left: 2em;
-  	padding: 7px 10px;
-  	height: 42px;
+    padding: 7px 10px;
+    height: 42px;
     right: 0;
-  	outline: 1; 
-	background: none;
-	color: black;
-	font-size: 20px;
+    outline: 1;
+    background: none;
+    color: black;
+    font-size: 20px;
     font-family: 'Roboto', Fallback, sans-serif;
-	border:1px solid rgba(0,0,0,0.2);
+    border: 1px solid rgba(0, 0, 0, 0.2);
     border-radius: 2.5px;
     position: relative;
     transition: all 0.25s ease;
@@ -253,7 +253,7 @@ p.card-highlight {
     vertical-align: top;
 }
 
-.form-check-input{
+.form-check-input {
     width: 1.25em;
     height: 1.25em;
     margin-right: 0.5em;
@@ -271,12 +271,87 @@ p.card-highlight {
     justify-content: center;
 }
 
-.btn:not([width]){
+.btn:not([width]) {
     font-family: 'Ciutadella Semibold', 'Roboto', Fallback, sans-serif;
-    margin: 0.5em;
-    width: 65px;
+    margin: 0.2em;
+    width: 40px;
     padding-left: 0.5em;
     padding-right: 0.5em;
+}
+
+#wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    inset: 0;
+}
+
+.iconDiv {
+    height: 50px;
+    width: 36px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    margin-left: 4px;
+    padding: 4px;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    white-space: nowrap;
+    overflow: hidden;
+    cursor: pointer;
+    transition: width 300ms ease-in-out 0s, background-color 300ms linear 200ms;
+}
+
+.icon {
+    height: 10px;
+}
+
+.iconDiv:hover,
+.iconDiv:focus-visible {
+    width: 142px;
+    background-color: var(--color-mid);
+    transition: width 300ms ease-in-out 0s, background-color 100ms linear 0s;
+}
+
+.iconDiv:focus-visible {
+    outline: 1px solid var(--color-mid);
+    outline-offset: 4px;
+}
+
+.iconDiv:active {
+    opacity: 0.9;
+}
+
+.iconDiv::after {
+    content: attr(tooltip);
+    margin-left: 12px;
+    animation: fadeIn 600ms linear forwards;
+}
+
+.spacer {
+    flex-grow: 1;
+}
+
+.divider {
+    height: 36px;
+    width: 1px;
+    margin: 24px 18px;
+    background-color: var(--color-dark);
+}
+
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+    }
+
+    50% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
 }
 
 
@@ -465,22 +540,6 @@ dt-search {
     }
 }
 
-address {
-    font-style: normal;
-    font-size: rem-calc(14);
-
-    p {
-        margin-bottom: 0;
-    }
-}
-
-.social li {
-    margin-bottom: 0;
-
-    &:last-child {
-        margin-bottom: 0;
-    }
-}
 
 .legal {
     li {
@@ -506,6 +565,104 @@ address {
     padding: 10px 15px;
     text-decoration: none;
     text-transform: uppercase;
+}
+
+.contact-wrapper {
+    background: white;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 5px 30px rgba(0, 0, 0, 0.1);
+}
+
+.contact-info {
+    background: linear-gradient(135deg, rgb(222, 222, 222), rgb(233, 233, 233));
+    padding: 40px;
+}
+
+.contact-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 25px;
+    transition: all 0.3s ease;
+}
+
+.contact-item:hover {
+    transform: translateX(10px);
+}
+
+.contact-icon {
+    width: 40px;
+    height: 40px;
+    background: #ffffff;
+    border-radius: 50%;
+    color: black;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 15px;
+}
+
+.social-links {
+    margin-top: 30px;
+}
+
+.social-icon {
+    width: 35px;
+    height: 35px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 10px;
+    transition: all 0.3s ease;
+}
+
+.social-icon:hover {
+    background: white;
+    color: #ea6212;
+    transform: translateY(-3px);
+}
+
+.contact-form {
+    padding: 40px;
+}
+
+.form-control {
+    border-radius: 10px;
+    padding: 12px 15px;
+    border: 2px solid #eee;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus {
+    border-color: #ea6212;
+    box-shadow: none;
+}
+
+.form-label {
+    font-weight: 500;
+    margin-bottom: 8px;
+}
+
+.btn-submit {
+    background: linear-gradient(135deg, #c54900, #ea6212);
+    border: none;
+    padding: 12px 30px;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+}
+
+.btn-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px #ea6212;
+}
+
+.map-container {
+    height: 200px;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-top: 20px;
 }
 
 #pills-participants-tab,
@@ -572,44 +729,87 @@ address {
 }
 
 
-.btn-status {
-  align-items: center;
-  appearance: none;
-  background-size: calc(100% + 20px) calc(100% + 20px);
-  border-radius: 100px;
-  border-width: 0px;
-  box-shadow: none;
-  box-sizing: border-box;
-  color: black;
-  cursor: pointer;
-  display: inline-flex;
-  font-size: 1rem;
-  height: auto;
-  justify-content: center;
-  line-height: 1.5;
-  padding: 6px 20px;
-  position: relative;
-  text-align: center;
-  text-decoration: none;
-  transition: background-color .2s,background-position .2s;
-  user-select: none;
-  -webkit-user-select: none;
-  touch-action: manipulation;
-  vertical-align: top;
-  white-space: nowrap;
+.btn-status,
+.btn {
+    align-items: center;
+    appearance: none;
+    background-size: calc(100% + 20px) calc(100% + 20px);
+    border-radius: 100px;
+    border-width: 0px;
+    box-shadow: none;
+    box-sizing: border-box;
+    color: black;
+    cursor: pointer;
+    display: inline-flex;
+    font-size: 1rem;
+    height: auto;
+    justify-content: center;
+    line-height: 1.5;
+    margin: 1px;
+    padding: 6px 10px;
+    position: relative;
+    text-align: center;
+    text-decoration: none;
+    transition: background-color .2s, background-position .2s;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+    vertical-align: top;
+    white-space: nowrap;
 }
 
 .btn-status:active,
 .btn-status:focus {
-  outline: none;
+    outline: none;
 }
 
 .btn-status:hover {
-  background-position: -20px -20px;
+    background-position: -20px -20px;
 }
 
 .btn-status:focus:not(:active) {
-  box-shadow: rgba(40, 170, 255, 0.25) 0 0 0 .125em;
+    box-shadow: rgba(40, 170, 255, 0.25) 0 0 0 .125em;
+}
+
+
+.btn-new-apt,
+.btn-new-ppt {
+    background-color: rgb(0, 167, 89);
+    color: white
+}
+
+.btn-mod-apt,
+.btn-mod-ppt {
+    background-color: rgb(255, 196, 0);
+}
+
+.btn-new-que {
+    background-color: rgb(0, 98, 255);
+    color: white
+}
+
+.btn-del-apt,
+.btn-del-ppt {
+    background-color: rgb(255, 0, 85);
+    color: white
+}
+
+.btn-status-scheduled {
+    border: 1px solid #1A1A1A;
+    border-width: 5px;
+    border-color: #ffae00;
+}
+
+.btn-status-scheduled {
+    border: 1px solid #1A1A1A;
+    border-width: 5px;
+    border-color: #ffae00;
+}
+
+.btn-status-scheduled {
+    border: 1px solid #1A1A1A;
+    border-width: 5px;
+    border-color: #ffae00;
 }
 
 .btn-status-scheduled {
@@ -620,7 +820,7 @@ address {
 
 .btn-status-confirmed {
     background-color: #ffae00;
-    background-image: linear-gradient(1deg,#ffae00, #f0cc84 99%);
+    background-image: linear-gradient(1deg, #ffae00, #f0cc84 99%);
 }
 
 .btn-status-successful {
@@ -631,25 +831,25 @@ address {
 
 .btn-status-good {
     background-color: #70d488;
-    background-image: linear-gradient(1deg,#70d488,#00aa66 99%);    
+    background-image: linear-gradient(1deg, #70d488, #00aa66 99%);
     color: #ffffff
 }
 
 .btn-status-reschedule {
     background-color: #db6577;
-    background-image: linear-gradient(1deg,#db6577,rgb(221, 41, 68) 99%);    
+    background-image: linear-gradient(1deg, #db6577, rgb(221, 41, 68) 99%);
     color: white;
 }
 
 .btn-status-drop {
     background-color: #807f7f;
-    background-image: linear-gradient(1deg,#b5b5b5,#807f7f 99%);    
+    background-image: linear-gradient(1deg, #b5b5b5, #807f7f 99%);
     color: white;
 }
 
 .btn-status-noshow {
     background-color: #807f7f;
-    background-image: linear-gradient(1deg,#b5b5b5,#807f7f 99%);    
+    background-image: linear-gradient(1deg, #b5b5b5, #807f7f 99%);
     color: white;
 }
 
