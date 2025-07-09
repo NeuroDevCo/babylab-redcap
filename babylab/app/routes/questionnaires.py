@@ -114,6 +114,12 @@ def que_routes(app):
             if data["isestimated"] == "1"
             else "<div style='color: green'>Calculated</div>"
         )
+        data["date_created"] = datetime.strftime(
+            data["date_created"], "%d/%m/%y %H:%M:%S"
+        )
+        data["date_updated"] = datetime.strftime(
+            data["date_updated"], "%d/%m/%y %H:%M:%S"
+        )
         return render_template("que.html", ppt_id=ppt_id, que_id=que_id, data=data)
 
     @app.route("/questionnaires/questionnaire_new", methods=["GET", "POST"])
