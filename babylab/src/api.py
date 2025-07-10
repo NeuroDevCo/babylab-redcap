@@ -13,7 +13,7 @@ from datetime import datetime
 from dateutil.relativedelta import relativedelta
 import pytz
 import requests
-import pandas as pd
+from pandas import DataFrame
 
 
 class RecordList:
@@ -28,20 +28,14 @@ class RecordList:
     def __repr__(self) -> str:
         return f"RecordList with {len(self)} records"
 
-    def to_df(self) -> pd.DataFrame:
+    def to_df(self) -> DataFrame:
         """Transforms a a RecordList to a Pandas DataFrame.
 
         Returns:
-            pd.DataFrame: Tabular dataset.
+            DataFrame: Tabular dataset.
         """
-        db_list = []
-        for v in self.records.values():
-            d = pd.DataFrame(v.data.items())
-            d = d.set_index([0])
-            db_list.append(d.transpose())
-        df = pd.concat(db_list)
-        df.index = pd.Index(df[df.columns[0]])
-        df = df[df.columns[1:]]
+        df = DataFrame([p.data for p in self.records.values()])
+        df.set_index("record_id", inplace=True)
         return df
 
 
