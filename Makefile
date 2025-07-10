@@ -34,3 +34,6 @@ babel-es:
 
 babel-compile:
 	pybabel compile -d babylab/translations
+
+exe:
+	uv run pyinstaller -w -F --add-data "babylab/app/templates;templates" --add-data "babylab/app/static;static" --add-data "babylab/app/routes;routes" --add-data "babylab/translations;translations" --add-data "babylab/src;src" run.py --name "babylab-redcap" --onefile --icon="favicon.ico"

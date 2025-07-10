@@ -28,12 +28,15 @@ dependencies = [
   "dotenv>=0.9.9",
   "flask>=3.1.1",
   "flask-babel>=4.0.0",
+  "flaskwebgui>=1.1.6",
   "markupsafe>=3.0.2",
   "pandas",
+  "pyinstaller>=6.14.2",
   "pylint>=3.3.7",
   "pytest>=8.4.1",
   "pytest-benchmark>=5.1.0",
   "requests",
+  "waitress>=3.0.2",
 ]
 
 [project.urls]
