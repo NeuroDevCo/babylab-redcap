@@ -163,7 +163,6 @@ a.fc-event {
     border-radius: 0;
 }
 
-
 .card-footer:b {
     font-family: 'Ciutadella Bold', 'Roboto Bold', Fallback, sans-serif;
     background-color: white;
@@ -205,7 +204,7 @@ a.fc-event {
 
 .card-table {
     background-color: white;
-    width: 80%;
+    width: 100%;
     float: left;
     margin: 1em;
     text-wrap: pretty;
@@ -256,6 +255,10 @@ p.card-highlight {
 .warning {
     background-color: #ff001e;
     color: white;
+}
+
+.searchPane{
+    background-color: #313131;
 }
 
 #wrapper {
@@ -648,6 +651,12 @@ dt-search {
     white-space: nowrap;
 }
 
+.dtsp-searchIcon {
+    height: 25px;
+    vertical-align: middle;
+    display: flex;
+    align-items: center;
+} 
 
 .btn-group {
     display: flex;
@@ -694,7 +703,7 @@ dt-search {
 }
 
 .btn-submit {
-    background:rgb(178, 178, 178);
+    background:rgb(231, 230, 230);
     border: none;
     border-radius: 100px;
     box-shadow: #000 !important;
@@ -759,10 +768,20 @@ dt-search {
     color: white;
 }
 
+
 .btn-subtle {
     width: 50px;
     background-color: white;
-    border: white;
+    border-width: 0 !important;
+}
+
+.dtsp-searchButtonCont {
+    border-width: 0 !important;
+    background-color: white !important;
+}
+
+.dtsp-clearAll {
+    width: 200px !important;
 }
 
 @keyframes moveInBottom {

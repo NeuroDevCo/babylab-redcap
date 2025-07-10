@@ -12,160 +12,139 @@ function tbl_ppt(id) {
             { title: 'Source' },
             { title: 'E-mail' },
             { title: 'Phone' },
-            { title: 'Buttons' },
+            { title: '' },
         ],
+        keys: true,
         layout: {
-            topStart: {
-                buttons: [
-                    {
-                        extend: 'searchPanes',
-                        config: {
-                            cascadePanes: true,
-                            combiner: 'or',
-                            collapse: true,
-                            controls: false,
-                            viewTotal: true,
-                            columns: [3, 5, 6],
-                        }
+            bottom: {
+                searchPanes: {
+                    layout: 'columns-4',
+                    cascadePanes: true,
+                    orderable: false,
+                    collapse: false,
+                    dtOpts: {
+                        paging: true,
+                        pagingType: 'numbers',
+                        searching: true
                     }
-                ]
-            },
-        },
-        language: {
-            searchPanes: {
-                collapse: '<i class="fa fa-filter fa-lg"></i>&nbsp;&nbsp;Filter'
-            },
-        },
-    });
-
-    table.on('click', 'td', function (e) {
-        let tr = e.target.closest('tr');
-        let row = table.row(tr);
-        if (row.child.isShown()) {
-            row.child.hide();
-        }
-        else {
-            row.child(format_ppt(row.data())).show();
-        }
-    });
-
-    return table;
-}
-
-function dt(id, searchCols, hideCols, lookupCols, queStatusCol, aptStatusCol) {
-
-
-    let table = new DataTable(id, {
-        fixedHeader: true,
-        layout: {
-            topStart: {
-                buttons: [
-                    {
-                        extend: 'searchPanes',
-                        config: {
-                            cascadePanes: true,
-                            combiner: 'or',
-                            collapse: true,
-                            controls: false,
-                            viewTotal: true,
-                            columns: searchCols,
-                        }
-                    }
-                ]
-            },
-        },
-        language: {
-            searchPanes: {
-                collapse: '<i class="fa fa-filter fa-lg"></i>&nbsp;&nbsp;Filter'
-            },
+                }
+            }
         },
         columnDefs: [
             {
                 visible: false,
-                targets: hideCols,
+                targets: 0
             },
             {
-                searchable: true,
-                targets: lookupCols,
+                searchPanes: {
+                    show: true,
+                },
+                targets: [1, 2, 3, 4, 5, 6, 7, 8]
             },
-            {
-                searchable: false,
-                targets: '_all',
-            },
-        ],
-        rowCallback: (row, data) => {
-            if (typeof queStatusCol !== "undefined") {
-                c = format_que_status(data[queStatusCol])
-                $('td:eq(2)', row).css('color', c);
-            }
-            if (typeof aptStatusCol !== "undefined") {
-                c = format_apt_status(data[aptStatusCol])
-                $('td:eq(2)', row).css('color', c);
-            }
-        },
-    });
+        ]
+    })
     return table;
 }
 
-function format_que_status(x) {
-    switch (x) {
-        case 'Estimated':
-            return '#d62728'
-        case 'Calculated':
-            return '#0ea844'
-        default:
-            return '#000000'
-    }
+function tbl_apt(id) {
+    let table = new DataTable(id, {
+        fixedHeader: true,
+        autoWidth: false,
+        columns: [
+            { title: '' },
+            { title: 'Appointment' },
+            { title: 'ID' },
+            { title: 'Study' },
+            { title: 'Status' },
+            { title: 'Date' },
+            { title: 'Made on the' },
+            { title: 'Last updated' },
+            { title: 'Taxi address' },
+            { title: 'Taxi booked' },
+            { title: 'Comments' },
+            { title: '' },
+
+        ],
+        layout: {
+            bottom: {
+                searchPanes: {
+                    layout: 'columns-4',
+                    cascadePanes: true,
+                    orderable: false,
+                    collapse: false,
+                    dtOpts: {
+                        paging: true,
+                        pagingType: 'numbers',
+                        searching: true
+                    }
+                }
+            }
+        },
+        columnDefs: [
+            {
+                visible: false,
+                searchPanes: {
+                    show: false,
+                },
+                targets: [0, 5, 6, 7, 10]
+            },
+        ]
+    })
+    return table;
 }
 
-function format_apt_status(x) {
-    switch (x) {
-        case 'Scheduled':
-            return '#000000'
-        case 'Confirmed':
-            return '#ffb700'
-        case 'Successful':
-            return '#0ea844'
-        case 'Cancelled - Reschedule':
-            return '#d62728'
-        default:
-            return '#acabab'
-    }
+function tbl_que(id) {
+    let table = new DataTable(id, {
+        fixedHeader: true,
+        autoWidth: true,
+        columns: [
+            { title: '' },
+            { title: 'Questionnaire', width: "14%" },
+            { title: 'ID', width: "5%" },
+            { title: 'Status', width: "10%" },
+            { title: 'L1' },
+            { title: '%' },
+            { title: 'L2' },
+            { title: '%' },
+            { title: 'L3' },
+            { title: '%' },
+            { title: 'L4' },
+            { title: '%' },
+            { title: 'Date updated' },
+            { title: 'Date created' },
+            { title: '' },
+        ],
+        keys: true,
+        layout: {
+            bottom: {
+                searchPanes: {
+                    layout: 'columns-6',
+                    cascadePanes: true,
+                    orderable: false,
+                    collapse: false,
+                    dtOpts: {
+                        paging: true,
+                        pagingType: 'numbers',
+                        searching: true
+                    }
+                }
+            }
+        },
+        columnDefs: [
+            {
+                visible: false,
+                searchPanes: {
+                    show: false,
+                },
+                targets: [0, 12, 13]
+            },
+            {
+                searchPanes: {
+                    show: false,
+                },
+                targets: [5, 7, 9, 11]
+            },
+        ]
+    })
+    return table;
 }
-
-
-
-
-function format_ppt(d) {
-    const initial = arr => arr.slice(0, -1);
-    cols = ['', 'ID', 'Name', 'Age (months)', 'Age (days)', 'Sex', 'Source', 'E-mail 1', 'E-mail 2', 'Phone1', 'Phone 2', 'Date created', 'Date updated', 'Comments']
-    x = '<div class="card-table"><div class="card-title">Participant ' + d[1] + '</div><table class="tbl-record table-hover table-responsive" style="user-select: none">'
-    d = initial(d)
-    for (let i = 0; i < d.length; i++) {
-        x += '<tr><td width="50%"><em>' + cols[i] + '</em></td><td>' + d[i] + '</td></tr>';
-    };
-    return x + '</table></div>';
-}
-
-function format_apt(d) {
-    const initial = arr => arr.slice(0, -1);
-    x = '<div class="card-table"><div class="card-title">Appointment ' + d[1] + '</div><table class="tbl-record table-hover table-responsive" style="user-select: none">'
-    cols = ['', 'Appointment ID', 'Participant ID', 'Study', 'Status', 'Date', 'Date created', 'Date updated', 'Taxi address', 'Taxi booked?', 'Comments']
-    d = initial(d)
-    for (let i = 0; i < d.length; i++) {
-        x += '<tr><td width="50%"><em>' + cols[i] + '</em></td><td>' + d[i] + '</td></tr>';
-    };
-    return x + '</table></div>';
-}
-
-function format_que(d) {
-    const initial = arr => arr.slice(0, -1);
-    x = '<div class="card-table"><div class="card-title">Questionaire ' + d[1] + '</div><table class="tbl-record table-hover table-responsive" style="user-select: none">'
-    cols = ['', 'Questionnaire ID', 'Participant ID', 'Is estimated?', 'L1', 'L1 (%)', 'L2', 'L2 (%)', 'L3', 'L3 (%)', 'L4', 'L4 (%)', 'Created', 'Updated', 'Comments']
-    d = initial(d)
-    for (let i = 0; i < d.length; i++) {
-        x += '<tr><td width="50%"><em>' + cols[i] + '</em></td><td>' + d[i] + '</td></tr>';
-    };
-    return x + '</table></div>';
-}
-

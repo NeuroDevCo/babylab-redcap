@@ -19,37 +19,15 @@
         type="button">{{ _("New participant") }}</a>
     </div>
     <br>
-    <div class="card-table">{{ data["table"] | safe }}</div>
+    <div class="card-table">
+      {{ data["table"] | safe }}
+    </div>
   </div>
   <script
     src="https://cdn.datatables.net/v/bs5/jq-3.7.0/dt-2.2.2/b-3.2.1/fh-4.0.1/sp-2.3.3/sl-3.0.0/datatables.min.js"></script>
   <script type="text/javascript" src="{{ url_for('static', filename='js/tables.js') }}"></script>
   <script>
-    $("#ppttable").append("<tfoot><tr><th></th><th>record_id</th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th></tr></tfoot>")
-
-    $("#ppttable tfoot th").each(function (index, value) {
-      var title = $(this).text();
-      if ([1].includes(index)) {
-        $(this).html(`<input type="text" placeholder="Search ID" />`);
-      } else {
-        $(this).html('');
-      }
-    });
-
     let table = new tbl_ppt("#ppttable")
-
-    table.columns().every(function (index) {
-      var that = this;
-      $("input", this.footer()).on("keyup change clear", function () {
-        if (that.search() !== this.value) {
-          that.search(this.value, { smart: true }).draw();
-          table
-            .rows()
-            .$("tr", { filter: "applied" })
-        }
-      });
-    });
-
   </script>
 </body>
 {% endblock content %}

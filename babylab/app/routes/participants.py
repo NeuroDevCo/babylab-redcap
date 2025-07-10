@@ -47,7 +47,7 @@ def prepare_ppt(records: api.Records, data_dict: dict, **kwargs) -> dict:
             "buttons",
         ]
     ]
-
+    # df = df.set_index("record_id")
     return {
         "table": df.to_html(
             classes=f'{classes}" id = "ppttable',

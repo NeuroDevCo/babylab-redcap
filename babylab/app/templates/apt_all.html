@@ -15,8 +15,8 @@
 </header>
 
 <body>
-  <div class="div-center">
-    <div class="card-table">
+  <div class="container">
+    <div class="div-center">
       {{ data["table"]|safe }}
     </div>
   </div>
@@ -24,18 +24,7 @@
     src="https://cdn.datatables.net/v/bs5/jq-3.7.0/dt-2.2.2/b-3.2.1/fh-4.0.1/sp-2.3.3/sl-3.0.0/datatables.min.js"></script>
   <script type="text/javascript" src="{{ url_for('static', filename='js/tables.js') }}"></script>
   <script>
-    let table = new dt("#apttable", searchCols = [3, 4], hideCols = [6, 8, 9, 10], statusCol = 4)
-
-    table.on('click', 'td', function (e) {
-      let tr = e.target.closest('tr');
-      let row = table.row(tr);
-      if (row.child.isShown()) {
-        row.child.hide();
-      }
-      else {
-        row.child(format_apt(row.data())).show();
-      }
-    });
+    let table = new tbl_apt("#apttable")
   </script>
 </body>
 {% endblock content %}
