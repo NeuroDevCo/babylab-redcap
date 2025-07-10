@@ -5,7 +5,7 @@ serve:
 	python -m flask --app babylab.app run
 
 debug:
-	python -m flask --app babylab.app run --debug
+	uv run flask --app babylab.app run --debug
 
 test:
 	uv run pytest -v -p no:cacheprovider --exitfirst --benchmark-time-unit="s" --benchmark-autosave

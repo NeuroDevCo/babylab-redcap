@@ -25,11 +25,13 @@ def prepare_ppt(records: api.Records, data_dict: dict, **kwargs) -> dict:
     df.index = df.index.astype(int)
     df = df.sort_index(ascending=False)
     df["buttons"] = [
-        utils.fmt_modify_button(p)
+        '<div class="btn-group">'
+        + utils.fmt_modify_button(p)
         + " "
         + utils.fmt_new_button(record="Appointment", ppt_id=p)
         + " "
         + utils.fmt_new_button(record="Questionnaire", ppt_id=p)
+        + "</div>"
         for p in df.index
     ]
     df = df[

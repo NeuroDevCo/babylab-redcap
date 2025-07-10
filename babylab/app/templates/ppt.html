@@ -19,22 +19,26 @@
 
 <body>
   <div class="container">
-    <form>
-      <div class="btn-group" role="group" aria-label="Basic example">
-        <a class="btn btn-new-apt" href="{{ url_for('apt_new', ppt_id = ppt_id) }}">
-          <i class="fa fa-calendar-plus"></i>&nbsp;&nbsp;&nbsp;&nbsp;{{ _("New appointment") }}
+    <div class="btn-group pull-center" role="group">
+      <form>
+        <a type="button" class="btn btn-header btn-header-new" href="{{ url_for('apt_new', ppt_id = ppt_id) }}">
+          <i class="fa fa-calendar-plus"></i>
+          &nbsp;&nbsp;&nbsp;&nbsp;{{ _("New appointment") }}
         </a>
-        <a class="btn btn-mod-ppt" href="{{ url_for('ppt_modify', ppt_id = ppt_id) }}">
-          <i class="fa fa-user-pen"></i>&nbsp;&nbsp;&nbsp;&nbsp;{{ _("Modify participant") }}
+        <a type="button" class="btn btn-header btn-header-mod" href="{{ url_for('ppt_modify', ppt_id = ppt_id) }}">
+          <i class="fa fa-user-pen"></i>
+          &nbsp;&nbsp;&nbsp;&nbsp;{{ _("Modify participant") }}
         </a>
-        <a class="btn btn-new-que" href="{{ url_for('que_new', ppt_id = ppt_id) }}"">
-            <i class=" fa-solid fa-file-circle-plus"></i>&nbsp;&nbsp;&nbsp;&nbsp;{{ _("Add questionnaire") }}
+        <a type="button" class="btn btn-header btn-header-que" href="{{ url_for('que_new', ppt_id = ppt_id) }}"">
+            <i class=" fa-solid fa-file-circle-plus"></i>
+          &nbsp;&nbsp;&nbsp;&nbsp;{{ _("Add questionnaire") }}
         </a>
-        <button type="submit" name="deleteParticipant" class="btn btn-del-ppt">
-          <i class="fa fa-delete-left"></i>&nbsp;&nbsp;&nbsp;&nbsp;{{ _("Delete participant") }}
+        <button type="submit" name="deleteParticipant" class="btn btn-header btn-header-del">
+          <i class="fa fa-delete-left"></i>
+          &nbsp;&nbsp;&nbsp;&nbsp;{{ _("Delete participant") }}
         </button>
-      </div>
-    </form>
+      </form>
+    </div>
   </div>
   <br>
   <div class="container">

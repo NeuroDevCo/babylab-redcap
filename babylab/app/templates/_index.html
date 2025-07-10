@@ -23,7 +23,7 @@
                     </div>
                     <div class="text-center pt-1 mb-5 pb-1">
                       <button type="submit" data-mdb-button-init data-mdb-ripple-init
-                        class="btn btn-submit btn-block fa-lg gradient-custom-2 mb-3" type="button" onclick="spinner()">
+                        class="btn btn-submit btn-block btn-lg fa-lg mb-3" type="button" onclick="spinner()">
                         {{ _("Log in") }}
                       </button>
                     </div>
@@ -47,15 +47,19 @@
                   {% endif %}
                   {% if redcap_version %}
                   {{ _("You have successfully logged in") }}.
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 214 214" class="check-circle">
-                    <g fill="none" stroke="currentColor" stroke-width="2">
-                      <circle class="semi-transparent" fill="currentColor" opacity="0.15" cx="107" cy="107" r="72">
-                      </circle>
-                      <circle class="colored" fill="currentColor" cx="107" cy="107" r="72" opacity="0.8"></circle>
-                      <polyline stroke="#fff" stroke-width="10" points="73.5,107.8 93.7,127.9 142.2,79.4"
-                        style="stroke-dasharray: 50%, 50%; stroke-dashoffset: 100%" />
-                    </g>
-                  </svg>
+                  <br>
+                  <br>
+                  <div class="row align-items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 214 214" class="check-circle" width="50px">
+                      <g fill="none" stroke="currentColor" stroke-width="2">
+                        <circle class="semi-transparent" fill="currentColor" opacity="0.15" cx="107" cy="107" r="72">
+                        </circle>
+                        <circle class="colored" fill="currentColor" cx="107" cy="107" r="72" opacity="0.8"></circle>
+                        <polyline stroke="#fff" stroke-width="10" points="73.5,107.8 93.7,127.9 142.2,79.4"
+                          style="stroke-dasharray: 50%, 50%; stroke-dashoffset: 100%" />
+                      </g>
+                    </svg>
+                  </div>
                   {% endif %}
 
                 </div>

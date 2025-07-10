@@ -78,13 +78,6 @@ label {
     font-size: medium;
 }
 
-button {
-    font-family: 'Ciutadella Bold', 'Roboto Bold', Fallback, sans-serif;
-    font-size: 18px;
-    margin: 1em;
-    padding-left: 0.5em;
-    padding-right: 0.5em;
-}
 
 .language-selector {
     display: inline-block;
@@ -265,20 +258,6 @@ p.card-highlight {
     color: white;
 }
 
-.btn-group {
-    display: flex;
-    width: 100%;
-    justify-content: center;
-}
-
-.btn:not([width]) {
-    font-family: 'Ciutadella Semibold', 'Roboto', Fallback, sans-serif;
-    margin: 0.2em;
-    width: 40px;
-    padding-left: 0.5em;
-    padding-right: 0.5em;
-}
-
 #wrapper {
     display: flex;
     align-items: center;
@@ -371,9 +350,9 @@ p.card-highlight {
     width: 100px;
 }
 
-.btn,
 .lead {
     font-family: 'Ciutadella Medium', 'Roboto Medium', Fallback, sans-serif;
+    font-size: 15pt;
 }
 
 .dtsp-panes,
@@ -386,6 +365,10 @@ div.dt-bootstrap,
     background-color: #ffffff83;
     padding: 0.5em 2em 0.5em 2em;
     font-size: medium;
+}
+
+.dt-buttons, .dt-layout-start {
+    width: 1em important;
 }
 
 .dt-column-title {
@@ -614,27 +597,6 @@ dt-search {
     margin-right: 15px;
 }
 
-.social-links {
-    margin-top: 30px;
-}
-
-.social-icon {
-    width: 35px;
-    height: 35px;
-    background: rgba(255, 255, 255, 0.2);
-    border-radius: 50%;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    margin-right: 10px;
-    transition: all 0.3s ease;
-}
-
-.social-icon:hover {
-    background: white;
-    color: #ea6212;
-    transform: translateY(-3px);
-}
 
 .contact-form {
     padding: 40px;
@@ -657,20 +619,162 @@ dt-search {
     margin-bottom: 8px;
 }
 
-.btn-submit {
-    background: #343a40;
-    border: none;
-    color: white !important;
-    padding: 12px 30px;
-    border-radius: 10px;
-    width: 100% !important;
-    transition: all 1s ease;
+
+.btn {
+    align-items: center;
+    appearance: none;
+    background-size: calc(100% + 20px) calc(100% + 20px);
+    border-radius: 100px;
+    border-width: 0px;
+    box-shadow: none;
+    box-sizing: border-box;
+    color: black;
+    cursor: pointer;
+    display: inline-flex;
+    font-size: 1rem;
+    height: auto;
+    justify-content: center;
+    line-height: 1.5;
+    margin: 1px;
+    padding: 6px 10px;
+    position: relative;
+    text-align: center;
+    text-decoration: none;
+    transition: background-color .2s, background-position .2s;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+    vertical-align: top;
+    white-space: nowrap;
 }
 
-.btn-submit:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15pxrgb(163, 163, 163);
+
+.btn-group {
+    display: flex;
+    justify-content: center;
+}
+.btn-header {
+    width: 200px !important;
+    display: inline;
+}
+
+.btn-header-new {
+    background-color: rgb(0, 167, 89);
+    color: white;
+}
+
+.btn-header-mod {
+    background-color: rgb(255, 196, 0);
+}
+
+.btn-header-que {
+    background-color: rgb(0, 98, 255);
+    color: white;
+}
+
+.btn-header-del {
+    background-color: rgb(255, 0, 85);
+    color: white;
+}
+
+
+
+
+.btn:not([width]) {
+    font-family: 'Roboto', Fallback, sans-serif;
+    margin: 0.2em;
+    width: 40px;
+    font-weight: bold;
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+}
+
+.btn-table {
+    margin: 0 !important;
+}
+
+.btn-submit {
+    background:rgb(178, 178, 178);
+    border: none;
+    border-radius: 100px;
+    box-shadow: #000 !important;
+    width: 300px !important;
+    transition: all 0.2s ease;
+}
+
+.btn:link,
+.btn:visited {
+    display: inline-block;
+    border-radius: 100px;
+    transition: all .2s;
+    position: absolute;
+    vertical-align: middle !important;
+}
+
+.btn:hover {
+    transform: translateY(-3px);
+}
+
+.btn:active {
+    transform: translateY(-1px);
+}
+
+.btn:hover::after {
+    transform: scaleX(1.4) scaleY(1.6);
+}
+
+.btn-animated {
+    animation: moveInBottom 5s ease-out;
+    animation-fill-mode: backwards;
+}
+
+.btn::after {
+    content: "";
+    display: inline-block;
+    height: 100%;
+    width: 100%;
+    border-radius: 100px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: -1;
+    transition: all .4s;
+}
+
+.btn-secondary {
+    width: 100px !important;
+    background-color: white;
+}
+
+.btn-secondary:after, 
+.btn-secondary:active,
+.btn-secondary:link,
+.btn-secondary:visited {
+    width: 100px !important;
     background-color: #313131;
+    color: white;
+}
+
+.btn-secondary:hover::after {
+    color: white;
+}
+
+.btn-subtle {
+    width: 50px;
+    background-color: white;
+    border: white;
+}
+
+@keyframes moveInBottom {
+    0% {
+        opacity: 0.5;
+        transform: translateY(30px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0px);
+    }
 }
 
 .map-container {
@@ -771,7 +875,7 @@ svg.check-circle polyline {
   }
   100% {
     r: 100;
-    opacity: 0;
+    opacity: 0.5;
   }
 }
 svg.check-circle circle.semi-transparent {
@@ -783,34 +887,12 @@ svg.check-circle circle.colored {
     backwards;
 }
 
-
-.btn-status,
-.btn {
-    align-items: center;
-    appearance: none;
-    background-size: calc(100% + 20px) calc(100% + 20px);
-    border-radius: 100px;
-    border-width: 0px;
-    box-shadow: none;
-    box-sizing: border-box;
-    color: black;
-    cursor: pointer;
-    display: inline-flex;
-    font-size: 1rem;
-    height: auto;
-    justify-content: center;
-    line-height: 1.5;
-    margin: 1px;
-    padding: 6px 10px;
-    position: relative;
-    text-align: center;
-    text-decoration: none;
-    transition: background-color .2s, background-position .2s;
-    user-select: none;
-    -webkit-user-select: none;
-    touch-action: manipulation;
-    vertical-align: top;
-    white-space: nowrap;
+.btn-status {
+    border-radius: 20px;
+    font-weight: 400 !important;
+    height: 40px;
+    vertical-align: middle;
+    width: 200px !important;
 }
 
 .btn-status:active,
@@ -822,90 +904,38 @@ svg.check-circle circle.colored {
     background-position: -20px -20px;
 }
 
-.btn-status:focus:not(:active) {
-    box-shadow: rgba(40, 170, 255, 0.25) 0 0 0 .125em;
-}
-
-
-.btn-new-apt,
-.btn-new-ppt {
-    background-color: rgb(0, 167, 89);
-    color: white
-}
-
-.btn-mod-apt,
-.btn-mod-ppt {
-    background-color: rgb(255, 196, 0);
-}
-
-.btn-new-que {
-    background-color: rgb(0, 98, 255);
-    color: white
-}
-
-.btn-del-apt,
-.btn-del-ppt {
-    background-color: rgb(255, 0, 85);
-    color: white
-}
-
 .btn-status-scheduled {
-    border: 1px solid #1A1A1A;
-    border-width: 5px;
-    border-color: #ffae00;
-}
-
-.btn-status-scheduled {
-    border: 1px solid #1A1A1A;
-    border-width: 5px;
-    border-color: #ffae00;
-}
-
-.btn-status-scheduled {
-    border: 1px solid #1A1A1A;
-    border-width: 5px;
-    border-color: #ffae00;
-}
-
-.btn-status-scheduled {
-    border: 1px solid #1A1A1A;
-    border-width: 5px;
-    border-color: #ffae00;
+    background-color:#86b8fd;
 }
 
 .btn-status-confirmed {
-    background-color: #ffae00;
-    background-image: linear-gradient(1deg, #ffae00, #f0cc84 99%);
+    background-color:#fdd886;
 }
 
 .btn-status-successful {
     border: 1px solid #1A1A1A;
     border-width: 5px;
-    border-color: #70d488;
+    background-color:#96d4a4;
+    border-color: #96d4a4;
 }
 
 .btn-status-good {
-    background-color: #70d488;
-    background-image: linear-gradient(1deg, #70d488, #00aa66 99%);
-    color: #ffffff
+    border: 1px solid #1A1A1A;
+    border-width: 5px;
+    background-color:#96d4a4;
+    border-color:rgb(61, 181, 89);
 }
 
 .btn-status-reschedule {
-    background-color: #db6577;
-    background-image: linear-gradient(1deg, #db6577, rgb(221, 41, 68) 99%);
-    color: white;
+    background-color:rgb(250, 159, 173);
 }
 
 .btn-status-drop {
-    background-color: #807f7f;
-    background-image: linear-gradient(1deg, #b5b5b5, #807f7f 99%);
-    color: white;
+    background-color:#dfdcdc;
 }
 
 .btn-status-noshow {
-    background-color: #807f7f;
-    background-image: linear-gradient(1deg, #b5b5b5, #807f7f 99%);
-    color: white;
+    background-color: #dfdcdc;
 }
 
 @keyframes rotate {
