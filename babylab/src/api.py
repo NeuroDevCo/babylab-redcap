@@ -13,7 +13,7 @@ from datetime import datetime
 from dateutil.relativedelta import relativedelta
 import pytz
 import requests
-import pandas as pd
+from pandas import DataFrame
 
 
 class RecordList:
@@ -28,20 +28,14 @@ class RecordList:
     def __repr__(self) -> str:
         return f"RecordList with {len(self)} records"
 
-    def to_df(self) -> pd.DataFrame:
+    def to_df(self) -> DataFrame:
         """Transforms a a RecordList to a Pandas DataFrame.
 
         Returns:
-            pd.DataFrame: Tabular dataset.
+            DataFrame: Tabular dataset.
         """
-        db_list = []
-        for v in self.records.values():
-            d = pd.DataFrame(v.data.items())
-            d = d.set_index([0])
-            db_list.append(d.transpose())
-        df = pd.concat(db_list)
-        df.index = pd.Index(df[df.columns[0]])
-        df = df[df.columns[1:]]
+        df = DataFrame([p.data for p in self.records.values()])
+        df.set_index("record_id", inplace=True)
         return df
 
 
@@ -83,8 +77,8 @@ class Participant:
         Returns:
             str: Description to print in console.
         """
-        n_apt = 0 if not self.appointments else len(self.appointments)
-        n_que = 0 if not self.questionnaires else len(self.questionnaires)
+        n_apt = 0 if self.appointments is None else len(self.appointments)
+        n_que = 0 if self.questionnaires is None else len(self.questionnaires)
         return f"Participant {self.record_id}: {str(n_apt)} appointments, {str(n_que)} questionnaires"  # pylint: disable=line-too-long
 
     def __str__(self) -> str:
@@ -93,8 +87,8 @@ class Participant:
         Returns:
             str: Description of class.
         """
-        n_apt = 0 if not self.appointments else len(self.appointments)
-        n_que = 0 if not self.questionnaires else len(self.questionnaires)
+        n_apt = 0 if self.appointments is None else len(self.appointments)
+        n_que = 0 if self.questionnaires is None else len(self.questionnaires)
         return f"Participant {self.record_id}: {str(n_apt)} appointments, {str(n_que)} questionnaires"  # pylint: disable=line-too-long
 
 
@@ -117,7 +111,6 @@ class Appointment:
         Returns:
             str: Description to print in console.
         """
-
         return f"Appointment {self.appointment_id}, participant {self.record_id}, {self.date}, {self.status}"  # pylint: disable=line-too-long
 
     def __str__(self) -> str:
@@ -148,13 +141,7 @@ class Questionnaire:
         Returns:
             str: Description to print in console.
         """
-        return (
-            f" Language questionnaire {self.questionnaire_id} from participant {self.record_id}"  # pylint: disable=no-member
-            + f"\n- L1 ({self.data['lang1']}) = {self.data['lang1_exp']}%"
-            + f"\n- L2 ({self.data['lang2']}) = {self.data['lang2_exp']}%"
-            + f"\n- L3 ({self.data['lang3']}) = {self.data['lang3_exp']}%"
-            + f"\n- L4 ({self.data['lang4']}) = {self.data['lang4_exp']}%"
-        )  # pylint: disable=line-too-long
+        return f"Questionnaire {self.questionnaire_id}, participant {self.record_id}"
 
     def __str__(self) -> str:
         """Return class description as string.
@@ -162,13 +149,7 @@ class Questionnaire:
         Returns:
             str: Description of class.
         """
-        return (
-            f" Language questionnaire {self.questionnaire_id} from participant {self.record_id}"  # pylint: disable=no-member
-            + f"\n- L1 ({self.data['lang1']}) = {self.data['lang1_exp']}%"
-            + f"\n- L2 ({self.data['lang2']}) = {self.data['lang2_exp']}%"
-            + f"\n- L3 ({self.data['lang3']}) = {self.data['lang3_exp']}%"
-            + f"\n- L4 ({self.data['lang4']}) = {self.data['lang4_exp']}%"
-        )  # pylint: disable=line-too-long
+        return f" Questionnaire {self.questionnaire_id}, participant {self.record_id}"
 
 
 class BadTokenException(Exception):
@@ -643,61 +624,10 @@ class Records:
             str: Description of class.
         """
         return (
-            "REDCap database:"
-            + f"\n- {len(self.participants)} participants"
-            + f"\n- {len(self.appointments)} appointments"
-            + f"\n- {len(self.questionnaires)} language questionnaires"
+            f"REDCap database ({len(self.participants)} participants"
+            + f", {len(self.appointments)} appointments"
+            + f", {len(self.questionnaires)} questionnaires"
         )
-
-    def update_record(self, record_id: str, record_type: str, **kwargs: any):
-        """Fetch appointment information from REDCap database and updated Records.
-
-        Args:
-            record_id (str): ID of record.
-            record_type (str): Type of record. Must be one of "participant", "appointment" or "questionnaire"
-            **kwargs (any, optional): Additional arguments passed to ``post_request``.
-
-        Raises:
-            ValueError: If `record_type` is not one of "participant", "appointment", "questionnaire".
-        """  # pylint: disable=line-too-long
-        if record_type not in ["participant", "appointment", "questionnaire"]:
-            raise ValueError(
-                "`record_type` must be one of 'participant', 'appointment', 'questionnaire'"
-            )
-
-        data = {
-            "content": "record",
-            "action": "export",
-            "format": "json",
-            "type": "flat",
-            "csvDelimiter": "",
-            "records[0]": record_id,
-            "forms[0]": "participants",
-            "rawOrLabel": "raw",
-            "rawOrLabelHeaders": "raw",
-            "exportCheckboxLabel": "false",
-            "exportSurveyFields": "false",
-            "exportDataAccessGroups": "false",
-            "returnFormat": "json",
-        }
-
-        if record_type != "participant":
-            ppt_id, repeat_id = record_id.split(":")
-            data["records[0]"] = int(ppt_id)
-            data["redcap_repeat_instance"] = repeat_id
-            data["forms[1]"] = "appointments"
-        if record_type == "questionnaire":
-            data["forms[1]"] = "languages"
-
-        r = post_request(data, **kwargs).json()
-        if record_type == "participant":
-            self.participants.records[record_id] = Participant(r)
-        elif record_type == "appointment":
-            r[1]["record_id"] = r[0]["record_id"]
-            self.appointments.records[record_id] = Appointment(r[1])
-        else:
-            r[1]["record_id"] = r[0]["record_id"]
-            self.questionnaires.records[record_id] = Questionnaire(r[1])
 
 
 class BadAgeFormat(Exception):
