@@ -22,7 +22,7 @@ def fmt_ppt_id(ppt_id: str) -> str:
     Returns:
         str: Formated participant ID.
     """
-    return f"<a href=/participants/{ppt_id}>{ppt_id}</a>"
+    return f"<a class='ppt-id' href=/participants/{ppt_id}>{ppt_id}</a>"
 
 
 def fmt_apt_id(apt_id: str) -> str:
@@ -34,7 +34,7 @@ def fmt_apt_id(apt_id: str) -> str:
     Returns:
         str: Formated appointment ID.
     """
-    return f"<a href=/appointments/{apt_id}>{apt_id}</a>"
+    return f"<a class='ppt-id' href=/appointments/{apt_id}>{apt_id}</a>"
 
 
 def fmt_que_id(que_id: str) -> str:
@@ -47,7 +47,7 @@ def fmt_que_id(que_id: str) -> str:
     Returns:
         str: Formated questionnaire ID.
     """
-    return f"<a href=/questionnaires/{que_id}>{que_id}</a>"
+    return f"<a class='ppt-id' href=/questionnaires/{que_id}>{que_id}</a>"
 
 
 def fmt_percentage(x: float | int) -> str:

@@ -24,7 +24,9 @@ th {
     font-family: 'Ciutadella Bold', 'Roboto Bold', Fallback, sans-serif;
 }
 
-
+div.container {
+    width: 100% !important;
+}
 
 b {
     font-family: 'Ciutadella Bold';
@@ -44,6 +46,11 @@ td,
 tr,
 th {
     background-color: #ffffff83;
+    vertical-align: middle !important;
+}
+
+tr {
+    height: 60px;
 }
 
 td {
@@ -130,7 +137,7 @@ a.fc-event {
 }
 
 .div-center {
-    width: 100%;
+    width: 100% !important;
     display: flex;
     justify-content: center;
 }
@@ -370,6 +377,10 @@ div.dt-bootstrap,
     font-size: medium;
 }
 
+.dt-column-order {
+    margin: 20px;
+}
+
 .dt-buttons, .dt-layout-start {
     width: 1em important;
 }
@@ -476,95 +487,6 @@ dt-search {
     text-align: center;
 }
 
-.main-footer {
-    text-align: center;
-    margin-top: 0.1 * 2;
-
-    &.collapsed {
-        margin-top: 0;
-    }
-
-    &--1 {
-        color: #fff;
-        background-color: #313131;
-        padding: 0.1 * 2 0;
-
-        a:not(.btn) {
-            color: #fff;
-        }
-
-        .column>* {
-            margin-bottom: 0.1 * 1.5;
-        }
-    }
-
-    &--2 {
-        padding: 0.1 * 2 0;
-
-        a {
-            color: #000;
-        }
-
-        .cerca {
-            text-align: left;
-
-            h3 {
-                text-transform: uppercase;
-                text-align: left;
-                font-size: rem-calc(16);
-            }
-
-            .inline-list--logos {
-                margin-left: 0;
-
-                li {
-                    margin-left: 0;
-                }
-            }
-        }
-    }
-
-    a:not(.btn) {
-        text-decoration: none;
-
-        &:hover {
-            text-decoration: underline;
-        }
-    }
-
-    ul,
-    p {
-        font-size: rem-calc(14);
-    }
-}
-
-
-.legal {
-    li {
-        font-size: rem-calc(14);
-    }
-}
-
-.inline-list--logos li:first-child {
-    position: relative;
-    top: -4px;
-}
-
-.more-link {
-    background-color: lightgray;
-    border-radius: 0;
-    display: inline-block;
-    font-size: 13px;
-    letter-spacing: 1px;
-    line-height: 1.5;
-    margin-bottom: 5px;
-    margin-right: 5px;
-    margin-top: 50px;
-    padding: 10px 15px;
-    text-decoration: none;
-    text-transform: uppercase;
-}
-
 .contact-wrapper {
     background: white;
     border-radius: 20px;
@@ -622,6 +544,34 @@ dt-search {
     margin-bottom: 8px;
 }
 
+.ppt-id {
+    text-align: left;
+    font-size: 18px;
+    font-weight: 600;
+    text-decoration: none;
+    background-color: #e7e6e6;
+    padding: 2px 10px 2px 10px;
+    border-radius: 100px;
+}
+
+.ppt-id:link,
+.ppt-id:visited {
+    display: inline-block;
+    transition: all .2s;
+    vertical-align: middle !important;
+}
+
+.ppt-id:hover {
+    transform: translateX(-3px);
+}
+
+.ppt-id:active {
+    transform: translateX(-1px);
+}
+
+.ppt-id:hover::after {
+    transform: scaleX(1.4) scaleY(1.6);
+}
 
 .btn {
     align-items: center;
@@ -647,8 +597,13 @@ dt-search {
     user-select: none;
     -webkit-user-select: none;
     touch-action: manipulation;
-    vertical-align: top;
+    vertical-align: middle;
     white-space: nowrap;
+}
+
+.btn-id {
+    width: 100px !important;
+    margin: 0 !important;
 }
 
 .dtsp-searchIcon {
@@ -662,6 +617,7 @@ dt-search {
     display: flex;
     justify-content: center;
 }
+
 .btn-header {
     width: 200px !important;
     display: inline;
@@ -686,9 +642,6 @@ dt-search {
     color: white;
 }
 
-
-
-
 .btn:not([width]) {
     font-family: 'Roboto', Fallback, sans-serif;
     margin: 0.2em;
@@ -699,11 +652,13 @@ dt-search {
 }
 
 .btn-table {
-    margin: 0 !important;
+    font-size: 18px !important;
+    padding: 0 !important;
+    vertical-align: top !important;
 }
 
 .btn-submit {
-    background:rgb(231, 230, 230);
+    background:#e7e6e6;
     border: none;
     border-radius: 100px;
     box-shadow: #000 !important;

@@ -4,7 +4,7 @@ function tbl_ppt(id) {
         autoWidth: false,
         columns: [
             { title: '' },
-            { title: 'ID' },
+            { title: 'ID', width: "8%" },
             { title: 'Name' },
             { title: 'Months' },
             { title: 'Days' },
@@ -18,10 +18,10 @@ function tbl_ppt(id) {
         layout: {
             bottom: {
                 searchPanes: {
-                    layout: 'columns-4',
+                    layout: 'columns-2',
                     cascadePanes: true,
                     orderable: false,
-                    collapse: false,
+                    initCollapsed: true,
                     dtOpts: {
                         paging: true,
                         pagingType: 'numbers',
@@ -41,6 +41,10 @@ function tbl_ppt(id) {
                 },
                 targets: [1, 2, 3, 4, 5, 6, 7, 8]
             },
+            {
+                orderable: false,
+                targets: [9],
+            }
         ]
     })
     return table;
@@ -68,10 +72,10 @@ function tbl_apt(id) {
         layout: {
             bottom: {
                 searchPanes: {
-                    layout: 'columns-4',
+                    layout: 'columns-2',
                     cascadePanes: true,
+                    initCollapsed: true,
                     orderable: false,
-                    collapse: false,
                     dtOpts: {
                         paging: true,
                         pagingType: 'numbers',
@@ -87,6 +91,10 @@ function tbl_apt(id) {
                     show: false,
                 },
                 targets: [0, 5, 6, 7, 10]
+            },
+            {
+                orderable: false,
+                targets: [11],
             },
         ]
     })
@@ -118,10 +126,10 @@ function tbl_que(id) {
         layout: {
             bottom: {
                 searchPanes: {
-                    layout: 'columns-6',
+                    layout: 'columns-2',
                     cascadePanes: true,
                     orderable: false,
-                    collapse: false,
+                    initCollapsed: true,
                     dtOpts: {
                         paging: true,
                         pagingType: 'numbers',
@@ -144,6 +152,10 @@ function tbl_que(id) {
                 },
                 targets: [5, 7, 9, 11]
             },
+            {
+                orderable: false,
+                targets: [14],
+            }
         ]
     })
     return table;
