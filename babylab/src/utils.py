@@ -8,7 +8,7 @@ from collections.abc import Iterable
 from datetime import date, timedelta, datetime
 from functools import singledispatch
 from copy import deepcopy
-from pandas import DataFrame
+from pandas import DataFrame, to_datetime
 from markupsafe import Markup
 from babylab.src import api
 
@@ -108,9 +108,9 @@ def fmt_new_button(record: str, ppt_id: str = None):
             f"`record` must be 'Appointment' or 'Questionnaire', but {record} was provided"
         )
     if record == "Appointment":
-        button_str = '<button type="button" class="btn"><i class="fa-solid fa-calendar"></i></button></a>'
+        button_str = '<button type="button" class="btn btn-table"><i class="fa-solid fa-calendar"></i></button></a>'
         return f'<a href="/appointments/appointment_new?ppt_id={ppt_id}">{button_str}'
-    button_str = '<button type="button" class="btn"></i><i class="fa-solid fa-language"></i></button></a>'
+    button_str = '<button type="button" class="btn btn-table"><i class="fa-solid fa-language"></i></button></a>'
     return f'<a href="/questionnaires/questionnaire_new?ppt_id={ppt_id}">{button_str}'
 
 
@@ -125,9 +125,7 @@ def fmt_modify_button(ppt_id: str = None, apt_id: str = None, que_id: str = None
     Returns:
         str: Formatted HTML string.
     """  # pylint: disable=line-too-long
-    button_str = (
-        '<button type="button" class="btn"><i class="fa-solid fa-pen"></i></button></a>'
-    )
+    button_str = '<button type="button" class="btn btn-table"><i class="fa-solid fa-pen"></i></button></a>'
 
     if apt_id:
         return f'<a href="/appointments/{apt_id}/appointment_modify">{button_str}'
@@ -218,7 +216,7 @@ def fmt_apt_status(x: str, markup: bool = True) -> str:
         "Cancelled - Drop": "drop",
         "No show": "drop",
     }
-    out = f"<p class='btn-status btn-status-{status_css[x]}'>{x}</p>"
+    out = f"<p class='btn btn-status btn-status-{status_css[x]}'>{x}</p>"
     return Markup(out) if markup else out
 
 
@@ -274,7 +272,7 @@ def get_age_timestamp(
         date_type (str, optional): Timestamp at which to calculate age. Defaults to "date".
 
     Raises:
-        ValueError: If tiemstamp is not "date" or "date_created".
+        ValueError: If timestamp is not "date" or "date_created".
 
     Returns:
         tuple[str, str]: Age at timestamp in months and days.
@@ -424,6 +422,8 @@ def get_apt_table(
     df["age_apt_months"], df["age_apt_days"] = get_age_timestamp(
         apt_records, ppt_records, "date"
     )
+    df["date"] = to_datetime(df.date)
+    df["date"] = df["date"].dt.strftime("%d/%m/%y %H:%M")
     if relabel:
         df = replace_labels(df, data_dict)
     return df

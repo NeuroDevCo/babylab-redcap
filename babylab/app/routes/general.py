@@ -299,13 +299,13 @@ def general_routes(app):
                 if version:
                     flash("Logged in.", "success")
                     app.config["RECORDS"] = api.Records(token=token)
-                    return render_template("index.html", redcap_version=version)
+                    return render_template("_index.html", redcap_version=version)
                 flash("Incorrect token", "error")
             except ValueError as e:
                 flash(f"Incorrect token: {e}", "error")
 
         return render_template(
-            "index.html", redcap_version=version, current_locale=conf.get_locale()
+            "_index.html", redcap_version=version, current_locale=conf.get_locale()
         )
 
     @app.route("/dashboard")

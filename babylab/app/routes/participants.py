@@ -3,6 +3,7 @@
 from datetime import datetime
 import requests
 from flask import flash, redirect, render_template, url_for, request
+from pandas import to_datetime
 from babylab.src import api, utils
 from babylab.app import config as conf
 
@@ -24,14 +25,15 @@ def prepare_ppt(records: api.Records, data_dict: dict, **kwargs) -> dict:
     df.index = df.index.astype(int)
     df = df.sort_index(ascending=False)
     df["buttons"] = [
-        utils.fmt_modify_button(p)
+        '<div class="btn-group">'
+        + utils.fmt_modify_button(p)
         + " "
         + utils.fmt_new_button(record="Appointment", ppt_id=p)
         + " "
         + utils.fmt_new_button(record="Questionnaire", ppt_id=p)
+        + "</div>"
         for p in df.index
     ]
-
     df = df[
         [
             "record_id",
@@ -84,6 +86,12 @@ def prepare_record_id(ppt: api.Participant, data_dict: dict) -> dict:
     df_apt["record_id"] = [utils.fmt_ppt_id(i) for i in df_apt.index]
     df_apt["appointment_id"] = [utils.fmt_apt_id(i) for i in df_apt["appointment_id"]]
     df_apt = df_apt.sort_values(by="date", ascending=False)
+    df_apt["date"] = to_datetime(df_apt.date)
+    df_apt["date"] = df_apt["date"].dt.strftime("%d/%m/%y %H:%M")
+    df_apt["date_created"] = to_datetime(df_apt.date_created)
+    df_apt["date_created"] = df_apt["date_created"].dt.strftime("%d/%m/%y %H:%M:%S")
+    df_apt["date_updated"] = to_datetime(df_apt.date_updated)
+    df_apt["date_updated"] = df_apt["date_updated"].dt.strftime("%d/%m/%y %H:%M:%S")
     df_apt = df_apt[
         [
             "record_id",
@@ -165,7 +173,8 @@ def prepare_record_id(ppt: api.Participant, data_dict: dict) -> dict:
         index=False,
         bold_rows=True,
     )
-
+    data["date_created"] = datetime.strftime(data["date_created"], "%d/%m/%y %H:%M:%S")
+    data["date_updated"] = datetime.strftime(data["date_updated"], "%d/%m/%y %H:%M:%S")
     return {
         "data": data,
         "table_appointments": table_apt,
@@ -265,7 +274,7 @@ def ppt_routes(app):
                 api.add_participant(data, modifying=False, token=token)
                 flash(f"Participant added! ({ ppt_id })", "success")
                 app.config["RECORDS"] = conf.get_records_or_index(token=token)
-                return redirect(url_for("que_new", ppt_id=ppt_id))
+                return redirect(url_for("ppt", ppt_id=ppt_id))
             except requests.exceptions.HTTPError as e:
                 flash(f"Something went wrong! {e}", "error")
                 return redirect(url_for("ppt_new", data_dict=data_dict))

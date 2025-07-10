@@ -26,7 +26,6 @@ def prepare_apt(records: api.Records, data_dict: dict = None, study: str = None)
         utils.fmt_modify_button(p, a) for p, a in zip(df.index, df["appointment_id"])
     ]
     df["appointment_id"] = [utils.fmt_apt_id(i) for i in df["appointment_id"]]
-
     df = df[
         [
             "appointment_id",
@@ -44,7 +43,6 @@ def prepare_apt(records: api.Records, data_dict: dict = None, study: str = None)
     ]
     df = df.sort_values("date_updated", ascending=False)
     df["status"] = [utils.fmt_apt_status(s) for s in df["status"]]
-
     df = df.rename(
         columns={
             "appointment_id": "Appointment",
@@ -96,18 +94,28 @@ def apt_routes(app):
         ppt = api.get_participant(ppt_id, token=token)
         apt = ppt.appointments.records[apt_id]
         data = utils.replace_labels(apt.data, data_dict)
-
         age_created = (ppt.data["age_created_months"], ppt.data["age_created_days"])
         data["age_apt_months"], data["age_apt_days"] = api.get_age(
             age_created, ts=ppt.data["date_created"], ts_new=data["date"]
         )
-
         ppt.data = utils.replace_labels(ppt.data, data_dict)
         ppt.data["age_now_months"] = str(ppt.data["age_now_months"])
         ppt.data["age_now_days"] = str(ppt.data["age_now_days"])
+        ppt.data["date_created"] = datetime.strftime(
+            ppt.data["date_created"], "%d/%m/%y %H:%M:%S"
+        )
+        ppt.data["date_updated"] = datetime.strftime(
+            ppt.data["date_updated"], "%d/%m/%y %H:%M:%S"
+        )
         data["age_apt_months"] = str(data["age_apt_months"])
         data["age_apt_days"] = str(data["age_apt_days"])
-
+        data["date"] = datetime.strftime(data["date"], "%d/%m/%y %H:%M")
+        data["date_created"] = datetime.strftime(
+            data["date_created"], "%d/%m/%y %H:%M:%S"
+        )
+        data["date_updated"] = datetime.strftime(
+            data["date_updated"], "%d/%m/%y %H:%M:%S"
+        )
         status_css = {
             "Scheduled": "scheduled",
             "Confirmed": "confirmed",
@@ -174,7 +182,7 @@ def apt_routes(app):
                 records = conf.get_records_or_index(token=token)
                 app.config["RECORDS"] = records
                 flash(f"Appointment added! ({ppt_id})", "success")
-                return redirect(url_for("apt_all", records=records))
+                return redirect(url_for("ppt_all", records=records))
             except requests.exceptions.HTTPError as e:
                 flash(f"Something went wrong! {e}", "error")
                 return render_template("apt_new.html", data_dict=data_dict)
