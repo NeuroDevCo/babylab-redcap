@@ -494,7 +494,6 @@ def count_col(
     """  # pylint: disable=line-too-long
     counts = x[col].value_counts().to_dict()
     counts = {missing_label if not k else k: v for k, v in counts.items()}
-    counts = dict(sorted(counts.items()))
     if values_sort:
         counts = dict(sorted(counts.items(), key=lambda item: item[1], reverse=True))
     if cumulative:

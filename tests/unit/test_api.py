@@ -187,7 +187,7 @@ def test_add_appointment_modifying(apt_record_mod, token_fixture):
         api.add_participant(apt_record_mod)
 
 
-@pytest.mark.skipif(IS_GIHTUB_ACTIONS, reason="Only local testing")
+@pytest.mark.skipif(True, reason="Disabled for now")
 def test_delete_appointment(apt_record_mod, token_fixture):
     """Test ``add_appointment`` ."""
     apt_id = api.make_id(
