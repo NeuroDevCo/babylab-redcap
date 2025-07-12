@@ -2,7 +2,7 @@
 
 from datetime import datetime
 import pytest
-from babylab.src import api
+from babylab import api
 
 timestamp = datetime(2024, 12, 17)
 

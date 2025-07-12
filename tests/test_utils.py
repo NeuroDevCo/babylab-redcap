@@ -4,7 +4,7 @@
 from typing import Generator
 from datetime import date, datetime
 import pytest
-from babylab.src import utils
+from babylab import utils
 
 
 def test_fmt_percentage():

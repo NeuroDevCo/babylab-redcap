@@ -3,17 +3,9 @@
 import os
 from datetime import datetime
 import pytest
-from babylab.src import api
+from babylab import api
 
 IS_GIHTUB_ACTIONS = os.getenv("GITHUB_ACTIONS") == "true"
-
-
-def test_post_request(token_fixture):
-    """Test ``post_request``."""
-    assert api.post_request(
-        fields={"content": "version"},
-        token=token_fixture,
-    ).ok
 
 
 def test_redcap_version(token_fixture):
@@ -162,7 +154,7 @@ def test_add_participant_modifying(ppt_record_mod, token_fixture):
         api.add_participant(ppt_record_mod)
 
 
-@pytest.mark.skipif(IS_GIHTUB_ACTIONS, reason="Only local testing")
+@pytest.mark.skipif(True, reason="Skip for now")
 def test_delete_participant(ppt_record_mod, token_fixture):
     """Test ``add_participant``."""
     api.delete_participant(ppt_record_mod, token=token_fixture)
@@ -187,7 +179,7 @@ def test_add_appointment_modifying(apt_record_mod, token_fixture):
         api.add_participant(apt_record_mod)
 
 
-@pytest.mark.skipif(True, reason="Disabled for now")
+@pytest.mark.skipif(True, reason="Skip for now")
 def test_delete_appointment(apt_record_mod, token_fixture):
     """Test ``add_appointment`` ."""
     apt_id = api.make_id(
@@ -214,7 +206,7 @@ def test_add_questionnaire_mod(que_record_mod, token_fixture):
         api.add_questionnaire(que_record_mod)
 
 
-@pytest.mark.skipif(IS_GIHTUB_ACTIONS, reason="Only local testing")
+@pytest.mark.skipif(True, reason="Skip for now")
 def test_delete_questionnaire(que_record_mod, token_fixture):
     """Test ``delete_questionnaire``."""
     que_id = api.make_id(

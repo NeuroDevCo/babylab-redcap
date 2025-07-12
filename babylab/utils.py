@@ -10,7 +10,7 @@ from functools import singledispatch
 from copy import deepcopy
 from pandas import DataFrame, to_datetime
 from markupsafe import Markup
-from babylab.src import api
+from babylab import api
 
 
 def fmt_ppt_id(ppt_id: str) -> str:

@@ -16,6 +16,22 @@ import requests
 from pandas import DataFrame
 
 
+class MissingEnvException(Exception):
+    """If .env file is not found in user folder"""
+
+    def __init__(self, envpath):
+        msg = f".env file not found. Please, make sure to save your credentials in {envpath}"  # pylint: disable=line-too-long
+        super().__init__(msg)
+
+
+class MissingEnvToken(Exception):
+    """If token is not provided under 'API_TEST_TOKEN' key."""
+
+    def __init__(self):
+        msg = "No token was found under the 'API_TEST_TOKEN' key in your .env file."  # pylint: disable=line-too-long
+        super().__init__(msg)
+
+
 class RecordList:
     """List of records"""
 

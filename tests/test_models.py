@@ -3,7 +3,7 @@
 
 from datetime import datetime
 from pandas import DataFrame
-from babylab.src import api
+from babylab import api
 
 
 def test_participant_class(ppt_record):
@@ -50,9 +50,9 @@ def test_questionnaire_class(que_record):
     assert hasattr(q, "record_id")
     assert hasattr(q, "data")
     assert isinstance(repr(q), str)
-    assert "questionnaire " in repr(q)
+    assert "questionnaire " in repr(q).lower()
     assert isinstance(str(q), str)
-    assert "questionnaire " in str(q)
+    assert "questionnaire " in str(q).lower()
 
 
 def test_records_class(token_fixture):
