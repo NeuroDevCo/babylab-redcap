@@ -6,6 +6,8 @@ from datetime import date, datetime
 import pytest
 from babylab import utils
 
+def test_fmt_ppt_id(ppt_id: "123"):
+    assert utils.fmt_ppt_id(ppt_id)==
 
 def test_fmt_percentage():
     """Test fmt_percentage."""

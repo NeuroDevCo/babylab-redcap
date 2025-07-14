@@ -4,7 +4,8 @@
 Functions to interact with the REDCap API.
 """
 
-import os
+from os import mkdir, walk
+from os.path import join, exists
 from collections import OrderedDict
 from collections.abc import Iterable
 import json
@@ -242,7 +243,6 @@ def get_data_dict(**kwargs: any) -> any:
         "language_lang4",
     ]
     fields = {"content": "metadata", "format": "json", "returnFormat": "json"}
-
     for idx, i in enumerate(items):
         fields[f"fields[{idx}]"] = i
     r = json.loads(post_request(fields=fields, **kwargs).text)
@@ -251,11 +251,13 @@ def get_data_dict(**kwargs: any) -> any:
     for k, v in zip(items_ordered, r):
         options = v["select_choices_or_calculations"].split("|")
         options = [tuple(o.strip().split(", ")) for o in options]
-        dicts[k] = dict(sorted(options, key=lambda x: x[1]))
+        if k.startswith("language_"):
+            options = sorted(options, key=lambda x: x[1])
+        dicts[k] = dict(options)
     return dicts
 
 
-def strings_to_datetimes(data: dict) -> dict:
+def str_to_dt(data: dict) -> dict:
     """Parse strings in a dictionary as formatted datetimes.
 
     It first tries to format the date as "Y-m-d H:M:S". If error, it assumes the "Y-m-d H:M" is due and tries to format it accordingly.
@@ -275,7 +277,7 @@ def strings_to_datetimes(data: dict) -> dict:
     return data
 
 
-def datetimes_to_strings(data: dict) -> dict:
+def dt_to_str(data: dict) -> dict:
     """Format datatimes in a dictionary as strings following the ISO 8061 date format.
 
     Args:
@@ -313,13 +315,12 @@ def get_records(record_id: str | list = None, **kwargs: any) -> dict:
         dict: REDCap records in JSON format.
     """
     fields = {"content": "record", "format": "json", "type": "flat"}
-
     if record_id and isinstance(record_id, list):
         fields["records[0]"] = record_id
         for r in record_id:
             fields[f"records[{record_id}]"] = r
     records = post_request(fields=fields, **kwargs).json()
-    return [strings_to_datetimes(r) for r in records]
+    return [str_to_dt(r) for r in records]
 
 
 def make_id(ppt_id: str, repeat_id: str = None) -> str:
@@ -378,10 +379,8 @@ def get_participant(ppt_id: str, **kwargs: any) -> Participant:
     }
     for i, f in enumerate(["participants", "appointments", "language"]):
         fields[f"forms[{i}]"] = f
-    recs = post_request(fields, **kwargs).json()
-    recs = [strings_to_datetimes(r) for r in recs]
-    apt = {}
-    que = {}
+    recs = [str_to_dt(r) for r in post_request(fields, **kwargs).json()]
+    apt, que = {}, {}
     for r in recs:
         repeat_id = make_id(r["record_id"], r["redcap_repeat_instance"])
         if r["redcap_repeat_instrument"] == "appointments":
@@ -445,7 +444,7 @@ def add_participant(data: dict, modifying: bool = False, **kwargs: any):
         "type": "flat",
         "overwriteBehavior": "normal" if modifying else "overwrite",
         "forceAutoNumber": "false" if modifying else "true",
-        "data": f"[{json.dumps(datetimes_to_strings(data))}]",
+        "data": f"[{json.dumps(dt_to_str(data))}]",
     }
     return post_request(fields=fields, **kwargs)
 
@@ -483,7 +482,7 @@ def add_appointment(data: dict, **kwargs: any):
         "type": "flat",
         "overwriteBehavior": "overwrite",
         "forceAutoNumber": "false",
-        "data": f"[{json.dumps(datetimes_to_strings(data))}]",
+        "data": f"[{json.dumps(dt_to_str(data))}]",
     }
     return post_request(fields=fields, **kwargs)
 
@@ -521,7 +520,7 @@ def add_questionnaire(data: dict, **kwargs: any):
         "type": "flat",
         "overwriteBehavior": "overwrite",
         "forceAutoNumber": "false",
-        "data": f"[{json.dumps(datetimes_to_strings(data))}]",
+        "data": f"[{json.dumps(dt_to_str(data))}]",
     }
 
     return post_request(fields=fields, **kwargs)
@@ -556,13 +555,13 @@ def redcap_backup(path: str = "tmp", **kwargs: any) -> dict:
     Returns:
         dict: A dictionary with the key data and metadata of the project.
     """
-    if not os.path.exists(path):
-        os.mkdir(path)
+    if not exists(path):
+        mkdir(path)
     pl = {}
     for k in ["project", "metadata", "instrument"]:
         pl[k] = {"format": "json", "returnFormat": "json", "content": k}
     d = {k: json.loads(post_request(v, **kwargs).text) for k, v in pl.items()}
-    with open(os.path.join(path, "records.csv"), "w+", encoding="utf-8") as f:
+    with open(join(path, "records.csv"), "w+", encoding="utf-8") as f:
         fields = {
             "content": "record",
             "action": "export",
@@ -580,14 +579,14 @@ def redcap_backup(path: str = "tmp", **kwargs: any) -> dict:
         "fields": d["metadata"],
     }
     for k, v in b.items():
-        with open(os.path.join(path, k + ".json"), "w", encoding="utf-8") as f:
+        with open(join(path, k + ".json"), "w", encoding="utf-8") as f:
             json.dump(v, f)
     timestamp = datetime.strftime(datetime.now(), "%Y-%m-%d-%H-%M")
-    file = os.path.join(path, "backup_" + timestamp + ".zip")
-    for root, _, files in os.walk(path, topdown=False):
+    file = join(path, "backup_" + timestamp + ".zip")
+    for root, _, files in walk(path, topdown=False):
         with zipfile.ZipFile(file, "w", zipfile.ZIP_DEFLATED) as z:
             for f in files:
-                z.write(os.path.join(root, f))
+                z.write(join(root, f))
     return file
 
 
@@ -630,7 +629,7 @@ class Records:
             "REDCap database:"
             + f"\n- {len(self.participants.records)} participants"
             + f"\n- {len(self.appointments.records)} appointments"
-            + f"\n- {len(self.questionnaires.records)} language questionnaires"  # pylint: disable=line-too-long
+            + f"\n- {len(self.questionnaires.records)} questionnaires"
         )
 
     def __str__(self) -> str:
@@ -640,9 +639,10 @@ class Records:
             str: Description of class.
         """
         return (
-            f"REDCap database ({len(self.participants)} participants"
-            + f", {len(self.appointments)} appointments"
-            + f", {len(self.questionnaires)} questionnaires"
+            "REDCap database:"
+            + f"\n- {len(self.participants.records)} participants"
+            + f"\n- {len(self.appointments.records)} appointments"
+            + f"\n- {len(self.questionnaires.records)} questionnaires"
         )
 
 
@@ -691,15 +691,12 @@ def get_age(age: str | tuple, ts: datetime, ts_new: datetime = None):
         ts = pytz.UTC.localize(ts, True)
     if ts_new.tzinfo is None or ts_new.tzinfo.utcoffset(ts_new) is None:
         ts_new = pytz.UTC.localize(ts_new, True)
-
     tdiff = relativedelta(ts_new, ts)
     age = parse_age(age)
     new_age_months = age[0] + tdiff.years * 12 + tdiff.months
     new_age_days = age[1] + tdiff.days
-
     if new_age_days >= 30:
         additional_months = new_age_days // 30
         new_age_months += additional_months
         new_age_days %= 30
-
     return new_age_months, new_age_days

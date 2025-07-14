@@ -22,26 +22,26 @@ def test_redcap_version(token_fixture):
     assert not api.get_redcap_version(token="bad#token")
 
 
-def test_datetimes_to_str():
+def test_dt_to_str():
     """Test ``test_datetimes_to_str`` function."""
     data = {
         "date_now": datetime(2024, 10, 24, 8, 48, 34, 685496),
         "date_today": datetime(2024, 10, 24, 8, 48),
         "date_str": "2024-05-12T5:12",
     }
-    result = api.datetimes_to_strings(data)
+    result = api.dt_to_str(data)
     assert result["date_now"] == "2024-10-24T08:48:34.685496"
     assert result["date_today"] == "2024-10-24T08:48:00"
     assert result["date_str"] == data["date_str"]
 
 
-def test_strings_to_datetimes():
+def test_str_to_dt():
     """Test ``test_datetimes_to_str`` function."""
     data = {
         "date_now": "2024-05-12 05:34:15",
         "date_today": "2024-05-12 05:34",
     }
-    result = api.strings_to_datetimes(data)
+    result = api.str_to_dt(data)
     assert result["date_now"] == datetime(2024, 5, 12, 5, 34, 15)
     assert result["date_today"] == datetime(2024, 5, 12, 5, 34)
 
@@ -154,7 +154,6 @@ def test_add_participant_modifying(ppt_record_mod, token_fixture):
         api.add_participant(ppt_record_mod)
 
 
-@pytest.mark.skipif(True, reason="Skip for now")
 def test_delete_participant(ppt_record_mod, token_fixture):
     """Test ``add_participant``."""
     api.delete_participant(ppt_record_mod, token=token_fixture)
@@ -179,7 +178,6 @@ def test_add_appointment_modifying(apt_record_mod, token_fixture):
         api.add_participant(apt_record_mod)
 
 
-@pytest.mark.skipif(True, reason="Skip for now")
 def test_delete_appointment(apt_record_mod, token_fixture):
     """Test ``add_appointment`` ."""
     apt_id = api.make_id(
@@ -206,7 +204,6 @@ def test_add_questionnaire_mod(que_record_mod, token_fixture):
         api.add_questionnaire(que_record_mod)
 
 
-@pytest.mark.skipif(True, reason="Skip for now")
 def test_delete_questionnaire(que_record_mod, token_fixture):
     """Test ``delete_questionnaire``."""
     que_id = api.make_id(
@@ -219,7 +216,6 @@ def test_delete_questionnaire(que_record_mod, token_fixture):
         api.delete_questionnaire(que_record_mod)
 
 
-@pytest.mark.skipif(True, reason="Only local testing")
 def test_redcap_backup(benchmark, token_fixture, tmp_path) -> dict:
     """Test ``redcap_backup``."""
     tmp_dir = tmp_path / "tmp"
@@ -245,3 +241,31 @@ def get_next_id(benchmark, token_fixture, records: api.Records = None) -> str:
         api.get_next_id(token=token_fixture)
 
     benchmark(_get_next_id)
+
+
+def test_get_age(benchmark):
+    """Test ``get_age``"""
+    ts = datetime(2024, 5, 1, 3, 4)
+    ts_new = datetime(2025, 1, 4, 1, 2)
+    age = (5, 5)
+
+    # when only birth date is provided
+    assert isinstance(api.get_age(age, ts), tuple)
+    assert all(isinstance(d, int) for d in api.get_age(age, ts))
+    assert len(api.get_age(age, ts)) == 2
+
+    # when birth date AND ts_new are provided
+    assert isinstance(api.get_age(age, ts, ts_new=ts_new), tuple)
+    assert all(isinstance(d, int) for d in api.get_age(age, ts, ts_new))
+    assert len(api.get_age(age, ts, ts_new)) == 2
+
+    assert api.get_age(age, ts, ts_new) == (13, 7)
+
+    assert all(d > 0 for d in api.get_age(age, ts, ts_new))
+    with pytest.raises(api.BadAgeFormat):
+        api.get_age(age="5, 4", ts=ts)
+
+    def _get_age():
+        api.get_age(age, ts, ts_new)
+
+    benchmark(_get_age)
