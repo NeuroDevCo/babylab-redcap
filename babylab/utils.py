@@ -235,7 +235,7 @@ def replace_labels(x: DataFrame | dict, data_dict: dict) -> DataFrame:
 
 def is_in_data_dict(
     x: Iterable[str] | None, variable: str, data_dict: dict
-) -> Iterable[str]:
+) -> list[str]:
     """Check that a value is an element in the data dictionary.
 
     Args:
@@ -244,10 +244,10 @@ def is_in_data_dict(
         data_dict (dict): Data dictionary as returned by ``api.get_data_dictionary``.
 
     Raises:
-        ValueError: _description_
+        ValueError: If `x` is not an option present in `data_dict`.
 
     Returns:
-        Iterable[str]: Values in data dict.
+        list[str]: Values in data dict.
     """
     options = list(data_dict[variable].values())
     if x is None:
@@ -262,7 +262,7 @@ def is_in_data_dict(
 
 
 def get_age_timestamp(
-    apt_records: dict, ppt_records: dict, dtype: str = "date"
+    months: int, days: int, timestamp: date | datetime
 ) -> tuple[str, str]:
     """Get age at timestamp in months and days.
 
@@ -277,28 +277,16 @@ def get_age_timestamp(
     Returns:
         tuple[str, str]: Age at timestamp in months and days.
     """
-    if dtype not in ["date", "date_created"]:
-        raise ValueError("timestamp must be 'date' or 'date_created'")
-
     months_new, days_new = [], []
-    for v in apt_records.values():
-        ppt_data = ppt_records[v.record_id].data
-        months = ppt_data["age_now_months"]
-        days = ppt_data["age_now_days"]
-        age_now = api.get_age(
-            age=(months, days),
-            ts=ppt_data[dtype] if dtype == "date_created" else v.data["date"],
-        )
-        months_new.append(int(age_now[0]))
-        days_new.append(int(age_now[1]))
+    for m, d, t in zip(months, days, timestamp):
+        age_months, age_days = api.get_age(age=(m, d), ts=t)
+        months_new.append(age_months)
+        days_new.append(age_days)
     return months_new, days_new
 
 
 def get_ppt_table(
-    records: api.Records,
-    data_dict: dict,
-    relabel: bool = True,
-    study: str = None,
+    records: api.Records, data_dict: dict, relabel: bool = True, study: str = None
 ) -> DataFrame:
     """Get participants table
 
@@ -347,15 +335,11 @@ def get_ppt_table(
     ]
     if not records.participants.records:
         return DataFrame([], columns=cols)
-    ppt = records.participants
-    apt = records.appointments
+    ppt, apt = records.participants, records.appointments
     if study:
-        target_ids = [
-            a.record_id for a in apt.records.values() if study in a.data["study"]
-        ]
-        ppt.records = {k: v for k, v in ppt.records.items() if k in target_ids}
-    new_age_months = []
-    new_age_days = []
+        ids = [a.record_id for a in apt.records.values() if study in a.data["study"]]
+        ppt.records = {k: v for k, v in ppt.records.items() if k in ids}
+    new_age_months, new_age_days = [], []
     for v in ppt.records.values():
         age_created = (v.data["age_created_months"], v.data["age_created_days"])
         age = api.get_age(age_created, ts=v.data["date_created"])
@@ -371,6 +355,7 @@ def get_ppt_table(
 def get_apt_table(
     records: api.Records,
     data_dict: dict = None,
+    ppt_id: str = None,
     study: str = None,
     relabel: bool = True,
 ) -> DataFrame:
@@ -385,52 +370,48 @@ def get_apt_table(
         DataFrame: Table of appointments.
     """  # pylint: disable=line-too-long
     apts = deepcopy(records.appointments)
-    if study:
-        apts.records = {
-            k: v for k, v in apts.records.items() if v.data["study"] == study
-        }
-
-    if not apts.records:
-        return DataFrame(
-            [],
-            columns=[
-                "appointment_id",
-                "record_id",
-                "study",
-                "status",
-                "date",
-                "date_created",
-                "date_updated",
-                "taxi_address",
-                "taxi_isbooked",
-            ],
-        )
-    apt_records = apts.records
-    if isinstance(records, api.Records):
-        ppt_records = records.participants.records
-    else:
-        ppt_records = {records.record_id: api.RecordList(records).records}
-
-    df = apts.to_df()
-    df["appointment_id"] = [
-        api.make_id(i, apt_id)
-        for i, apt_id in zip(df.index, df["redcap_repeat_instance"])
+    colnames = [
+        "appointment_id",
+        "record_id",
+        "study",
+        "status",
+        "date",
+        "date_created",
+        "date_updated",
+        "taxi_address",
+        "taxi_isbooked",
     ]
-    df["age_now_months"], df["age_now_days"] = get_age_timestamp(
-        apt_records, ppt_records, "date_created"
-    )
-    df["age_apt_months"], df["age_apt_days"] = get_age_timestamp(
-        apt_records, ppt_records, "date"
-    )
-    df["date"] = to_datetime(df.date)
-    df["date"] = df["date"].dt.strftime("%d/%m/%y %H:%M")
+    df = apts.to_df()
     if relabel:
         df = replace_labels(df, data_dict)
+    if study:
+        df = df[df.study == study]
+    if ppt_id:
+        df = df[df.index == ppt_id]
+    if len(apts.records) == 0:
+        return DataFrame(columns=colnames)
+    months, days = [], []
+    for v in apts.records.values():
+        ppt_data = records.participants.records[v.record_id].data
+        months.append(ppt_data["age_now_months"])
+        days.append(ppt_data["age_now_days"])
+    df["age_now_months"], df["age_now_days"] = get_age_timestamp(
+        months, days, df["date_created"].to_list()
+    )
+    df["age_apt_months"], df["age_apt_days"] = get_age_timestamp(
+        months, days, df["date"].to_list()
+    )
+    df["date"] = to_datetime(df.date, format="%Y-%m-%dT%H:%M")
+    df["date"] = df["date"].dt.strftime("%d/%m/%y %H:%M")
     return df
 
 
 def get_que_table(
-    records: api.Records, data_dict: dict, relabel: bool = True
+    records: api.Records,
+    data_dict: dict,
+    ppt_id: str = None,
+    study: str = None,
+    relabel: bool = True,
 ) -> DataFrame:
     """Get questionnaires table.
 
@@ -443,33 +424,33 @@ def get_que_table(
     Returns:
         DataFrame: A formated Pandas DataFrame.
     """  # pylint: disable=line-too-long
-    quest = records.questionnaires
-
-    if not quest.records:
-        return DataFrame(
-            [],
-            columns=[
-                "record_id",
-                "questionnaire_id",
-                "isestimated",
-                "date_created",
-                "date_updated",
-                "lang1",
-                "lang1_exp",
-                "lang2",
-                "lang2_exp",
-                "lang3",
-                "lang3_exp",
-                "lang4",
-                "lang4_exp",
-            ],
-        )
-    df = quest.to_df()
-    df["questionnaire_id"] = [
-        api.make_id(p, q) for p, q in zip(df.index, df["redcap_repeat_instance"])
+    ques = deepcopy(records.questionnaires)
+    colnames = [
+        "record_id",
+        "questionnaire_id",
+        "isestimated",
+        "date_created",
+        "date_updated",
+        "lang1",
+        "lang1_exp",
+        "lang2",
+        "lang2_exp",
+        "lang3",
+        "lang3_exp",
+        "lang4",
+        "lang4_exp",
     ]
+    df = ques.to_df()
     if relabel:
-        replace_labels(df, data_dict)
+        df = replace_labels(df, data_dict)
+    if study:
+        df = df[df.study == study]
+    if ppt_id:
+        df = df[df.index == ppt_id]
+    if len(ques.records) == 0:
+        return DataFrame(columns=colnames)
+    df["date_created"] = to_datetime(df.date_created, format="%Y-%m-%dT%H:%M")
+    df["date_updated"] = df["date_updated"].dt.strftime("%d/%m/%y %H:%M")
     return df
 
 

@@ -76,6 +76,8 @@ def test_recordlist_class_participants(token_fixture):
     records = api.Records(token=token_fixture).participants
     assert isinstance(records.records, dict)
     assert isinstance(records.to_df(), DataFrame)
+    assert isinstance(records.kind, str)
+    assert records.kind == "participants"
 
 
 def test_recordlist_class_appointments(token_fixture):
@@ -83,6 +85,8 @@ def test_recordlist_class_appointments(token_fixture):
     records = api.Records(token=token_fixture).appointments
     assert isinstance(records.records, dict)
     assert isinstance(records.to_df(), DataFrame)
+    assert isinstance(records.kind, str)
+    assert records.kind == "appointments"
 
 
 def test_recordlist_class_questionnaires(token_fixture):
@@ -90,6 +94,8 @@ def test_recordlist_class_questionnaires(token_fixture):
     records = api.Records(token=token_fixture).questionnaires
     assert isinstance(records.records, dict)
     assert isinstance(records.to_df(), DataFrame)
+    assert isinstance(records.kind, str)
+    assert records.kind == "questionnaires"
 
 
 def test_records_class_participants(records_fixture):

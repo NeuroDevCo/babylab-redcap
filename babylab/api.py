@@ -36,14 +36,15 @@ class MissingEnvToken(Exception):
 class RecordList:
     """List of records"""
 
-    def __init__(self, records: dict):
+    def __init__(self, records: dict, kind: str = None):
         self.records: dict = records
+        self.kind = kind
 
     def __len__(self) -> int:
         return len(self.records)
 
     def __repr__(self) -> str:
-        return f"RecordList with {len(self)} records"
+        return f"RecordList ({self.kind if self.kind else 'generic'}) with {len(self)} records"
 
     def to_df(self) -> DataFrame:
         """Transforms a a RecordList to a Pandas DataFrame.
@@ -51,7 +52,79 @@ class RecordList:
         Returns:
             DataFrame: Tabular dataset.
         """
-        df = DataFrame([p.data for p in self.records.values()])
+        if self.kind == "participants":
+            colnames = [
+                "record_id",
+                "date_created",
+                "date_updated",
+                "source",
+                "name",
+                "age_created_months",
+                "age_created_days",
+                "sex",
+                "twin",
+                "isdropout",
+                "parent1_name",
+                "parent1_surname",
+                "email1",
+                "phone1",
+                "parent2_name",
+                "parent2_surname",
+                "email2",
+                "phone2",
+                "address",
+                "city",
+                "postcode",
+                "birth_type",
+                "gest_weeks",
+                "birth_weight",
+                "head_circumference",
+                "apgar1",
+                "apgar2",
+                "apgar3",
+                "hearing",
+                "diagnoses",
+                "comments",
+                "age_now_months",
+                "age_now_days",
+            ]
+        elif self.kind == "appointments":
+            colnames = [
+                "record_id",
+                "appointment_id",
+                "study",
+                "status",
+                "date",
+                "date_created",
+                "date_updated",
+                "taxi_address",
+                "taxi_isbooked",
+            ]
+        else:
+            colnames = [
+                "record_id",
+                "redcap_repeat_instance",
+                "date_created",
+                "date_updated",
+                "isestimated",
+                "lang1",
+                "lang1_exp",
+                "lang2",
+                "lang2_exp",
+                "lang3",
+                "lang3_exp",
+                "lang4",
+                "lang4_exp",
+                "comments",
+                "complete",
+            ]
+        recs = [p.data for p in self.records.values()]
+        if not recs:
+            df = DataFrame(columns=colnames)
+        else:
+            df = DataFrame(recs)
+            df = df.rename(columns={"id": "appointment_id"})
+            df = df[colnames]
         df.set_index("record_id", inplace=True)
         return df
 
@@ -615,9 +688,9 @@ class Records:
             ques = {k: v for k, v in que.items() if v.record_id == p}
             v.questionnaires = RecordList(ques)
 
-        self.participants = RecordList(ppt)
-        self.appointments = RecordList(apt)
-        self.questionnaires = RecordList(que)
+        self.participants = RecordList(ppt, kind="participants")
+        self.appointments = RecordList(apt, kind="appointments")
+        self.questionnaires = RecordList(que, kind="questionnaires")
 
     def __repr__(self) -> str:
         """Print class in console.
