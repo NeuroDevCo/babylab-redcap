@@ -7,33 +7,6 @@ import pytest
 from babylab import utils
 
 
-def test_fmt_percentage():
-    """Test fmt_percentage."""
-    with pytest.raises(ValueError):
-        utils.fmt_percentage(-0.1)
-    with pytest.raises(ValueError):
-        utils.fmt_percentage(111)
-    assert utils.fmt_percentage(0) == ""
-    assert utils.fmt_percentage(1) == "1"
-    assert utils.fmt_percentage(0.2) == "0"
-    assert utils.fmt_percentage(55) == "55"
-    assert utils.fmt_percentage(100) == "100"
-
-
-def test_fmt_taxi_isbooked():
-    """Test fmt_taxi_isbooked."""
-    with pytest.raises(ValueError):
-        utils.fmt_taxi_isbooked("Some address", "a")
-    assert (
-        utils.fmt_taxi_isbooked("Some address", "1")
-        == "<p style='color: green;'>Yes</p>"
-    )
-    assert (
-        utils.fmt_taxi_isbooked("Some address", "0") == "<p style='color: red;'>No</p>"
-    )
-    assert utils.fmt_taxi_isbooked("", "0") == ""
-
-
 def test_is_in_data_dict(data_dict: dict):
     """Test is_in_datadict."""
     assert utils.is_in_data_dict(["Successful"], "appointment_status", data_dict) == [
@@ -45,7 +18,6 @@ def test_is_in_data_dict(data_dict: dict):
     assert utils.is_in_data_dict("Successful", "appointment_status", data_dict) == [
         "Successful"
     ]
-
     assert utils.is_in_data_dict(
         ["mop_newborns_1_nirs"], "appointment_study", data_dict
     ) == ["mop_newborns_1_nirs"]

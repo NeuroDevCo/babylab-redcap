@@ -1,6 +1,7 @@
 """Test API."""
 
 import os
+import time
 from datetime import datetime
 import pytest
 from babylab import api
@@ -8,18 +9,21 @@ from babylab import api
 IS_GIHTUB_ACTIONS = os.getenv("GITHUB_ACTIONS") == "true"
 
 
-def test_redcap_version(token_fixture):
+def test_get_api_key():
+    """Test get_api_key."""
+    token = api.get_api_key()
+    assert token is not None
+    assert isinstance(token, str)
+    with pytest.raises(api.MissingEnvException):
+        api.get_api_key(envpath="BADPATH")
+
+
+def test_redcap_version():
     """Test ``redcap_version``."""
-    version = api.get_redcap_version(token=token_fixture)
+    version = api.get_redcap_version()
     assert version
     assert isinstance(version, str)
     assert len(version.split(".")) == 3
-    with pytest.raises(TypeError):
-        api.get_redcap_version()
-    with pytest.raises(TypeError):
-        api.get_redcap_version(token_fixture)  # pylint: disable=too-many-function-args
-    assert not api.get_redcap_version(token="wrongtoken")
-    assert not api.get_redcap_version(token="bad#token")
 
 
 def test_dt_to_str():
@@ -46,17 +50,14 @@ def test_str_to_dt():
     assert result["date_today"] == datetime(2024, 5, 12, 5, 34)
 
 
-def test_get_data_dict(benchmark, token_fixture):
+def test_get_data_dict(benchmark):
     """Test ``get_records``."""
-    data_dict = api.get_data_dict(token=token_fixture)
-
+    data_dict = api.get_data_dict()
     assert isinstance(data_dict, dict)
     assert all(isinstance(v, dict) for v in data_dict.values())
-    with pytest.raises(TypeError):
-        api.get_data_dict()
 
     def _get_data_dict():
-        api.get_data_dict(token=token_fixture)
+        api.get_data_dict()
 
     benchmark(_get_data_dict)
 
@@ -79,166 +80,96 @@ def test_make_id():
         api.make_id("1:1")
 
 
-def test_get_participant(benchmark, ppt_record_mod, token_fixture):
-    """Test ``get_participant``."""
-    ppt_id = ppt_record_mod["record_id"]
-    ppt = api.get_participant(ppt_id, token=token_fixture)
-
-    assert isinstance(ppt, api.Participant)
-    with pytest.raises(api.RecordNotFound):
-        api.get_participant("BADID", token=token_fixture)
-
-    def _get_participant():
-        api.get_participant(ppt_id, token=token_fixture)
-
-    benchmark(_get_participant)
-
-
-def test_get_appointment(benchmark, apt_record_mod, token_fixture):
-    """Test ``get_participant``."""
-    ppt_id = apt_record_mod["record_id"]
-    repeat_id = apt_record_mod["redcap_repeat_instance"]
-    apt_id = api.make_id(ppt_id, repeat_id)
-    apt = api.get_appointment(apt_id, token=token_fixture)
-    assert isinstance(apt, api.Appointment)
-    with pytest.raises(api.RecordNotFound):
-        api.get_appointment("f{ppt_id}:BADID", token=token_fixture)
-
-    def _get_appointment():
-        api.get_appointment(apt_id, token=token_fixture)
-
-    benchmark(_get_appointment)
-
-
-def test_get_questionnaire(benchmark, que_record_mod, token_fixture):
-    """Test ``get_participant``."""
-    ppt_id = que_record_mod["record_id"]
-    repeat_id = que_record_mod["redcap_repeat_instance"]
-    que_id = api.make_id(ppt_id, repeat_id)
-    que = api.get_questionnaire(que_id, token=token_fixture)
-    assert isinstance(que, api.Questionnaire)
-    with pytest.raises(api.RecordNotFound):
-        api.get_questionnaire("f{que_id}:BADID", token=token_fixture)
-
-    def _get_questionnaire():
-        api.get_questionnaire(que_id, token=token_fixture)
-
-    benchmark(_get_questionnaire)
-
-
-def test_get_records(benchmark, token_fixture):
+def test_get_records(benchmark):
     """Test ``get_records``."""
-    records = api.get_records(token=token_fixture)
+    records = api.get_records()
     assert isinstance(records, list)
     assert all(isinstance(r, dict) for r in records)
-    with pytest.raises(TypeError):
-        api.get_records()
 
     def _get_records():
-        api.get_records(token=token_fixture)
+        api.get_records()
 
     benchmark(_get_records)
 
 
-def test_add_participant(ppt_record, token_fixture):
-    """Test ``add_participant``."""
-    api.add_participant(ppt_record, token=token_fixture)
-    with pytest.raises(TypeError):
-        api.add_participant(ppt_record)
+def test_add_mod_del_participant(ppt_record):
+    """Test adding,modifying, and deleting participants."""
+    # add
+    rid = ppt_record["record_id"]
+    api.add_participant(ppt_record)
+    assert isinstance(api.get_participant(rid), api.Participant)
+    # modify
+    old_val = ppt_record["participant_apgar1"]
+    new_val = str(int(old_val) + 1) if old_val != "10" else "1"
+    ppt_record["participant_apgar1"] = new_val
+    api.add_participant(ppt_record, modifying=True)
+    new_record = api.get_participant(rid)
+    assert new_record.data["apgar1"] == new_val
+    # delete
+    api.delete_participant(ppt_record)
+    with pytest.raises(api.RecordNotFound):
+        api.get_participant(rid)
 
 
-def test_add_participant_modifying(ppt_record_mod, token_fixture):
-    """Test ``add_participant`` with ``modifying=True``."""
-    api.add_participant(ppt_record_mod, token=token_fixture)
-    with pytest.raises(TypeError):
-        api.add_participant(ppt_record_mod)
+def test_add_mod_del_appointment(apt_record):
+    """Test adding, modifying, and delete appointments."""
+    # add
+    api.add_appointment(apt_record)
+    rid = api.make_id(apt_record["record_id"], apt_record["redcap_repeat_instance"])
+    assert isinstance(api.get_appointment(rid), api.Appointment)
+    # modify
+    old_val = apt_record["appointment_status"]
+    new_val = "1" if old_val != "1" else "1"
+    apt_record["appointment_status"] = new_val
+    api.add_appointment(apt_record)
+    new_record = api.get_appointment(rid)
+    assert new_record.data["status"] == new_val
+    # delete
+    api.delete_appointment(apt_record)
+    with pytest.raises(api.RecordNotFound):
+        api.get_appointment(rid)
 
 
-def test_delete_participant(ppt_record_mod, token_fixture):
-    """Test ``add_participant``."""
-    api.delete_participant(ppt_record_mod, token=token_fixture)
-    recs = api.Records(token=token_fixture)
-    assert ppt_record_mod["record_id"] not in recs.appointments.records
-    api.delete_participant(ppt_record_mod, token=token_fixture)
-    with pytest.raises(TypeError):
-        api.delete_participant(ppt_record_mod)
+def test_add_mod_del_questionnaire(que_record):
+    """Test adding, modifying, and delting questionnaires."""
+    # add
+    api.add_questionnaire(que_record)
+    rid = api.make_id(que_record["record_id"], que_record["redcap_repeat_instance"])
+    assert isinstance(api.get_questionnaire(rid), api.Questionnaire)
+    # modify
+    old_val = que_record["language_lang1"]
+    new_val = str(1 if old_val == "0" else 0)
+    que_record["language_lang1"] = new_val
+    api.add_questionnaire(que_record)
+    new_record = api.get_questionnaire(rid)
+    assert new_record.data["lang1"] == new_val
+    # delete
+    api.delete_questionnaire(que_record)
+    with pytest.raises(api.RecordNotFound):
+        api.get_questionnaire(rid)
 
 
-def test_add_appointment(apt_record, token_fixture):
-    """Test ``add_appointment`` ."""
-    api.add_appointment(apt_record, token=token_fixture)
-    with pytest.raises(TypeError):
-        api.add_appointment(apt_record)
-
-
-def test_add_appointment_modifying(apt_record_mod, token_fixture):
-    """Test ``add_appointment`` with ``modifying=True``."""
-    api.add_appointment(apt_record_mod, token=token_fixture)
-    with pytest.raises(TypeError):
-        api.add_participant(apt_record_mod)
-
-
-def test_delete_appointment(apt_record_mod, token_fixture):
-    """Test ``add_appointment`` ."""
-    apt_id = api.make_id(
-        apt_record_mod["record_id"], apt_record_mod["redcap_repeat_instance"]
-    )
-    api.delete_appointment(apt_record_mod, token=token_fixture)
-    recs = api.Records(token=token_fixture)
-    assert apt_id not in recs.appointments.records
-    with pytest.raises(TypeError):
-        api.delete_appointment(apt_record_mod)
-
-
-def test_add_questionnaire(que_record, token_fixture):
-    """Test ``add_appointment``."""
-    api.add_questionnaire(que_record, token=token_fixture)
-    with pytest.raises(TypeError):
-        api.add_questionnaire(que_record)
-
-
-def test_add_questionnaire_mod(que_record_mod, token_fixture):
-    """Test ``add_questionaire`` with ``modifying=True``."""
-    api.add_questionnaire(que_record_mod, token=token_fixture)
-    with pytest.raises(TypeError):
-        api.add_questionnaire(que_record_mod)
-
-
-def test_delete_questionnaire(que_record_mod, token_fixture):
-    """Test ``delete_questionnaire``."""
-    que_id = api.make_id(
-        que_record_mod["record_id"], que_record_mod["redcap_repeat_instance"]
-    )
-    api.delete_questionnaire(que_record_mod, token=token_fixture)
-    recs = api.Records(token=token_fixture)
-    assert que_id not in recs.questionnaires.records
-    with pytest.raises(TypeError):
-        api.delete_questionnaire(que_record_mod)
-
-
-def test_redcap_backup(benchmark, token_fixture, tmp_path) -> dict:
+def test_redcap_backup(benchmark, tmp_path) -> dict:
     """Test ``redcap_backup``."""
     tmp_dir = tmp_path / "tmp"
-    file = api.redcap_backup(path=tmp_dir, token=token_fixture)
+    file = api.redcap_backup(path=tmp_dir)
     assert os.path.exists(file)
-    with pytest.raises(TypeError):
-        api.redcap_backup(path=tmp_dir)
 
     def _redcap_backup():
-        api.redcap_backup(path=tmp_dir, token=token_fixture)
+        api.redcap_backup(path=tmp_dir)
 
     benchmark(_redcap_backup)
 
 
-def get_next_id(benchmark, token_fixture, records: api.Records = None) -> str:
+def get_next_id(benchmark, records: api.Records = None) -> str:
     """Test ``get_next_id``."""
     if records is None:
-        records = api.Records(token=token_fixture)
-    next_id = api.get_next_id(token=token_fixture)
+        records = api.Records()
+    next_id = api.get_next_id()
     assert next_id not in list(records.participants.records.keys())
 
     def _get_next_id():
-        api.get_next_id(token=token_fixture)
+        api.get_next_id()
 
     benchmark(_get_next_id)
 

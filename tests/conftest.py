@@ -7,53 +7,21 @@ from datetime import datetime
 from string import digits, ascii_lowercase
 from random import choice, choices
 import pytest
-from dotenv import load_dotenv
 from babylab import api
 
 IS_GIHTUB_ACTIONS = os.getenv("GITHUB_ACTIONS") == "true"
 
 
-def get_api_key():
-    """Retrieve API credentials.
-
-    Raises:
-        MissingEnvException: If .en file is not located in ~/.env.
-    """
-    if os.getenv("GITHUB_ACTIONS") != "true":
-        envpath = os.path.expanduser(os.path.join("~", ".env"))
-        if not os.path.exists(envpath):
-            return "BADTOKEN"
-        load_dotenv(envpath)
-        t = os.getenv("API_TEST_KEY")
-        if t:
-            return t
-        return "BADTOKEN"
-    t = os.getenv("API_TEST_KEY")
-    if not t:
-        raise api.MissingEnvToken
-    return t
-
-
-@pytest.fixture
-def token_fixture():
-    """API test token.
-
-    Returns:
-        str: API test token.
-    """
-    return get_api_key()
-
-
 @pytest.fixture
 def records_fixture():
     """REDCap records database."""
-    return api.Records(token=get_api_key())
+    return api.Records()
 
 
 @pytest.fixture
 def data_dict():
     """REDCap data dictionary.."""
-    return api.get_data_dict(token=get_api_key())
+    return api.get_data_dict()
 
 
 @pytest.fixture
@@ -97,16 +65,6 @@ def ppt_record() -> dict:
 
 
 @pytest.fixture
-def ppt_record_mod() -> dict:
-    """Create REDcap record fixture.
-
-    Returns:
-        dict: A REDcap record fixture.
-    """
-    return create_record_ppt(is_new=False)
-
-
-@pytest.fixture
 def apt_record() -> dict:
     """Create REDcap record fixture.
 
@@ -117,16 +75,6 @@ def apt_record() -> dict:
 
 
 @pytest.fixture
-def apt_record_mod() -> dict:
-    """Create REDcap record fixture.
-
-    Returns:
-        dict: A REDcap record fixture.
-    """
-    return create_record_apt(is_new=False)
-
-
-@pytest.fixture
 def que_record() -> dict:
     """Create REDcap record fixture.
 
@@ -134,16 +82,6 @@ def que_record() -> dict:
         dict: A REDCap record fixture.
     """
     return create_record_que()
-
-
-@pytest.fixture
-def que_record_mod() -> dict:
-    """Create REDcap record fixture.
-
-    Returns:
-        dict: A REDCap record fixture.
-    """
-    return create_record_que(is_new=False)
 
 
 def generate_str(n: str = 7) -> str:
@@ -191,16 +129,16 @@ def generate_lang_exp():
     return exp
 
 
-def get_data_dict(token=token_fixture) -> dict:
+def get_data_dict() -> dict:
     """Create REDcap record fixture.
 
     Returns:
         dict: A REDcap record fixture.
     """
-    return api.get_data_dict(token=token)
+    return api.get_data_dict()
 
 
-def create_finput_ppt(token=token_fixture, is_new: bool = True) -> dict:
+def create_finput_ppt(is_new: bool = True) -> dict:
     """Simulate form input to test POST request in participants.
 
     Args:
@@ -209,7 +147,7 @@ def create_finput_ppt(token=token_fixture, is_new: bool = True) -> dict:
     Returns:
         dict: Simulated form input.
     """
-    recs = api.Records(token=token)
+    recs = api.Records()
     ppt_id = choice(list(recs.participants.records.keys()))
     data = {
         "record_id": "new" if is_new else ppt_id,
@@ -246,7 +184,7 @@ def create_finput_ppt(token=token_fixture, is_new: bool = True) -> dict:
     return data
 
 
-def create_finput_apt(token=token_fixture, is_new: bool = True) -> dict:
+def create_finput_apt(is_new: bool = True) -> dict:
     """Simulate form input to test POST request in appointments.
 
     Args:
@@ -255,8 +193,8 @@ def create_finput_apt(token=token_fixture, is_new: bool = True) -> dict:
     Returns:
         dict: Simulated form input.
     """
-    recs = api.Records(token=token)
-    ddict = api.get_data_dict(token=token)
+    recs = api.Records()
+    ddict = api.get_data_dict()
     ppt_id = choice(list(recs.participants.records.keys()))
     while not recs.participants.records[ppt_id].appointments.records:
         ppt_id = choice(list(recs.participants.records.keys()))
@@ -274,7 +212,7 @@ def create_finput_apt(token=token_fixture, is_new: bool = True) -> dict:
     return data
 
 
-def create_finput_que(token=token_fixture, is_new: bool = True) -> dict:
+def create_finput_que(is_new: bool = True) -> dict:
     """Simulate form input to test POST request in questionnaires.
 
     Args:
@@ -283,8 +221,8 @@ def create_finput_que(token=token_fixture, is_new: bool = True) -> dict:
     Returns:
         dict: Simulated form input.
     """
-    recs = api.Records(token=token)
-    ddict = api.get_data_dict(token=token)
+    recs = api.Records()
+    ddict = api.get_data_dict()
     lang_exp = generate_lang_exp()
     ppt_id = choice(list(recs.participants.records.keys()))
     while not recs.participants.records[ppt_id].questionnaires.records:
@@ -320,22 +258,21 @@ def create_record_ppt(is_new: bool = True) -> dict:
     Returns:
         dict: A REDCap record.
     """
-    recs = api.Records(token=get_api_key())
+    recs = api.Records()
     ppt_id = choice(list(recs.participants.records.keys()))
     return {
-        "record_id": "0" if is_new else ppt_id,
+        "record_id": api.get_next_id() if is_new else ppt_id,
         "participant_date_created": datetime(2024, 12, 16, 11, 13, 0),
         "participant_date_updated": datetime(2024, 12, 16, 11, 13, 0),
         "participant_name": generate_str(),
         "participant_age_created_months": choice(range(12)),
         "participant_age_created_days": choice(range(31)),
-        "participant_days_since_last_apt": "",
         "participant_sex": str(choice(range(1, 6))),
         "participant_source": str(choice(range(1, 3))),
         "participant_twin": "",
         "participant_parent1_name": generate_str(),
         "participant_parent1_surname": generate_str(),
-        "participant_isdroput": choice(["0", "1"]),
+        "participant_isdropout": choice(["0", "1"]),
         "participant_email1": generate_email(),
         "participant_phone1": generate_phone(),
         "participant_parent2_name": generate_str(),
@@ -368,9 +305,8 @@ def create_record_apt(is_new: bool = True) -> dict:
     Returns:
         dict: A REDCap record.
     """
-    token = get_api_key()
-    ddict = get_data_dict(token=token)
-    recs = api.Records(token=token)
+    ddict = get_data_dict()  # pylint: disable=unexpected-keyword-arg
+    recs = api.Records()
     ppd_id_list = list(recs.participants.records.keys())
     ppt_id = choice(ppd_id_list)
     apt_recs = recs.participants.records[ppt_id].appointments.records
@@ -382,7 +318,7 @@ def create_record_apt(is_new: bool = True) -> dict:
         "record_id": ppt_id,
         "redcap_repeat_instrument": "appointments",
         "redcap_repeat_instance": (
-            api.get_next_id(token=token) if is_new else apt_id.split(":")[1]
+            api.get_next_id() if is_new else apt_id.split(":")[1]
         ),
         "appointment_study": choice(list(ddict["appointment_study"].keys())),
         "appointment_date_created": datetime(2024, 12, 12, 14, 9, 0),
@@ -405,9 +341,8 @@ def create_record_que(is_new: bool = True) -> dict:
     Returns:
         dict: A REDCap record.
     """
-    token = get_api_key()
-    ddict = get_data_dict(token=token)
-    recs = api.Records(token=token)
+    ddict = get_data_dict()  # pylint: disable=unexpected-keyword-arg
+    recs = api.Records()
     lang_exp = generate_lang_exp()
     ppt_id_list = list(recs.participants.records.keys())
     ppt_id = choice(ppt_id_list)
@@ -422,7 +357,7 @@ def create_record_que(is_new: bool = True) -> dict:
         "record_id": ppt_id,
         "redcap_repeat_instrument": "language",
         "redcap_repeat_instance": (
-            api.get_next_id(token=token) if is_new else que_id.split(":")[1]
+            api.get_next_id() if is_new else que_id.split(":")[1]
         ),
         "language_date_created": date,
         "language_date_updated": date,
@@ -440,21 +375,19 @@ def create_record_que(is_new: bool = True) -> dict:
     }
 
 
-def last_participant_added(token=token_fixture, records: api.Records = None) -> str:
+def last_participant_added(records: api.Records = None) -> str:
     """Returns the record_id of the last record."""
     if records is None:
-        records = api.Records(token=token)
+        records = api.Records()
     return list(records.participants.records.keys())[-1]
 
 
-def participant_exists(
-    ppt_id: str, token=token_fixture, records: api.Records = None
-) -> bool:
+def participant_exists(ppt_id: str, records: api.Records = None) -> bool:
     """Check that participant exists"""
     if records is None:
-        records = api.Records(token=token)
+        records = api.Records()
     try:
-        api.get_participant(ppt_id, token=token)
+        api.get_participant(ppt_id)
         return True
     except api.RecordNotFound:
         return False

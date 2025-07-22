@@ -55,9 +55,9 @@ def test_questionnaire_class(que_record):
     assert "questionnaire " in str(q).lower()
 
 
-def test_records_class(token_fixture):
+def test_records_class():
     """Test participant class."""
-    records = api.Records(token=token_fixture)
+    records = api.Records()
     assert hasattr(records, "appointments")
     assert hasattr(records, "participants")
     assert hasattr(records, "questionnaires")
@@ -71,27 +71,27 @@ def test_records_class(token_fixture):
     assert "REDCap database" in str(records)
 
 
-def test_recordlist_class_participants(token_fixture):
+def test_recordlist_class_participants():
     """Test RecordList class with participants."""
-    records = api.Records(token=token_fixture).participants
+    records = api.Records().participants
     assert isinstance(records.records, dict)
     assert isinstance(records.to_df(), DataFrame)
     assert isinstance(records.kind, str)
     assert records.kind == "participants"
 
 
-def test_recordlist_class_appointments(token_fixture):
+def test_recordlist_class_appointments():
     """Test RecordList class with appointments."""
-    records = api.Records(token=token_fixture).appointments
+    records = api.Records().appointments
     assert isinstance(records.records, dict)
     assert isinstance(records.to_df(), DataFrame)
     assert isinstance(records.kind, str)
     assert records.kind == "appointments"
 
 
-def test_recordlist_class_questionnaires(token_fixture):
+def test_recordlist_class_questionnaires():
     """Test RecordList class with questionnaires."""
-    records = api.Records(token=token_fixture).questionnaires
+    records = api.Records().questionnaires
     assert isinstance(records.records, dict)
     assert isinstance(records.to_df(), DataFrame)
     assert isinstance(records.kind, str)

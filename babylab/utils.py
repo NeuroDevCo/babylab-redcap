@@ -2,157 +2,43 @@
 Util functions for the app.
 """
 
-import os
-import shutil
-from collections.abc import Iterable
 from datetime import date, timedelta, datetime
 from functools import singledispatch
 from copy import deepcopy
 from pandas import DataFrame, to_datetime
-from markupsafe import Markup
 from babylab import api
 
-
-def fmt_ppt_id(ppt_id: str) -> str:
-    """Format appointment ID.
-
-    Args:
-        ppt_id (str): Participant ID.
-
-    Returns:
-        str: Formated participant ID.
-    """
-    return f"<a class='ppt-id' href=/participants/{ppt_id}>{ppt_id}</a>"
-
-
-def fmt_apt_id(apt_id: str) -> str:
-    """Format appointment ID.
-
-    Args:
-        apt_id (str): Appointment ID.
-
-    Returns:
-        str: Formated appointment ID.
-    """
-    return f"<a class='ppt-id' href=/appointments/{apt_id}>{apt_id}</a>"
-
-
-def fmt_que_id(que_id: str) -> str:
-    """Format questionnaire ID.
-
-    Args:
-        apt_id (str): Questionnaire ID.
-        ppt_id (str): Participant ID.
-
-    Returns:
-        str: Formated questionnaire ID.
-    """
-    return f"<a class='ppt-id' href=/questionnaires/{que_id}>{que_id}</a>"
-
-
-def fmt_percentage(x: float | int) -> str:
-    """Format number into percentage.
-
-    Args:
-        x (float | int): Number to format. Must be higher than or equal to zero, and lower than or equal to one.
-
-    Raises:
-        ValueError: If number is not higher than or equal to zero, and lower than or equal to one.
-
-    Returns:
-        str: Formatted percentage.
-    """  # pylint: disable=line-too-long
-    if x > 100 or x < 0:
-        raise ValueError(
-            "`x` higher than or equal to zero, and lower than or equal to one"
-        )
-    return str(int(float(x))) if x else ""
-
-
-def fmt_taxi_isbooked(address: str, isbooked: str) -> str:
-    """Format ``taxi_isbooked`` variable to HTML.
-
-    Args:
-        address (str): ``taxi_address`` value.
-        isbooked (str): ``taxi_isbooked`` value.
-
-    Raises:
-        ValueError: If ``isbooked`` is not "0" or "1".
-
-    Returns:
-        str: Formatted HTML string.
-    """  # pylint: disable=line-too-long
-    if str(isbooked) not in ["", "0", "1"]:
-        raise ValueError(
-            f"`is_booked` must be one of '0' or '1', but {isbooked} was provided"
-        )
-    if not address:
-        return ""
-    if int(isbooked):
-        return "<p style='color: green;'>Yes</p>"
-    return "<p style='color: red;'>No</p>"
-
-
-def fmt_new_button(record: str, ppt_id: str = None):
-    """Add new record button.
-
-    Args:
-        record (str): Type of record.
-        ppt_id (str): Participant ID.
-
-    Returns:
-        str: Formatted HTML string.
-    """  # pylint: disable=line-too-long
-    if record not in ["Appointment", "Questionnaire"]:
-        raise ValueError(
-            f"`record` must be 'Appointment' or 'Questionnaire', but {record} was provided"
-        )
-    if record == "Appointment":
-        button_str = '<button type="button" class="btn btn-table"><i class="fa-solid fa-calendar"></i></button></a>'
-        return f'<a href="/appointments/appointment_new?ppt_id={ppt_id}">{button_str}'
-    button_str = '<button type="button" class="btn btn-table"><i class="fa-solid fa-language"></i></button></a>'
-    return f'<a href="/questionnaires/questionnaire_new?ppt_id={ppt_id}">{button_str}'
-
-
-def fmt_modify_button(ppt_id: str = None, apt_id: str = None, que_id: str = None):
-    """Add modify button.
-
-    Args:
-        ppt_id (str): Participant ID.
-        apt_id (str, optional): Appointment ID. Defaults to None.
-        que_id (str, optional): Questionnaire ID. Defaults to None.
-
-    Returns:
-        str: Formatted HTML string.
-    """  # pylint: disable=line-too-long
-    button_str = '<button type="button" class="btn btn-table"><i class="fa-solid fa-pen"></i></button></a>'
-
-    if apt_id:
-        return f'<a href="/appointments/{apt_id}/appointment_modify">{button_str}'
-
-    if que_id:
-        return f'<a href="/questionnaires/{que_id}/questionnaire_modify">{button_str}'
-
-    return f'<a href="/participants/{ppt_id}/participant_modify">{button_str}'
+INT_FIELDS = [
+    "age_created_months",
+    "age_created_days",
+    "age_now_months",
+    "age_now_days",
+    "gest_weeks",
+    "birth_weight",
+    "head_circumference",
+    "apgar1",
+    "apgar2",
+    "apgar3",
+]
 
 
 @singledispatch
-def fmt_labels(x: dict | DataFrame, prefixes: Iterable[str]):
+def fmt_labels(x: dict | DataFrame, prefixes: list[str]):
     """Reformat dataframe.
 
     Args:
         x (dict | DataFrame): Dataframe to reformat.
         data_dict (dict): Data dictionary to labels to use, as returned by ``api.get_data_dict``.
-        prefixes (Iterable[str]): List of prefixes to look for in variable names.
+        prefixes (list[str]): List of prefixes to look for in variable names.
 
     Returns:
         DataFrame: A reformated Dataframe.
     """
-    raise TypeError("`x` must be a dict or a pd.DataFrame")
+    raise TypeError("`x` must be a dict or a DataFrame")
 
 
 @fmt_labels.register(dict)
-def fmt_dict(x: dict, data_dict: dict) -> dict:
+def _(x: dict, data_dict: dict) -> dict:
     """Reformat dictionary.
 
     Args:
@@ -169,77 +55,38 @@ def fmt_dict(x: dict, data_dict: dict) -> dict:
             if f + k in data_dict and v:
                 y[k] = data_dict[f + k][v]
         if "exp" in k:
-            y[k] = round(float(v), None) if v else ""
+            y[k] = round(float(v), None) if v else None
         if "taxi_isbooked" in k:
-            y[k] = fmt_taxi_isbooked(y["taxi_address"], y[k])
+            y[k] = y["taxi_address"] == "1"
+        y[k] = y[k] if y[k] else None
+    y = {k: (int(v) if k in INT_FIELDS else v) for k, v in y.items()}
     return y
 
 
 @fmt_labels.register(DataFrame)
 def _(x: DataFrame, data_dict: dict, prefixes: list[str] = None) -> DataFrame:
-
     if prefixes is None:
         prefixes = ["participant", "appointment", "language"]
     for col, val in x.items():
         kdict = [x + "_" + col for x in prefixes]
         for k in kdict:
             if k in data_dict:
-                x[col] = [data_dict[k][v] if v else "" for v in val]
+                x[col] = [data_dict[k][v] if v else None for v in val]
         if "lang" in col:
-            x[col] = ["" if v == "None" else v for v in x[col]]
-        if "exp" in col:
-            x[col] = [fmt_percentage(v) for v in val]
-        if "taxi_isbooked" in col:
-            pairs = zip(x["taxi_address"], x[col])
-            x[col] = [fmt_taxi_isbooked(a, i) for a, i in pairs]
+            x[col] = [None if v == "None" else v for v in x[col]]
         if "isestimated" in col:
-            x[col] = ["Estimated" if x == "1" else "Calculated" for x in x[col]]
+            x[col] = [x == "1" for x in x[col]]
+    x = x.replace(r"^\s*$", None, regex=True)
+    x = x.convert_dtypes()
+    x[INT_FIELDS] = x[INT_FIELDS].astype(float).astype("Int64")
     return x
 
 
-def fmt_apt_status(x: str, markup: bool = True) -> str:
-    """format appointment status using custom CSS class.
-
-    Args:
-        x (str): Appointment status value (label).
-        markup (bool, optional): Should the string be markup-safe? defaults to True.
-
-    Returns:
-        str: HTML-CSS formatted appointment status label.
-    """
-    status_css = {
-        "Scheduled": "scheduled",
-        "Confirmed": "confirmed",
-        "Successful": "successful",
-        "Successful - Good": "good",
-        "Cancelled - Reschedule": "reschedule",
-        "Cancelled - Drop": "drop",
-        "No show": "drop",
-    }
-    out = f"<p class='btn btn-status btn-status-{status_css[x]}'>{x}</p>"
-    return Markup(out) if markup else out
-
-
-def replace_labels(x: DataFrame | dict, data_dict: dict) -> DataFrame:
-    """Replace field values with labels.
-
-    Args:
-        x (DataFrame): Pandas DataFrame in which to replace values with labels.
-        data_dict (dict): Data dictionary as returned by ``get_data_dictionary``.
-
-    Returns:
-        DataFrame: A Pandas DataFrame with replaced labels.
-    """  # pylint: disable=line-too-long
-    return fmt_labels(x, data_dict)
-
-
-def is_in_data_dict(
-    x: Iterable[str] | None, variable: str, data_dict: dict
-) -> list[str]:
+def is_in_data_dict(x: list[str] | None, variable: str, data_dict: dict) -> list[str]:
     """Check that a value is an element in the data dictionary.
 
     Args:
-        x (Iterable[str] | None): Value to look up in the data dictionary.
+        x (list[str] | None): Value to look up in the data dictionary.
         variable (str): Key in which to look for.
         data_dict (dict): Data dictionary as returned by ``api.get_data_dictionary``.
 
@@ -348,7 +195,7 @@ def get_ppt_table(
     df = records.participants.to_df()
     df["age_now_months"], df["age_now_days"] = new_age_months, new_age_days
     if relabel:
-        df = replace_labels(df, data_dict)
+        df = fmt_labels(df, data_dict)
     return df
 
 
@@ -383,7 +230,7 @@ def get_apt_table(
     ]
     df = apts.to_df()
     if relabel:
-        df = replace_labels(df, data_dict)
+        df = fmt_labels(df, data_dict)
     if study:
         df = df[df.study == study]
     if ppt_id:
@@ -442,7 +289,7 @@ def get_que_table(
     ]
     df = ques.to_df()
     if relabel:
-        df = replace_labels(df, data_dict)
+        df = fmt_labels(df, data_dict)
     if study:
         df = df[df.study == study]
     if ppt_id:
@@ -485,16 +332,6 @@ def count_col(
     return counts
 
 
-def clean_tmp(path: str = "tmp"):
-    """Clean temporal directory
-
-    Args:
-        path (str, optional): Path to the temporal directory. Defaults to "tmp".
-    """
-    if os.path.exists(path):
-        shutil.rmtree(path)
-
-
 def get_year_weeks(year: int):
     """Get week numbers of the year"""
     date_first = date(year, 1, 1)
@@ -518,16 +355,16 @@ def get_week_n(timestamp: date):
 def get_weekly_apts(
     records: api.Records,
     data_dict: dict,
-    study: Iterable | None = None,
-    status: Iterable | None = None,
+    study: list | None = None,
+    status: list | None = None,
 ) -> dict:
     """Get weekly number of appointments.
 
     Args:
         records (api.Records): REDCap records, as returned by ``api.Records``.
         data_dict (dict): Data dictionary as returned by ``api.get_data_dictionary``.
-        study (Iterable | None, optional): Study to filter for. Defaults to None.
-        status (Iterable | None, optional): Status to filter for. Defaults to None.
+        study (list | None, optional): Study to filter for. Defaults to None.
+        status (list | None, optional): Status to filter for. Defaults to None.
 
     Raises:
         ValueError: If `study` or `status` is not available.

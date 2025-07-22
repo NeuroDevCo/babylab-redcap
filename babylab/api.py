@@ -4,17 +4,22 @@
 Functions to interact with the REDCap API.
 """
 
-from os import mkdir, walk
-from os.path import join, exists
+from dataclasses import dataclass
+from os import mkdir, walk, getenv
+from os.path import join, exists, expanduser
 from collections import OrderedDict
-from collections.abc import Iterable
+from warnings import warn
 import json
 import zipfile
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 import pytz
+from dotenv import load_dotenv
 import requests
 from pandas import DataFrame
+from babylab.globals import COLNAMES
+
+URI = "https://apps.sjdhospitalbarcelona.org/redcap/api/"
 
 
 class MissingEnvException(Exception):
@@ -33,18 +38,50 @@ class MissingEnvToken(Exception):
         super().__init__(msg)
 
 
+class BadTokenException(Exception):
+    """If token is ill-formed."""
+
+
+class RecordNotFound(Exception):
+    """If record is not found."""
+
+    def __init__(self, record_id):
+        super().__init__(f"Record '{record_id}' not found")
+
+
+def get_api_key(envpath: str = None):
+    """Retrieve API credentials.
+
+    Raises:
+        MissingEnvException: If .en file is not located in ~/.env.
+    """
+    if envpath is None:
+        envpath = expanduser(join("~", ".env"))
+    if getenv("GITHUB_ACTIONS") != "true":
+        if not exists(envpath):
+            raise MissingEnvException(envpath=envpath)
+        load_dotenv(envpath)
+        t = getenv("API_TEST_KEY")
+        if t:
+            return t
+    t = getenv("API_TEST_KEY")
+    if not t:
+        raise MissingEnvToken()
+    if not isinstance(t, str) or not t.isalnum():
+        raise BadTokenException("Token must be str without non-alphanumeric characters")
+
+    return t
+
+
+@dataclass
 class RecordList:
     """List of records"""
 
-    def __init__(self, records: dict, kind: str = None):
-        self.records: dict = records
-        self.kind = kind
+    records: dict
+    kind: str | None = None
 
     def __len__(self) -> int:
         return len(self.records)
-
-    def __repr__(self) -> str:
-        return f"RecordList ({self.kind if self.kind else 'generic'}) with {len(self)} records"
 
     def to_df(self) -> DataFrame:
         """Transforms a a RecordList to a Pandas DataFrame.
@@ -52,90 +89,25 @@ class RecordList:
         Returns:
             DataFrame: Tabular dataset.
         """
-        if self.kind == "participants":
-            colnames = [
-                "record_id",
-                "date_created",
-                "date_updated",
-                "source",
-                "name",
-                "age_created_months",
-                "age_created_days",
-                "sex",
-                "twin",
-                "isdropout",
-                "parent1_name",
-                "parent1_surname",
-                "email1",
-                "phone1",
-                "parent2_name",
-                "parent2_surname",
-                "email2",
-                "phone2",
-                "address",
-                "city",
-                "postcode",
-                "birth_type",
-                "gest_weeks",
-                "birth_weight",
-                "head_circumference",
-                "apgar1",
-                "apgar2",
-                "apgar3",
-                "hearing",
-                "diagnoses",
-                "comments",
-                "age_now_months",
-                "age_now_days",
-            ]
-        elif self.kind == "appointments":
-            colnames = [
-                "record_id",
-                "appointment_id",
-                "study",
-                "status",
-                "date",
-                "date_created",
-                "date_updated",
-                "taxi_address",
-                "taxi_isbooked",
-            ]
-        else:
-            colnames = [
-                "record_id",
-                "redcap_repeat_instance",
-                "date_created",
-                "date_updated",
-                "isestimated",
-                "lang1",
-                "lang1_exp",
-                "lang2",
-                "lang2_exp",
-                "lang3",
-                "lang3_exp",
-                "lang4",
-                "lang4_exp",
-                "comments",
-                "complete",
-            ]
         recs = [p.data for p in self.records.values()]
+        names = COLNAMES[self.kind]
         if not recs:
-            df = DataFrame(columns=colnames)
+            df = DataFrame(columns=names)
         else:
             df = DataFrame(recs)
             df = df.rename(columns={"id": "appointment_id"})
-            df = df[colnames]
+            df = df[names]
         df.set_index("record_id", inplace=True)
         return df
 
 
-def filter_fields(data: dict, prefix: str, fields: Iterable[str]) -> dict:
+def filter_fields(data: dict, prefix: str, fields: list[str]) -> dict:
     """Filter a data dictionary based on a prefix and field names.
 
     Args:
         records (dict): Record data dictionary.
         prefix (str): Prefix to look for.
-        fields (Iterable[str]): Field names to look for.
+        fields (list[str]): Field names to look for.
 
     Returns:
         dict: Filtered records.
@@ -147,10 +119,18 @@ def filter_fields(data: dict, prefix: str, fields: Iterable[str]) -> dict:
     }
 
 
+class BadRecordListKind(BaseException):
+    """Bad RecordList kind"""
+
+
 class Participant:
     """Participant in database"""
 
     def __init__(self, data, apt: RecordList = None, que: RecordList = None):
+        if (apt and apt.kind != "appointments") or (
+            que and que.kind != "questionnaires"
+        ):
+            raise BadRecordListKind
         data = filter_fields(data, "participant_", ["record_id"])
         age_created = (data["age_created_months"], data["age_created_days"])
         data["age_now_months"], data["age_now_days"] = get_age(
@@ -242,17 +222,12 @@ class Questionnaire:
         return f" Questionnaire {self.questionnaire_id}, participant {self.record_id}"
 
 
-class BadTokenException(Exception):
-    """If token is ill-formed."""
-
-
-def post_request(fields: dict, token: str, timeout: Iterable[int] = (5, 10)) -> dict:
+def post_request(fields: dict, timeout: list[int] = (5, 10)) -> dict:
     """Make a POST request to the REDCap database.
 
     Args:
         fields (dict): Fields to retrieve.
-        token (str): API token.
-        timeout (Iterable[int], optional): Timeout of HTTP request in seconds. Defaults to 10.
+        timeout (list[int], optional): Timeout of HTTP request in seconds. Defaults to 10.
 
     Raises:
         requests.exceptions.HTTPError: If HTTP request fails.
@@ -261,44 +236,28 @@ def post_request(fields: dict, token: str, timeout: Iterable[int] = (5, 10)) -> 
     Returns:
         dict: HTTP request response in JSON format.
     """
+    token = get_api_key()
     fields = OrderedDict(fields)
     fields["token"] = token
     fields.move_to_end("token", last=False)
-
-    try:
-        if not token.isalnum():
-            raise BadTokenException("Token contains non-alphanumeric characters")
-        r = requests.post(
-            "https://apps.sjdhospitalbarcelona.org/redcap/api/",
-            data=fields,
-            timeout=timeout,
-        )
-        r.raise_for_status()
-        return r
-    except requests.exceptions.HTTPError as e:
-        print(str(e) + ":\n" + r.text.replace("'<.*?>'", ""))
-    except BadTokenException:
-        print("Token contains non-alphanumeric characters")
-    return None
+    r = requests.post(URI, data=fields, timeout=timeout)
+    r.raise_for_status()
+    return r
 
 
-def get_redcap_version(**kwargs: any) -> str:
+def get_redcap_version() -> str:
     """Get REDCap version.
-    Args:
-        **kwargs (any, optional): Arguments passed to ``post_request``.
+
     Returns:
         str: REDCAp version number.
     """
     fields = {"content": "version"}
-    r = post_request(fields=fields, **kwargs)
-    return r.content.decode("utf-8") if r else None
+    r = post_request(fields=fields)
+    return r.content.decode("utf-8")
 
 
-def get_data_dict(**kwargs: any) -> any:
-    """Get data dictionaries for categorical variables
-
-    Args:
-        **kwargs (any, optional): Additional arguments passed tp ``post_request``.
+def get_data_dict() -> dict:
+    """Get data dictionaries for categorical variables.
 
     Returns:
         dict: Data dictionary.
@@ -318,7 +277,7 @@ def get_data_dict(**kwargs: any) -> any:
     fields = {"content": "metadata", "format": "json", "returnFormat": "json"}
     for idx, i in enumerate(items):
         fields[f"fields[{idx}]"] = i
-    r = json.loads(post_request(fields=fields, **kwargs).text)
+    r = json.loads(post_request(fields=fields).text)
     items_ordered = [i["field_name"] for i in r]
     dicts = {}
     for k, v in zip(items_ordered, r):
@@ -365,24 +324,21 @@ def dt_to_str(data: dict) -> dict:
     return data
 
 
-def get_next_id(**kwargs: any) -> str:
+def get_next_id() -> str:
     """Get next record_id in REDCap database.
-
-    Args:
-        **kwargs (any, optional): Additional arguments passed to ``post_request``.
 
     Returns:
         str: record_id of next record.
     """
     fields = {"content": "generateNextRecordName"}
-    return str(post_request(fields=fields, **kwargs).json())
+    return str(post_request(fields=fields).json())
 
 
-def get_records(record_id: str | list = None, **kwargs: any) -> dict:
+def get_records(record_id: str | list | None = None) -> dict:
     """Return records as JSON.
 
     Args:
-        kwargs  (any, optional): Additional arguments passed to ``post_request``.
+        record_id  (str): ID of record to retrieve. Defaults to None.
 
     Returns:
         dict: REDCap records in JSON format.
@@ -392,7 +348,7 @@ def get_records(record_id: str | list = None, **kwargs: any) -> dict:
         fields["records[0]"] = record_id
         for r in record_id:
             fields[f"records[{record_id}]"] = r
-    records = post_request(fields=fields, **kwargs).json()
+    records = post_request(fields=fields).json()
     return [str_to_dt(r) for r in records]
 
 
@@ -419,19 +375,11 @@ def make_id(ppt_id: str, repeat_id: str = None) -> str:
     return ppt_id + ":" + repeat_id
 
 
-class RecordNotFound(Exception):
-    """If record is not found."""
-
-    def __init__(self, record_id):
-        super().__init__(f"Record '{record_id}' not found")
-
-
-def get_participant(ppt_id: str, **kwargs: any) -> Participant:
+def get_participant(ppt_id: str) -> Participant:
     """Get participant record.
 
     Args:
         ppt_id: ID of participant (record_id).
-        **kwargs (any, optional): Additional arguments passed to ``post_request``
 
     Returns:
         Participant: Participant object.
@@ -452,7 +400,7 @@ def get_participant(ppt_id: str, **kwargs: any) -> Participant:
     }
     for i, f in enumerate(["participants", "appointments", "language"]):
         fields[f"forms[{i}]"] = f
-    recs = [str_to_dt(r) for r in post_request(fields, **kwargs).json()]
+    recs = [str_to_dt(r) for r in post_request(fields).json()]
     apt, que = {}, {}
     for r in recs:
         repeat_id = make_id(r["record_id"], r["redcap_repeat_instance"])
@@ -461,54 +409,55 @@ def get_participant(ppt_id: str, **kwargs: any) -> Participant:
         if r["redcap_repeat_instrument"] == "language":
             que[repeat_id] = Questionnaire(r)
     try:
-        return Participant(recs[0], apt=RecordList(apt), que=RecordList(que))
-    except IndexError as exc:
-        raise RecordNotFound(record_id=ppt_id) from exc
+        return Participant(
+            recs[0],
+            apt=RecordList(apt, kind="appointments"),
+            que=RecordList(que, kind="questionnaires"),
+        )
+    except IndexError as e:
+        raise RecordNotFound(record_id=ppt_id) from e
 
 
-def get_appointment(apt_id: str, **kwargs: any) -> Appointment:
+def get_appointment(apt_id: str) -> Appointment:
     """Get appointment record.
 
     Args:
         apt_id (str): ID of appointment (``redcap_repeated_id``).
-        **kwargs (any, optional): Additional arguments passed to ``post_request``
 
     Returns:
         Appointment: Appointment object.
     """
     ppt_id, _ = apt_id.split(":")
-    ppt = get_participant(ppt_id, **kwargs)
+    ppt = get_participant(ppt_id)
     try:
         return ppt.appointments.records[apt_id]
-    except KeyError as exc:
-        raise RecordNotFound(record_id=apt_id) from exc
+    except KeyError as e:
+        raise RecordNotFound(record_id=apt_id) from e
 
 
-def get_questionnaire(que_id: str, **kwargs: any) -> Questionnaire:
+def get_questionnaire(que_id: str) -> Questionnaire:
     """Get questionnaire record.
 
     Args:
         que_id (str): ID of appointment (``redcap_repeated_id``).
-        **kwargs (any, optional): Additional arguments passed to ``post_request``
 
     Returns:
         Questionnaire: Appointment object.
     """
     ppt_id, _ = que_id.split(":")
-    ppt = get_participant(ppt_id, **kwargs)
+    ppt = get_participant(ppt_id)
     try:
         return ppt.questionnaires.records[que_id]
-    except KeyError as exc:
-        raise RecordNotFound(record_id=que_id) from exc
+    except KeyError as e:
+        raise RecordNotFound(record_id=que_id) from e
 
 
-def add_participant(data: dict, modifying: bool = False, **kwargs: any):
+def add_participant(data: dict, modifying: bool = False):
     """Add new participant to REDCap database.
 
     Args:
         data (dict): Participant data.
         modifying (bool, optional): Modifying existent participant?
-        *kwargs (any, optional): Additional arguments passed to ``post_request``.
     """
     fields = {
         "content": "record",
@@ -519,16 +468,15 @@ def add_participant(data: dict, modifying: bool = False, **kwargs: any):
         "forceAutoNumber": "false" if modifying else "true",
         "data": f"[{json.dumps(dt_to_str(data))}]",
     }
-    return post_request(fields=fields, **kwargs)
+    return post_request(fields=fields)
 
 
-def delete_participant(data: dict, **kwargs: any):
+def delete_participant(data: dict):
     """Delete participant from REDCap database.
 
     Args:
         data (dict): Participant data.
         modifying (bool, optional): Modifying existent participant?
-        *kwargs (any, optional): Additional arguments passed to ``post_request``.
     """
     fields = {
         "content": "record",
@@ -537,16 +485,21 @@ def delete_participant(data: dict, **kwargs: any):
         "instrument": "",
         "records[0]": f"{data['record_id']}",
     }
-    return post_request(fields=fields, **kwargs)
+    r = post_request(fields=fields)
+    try:
+        r.raise_for_status()
+        return r
+    except requests.exceptions.HTTPError as e:
+        rid = make_id(data["record_id"])
+        raise RecordNotFound(rid) from e
 
 
-def add_appointment(data: dict, **kwargs: any):
+def add_appointment(data: dict):
     """Add new appointment to REDCap database.
 
     Args:
         record_id (dict): ID of participant.
         data (dict): Appointment data.
-        **kwargs (any, optional): Additional arguments passed to ``post_request``.
     """
     fields = {
         "content": "record",
@@ -557,16 +510,15 @@ def add_appointment(data: dict, **kwargs: any):
         "forceAutoNumber": "false",
         "data": f"[{json.dumps(dt_to_str(data))}]",
     }
-    return post_request(fields=fields, **kwargs)
+    return post_request(fields=fields)
 
 
-def delete_appointment(data: dict, **kwargs: any):
+def delete_appointment(data: dict):
     """Delete appointment from REDCap database.
 
     Args:
         data (dict): Participant data.
         modifying (bool, optional): Modifying existent participant?
-        **kwargs (any, optional): Additional arguments passed to ``post_request``.
     """
     fields = {
         "content": "record",
@@ -576,15 +528,16 @@ def delete_appointment(data: dict, **kwargs: any):
         "repeat_instance": int(data["redcap_repeat_instance"]),
         f"records[{data['record_id']}]": f"{data['record_id']}",
     }
-    return post_request(fields=fields, **kwargs)
+    r = post_request(fields=fields)
+    warn_absent_record(r)
+    return r
 
 
-def add_questionnaire(data: dict, **kwargs: any):
+def add_questionnaire(data: dict):
     """Add new questionnaire to REDCap database.
 
     Args:
         data (dict): Questionnaire data.
-        **kwargs (any, optional): Additional arguments passed to ``post_request``.
     """
     fields = {
         "content": "record",
@@ -595,17 +548,15 @@ def add_questionnaire(data: dict, **kwargs: any):
         "forceAutoNumber": "false",
         "data": f"[{json.dumps(dt_to_str(data))}]",
     }
+    return post_request(fields=fields)
 
-    return post_request(fields=fields, **kwargs)
 
-
-def delete_questionnaire(data: dict, **kwargs: any):
+def delete_questionnaire(data: dict):
     """Delete questionnaire from REDCap database.
 
     Args:
         data (dict): Participant data.
         modifying (bool, optional): Modifying existent participant?
-        **kwargs (any, optional): Additional arguments passed to ``post_request``.
     """
     fields = {
         "content": "record",
@@ -615,15 +566,26 @@ def delete_questionnaire(data: dict, **kwargs: any):
         "repeat_instance": int(data["redcap_repeat_instance"]),
         f"records[{data['record_id']}]": f"{data['record_id']}",
     }
-    return post_request(fields=fields, **kwargs)
+    r = post_request(fields=fields)
+    warn_absent_record(r)
+    return r
 
 
-def redcap_backup(path: str = "tmp", **kwargs: any) -> dict:
+def warn_absent_record(r: requests.models.Response):
+    """Warn user about absent record.
+
+    Args:
+        r (requests.models.Response): HTTPS response.
+    """
+    if "registros proporcionados no existen" in r.content.decode():
+        warn("Record does not exist!")
+
+
+def redcap_backup(path: str = "tmp") -> dict:
     """Download a backup of the REDCap database
 
     Args:
         path (str, optional): Output directory. Defaults to "tmp".
-        **kwargs (any, optional): Additional arguments passed to ``post_request``.
 
     Returns:
         dict: A dictionary with the key data and metadata of the project.
@@ -633,7 +595,7 @@ def redcap_backup(path: str = "tmp", **kwargs: any) -> dict:
     pl = {}
     for k in ["project", "metadata", "instrument"]:
         pl[k] = {"format": "json", "returnFormat": "json", "content": k}
-    d = {k: json.loads(post_request(v, **kwargs).text) for k, v in pl.items()}
+    d = {k: json.loads(post_request(v).text) for k, v in pl.items()}
     with open(join(path, "records.csv"), "w+", encoding="utf-8") as f:
         fields = {
             "content": "record",
@@ -642,7 +604,7 @@ def redcap_backup(path: str = "tmp", **kwargs: any) -> dict:
             "csvDelimiter": ",",
             "returnFormat": "json",
         }
-        records = post_request(fields, **kwargs).content.decode().split("\n")
+        records = post_request(fields).content.decode().split("\n")
         records = [r + "\n" for r in records]
         f.writelines(records)
 
@@ -666,8 +628,8 @@ def redcap_backup(path: str = "tmp", **kwargs: any) -> dict:
 class Records:
     """REDCap records"""
 
-    def __init__(self, record_id: str | list = None, **kwargs: any):
-        records = get_records(record_id, **kwargs)
+    def __init__(self, record_id: str | list = None):
+        records = get_records(record_id)
         ppt, apt, que = {}, {}, {}
         for r in records:
             ppt_id = r["record_id"]
@@ -684,9 +646,9 @@ class Records:
         # add appointments and questionnaires to each participant
         for p, v in ppt.items():
             apts = {k: v for k, v in apt.items() if v.record_id == p}
-            v.appointments = RecordList(apts)
+            v.appointments = RecordList(apts, kind="appointments")
             ques = {k: v for k, v in que.items() if v.record_id == p}
-            v.questionnaires = RecordList(ques)
+            v.questionnaires = RecordList(ques, kind="questionnaires")
 
         self.participants = RecordList(ppt, kind="participants")
         self.appointments = RecordList(apt, kind="appointments")
