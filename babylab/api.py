@@ -72,7 +72,6 @@ def get_api_key(path: str = None, name: str = "API_TEST_KEY"):
         raise MissingEnvToken()
     if not isinstance(t, str) or not t.isalnum():
         raise BadTokenException("Token must be str without non-alphanumeric characters")
-
     return t
 
 
@@ -242,7 +241,9 @@ def post_request(fields: dict, timeout: list[int] = (5, 10)) -> dict:
     Returns:
         dict: HTTP request response in JSON format.
     """
-    token = get_api_key()
+    token = getenv("API_KEY")
+    if token is None:
+        raise MissingEnvToken()
     fields = OrderedDict(fields)
     fields["token"] = token
     fields.move_to_end("token", last=False)
