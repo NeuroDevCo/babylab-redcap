@@ -60,15 +60,14 @@ def get_api_key(path: str = None, name: str = "API_TEST_KEY"):
     """
     if path is None:
         path = expanduser(join("~", ".env"))
-    if getenv("GITHUB_ACTIONS") != "true":
+    if getenv("GITHUB_ACTIONS") == "true":
+        t = getenv(name)
+    else:
         if not exists(path):
             raise MissingEnvException(envpath=path)
-        load_dotenv(path)
+        load_dotenv(path, override=True)
         t = getenv(name)
-        if t:
-            return t
-    t = getenv(name)
-    if not t:
+    if t is None:
         raise MissingEnvToken()
     if not isinstance(t, str) or not t.isalnum():
         raise BadTokenException("Token must be str without non-alphanumeric characters")

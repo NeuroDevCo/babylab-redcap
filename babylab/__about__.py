@@ -2,4 +2,4 @@
 About the package.
 """
 
-__version__ = "0.5.9"  # no cov
+__version__ = "0.5.10"  # no cov

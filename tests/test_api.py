@@ -1,7 +1,6 @@
 """Test API."""
 
 import os
-import time
 from datetime import datetime
 import pytest
 from babylab import api
@@ -15,7 +14,7 @@ def test_get_api_key():
     assert token is not None
     assert isinstance(token, str)
     with pytest.raises(api.MissingEnvException):
-        api.get_api_key(envpath="BADPATH")
+        api.get_api_key(path="BADPATH")
 
 
 def test_redcap_version():
