@@ -50,7 +50,7 @@ COLNAMES = {
     ],
     "questionnaires": [
         "record_id",
-        "redcap_repeat_instance",
+        "questionnaire_id",
         "date_created",
         "date_updated",
         "isestimated",

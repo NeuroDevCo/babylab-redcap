@@ -274,8 +274,8 @@ def get_que_table(
     """  # pylint: disable=line-too-long
     ques = deepcopy(records.questionnaires)
     colnames = [
-        "record_id",
         "questionnaire_id",
+        "record_id",
         "isestimated",
         "date_created",
         "date_updated",

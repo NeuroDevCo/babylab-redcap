@@ -98,7 +98,10 @@ class RecordList:
             df = DataFrame(columns=names)
         else:
             df = DataFrame(recs)
-            df = df.rename(columns={"id": "appointment_id"})
+            if self.kind == "appointments":
+                df = df.rename(columns={"redcap_repeat_instance": "appointment_id"})
+            if self.kind == "questionnaires":
+                df = df.rename(columns={"redcap_repeat_instance": "questionnaire_id"})
             df = df[names]
         df.set_index("record_id", inplace=True)
         return df
