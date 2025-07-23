@@ -78,7 +78,8 @@ def _(x: DataFrame, data_dict: dict, prefixes: list[str] = None) -> DataFrame:
             x[col] = [x == "1" for x in x[col]]
     x = x.replace(r"^\s*$", None, regex=True)
     x = x.convert_dtypes()
-    x[INT_FIELDS] = x[INT_FIELDS].astype(float).astype("Int64")
+    cols = [f for f in INT_FIELDS if f in x.columns]
+    x[cols] = x[cols].astype(float).astype("Int64")
     return x
 
 
