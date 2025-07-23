@@ -49,22 +49,25 @@ class RecordNotFound(Exception):
         super().__init__(f"Record '{record_id}' not found")
 
 
-def get_api_key(envpath: str = None):
+def get_api_key(path: str = None, name: str = "API_TEST_KEY"):
     """Retrieve API credentials.
 
+    Args:
+        path (str, optional): Path to the .env file with global variables. Defaults to None.
+        name (str, optional): Name of the variable to import. Defaults to "API_TEST_KEY".
     Raises:
         MissingEnvException: If .en file is not located in ~/.env.
     """
-    if envpath is None:
-        envpath = expanduser(join("~", ".env"))
+    if path is None:
+        path = expanduser(join("~", ".env"))
     if getenv("GITHUB_ACTIONS") != "true":
-        if not exists(envpath):
-            raise MissingEnvException(envpath=envpath)
-        load_dotenv(envpath)
-        t = getenv("API_TEST_KEY")
+        if not exists(path):
+            raise MissingEnvException(envpath=path)
+        load_dotenv(path)
+        t = getenv(name)
         if t:
             return t
-    t = getenv("API_TEST_KEY")
+    t = getenv(name)
     if not t:
         raise MissingEnvToken()
     if not isinstance(t, str) or not t.isalnum():
