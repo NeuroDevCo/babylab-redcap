@@ -31,10 +31,10 @@ class MissingEnvException(Exception):
 
 
 class MissingEnvToken(Exception):
-    """If token is not provided under 'API_TEST_TOKEN' key."""
+    """If token is not provided under 'API_TEST_KEY' key."""
 
     def __init__(self):
-        msg = "No token was found under the 'API_TEST_TOKEN' key in your .env file."  # pylint: disable=line-too-long
+        msg = "No token was found under the 'API_TEST_KEY' key in your .env file."  # pylint: disable=line-too-long
         super().__init__(msg)
 
 
