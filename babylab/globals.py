@@ -46,6 +46,7 @@ COLNAMES = {
         "date_updated",
         "taxi_address",
         "taxi_isbooked",
+        "comments",
     ],
     "questionnaires": [
         "record_id",
