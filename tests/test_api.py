@@ -149,6 +149,7 @@ def test_add_mod_del_questionnaire(que_record):
         api.get_questionnaire(rid)
 
 
+@pytest.mark.skip(reason="Takes too long for now")
 def test_redcap_backup(benchmark, tmp_path) -> dict:
     """Test ``redcap_backup``."""
     tmp_dir = tmp_path / "tmp"

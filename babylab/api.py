@@ -27,7 +27,7 @@ class MissingEnvException(Exception):
 
 
 class MissingEnvToken(Exception):
-    """Token is not provided under 'API_TEST_KEY' key."""
+    """Token is not provided as key in .env"""
 
 
 class MissingRecord(Exception):
@@ -35,7 +35,7 @@ class MissingRecord(Exception):
 
 
 class BadToken(Exception):
-    """Token is ill-formed."""
+    """Token is ill-formed"""
 
 
 class BadRecordListKind(Exception):
@@ -43,15 +43,15 @@ class BadRecordListKind(Exception):
 
 
 class BadAgeFormat(Exception):
-    """If Age des not follow the right format."""
+    """If Age des not follow the right format"""
 
 
-def get_api_key(path: str = None, name: str = "API_TEST_KEY"):
+def get_api_key(path: str = None, name: str = "API_KEY"):
     """Retrieve API credentials.
 
     Args:
         path (str, optional): Path to the .env file with global variables. Defaults to ``expanduser(join("~", ".env"))``.
-        name (str, optional): Name of the variable to import. Defaults to "API_TEST_KEY".
+        name (str, optional): Name of the variable to import. Defaults to "API_KEY".
 
     Raises:
         MissingEnvException: If .en file is not found  in ``path``.
@@ -66,7 +66,7 @@ def get_api_key(path: str = None, name: str = "API_TEST_KEY"):
         load_dotenv(path, override=True)
         t = getenv(name)
     if t is None:
-        raise MissingEnvToken("No item 'API_TEST_KEY' in your .env file")
+        raise MissingEnvToken("No item 'API_KEY' in your .env file")
     if not isinstance(t, str) or not t.isalnum():
         raise BadToken("Token must be str with no non-alphanumeric characters")
     return t
@@ -211,9 +211,9 @@ def post_request(fields: dict, timeout: list[int] = (5, 10)) -> dict:
     Returns:
         dict: HTTP request response in JSON format.
     """  # pylint: disable=line-too-long
-    t = getenv("API_KEY")
+    t = get_api_key()
     if t is None:
-        raise MissingEnvToken("No item 'API_TEST_KEY' in your .env file")
+        raise MissingEnvToken("No key found in your .env file")
     fields = OrderedDict(fields)
     fields["token"] = t
     fields.move_to_end("token", last=False)
