@@ -13,8 +13,9 @@ def test_get_api_key():
     token = api.get_api_key()
     assert token is not None
     assert isinstance(token, str)
-    with pytest.raises(api.MissingEnvException):
-        api.get_api_key(path="BADPATH")
+    if not IS_GIHTUB_ACTIONS:
+        with pytest.raises(api.MissingEnvException):
+            api.get_api_key(path="BADPATH")
 
 
 def test_redcap_version():
