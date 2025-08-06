@@ -9,74 +9,72 @@ from os import mkdir, walk, getenv
 from os.path import join, exists, expanduser
 from collections import OrderedDict
 from warnings import warn
-import json
-import zipfile
+from json import loads, dumps, dump
+from zipfile import ZipFile, ZIP_DEFLATED
 from datetime import datetime
-from dateutil.relativedelta import relativedelta
-import pytz
+from dateutil.relativedelta import relativedelta as rdelta
+from pytz import UTC as utc
 from dotenv import load_dotenv
 import requests
 from pandas import DataFrame
-from babylab.globals import COLNAMES
+from babylab.globals import COLNAMES, FIELDS_TO_RENAME
 
 URI = "https://apps.sjdhospitalbarcelona.org/redcap/api/"
 
 
 class MissingEnvException(Exception):
-    """If .env file is not found in user folder"""
-
-    def __init__(self, envpath):
-        msg = f".env file not found. Please, make sure to save your credentials in {envpath}"  # pylint: disable=line-too-long
-        super().__init__(msg)
+    """.env file is not found in user folder"""
 
 
 class MissingEnvToken(Exception):
-    """If token is not provided under 'API_TEST_KEY' key."""
-
-    def __init__(self):
-        msg = "No token was found under the 'API_TEST_KEY' key in your .env file."  # pylint: disable=line-too-long
-        super().__init__(msg)
+    """Token is not provided under 'API_TEST_KEY' key."""
 
 
-class BadTokenException(Exception):
-    """If token is ill-formed."""
+class MissingRecord(Exception):
+    """Record is not found."""
 
 
-class RecordNotFound(Exception):
-    """If record is not found."""
+class BadToken(Exception):
+    """Token is ill-formed."""
 
-    def __init__(self, record_id):
-        super().__init__(f"Record '{record_id}' not found")
+
+class BadRecordListKind(Exception):
+    """Bad RecordList kind"""
+
+
+class BadAgeFormat(Exception):
+    """If Age des not follow the right format."""
 
 
 def get_api_key(path: str = None, name: str = "API_TEST_KEY"):
     """Retrieve API credentials.
 
     Args:
-        path (str, optional): Path to the .env file with global variables. Defaults to None.
+        path (str, optional): Path to the .env file with global variables. Defaults to ``expanduser(join("~", ".env"))``.
         name (str, optional): Name of the variable to import. Defaults to "API_TEST_KEY".
+
     Raises:
-        MissingEnvException: If .en file is not located in ~/.env.
-    """
+        MissingEnvException: If .en file is not found  in ``path``.
+    """  # pylint: disable=line-too-long
     if path is None:
         path = expanduser(join("~", ".env"))
     if getenv("GITHUB_ACTIONS") == "true":
         t = getenv(name)
     else:
         if not exists(path):
-            raise MissingEnvException(envpath=path)
+            raise MissingEnvException(f".env file not found in {path}")
         load_dotenv(path, override=True)
         t = getenv(name)
     if t is None:
-        raise MissingEnvToken()
+        raise MissingEnvToken("No item 'API_TEST_KEY' in your .env file")
     if not isinstance(t, str) or not t.isalnum():
-        raise BadTokenException("Token must be str without non-alphanumeric characters")
+        raise BadToken("Token must be str with no non-alphanumeric characters")
     return t
 
 
 @dataclass
 class RecordList:
-    """List of records"""
+    """List of REDCap records."""
 
     records: dict
     kind: str | None = None
@@ -89,7 +87,7 @@ class RecordList:
 
         Returns:
             DataFrame: Tabular dataset.
-        """
+        """  # pylint: disable=line-too-long
         recs = [p.data for p in self.records.values()]
         names = COLNAMES[self.kind]
         if not recs:
@@ -115,16 +113,12 @@ def filter_fields(data: dict, prefix: str, fields: list[str]) -> dict:
 
     Returns:
         dict: Filtered records.
-    """
+    """  # pylint: disable=line-too-long
     return {
         k.replace(prefix, ""): v
         for k, v in data.items()
         if k.startswith(prefix) or k in fields
     }
-
-
-class BadRecordListKind(BaseException):
-    """Bad RecordList kind"""
 
 
 class Participant:
@@ -134,33 +128,22 @@ class Participant:
         if (apt and apt.kind != "appointments") or (
             que and que.kind != "questionnaires"
         ):
-            raise BadRecordListKind
+            raise BadRecordListKind()
         data = filter_fields(data, "participant_", ["record_id"])
         age_created = (data["age_created_months"], data["age_created_days"])
-        data["age_now_months"], data["age_now_days"] = get_age(
-            age_created, data["date_created"]
-        )
+        months, days = get_age(age_created, data["date_created"])
+        data["age_now_months"], data["age_now_days"] = months, days
         self.record_id = data["record_id"]
         self.data = data
         self.appointments = apt
         self.questionnaires = que
 
     def __repr__(self) -> str:
-        """Print class in console.
-
-        Returns:
-            str: Description to print in console.
-        """
-        n_apt = 0 if self.appointments is None else len(self.appointments)
-        n_que = 0 if self.questionnaires is None else len(self.questionnaires)
+        n_apt = 0 if not self.appointments else len(self.appointments) > 0
+        n_que = 0 if not self.questionnaires else len(self.questionnaires) > 0
         return f"Participant {self.record_id}: {str(n_apt)} appointments, {str(n_que)} questionnaires"  # pylint: disable=line-too-long
 
     def __str__(self) -> str:
-        """Return class description as string.
-
-        Returns:
-            str: Description of class.
-        """
         n_apt = 0 if self.appointments is None else len(self.appointments)
         n_que = 0 if self.questionnaires is None else len(self.questionnaires)
         return f"Participant {self.record_id}: {str(n_apt)} appointments, {str(n_que)} questionnaires"  # pylint: disable=line-too-long
@@ -178,22 +161,17 @@ class Appointment:
         self.appointment_id = make_id(data["record_id"], data["redcap_repeat_instance"])
         self.status = data["status"]
         self.date = data["date"]
+        self._description = (
+            f"Appointment {self.appointment_id}"
+            + f"participant {self.record_id}, "
+            + f"{self.date}, {self.status}"
+        )
 
     def __repr__(self) -> str:
-        """Print class in console.
-
-        Returns:
-            str: Description to print in console.
-        """
-        return f"Appointment {self.appointment_id}, participant {self.record_id}, {self.date}, {self.status}"  # pylint: disable=line-too-long
+        return self._description
 
     def __str__(self) -> str:
-        """Return class description as string.
-
-        Returns:
-            str: Description of class.
-        """
-        return f"Appointment {self.appointment_id}, participant {self.record_id}, {self.date}, {self.status}"  # pylint: disable=line-too-long
+        return self._description
 
 
 class Questionnaire:
@@ -202,7 +180,10 @@ class Questionnaire:
     def __init__(self, data: dict):
         data = filter_fields(data, "language_", ["record_id", "redcap_repeat_instance"])
         self.record_id = data["record_id"]
-        self.questionnaire_id = make_id(self.record_id, data["redcap_repeat_instance"])
+        self.questionnaire_id = make_id(
+            self.record_id,
+            data["redcap_repeat_instance"],
+        )
         self.isestimated = data["isestimated"]
         self.data = data
         for i in range(1, 5):
@@ -210,19 +191,9 @@ class Questionnaire:
             self.data[lang] = int(self.data[lang]) if self.data[lang] else 0
 
     def __repr__(self) -> str:
-        """Print class in console.
-
-        Returns:
-            str: Description to print in console.
-        """
         return f"Questionnaire {self.questionnaire_id}, participant {self.record_id}"
 
     def __str__(self) -> str:
-        """Return class description as string.
-
-        Returns:
-            str: Description of class.
-        """
         return f" Questionnaire {self.questionnaire_id}, participant {self.record_id}"
 
 
@@ -235,16 +206,16 @@ def post_request(fields: dict, timeout: list[int] = (5, 10)) -> dict:
 
     Raises:
         requests.exceptions.HTTPError: If HTTP request fails.
-        BadTokenException: If API token contains non-alphanumeric characters.
+        BadToken: If API token contains non-alphanumeric characters.
 
     Returns:
         dict: HTTP request response in JSON format.
-    """
-    token = getenv("API_KEY")
-    if token is None:
-        raise MissingEnvToken()
+    """  # pylint: disable=line-too-long
+    t = getenv("API_KEY")
+    if t is None:
+        raise MissingEnvToken("No item 'API_TEST_KEY' in your .env file")
     fields = OrderedDict(fields)
-    fields["token"] = token
+    fields["token"] = t
     fields.move_to_end("token", last=False)
     r = requests.post(URI, data=fields, timeout=timeout)
     r.raise_for_status()
@@ -256,7 +227,7 @@ def get_redcap_version() -> str:
 
     Returns:
         str: REDCAp version number.
-    """
+    """  # pylint: disable=line-too-long
     fields = {"content": "version"}
     r = post_request(fields=fields)
     return r.content.decode("utf-8")
@@ -267,23 +238,11 @@ def get_data_dict() -> dict:
 
     Returns:
         dict: Data dictionary.
-    """
-    items = [
-        "participant_sex",
-        "participant_birth_type",
-        "participant_hearing",
-        "participant_source",
-        "appointment_study",
-        "appointment_status",
-        "language_lang1",
-        "language_lang2",
-        "language_lang3",
-        "language_lang4",
-    ]
+    """  # pylint: disable=line-too-long
     fields = {"content": "metadata", "format": "json", "returnFormat": "json"}
-    for idx, i in enumerate(items):
+    for idx, i in enumerate(FIELDS_TO_RENAME):
         fields[f"fields[{idx}]"] = i
-    r = json.loads(post_request(fields=fields).text)
+    r = loads(post_request(fields=fields).text)
     items_ordered = [i["field_name"] for i in r]
     dicts = {}
     for k, v in zip(items_ordered, r):
@@ -335,7 +294,7 @@ def get_next_id() -> str:
 
     Returns:
         str: record_id of next record.
-    """
+    """  # pylint: disable=line-too-long
     fields = {"content": "generateNextRecordName"}
     return str(post_request(fields=fields).json())
 
@@ -348,7 +307,7 @@ def get_records(record_id: str | list | None = None) -> dict:
 
     Returns:
         dict: REDCap records in JSON format.
-    """
+    """  # pylint: disable=line-too-long
     fields = {"content": "record", "format": "json", "type": "flat"}
     if record_id and isinstance(record_id, list):
         fields["records[0]"] = record_id
@@ -389,7 +348,7 @@ def get_participant(ppt_id: str) -> Participant:
 
     Returns:
         Participant: Participant object.
-    """
+    """  # pylint: disable=line-too-long
     fields = {
         "content": "record",
         "action": "export",
@@ -421,7 +380,7 @@ def get_participant(ppt_id: str) -> Participant:
             que=RecordList(que, kind="questionnaires"),
         )
     except IndexError as e:
-        raise RecordNotFound(record_id=ppt_id) from e
+        raise MissingRecord(f"Record {ppt_id} not found") from e
 
 
 def get_appointment(apt_id: str) -> Appointment:
@@ -432,13 +391,13 @@ def get_appointment(apt_id: str) -> Appointment:
 
     Returns:
         Appointment: Appointment object.
-    """
+    """  # pylint: disable=line-too-long
     ppt_id, _ = apt_id.split(":")
     ppt = get_participant(ppt_id)
     try:
         return ppt.appointments.records[apt_id]
     except KeyError as e:
-        raise RecordNotFound(record_id=apt_id) from e
+        raise MissingRecord(f"Record {apt_id} not found") from e
 
 
 def get_questionnaire(que_id: str) -> Questionnaire:
@@ -449,13 +408,13 @@ def get_questionnaire(que_id: str) -> Questionnaire:
 
     Returns:
         Questionnaire: Appointment object.
-    """
+    """  # pylint: disable=line-too-long
     ppt_id, _ = que_id.split(":")
     ppt = get_participant(ppt_id)
     try:
         return ppt.questionnaires.records[que_id]
     except KeyError as e:
-        raise RecordNotFound(record_id=que_id) from e
+        raise MissingRecord(f"Record {que_id} not found") from e
 
 
 def add_participant(data: dict, modifying: bool = False):
@@ -464,7 +423,7 @@ def add_participant(data: dict, modifying: bool = False):
     Args:
         data (dict): Participant data.
         modifying (bool, optional): Modifying existent participant?
-    """
+    """  # pylint: disable=line-too-long
     fields = {
         "content": "record",
         "action": "import",
@@ -472,7 +431,7 @@ def add_participant(data: dict, modifying: bool = False):
         "type": "flat",
         "overwriteBehavior": "normal" if modifying else "overwrite",
         "forceAutoNumber": "false" if modifying else "true",
-        "data": f"[{json.dumps(dt_to_str(data))}]",
+        "data": f"[{dumps(dt_to_str(data))}]",
     }
     return post_request(fields=fields)
 
@@ -483,7 +442,7 @@ def delete_participant(data: dict):
     Args:
         data (dict): Participant data.
         modifying (bool, optional): Modifying existent participant?
-    """
+    """  # pylint: disable=line-too-long
     fields = {
         "content": "record",
         "action": "delete",
@@ -497,7 +456,7 @@ def delete_participant(data: dict):
         return r
     except requests.exceptions.HTTPError as e:
         rid = make_id(data["record_id"])
-        raise RecordNotFound(rid) from e
+        raise MissingRecord(f"Record {rid} not found") from e
 
 
 def add_appointment(data: dict):
@@ -506,7 +465,7 @@ def add_appointment(data: dict):
     Args:
         record_id (dict): ID of participant.
         data (dict): Appointment data.
-    """
+    """  # pylint: disable=line-too-long
     fields = {
         "content": "record",
         "action": "import",
@@ -514,7 +473,7 @@ def add_appointment(data: dict):
         "type": "flat",
         "overwriteBehavior": "overwrite",
         "forceAutoNumber": "false",
-        "data": f"[{json.dumps(dt_to_str(data))}]",
+        "data": f"[{dumps(dt_to_str(data))}]",
     }
     return post_request(fields=fields)
 
@@ -525,7 +484,7 @@ def delete_appointment(data: dict):
     Args:
         data (dict): Participant data.
         modifying (bool, optional): Modifying existent participant?
-    """
+    """  # pylint: disable=line-too-long
     fields = {
         "content": "record",
         "action": "delete",
@@ -535,7 +494,7 @@ def delete_appointment(data: dict):
         f"records[{data['record_id']}]": f"{data['record_id']}",
     }
     r = post_request(fields=fields)
-    warn_absent_record(r)
+    warn_missing_record(r)
     return r
 
 
@@ -544,7 +503,7 @@ def add_questionnaire(data: dict):
 
     Args:
         data (dict): Questionnaire data.
-    """
+    """  # pylint: disable=line-too-long
     fields = {
         "content": "record",
         "action": "import",
@@ -552,7 +511,7 @@ def add_questionnaire(data: dict):
         "type": "flat",
         "overwriteBehavior": "overwrite",
         "forceAutoNumber": "false",
-        "data": f"[{json.dumps(dt_to_str(data))}]",
+        "data": f"[{dumps(dt_to_str(data))}]",
     }
     return post_request(fields=fields)
 
@@ -563,7 +522,7 @@ def delete_questionnaire(data: dict):
     Args:
         data (dict): Participant data.
         modifying (bool, optional): Modifying existent participant?
-    """
+    """  # pylint: disable=line-too-long
     fields = {
         "content": "record",
         "action": "delete",
@@ -573,16 +532,16 @@ def delete_questionnaire(data: dict):
         f"records[{data['record_id']}]": f"{data['record_id']}",
     }
     r = post_request(fields=fields)
-    warn_absent_record(r)
+    warn_missing_record(r)
     return r
 
 
-def warn_absent_record(r: requests.models.Response):
+def warn_missing_record(r: requests.models.Response):
     """Warn user about absent record.
 
     Args:
         r (requests.models.Response): HTTPS response.
-    """
+    """  # pylint: disable=line-too-long
     if "registros proporcionados no existen" in r.content.decode():
         warn("Record does not exist!")
 
@@ -595,13 +554,13 @@ def redcap_backup(path: str = "tmp") -> dict:
 
     Returns:
         dict: A dictionary with the key data and metadata of the project.
-    """
+    """  # pylint: disable=line-too-long
     if not exists(path):
         mkdir(path)
     pl = {}
     for k in ["project", "metadata", "instrument"]:
         pl[k] = {"format": "json", "returnFormat": "json", "content": k}
-    d = {k: json.loads(post_request(v).text) for k, v in pl.items()}
+    d = {k: loads(post_request(v).text) for k, v in pl.items()}
     with open(join(path, "records.csv"), "w+", encoding="utf-8") as f:
         fields = {
             "content": "record",
@@ -621,11 +580,11 @@ def redcap_backup(path: str = "tmp") -> dict:
     }
     for k, v in b.items():
         with open(join(path, k + ".json"), "w", encoding="utf-8") as f:
-            json.dump(v, f)
+            dump(v, f)
     timestamp = datetime.strftime(datetime.now(), "%Y-%m-%d-%H-%M")
     file = join(path, "backup_" + timestamp + ".zip")
     for root, _, files in walk(path, topdown=False):
-        with zipfile.ZipFile(file, "w", zipfile.ZIP_DEFLATED) as z:
+        with ZipFile(file, "w", ZIP_DEFLATED) as z:
             for f in files:
                 z.write(join(root, f))
     return file
@@ -661,11 +620,6 @@ class Records:
         self.questionnaires = RecordList(que, kind="questionnaires")
 
     def __repr__(self) -> str:
-        """Print class in console.
-
-        Returns:
-            str: Description to print in console.
-        """
         return (
             "REDCap database:"
             + f"\n- {len(self.participants.records)} participants"
@@ -674,24 +628,12 @@ class Records:
         )
 
     def __str__(self) -> str:
-        """Return class description as string.
-
-        Returns:
-            str: Description of class.
-        """
         return (
             "REDCap database:"
             + f"\n- {len(self.participants.records)} participants"
             + f"\n- {len(self.appointments.records)} appointments"
             + f"\n- {len(self.questionnaires.records)} questionnaires"
         )
-
-
-class BadAgeFormat(Exception):
-    """If age des not follow the right format."""
-
-    def __init__(self, age: tuple[int, int]):
-        super().__init__(f"`age` must follow the `(months, age)` format': { age }")
 
 
 def parse_age(age: tuple) -> tuple[int, int]:
@@ -712,7 +654,7 @@ def parse_age(age: tuple) -> tuple[int, int]:
         assert len(age) == 2
         return int(age[0]), int(age[1])
     except AssertionError as e:
-        raise BadAgeFormat(age) from e
+        raise BadAgeFormat("age must be in (months, age) format") from e
 
 
 def get_age(age: str | tuple, ts: datetime, ts_new: datetime = None):
@@ -727,15 +669,15 @@ def get_age(age: str | tuple, ts: datetime, ts_new: datetime = None):
         tuple: Age in at ``new_timestamp``.
     """  # pylint: disable=line-too-long
     if ts_new is None:
-        ts_new = datetime.now(pytz.UTC)
+        ts_new = datetime.now(utc)
     if ts.tzinfo is None or ts.tzinfo.utcoffset(ts) is None:
-        ts = pytz.UTC.localize(ts, True)
+        ts = utc.localize(ts, True)
     if ts_new.tzinfo is None or ts_new.tzinfo.utcoffset(ts_new) is None:
-        ts_new = pytz.UTC.localize(ts_new, True)
-    tdiff = relativedelta(ts_new, ts)
-    age = parse_age(age)
-    new_age_months = age[0] + tdiff.years * 12 + tdiff.months
-    new_age_days = age[1] + tdiff.days
+        ts_new = utc.localize(ts_new, True)
+    tdiff = rdelta(ts_new, ts)
+    months, days = parse_age(age)
+    new_age_months = months + tdiff.years * 12 + tdiff.months
+    new_age_days = days + tdiff.days
     if new_age_days >= 30:
         additional_months = new_age_days // 30
         new_age_months += additional_months

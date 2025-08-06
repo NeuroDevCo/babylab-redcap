@@ -7,23 +7,11 @@ from functools import singledispatch
 from copy import deepcopy
 from pandas import DataFrame, to_datetime
 from babylab import api
-
-INT_FIELDS = [
-    "age_created_months",
-    "age_created_days",
-    "age_now_months",
-    "age_now_days",
-    "gest_weeks",
-    "birth_weight",
-    "head_circumference",
-    "apgar1",
-    "apgar2",
-    "apgar3",
-]
+from babylab.globals import COLNAMES, INT_FIELDS
 
 
 @singledispatch
-def fmt_labels(x: dict | DataFrame, prefixes: list[str]):
+def fmt_labels(x: dict | DataFrame, data_dict: dict[str, str]):
     """Reformat dataframe.
 
     Args:
@@ -65,6 +53,16 @@ def _(x: dict, data_dict: dict) -> dict:
 
 @fmt_labels.register(DataFrame)
 def _(x: DataFrame, data_dict: dict, prefixes: list[str] = None) -> DataFrame:
+    """Reformat DataFrame.
+
+    Args:
+        x (dict): dictionary to reformat.
+        data_dict (dict): Data dictionary to labels to use, as returned by ``api.get_data_dict``.
+        prefixes: Field prefixes to look for.
+
+    Returns:
+        DataFrame: A reformatted DataFrame.
+    """
     if prefixes is None:
         prefixes = ["participant", "appointment", "language"]
     for col, val in x.items():
@@ -147,42 +145,8 @@ def get_ppt_table(
     Returns:
         DataFrame: Table of partcicipants.
     """  # pylint: disable=line-too-long
-    cols = [
-        "record_id",
-        "date_created",
-        "date_updated",
-        "source",
-        "name",
-        "age_created_months",
-        "age_created_days",
-        "days_since_last_appointment",
-        "sex",
-        "twin",
-        "parent1_name",
-        "parent1_surname",
-        "isdroput",
-        "email1",
-        "phone1",
-        "parent2_name",
-        "parent2_surname",
-        "email2",
-        "phone2",
-        "address",
-        "city",
-        "postcode",
-        "birth_type",
-        "gest_weeks",
-        "birth_weight",
-        "head_circumference",
-        "apgar1",
-        "apgar2",
-        "apgar3",
-        "hearing",
-        "diagnoses",
-        "comments",
-    ]
     if not records.participants.records:
-        return DataFrame([], columns=cols)
+        return DataFrame([], columns=COLNAMES["participants"])
     ppt, apt = records.participants, records.appointments
     if study:
         ids = [a.record_id for a in apt.records.values() if study in a.data["study"]]
@@ -212,23 +176,14 @@ def get_apt_table(
     Args:
         records (api.Records): REDCap records, as returned by ``api.Records``.
         data_dict (dict): Data dictionary as returned by ``api.get_data_dictionary``.
-        study (str, optional): Study to filter for. Defaults to None.
+        ppt_id (str): ID of participant to return. If None (default), all participants are returned.
+        study (str, optional): Study to filter for. If None (default) all studies are returned.
+        relabel (bool): Reformat labels if True (default).
 
     Returns:
         DataFrame: Table of appointments.
     """  # pylint: disable=line-too-long
     apts = deepcopy(records.appointments)
-    colnames = [
-        "appointment_id",
-        "record_id",
-        "study",
-        "status",
-        "date",
-        "date_created",
-        "date_updated",
-        "taxi_address",
-        "taxi_isbooked",
-    ]
     df = apts.to_df()
     if relabel:
         df = fmt_labels(df, data_dict)
@@ -237,7 +192,7 @@ def get_apt_table(
     if ppt_id:
         df = df[df.index == ppt_id]
     if len(apts.records) == 0:
-        return DataFrame(columns=colnames)
+        return DataFrame(columns=COLNAMES["appointments"])
     months, days = [], []
     for v in apts.records.values():
         ppt_data = records.participants.records[v.record_id].data
@@ -266,28 +221,14 @@ def get_que_table(
     Args:
         records (api.Records): REDCap records, as returned by ``api.Records``.
         data_dict (dict): Data dictionary as returned by ``api.get_data_dictionary``.
-        study (str, optional): Study to filter for. Defaults to None.
-        relabel (bool, optional): Should columns be relabeled? Defaults to True.
+        ppt_id (str): ID of participant to return. If None (default), all participants are returned.
+        study (str, optional): Study to filter for. If None (default) all studies are returned.
+        relabel (bool): Reformat labels if True (default).
 
     Returns:
         DataFrame: A formated Pandas DataFrame.
     """  # pylint: disable=line-too-long
     ques = deepcopy(records.questionnaires)
-    colnames = [
-        "questionnaire_id",
-        "record_id",
-        "isestimated",
-        "date_created",
-        "date_updated",
-        "lang1",
-        "lang1_exp",
-        "lang2",
-        "lang2_exp",
-        "lang3",
-        "lang3_exp",
-        "lang4",
-        "lang4_exp",
-    ]
     df = ques.to_df()
     if relabel:
         df = fmt_labels(df, data_dict)
@@ -296,7 +237,7 @@ def get_que_table(
     if ppt_id:
         df = df[df.index == ppt_id]
     if len(ques.records) == 0:
-        return DataFrame(columns=colnames)
+        return DataFrame(columns=COLNAMES["questionnaires"])
     df["date_created"] = to_datetime(df.date_created, format="%Y-%m-%dT%H:%M")
     df["date_updated"] = df["date_updated"].dt.strftime("%d/%m/%y %H:%M")
     return df

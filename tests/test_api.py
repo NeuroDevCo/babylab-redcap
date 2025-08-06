@@ -106,7 +106,7 @@ def test_add_mod_del_participant(ppt_record):
     assert new_record.data["apgar1"] == new_val
     # delete
     api.delete_participant(ppt_record)
-    with pytest.raises(api.RecordNotFound):
+    with pytest.raises(api.MissingRecord):
         api.get_participant(rid)
 
 
@@ -125,7 +125,7 @@ def test_add_mod_del_appointment(apt_record):
     assert new_record.data["status"] == new_val
     # delete
     api.delete_appointment(apt_record)
-    with pytest.raises(api.RecordNotFound):
+    with pytest.raises(api.MissingRecord):
         api.get_appointment(rid)
 
 
@@ -144,7 +144,7 @@ def test_add_mod_del_questionnaire(que_record):
     assert new_record.data["lang1"] == new_val
     # delete
     api.delete_questionnaire(que_record)
-    with pytest.raises(api.RecordNotFound):
+    with pytest.raises(api.MissingRecord):
         api.get_questionnaire(rid)
 
 

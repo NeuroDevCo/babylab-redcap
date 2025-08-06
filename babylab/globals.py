@@ -66,3 +66,30 @@ COLNAMES = {
         "complete",
     ],
 }
+
+FIELDS_TO_RENAME = [
+    "participant_sex",
+    "participant_birth_type",
+    "participant_hearing",
+    "participant_source",
+    "appointment_study",
+    "appointment_status",
+    "language_lang1",
+    "language_lang2",
+    "language_lang3",
+    "language_lang4",
+]
+
+
+INT_FIELDS = INT_FIELDS = [
+    "age_created_months",
+    "age_created_days",
+    "age_now_months",
+    "age_now_days",
+    "gest_weeks",
+    "birth_weight",
+    "head_circumference",
+    "apgar1",
+    "apgar2",
+    "apgar3",
+]
