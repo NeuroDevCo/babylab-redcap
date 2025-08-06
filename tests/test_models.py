@@ -1,5 +1,4 @@
-"""Test database models
-"""
+"""Test database models"""
 
 from datetime import datetime
 from pandas import DataFrame

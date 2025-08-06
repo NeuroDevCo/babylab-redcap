@@ -389,5 +389,5 @@ def participant_exists(ppt_id: str, records: api.Records = None) -> bool:
     try:
         api.get_participant(ppt_id)
         return True
-    except api.RecordNotFound:
+    except api.MissingRecord:
         return False

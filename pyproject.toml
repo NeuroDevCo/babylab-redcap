@@ -34,7 +34,6 @@ dependencies = [
   "pandas",
   "pydotenv>=0.0.7",
   "pyinstaller>=6.14.2",
-  "pylint>=3.3.7",
   "pytest>=8.4.1",
   "pytest-benchmark>=5.1.0",
   "pytest-cov>=6.2.1",
@@ -86,3 +85,8 @@ exclude_lines = [
 
 [tool.djlint]
 profile="jinja"
+
+[dependency-groups]
+dev = [
+    "ruff>=0.12.7",
+]
