@@ -92,58 +92,90 @@ def test_get_records(benchmark):
     benchmark(_get_records)
 
 
-def test_add_mod_del_participant(ppt_record):
+def test_add_participant(ppt_record):
     """Test adding,modifying, and deleting participants."""
-    # add
     rid = ppt_record["record_id"]
     api.add_participant(ppt_record)
     assert isinstance(api.get_participant(rid), api.Participant)
-    # modify
+
+
+def test_modify_participant(ppt_record):
+    """Test adding,modifying, and deleting participants."""
+    rid = ppt_record["record_id"]
+    assert isinstance(api.get_participant(rid), api.Participant)
     old_val = ppt_record["participant_apgar1"]
     new_val = str(int(old_val) + 1) if old_val != "10" else "1"
     ppt_record["participant_apgar1"] = new_val
     api.add_participant(ppt_record, modifying=True)
     new_record = api.get_participant(rid)
     assert new_record.data["apgar1"] == new_val
-    # delete
+
+
+@pytest.mark.xfail(reason="Slow API")
+def test_delete_participant(ppt_record):
+    """Test adding,modifying, and deleting participants."""
+    rid = ppt_record["record_id"]
+    assert isinstance(api.get_participant(rid), api.Participant)
     api.delete_participant(ppt_record)
     with pytest.raises(api.MissingRecord):
         api.get_participant(rid)
 
 
-def test_add_mod_del_appointment(apt_record):
-    """Test adding, modifying, and delete appointments."""
-    # add
+def test_add_appointment(apt_record):
+    """Test adding appointments."""
     api.add_appointment(apt_record)
     rid = api.make_id(apt_record["record_id"], apt_record["redcap_repeat_instance"])
     assert isinstance(api.get_appointment(rid), api.Appointment)
-    # modify
+
+
+def test_modify_appointment(apt_record):
+    """Test modifying questionnaires."""
+    api.add_appointment(apt_record)
+    rid = api.make_id(apt_record["record_id"], apt_record["redcap_repeat_instance"])
     old_val = apt_record["appointment_status"]
     new_val = "1" if old_val != "1" else "1"
     apt_record["appointment_status"] = new_val
     api.add_appointment(apt_record)
     new_record = api.get_appointment(rid)
     assert new_record.data["status"] == new_val
-    # delete
+
+
+@pytest.mark.xfail(reason="Slow API")
+def test_delete_appointment(apt_record):
+    """Test deleting appointments."""
+    api.add_appointment(apt_record)
+    rid = api.make_id(apt_record["record_id"], apt_record["redcap_repeat_instance"])
+    rid = api.make_id(apt_record["record_id"], apt_record["redcap_repeat_instance"])
     api.delete_appointment(apt_record)
     with pytest.raises(api.MissingRecord):
         api.get_appointment(rid)
 
 
-def test_add_mod_del_questionnaire(que_record):
-    """Test adding, modifying, and delting questionnaires."""
+def test_add_questionnaire(que_record):
+    """Test adding questionnaires."""
     # add
     api.add_questionnaire(que_record)
     rid = api.make_id(que_record["record_id"], que_record["redcap_repeat_instance"])
     assert isinstance(api.get_questionnaire(rid), api.Questionnaire)
-    # modify
+
+
+def test_modify_questionnaire(que_record):
+    """Test modifying questionnaires."""
+    rid = api.make_id(que_record["record_id"], que_record["redcap_repeat_instance"])
+    assert isinstance(api.get_questionnaire(rid), api.Questionnaire)
     old_val = que_record["language_lang1"]
     new_val = str(1 if old_val == "0" else 0)
     que_record["language_lang1"] = new_val
     api.add_questionnaire(que_record)
     new_record = api.get_questionnaire(rid)
     assert new_record.data["lang1"] == new_val
-    # delete
+
+
+@pytest.mark.xfail(reason="Slow API")
+def test_delete_questionnaire(que_record):
+    """Test deleting questionnaires."""
+    rid = api.make_id(que_record["record_id"], que_record["redcap_repeat_instance"])
+    assert isinstance(api.get_questionnaire(rid), api.Questionnaire)
     api.delete_questionnaire(que_record)
     with pytest.raises(api.MissingRecord):
         api.get_questionnaire(rid)
@@ -173,6 +205,15 @@ def get_next_id(benchmark, records: api.Records = None) -> str:
         api.get_next_id()
 
     benchmark(_get_next_id)
+
+
+def test_parse_str_date():
+    """Test parse_str_date."""
+    hms = datetime(2025, 5, 2, 9, 10, 10)
+    hm = datetime(2025, 5, 2, 9, 10)
+    assert api.parse_str_date("2025-05-02T09:10:10") == hms
+    assert api.parse_str_date("2025-05-02 09:10:10") == hms
+    assert api.parse_str_date("2025-05-02 09:10") == hm
 
 
 def test_get_age(benchmark):

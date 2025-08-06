@@ -159,7 +159,10 @@ class Appointment:
         self.data = data
         self.appointment_id = make_id(data["record_id"], data["redcap_repeat_instance"])
         self.status = data["status"]
-        self.date = data["date"]
+        if isinstance(data["date"], str):
+            self.date = parse_str_date(data["date"])
+        else:
+            self.date = data["date"]
         self._description = (
             f"Appointment {self.appointment_id}"
             + f"participant {self.record_id}, "
@@ -656,29 +659,51 @@ def parse_age(age: tuple) -> tuple[int, int]:
         raise BadAgeFormat("age must be in (months, age) format") from e
 
 
-def get_age(age: str | tuple, ts: datetime, ts_new: datetime = None):
+def parse_str_date(x: str) -> datetime:
+    """Parse string data to datetime.
+
+    Args:
+        x (str): String date to parse.
+
+    Returns:
+        datetime: Parsed datetime.
+    """
+    try:
+        return datetime.strptime(x, "%Y-%m-%dT%H:%M:%S")
+    except ValueError:
+        try:
+            return datetime.strptime(x, "%Y-%m-%d %H:%M:%S")
+        except ValueError:
+            return datetime.strptime(x, "%Y-%m-%d %H:%M")
+
+
+def get_age(age: str | tuple, ts: datetime | str, ts_new: datetime = None):
     """Calculate the age of a person in months and days at a new timestamp.
 
     Args:
         age (tuple): Age in months and days as a tuple of type (months, days).
-        ts (datetime): Birth date as ``datetime.datetime`` type.
+        ts (datetime | str): Birth date as ``datetime.datetime`` type.
         ts_new (datetime.datetime, optional): Time for which the age is calculated. Defaults to current date (``datetime.datetime.now()``).
 
     Returns:
         tuple: Age in at ``new_timestamp``.
     """  # pylint: disable=line-too-long
-    if ts_new is None:
-        ts_new = datetime.now(utc)
+    ts = parse_str_date(ts) if isinstance(ts, str) else ts
+    ts_new = datetime.now(utc) if ts_new is None else ts_new
+
     if ts.tzinfo is None or ts.tzinfo.utcoffset(ts) is None:
         ts = utc.localize(ts, True)
     if ts_new.tzinfo is None or ts_new.tzinfo.utcoffset(ts_new) is None:
         ts_new = utc.localize(ts_new, True)
+
     tdiff = rdelta(ts_new, ts)
     months, days = parse_age(age)
     new_age_months = months + tdiff.years * 12 + tdiff.months
     new_age_days = days + tdiff.days
+
     if new_age_days >= 30:
         additional_months = new_age_days // 30
         new_age_months += additional_months
         new_age_days %= 30
+
     return new_age_months, new_age_days

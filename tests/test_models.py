@@ -7,51 +7,51 @@ from babylab import api
 
 def test_participant_class(ppt_record):
     """Test participant class."""
-    p = api.Participant(ppt_record)
-    assert hasattr(p, "record_id")
-    assert hasattr(p, "data")
+    ppt = api.Participant(ppt_record)
+    assert hasattr(ppt, "record_id")
+    assert hasattr(ppt, "data")
 
-    assert isinstance(p.record_id, str)
-    assert isinstance(p.data, dict)
+    assert isinstance(ppt.record_id, str)
+    assert isinstance(ppt.data, dict)
 
-    assert isinstance(repr(p), str)
-    assert "Participant " in repr(p)
-    assert isinstance(str(p), str)
-    assert "Participant " in str(p)
+    assert isinstance(repr(ppt), str)
+    assert "Participant " in repr(ppt)
+    assert isinstance(str(ppt), str)
+    assert "Participant " in str(ppt)
 
 
 def test_appointment_class(apt_record):
     """Test appointment class."""
-    a = api.Appointment(apt_record)
-    assert hasattr(a, "appointment_id")
-    assert hasattr(a, "record_id")
-    assert hasattr(a, "date")
-    assert hasattr(a, "status")
-    assert hasattr(a, "data")
+    apt = api.Appointment(apt_record)
+    assert hasattr(apt, "appointment_id")
+    assert hasattr(apt, "record_id")
+    assert hasattr(apt, "date")
+    assert hasattr(apt, "status")
+    assert hasattr(apt, "data")
 
-    assert isinstance(a.appointment_id, str)
-    assert isinstance(a.record_id, str)
-    assert isinstance(a.date, datetime)
-    assert isinstance(a.status, str)
-    assert isinstance(a.data, dict)
+    assert isinstance(apt.appointment_id, str)
+    assert isinstance(apt.record_id, str)
+    assert isinstance(apt.date, datetime)
+    assert isinstance(apt.status, str)
+    assert isinstance(apt.data, dict)
 
-    assert isinstance(repr(a), str)
-    assert "Appointment " in repr(a)
-    assert isinstance(str(a), str)
-    assert "Appointment " in str(a)
+    assert isinstance(repr(apt), str)
+    assert "Appointment " in repr(apt)
+    assert isinstance(str(apt), str)
+    assert "Appointment " in str(apt)
 
 
 def test_questionnaire_class(que_record):
     """Test questionnaire class."""
-    q = api.Questionnaire(que_record)
-    assert hasattr(q, "questionnaire_id")
-    assert hasattr(q, "isestimated")
-    assert hasattr(q, "record_id")
-    assert hasattr(q, "data")
-    assert isinstance(repr(q), str)
-    assert "questionnaire " in repr(q).lower()
-    assert isinstance(str(q), str)
-    assert "questionnaire " in str(q).lower()
+    que = api.Questionnaire(que_record)
+    assert hasattr(que, "questionnaire_id")
+    assert hasattr(que, "isestimated")
+    assert hasattr(que, "record_id")
+    assert hasattr(que, "data")
+    assert isinstance(repr(que), str)
+    assert "questionnaire " in repr(que).lower()
+    assert isinstance(str(que), str)
+    assert "questionnaire " in str(que).lower()
 
 
 def test_records_class():

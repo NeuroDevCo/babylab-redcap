@@ -24,37 +24,37 @@ def data_dict():
     return api.get_data_dict()
 
 
-@pytest.fixture
+@pytest.fixture(scope="session", autouse=True)
 def ppt_finput_mod() -> dict:
     """Form input for participant."""
     return create_finput_ppt(is_new=False)
 
 
-@pytest.fixture
+@pytest.fixture(scope="session", autouse=True)
 def apt_finput() -> dict:
     """Form input for appointment."""
     return create_finput_apt()
 
 
-@pytest.fixture
+@pytest.fixture(scope="session", autouse=True)
 def apt_finput_mod() -> dict:
     """Form input for appointment."""
     return create_finput_apt(is_new=False)
 
 
-@pytest.fixture
+@pytest.fixture(scope="session", autouse=True)
 def que_finput() -> dict:
     """Form input for questionnaire."""
     return create_finput_que()
 
 
-@pytest.fixture
+@pytest.fixture(scope="session", autouse=True)
 def que_finput_mod() -> dict:
     """Form input for questionnaire."""
     return create_finput_que(is_new=False)
 
 
-@pytest.fixture
+@pytest.fixture(scope="session", autouse=True)
 def ppt_record() -> dict:
     """Create REDcap record fixture.
 
@@ -64,7 +64,7 @@ def ppt_record() -> dict:
     return create_record_ppt()
 
 
-@pytest.fixture
+@pytest.fixture(scope="session", autouse=True)
 def apt_record() -> dict:
     """Create REDcap record fixture.
 
@@ -74,7 +74,7 @@ def apt_record() -> dict:
     return create_record_apt()
 
 
-@pytest.fixture
+@pytest.fixture(scope="session", autouse=True)
 def que_record() -> dict:
     """Create REDcap record fixture.
 
