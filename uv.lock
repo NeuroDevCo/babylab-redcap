@@ -56,12 +56,8 @@ dependencies = [
     { name = "pytest-benchmark" },
     { name = "pytest-cov" },
     { name = "requests" },
-    { name = "waitress" },
-]
-
-[package.dev-dependencies]
-dev = [
     { name = "ruff" },
+    { name = "waitress" },
 ]
 
 [package.metadata]
@@ -79,11 +75,12 @@ requires-dist = [
     { name = "pytest-benchmark", specifier = ">=5.1.0" },
     { name = "pytest-cov", specifier = ">=6.2.1" },
     { name = "requests" },
+    { name = "ruff", specifier = ">=0.12.7" },
     { name = "waitress", specifier = ">=3.0.2" },
 ]
 
 [package.metadata.requires-dev]
-dev = [{ name = "ruff", specifier = ">=0.12.7" }]
+dev = []
 
 [[package]]
 name = "blinker"

@@ -38,6 +38,7 @@ dependencies = [
   "pytest-benchmark>=5.1.0",
   "pytest-cov>=6.2.1",
   "requests",
+  "ruff>=0.12.7",
   "waitress>=3.0.2",
 ]
 
@@ -87,6 +88,4 @@ exclude_lines = [
 profile="jinja"
 
 [dependency-groups]
-dev = [
-    "ruff>=0.12.7",
-]
+dev = []
