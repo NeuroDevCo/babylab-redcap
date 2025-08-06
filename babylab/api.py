@@ -56,17 +56,16 @@ def get_api_key(path: str = None, name: str = "API_KEY"):
     Raises:
         MissingEnvException: If .en file is not found  in ``path``.
     """  # pylint: disable=line-too-long
-    if path is None:
-        path = expanduser(join("~", ".env"))
     if getenv("GITHUB_ACTIONS") == "true":
         t = getenv(name)
     else:
+        path = expanduser(join("~", ".env")) if path is None else path
         if not exists(path):
             raise MissingEnvException(f".env file not found in {path}")
         load_dotenv(path, override=True)
         t = getenv(name)
     if t is None:
-        raise MissingEnvToken("No item 'API_KEY' in your .env file")
+        raise MissingEnvToken(f"No env variable named '{name}' found")
     if not isinstance(t, str) or not t.isalnum():
         raise BadToken("Token must be str with no non-alphanumeric characters")
     return t

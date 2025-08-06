@@ -1,4 +1,5 @@
-"""Test util functions"""
+"""Test util functions
+"""
 
 from typing import Generator
 from datetime import date, datetime

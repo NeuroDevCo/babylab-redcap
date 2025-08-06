@@ -35,4 +35,4 @@ jobs:
         run: |
           uv run pytest -v -p no:cacheprovider --exitfirst --benchmark-time-unit="s" --benchmark-autosave
         env:
-          API_TEST_KEY: ${{ secrets.API_TEST_KEY }}
+          API_TEST_KEY: ${{ secrets.API_KEY }}
