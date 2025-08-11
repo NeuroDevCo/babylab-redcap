@@ -21,7 +21,7 @@
 
 ## Installation
 
-Python >=3.10 is needed. I recommend you install Python 3.12.7 from the [official website](https://www.python.org/downloads/release/python-3127/). Depending on your OS, you may have to download one of these files:
+Python >=3.10 is needed. Python 3.12.7 is recommended (installation available at the [official website](https://www.python.org/downloads/release/python-3127/)). Depending on your OS, you may have to download one of these files:
 
 * **Windows**: `Windows installer (64-bit)` file
 * **macOS**: `macOS 64-bit universal2 installer` file
