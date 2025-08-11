@@ -185,17 +185,17 @@ def get_apt_table(
     """  # pylint: disable=line-too-long
     apts = deepcopy(records.appointments)
     df = apts.to_df()
-    if relabel:
-        df = fmt_labels(df, data_dict)
     if study:
         df = df[df.study == study]
     if ppt_id:
         df = df[df.index == ppt_id]
+    if relabel:
+        df = fmt_labels(df, data_dict)
     if len(apts.records) == 0:
         return DataFrame(columns=COLNAMES["appointments"])
     months, days = [], []
-    for v in apts.records.values():
-        ppt_data = records.participants.records[v.record_id].data
+    for pid in set(df.index):
+        ppt_data = records.participants.records[pid].data
         months.append(ppt_data["age_now_months"])
         days.append(ppt_data["age_now_days"])
     df["age_now_months"], df["age_now_days"] = get_age_timestamp(
