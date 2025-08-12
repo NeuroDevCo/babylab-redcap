@@ -5,13 +5,13 @@ Util functions for the app.
 from datetime import date, timedelta, datetime
 from functools import singledispatch
 from copy import deepcopy
-from pandas import DataFrame, to_datetime
+import polars as pl
 from babylab import api
 from babylab.globals import COLNAMES, INT_FIELDS
 
 
 @singledispatch
-def fmt_labels(x: dict | DataFrame, data_dict: dict[str, str]):
+def fmt_labels(x: dict | pl.DataFrame, data_dict: dict[str, str]):
     """Reformat dataframe.
 
     Args:
@@ -44,40 +44,37 @@ def _(x: dict, data_dict: dict) -> dict:
                 y[k] = data_dict[f + k][v]
         if "exp" in k:
             y[k] = round(float(v), None) if v else None
-        if "taxi_isbooked" in k:
-            y[k] = y["taxi_address"] == "1"
-        y[k] = y[k] if y[k] else None
+        for c in ["taxi_isbooked", "isdropout", "isestimated"]:
+            if c in k:
+                y[k] = y[c] == "1"
+        y[k] = y[k] if y[k] != "" else None
     y = {k: (int(v) if k in INT_FIELDS else v) for k, v in y.items()}
     return y
 
 
-@fmt_labels.register(DataFrame)
-def _(x: DataFrame, data_dict: dict, prefixes: list[str] = None) -> DataFrame:
+@fmt_labels.register(pl.DataFrame)
+def _(x: pl.DataFrame, data_dict: dict) -> pl.DataFrame:
     """Reformat DataFrame.
 
     Args:
         x (dict): dictionary to reformat.
         data_dict (dict): Data dictionary to labels to use, as returned by ``api.get_data_dict``.
-        prefixes: Field prefixes to look for.
 
     Returns:
         DataFrame: A reformatted DataFrame.
     """
-    if prefixes is None:
-        prefixes = ["participant", "appointment", "language"]
-    for col, val in x.items():
-        kdict = [x + "_" + col for x in prefixes]
-        for k in kdict:
-            if k in data_dict:
-                x[col] = [data_dict[k][v] if v else None for v in val]
-        if "lang" in col:
-            x[col] = [None if v == "None" else v for v in x[col]]
-        if "isestimated" in col:
-            x[col] = [x == "1" for x in x[col]]
-    x = x.replace(r"^\s*$", None, regex=True)
-    x = x.convert_dtypes()
-    cols = [f for f in INT_FIELDS if f in x.columns]
-    x[cols] = x[cols].astype(float).astype("Int64")
+    cols = {k.rsplit("_", 1)[1]: v for k, v in data_dict.items()}
+    for k, v in {ck: cv for ck, cv in cols.items() if ck in x.columns}.items():
+        x = x.with_columns(pl.col(k).replace_strict(v, default=None))
+    for c in ["isestimated", "isdropout"]:
+        if c in x.columns:
+            x = x.with_columns(pl.col(c).eq("1"))
+    x = x.with_columns(
+        pl.when(pl.col(pl.String).str.len_chars() == 0)
+        .then(None)
+        .otherwise(pl.col(pl.String))
+        .name.keep()
+    ).cast({c: pl.Int64 for c in [f for f in INT_FIELDS if f in x.columns]})
     return x
 
 
@@ -133,7 +130,7 @@ def get_age_timestamp(
 
 def get_ppt_table(
     records: api.Records, data_dict: dict, relabel: bool = True, study: str = None
-) -> DataFrame:
+) -> pl.DataFrame:
     """Get participants table
 
     Args:
@@ -143,22 +140,21 @@ def get_ppt_table(
         study (str, optional): Study in which the participant in the records must have participated to be kept. Defaults to None.
 
     Returns:
-        DataFrame: Table of partcicipants.
+        pl.DataFrame: Table of partcicipants.
     """  # pylint: disable=line-too-long
     if not records.participants.records:
-        return DataFrame([], columns=COLNAMES["participants"])
-    ppt, apt = records.participants, records.appointments
-    if study:
-        ids = [a.record_id for a in apt.records.values() if study in a.data["study"]]
-        ppt.records = {k: v for k, v in ppt.records.items() if k in ids}
-    new_age_months, new_age_days = [], []
-    for v in ppt.records.values():
-        age_created = (v.data["age_created_months"], v.data["age_created_days"])
-        age = api.get_age(age_created, ts=v.data["date_created"])
-        new_age_months.append(int(age[0]))
-        new_age_days.append(int(age[1]))
+        return pl.DataFrame(schema=COLNAMES["participants"])
+
     df = records.participants.to_df()
-    df["age_now_months"], df["age_now_days"] = new_age_months, new_age_days
+    if study:
+        ppt_study = (
+            records.appointments.to_df()
+            .filter(pl.col("study") == study)
+            .unique("record_id")
+            .get_column("record_id")
+            .to_list()
+        )
+        df = df.filter(pl.col("record_id").is_in(ppt_study))
     if relabel:
         df = fmt_labels(df, data_dict)
     return df
@@ -170,7 +166,7 @@ def get_apt_table(
     ppt_id: str = None,
     study: str = None,
     relabel: bool = True,
-) -> DataFrame:
+) -> pl.DataFrame:
     """Get appointments table.
 
     Args:
@@ -183,29 +179,22 @@ def get_apt_table(
     Returns:
         DataFrame: Table of appointments.
     """  # pylint: disable=line-too-long
-    apts = deepcopy(records.appointments)
-    df = apts.to_df()
+    df = deepcopy(records.appointments).to_df()
+    if len(df) == 0:
+        return pl.DataFrame(schema=COLNAMES["appointments"])
     if study:
-        df = df[df.study == study]
+        df = df.filter(pl.col("study") == study)
     if ppt_id:
-        df = df[df.index == ppt_id]
+        df = df.filter(pl.col("record_id") == ppt_id)
     if relabel:
         df = fmt_labels(df, data_dict)
-    if len(apts.records) == 0:
-        return DataFrame(columns=COLNAMES["appointments"])
-    months, days = [], []
-    for pid in set(df.index):
-        ppt_data = records.participants.records[pid].data
-        months.append(ppt_data["age_now_months"])
-        days.append(ppt_data["age_now_days"])
-    df["age_now_months"], df["age_now_days"] = get_age_timestamp(
-        months, days, df["date_created"].to_list()
+    ppt_df = records.participants.to_df()
+    df = df.join(
+        ppt_df.select(["record_id", "age_now_months", "age_now_days"]), on="record_id"
     )
-    df["age_apt_months"], df["age_apt_days"] = get_age_timestamp(
-        months, days, df["date"].to_list()
-    )
-    df["date"] = to_datetime(df.date, format="%Y-%m-%dT%H:%M")
-    df["date"] = df["date"].dt.strftime("%d/%m/%y %H:%M")
+    age_apt = get_age_timestamp(df["age_now_days"], df["age_now_months"], df["date"])
+    df.insert_column(-1, pl.Series("age_apt_months", age_apt[0]))
+    df.insert_column(-1, pl.Series("age_apt_days", age_apt[1]))
     return df
 
 
@@ -215,7 +204,7 @@ def get_que_table(
     ppt_id: str = None,
     study: str = None,
     relabel: bool = True,
-) -> DataFrame:
+) -> pl.DataFrame:
     """Get questionnaires table.
 
     Args:
@@ -228,23 +217,21 @@ def get_que_table(
     Returns:
         DataFrame: A formated Pandas DataFrame.
     """  # pylint: disable=line-too-long
-    ques = deepcopy(records.questionnaires)
-    df = ques.to_df()
-    if relabel:
-        df = fmt_labels(df, data_dict)
+    df = deepcopy(records.questionnaires).to_df()
+    if len(df) == 0:
+        return pl.DataFrame(schema=COLNAMES["questionnaires"])
     if study:
         df = df[df.study == study]
     if ppt_id:
         df = df[df.index == ppt_id]
-    if len(ques.records) == 0:
-        return DataFrame(columns=COLNAMES["questionnaires"])
-    df["date_created"] = to_datetime(df.date_created, format="%Y-%m-%dT%H:%M")
-    df["date_updated"] = df["date_updated"].dt.strftime("%d/%m/%y %H:%M")
+    if relabel:
+        df = fmt_labels(df, data_dict)
+
     return df
 
 
 def count_col(
-    x: DataFrame,
+    x: pl.DataFrame,
     col: str,
     values_sort: bool = False,
     cumulative: bool = False,

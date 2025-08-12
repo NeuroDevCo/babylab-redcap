@@ -16,8 +16,8 @@ from dateutil.relativedelta import relativedelta as rdelta
 from pytz import UTC as utc
 from dotenv import load_dotenv
 import requests
-from pandas import DataFrame
-from babylab.globals import COLNAMES, FIELDS_TO_RENAME
+import polars as pl
+from babylab.globals import COLNAMES, FIELDS_TO_RENAME, INT_FIELDS
 
 URI = "https://apps.sjdhospitalbarcelona.org/redcap/api/"
 
@@ -81,7 +81,7 @@ class RecordList:
     def __len__(self) -> int:
         return len(self.records)
 
-    def to_df(self) -> DataFrame:
+    def to_df(self) -> pl.DataFrame:
         """Transforms a a RecordList to a Pandas DataFrame.
 
         Returns:
@@ -90,15 +90,28 @@ class RecordList:
         recs = [p.data for p in self.records.values()]
         names = COLNAMES[self.kind]
         if not recs:
-            df = DataFrame(columns=names)
-        else:
-            df = DataFrame(recs)
-            if self.kind == "appointments":
-                df = df.rename(columns={"redcap_repeat_instance": "appointment_id"})
-            if self.kind == "questionnaires":
-                df = df.rename(columns={"redcap_repeat_instance": "questionnaire_id"})
-            df = df[names]
-        df.set_index("record_id", inplace=True)
+            return pl.DataFrame(schema=names)
+        id_lookup = {
+            "participants": "none",
+            "appointments": "appointment_id",
+            "questionnaires": "questionnaire_id",
+        }
+        df = (
+            pl.DataFrame(data=recs)
+            .rename({"redcap_repeat_instance": id_lookup[self.kind]}, strict=False)
+            .select(names)
+            .with_columns(
+                pl.when(pl.col(pl.String).str.len_chars() == 0)
+                .then(None)
+                .otherwise(pl.col(pl.String))
+                .name.keep()
+            )
+        )
+        df = df.with_columns(
+            pl.col(
+                [f for f in INT_FIELDS if f in df.columns],
+            ).cast(pl.Int128)
+        )
         return df
 
 

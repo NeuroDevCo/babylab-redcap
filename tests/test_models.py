@@ -1,7 +1,7 @@
 """Test database models"""
 
 from datetime import datetime
-from pandas import DataFrame
+from polars import DataFrame
 from babylab import api
 
 
