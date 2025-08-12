@@ -2,8 +2,56 @@
 
 from typing import Generator
 from datetime import date, datetime
+import polars as pl
 import pytest
-from babylab import utils
+from babylab import api, utils
+
+
+def test_fmt_labels_dict(data_dict):
+    x = {"source": "1", "sex": "2", "isdropout": "0", "age_now_months": "2"}
+    o = utils.fmt_labels(x, data_dict)
+    assert isinstance(o, dict)
+    assert all(k in o for k in x)
+    assert isinstance(o["source"], str)
+    assert isinstance(o["sex"], str)
+    assert isinstance(o["isdropout"], bool)
+    assert isinstance(o["age_now_months"], int)
+    assert o["source"] == "SJD Àrea de la Dona"
+    assert o["sex"] == "Male"
+    assert o["isdropout"] is False
+    assert o["age_now_months"] == 2
+
+
+def test_fmt_labels_polars(data_dict):
+    x = pl.DataFrame(
+        data={"source": "1", "sex": "2", "isdropout": "0", "age_now_months": "2"},
+    )
+    o = utils.fmt_labels(x, data_dict)
+    assert isinstance(o, pl.DataFrame)
+    assert all(k in o for k in x.columns)
+    assert o["source"][0] == "SJD Àrea de la Dona"
+    assert o["sex"][0] == "Male"
+    assert not o["isdropout"][0]
+    assert o["age_now_months"][0] == 2
+
+
+def test_get_ppt_table(records_fixture: api.Records, data_dict: dict):
+    df = utils.get_ppt_table(records_fixture, data_dict)
+    assert isinstance(df, pl.DataFrame)
+    assert all(c in df.columns for c in utils.COLNAMES["participants"])
+
+
+def test_get_ppt_table_study(records_fixture: api.Records, data_dict: dict):
+    for s in data_dict["appointment_study"]:
+        df = utils.get_ppt_table(records_fixture, data_dict, study=s)
+        assert isinstance(df, pl.DataFrame)
+    assert all(c in df.columns for c in utils.COLNAMES["participants"])
+
+
+def test_get_apt_table(records_fixture: api.Records, data_dict: dict):
+    df = utils.get_apt_table(records_fixture, data_dict)
+    assert isinstance(df, pl.DataFrame)
+    assert all(c in df.columns for c in utils.COLNAMES["appointments"])
 
 
 def test_is_in_data_dict(data_dict: dict):

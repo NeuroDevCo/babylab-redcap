@@ -81,7 +81,7 @@ FIELDS_TO_RENAME = [
 ]
 
 
-INT_FIELDS = INT_FIELDS = [
+INT_FIELDS = [
     "age_created_months",
     "age_created_days",
     "age_now_months",
