@@ -129,7 +129,11 @@ def get_age_timestamp(
 
 
 def get_ppt_table(
-    records: api.Records, data_dict: dict, relabel: bool = True, study: str = None
+    records: api.Records,
+    data_dict: dict,
+    relabel: bool = True,
+    ppt_id: list[str] | str = None,
+    study: list[str] | str = None,
 ) -> pl.DataFrame:
     """Get participants table
 
@@ -137,24 +141,30 @@ def get_ppt_table(
         records (api.Records): REDCap records, as returned by ``api.Records``.
         data_dict (dict, optional): Data dictionary as returned by ``api.get_data_dictionary``.
         relabel (bool, optional): Should columns be relabeled? Defaults to True.
-        study (str, optional): Study in which the participant in the records must have participated to be kept. Defaults to None.
+        ppt_id (list[str] | str): ID of participant to return. If None (default), all participants are returned.
+        study (list[str] | str, optional): Study in which the participant in the records must have participated to be kept. Defaults to None.
 
     Returns:
         pl.DataFrame: Table of partcicipants.
     """  # pylint: disable=line-too-long
     if not records.participants.records:
         return pl.DataFrame(schema=COLNAMES["participants"])
-
+    if isinstance(ppt_id, str):
+        ppt_id = [ppt_id]
+    if isinstance(study, str):
+        study = [study]
     df = records.participants.to_df()
     if study:
         ppt_study = (
             records.appointments.to_df()
-            .filter(pl.col("study") == study)
+            .filter(pl.col("study").is_in(study))
             .unique("record_id")
             .get_column("record_id")
             .to_list()
         )
         df = df.filter(pl.col("record_id").is_in(ppt_study))
+    if ppt_id:
+        df = df.filter(pl.col("record_id").is_in(ppt_id))
     if relabel:
         df = fmt_labels(df, data_dict)
     return df
@@ -163,8 +173,8 @@ def get_ppt_table(
 def get_apt_table(
     records: api.Records,
     data_dict: dict = None,
-    ppt_id: str = None,
-    study: str = None,
+    ppt_id: list[str] | str = None,
+    study: list[str] | str = None,
     relabel: bool = True,
 ) -> pl.DataFrame:
     """Get appointments table.
@@ -172,8 +182,8 @@ def get_apt_table(
     Args:
         records (api.Records): REDCap records, as returned by ``api.Records``.
         data_dict (dict): Data dictionary as returned by ``api.get_data_dictionary``.
-        ppt_id (str): ID of participant to return. If None (default), all participants are returned.
-        study (str, optional): Study to filter for. If None (default) all studies are returned.
+        ppt_id (list[str] | str): ID of participant to return. If None (default), all participants are returned.
+        study (list[str] | str, optional): Study to filter for. If None (default) all studies are returned.
         relabel (bool): Reformat labels if True (default).
 
     Returns:
@@ -182,10 +192,14 @@ def get_apt_table(
     df = deepcopy(records.appointments).to_df()
     if len(df) == 0:
         return pl.DataFrame(schema=COLNAMES["appointments"])
+    if isinstance(study, str):
+        study = [study]
+    if isinstance(ppt_id, str):
+        ppt_id = [ppt_id]
     if study:
-        df = df.filter(pl.col("study") == study)
+        df = df.filter(pl.col("study").is_in(study))
     if ppt_id:
-        df = df.filter(pl.col("record_id") == ppt_id)
+        df = df.filter(pl.col("record_id").is_in(ppt_id))
     if relabel:
         df = fmt_labels(df, data_dict)
     ppt_df = records.participants.to_df()
@@ -201,8 +215,7 @@ def get_apt_table(
 def get_que_table(
     records: api.Records,
     data_dict: dict,
-    ppt_id: str = None,
-    study: str = None,
+    ppt_id: list[str] | str = None,
     relabel: bool = True,
 ) -> pl.DataFrame:
     """Get questionnaires table.
@@ -210,8 +223,7 @@ def get_que_table(
     Args:
         records (api.Records): REDCap records, as returned by ``api.Records``.
         data_dict (dict): Data dictionary as returned by ``api.get_data_dictionary``.
-        ppt_id (str): ID of participant to return. If None (default), all participants are returned.
-        study (str, optional): Study to filter for. If None (default) all studies are returned.
+        ppt_id (list[str] | str): ID of participant to return. If None (default), all participants are returned.
         relabel (bool): Reformat labels if True (default).
 
     Returns:
@@ -220,13 +232,12 @@ def get_que_table(
     df = deepcopy(records.questionnaires).to_df()
     if len(df) == 0:
         return pl.DataFrame(schema=COLNAMES["questionnaires"])
-    if study:
-        df = df[df.study == study]
+    if isinstance(ppt_id, str):
+        ppt_id = [ppt_id]
     if ppt_id:
-        df = df[df.index == ppt_id]
+        df = df.filter(pl.col("record_id").is_in(ppt_id))
     if relabel:
         df = fmt_labels(df, data_dict)
-
     return df
 
 

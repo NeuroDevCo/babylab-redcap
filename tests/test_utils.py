@@ -1,6 +1,7 @@
 """Test util functions"""
 
 from typing import Generator
+from random import choice, choices
 from datetime import date, datetime
 import polars as pl
 import pytest
@@ -42,16 +43,85 @@ def test_get_ppt_table(records_fixture: api.Records, data_dict: dict):
 
 
 def test_get_ppt_table_study(records_fixture: api.Records, data_dict: dict):
-    for s in data_dict["appointment_study"]:
-        df = utils.get_ppt_table(records_fixture, data_dict, study=s)
+    for k in data_dict["appointment_study"].items():
+        df = utils.get_ppt_table(records_fixture, data_dict, study=k)
         assert isinstance(df, pl.DataFrame)
+        assert all(c in df.columns for c in utils.COLNAMES["participants"])
+
+
+def test_get_ppt_table_id_list(
+    records_fixture: api.Records, data_dict: dict, ppt_id: str | list[str] = None
+):
+    if ppt_id is None:
+        ppt_id = choices(list(records_fixture.participants.records.keys()), k=100)
+    df = utils.get_ppt_table(records_fixture, data_dict, ppt_id=ppt_id)
+    assert isinstance(df, pl.DataFrame)
     assert all(c in df.columns for c in utils.COLNAMES["participants"])
+    assert all(p in ppt_id for p in df["record_id"].unique().to_list())
 
 
 def test_get_apt_table(records_fixture: api.Records, data_dict: dict):
     df = utils.get_apt_table(records_fixture, data_dict)
     assert isinstance(df, pl.DataFrame)
     assert all(c in df.columns for c in utils.COLNAMES["appointments"])
+
+
+def test_get_apt_table_study(records_fixture: api.Records, data_dict: dict):
+    for k, v in data_dict["appointment_study"].items():
+        df = utils.get_apt_table(records_fixture, data_dict, study=k)
+        assert isinstance(df, pl.DataFrame)
+        assert all(c in df.columns for c in utils.COLNAMES["appointments"])
+        assert all(df["study"] == v)
+
+
+def test_get_apt_table_id(
+    records_fixture: api.Records, data_dict: dict, ppt_id: str = None
+):
+    if ppt_id is None:
+        ppt_id = choice(list(records_fixture.participants.records.keys()))
+    df = utils.get_apt_table(records_fixture, data_dict, ppt_id=ppt_id)
+    assert isinstance(df, pl.DataFrame)
+    assert all(c in df.columns for c in utils.COLNAMES["appointments"])
+
+
+def test_get_apt_table_id_list(
+    records_fixture: api.Records, data_dict: dict, ppt_id: str | list[str] = None
+):
+    if ppt_id is None:
+        ppt_id = choices(list(records_fixture.appointments.records.keys()), k=100)
+        ppt_id = set([p.split(":")[0] for p in ppt_id])
+    df = utils.get_apt_table(records_fixture, data_dict, ppt_id=ppt_id)
+    assert isinstance(df, pl.DataFrame)
+    assert all(c in df.columns for c in utils.COLNAMES["appointments"])
+    assert all(p in ppt_id for p in df["record_id"].unique().to_list())
+
+
+def test_get_que_table(records_fixture: api.Records, data_dict: dict):
+    df = utils.get_que_table(records_fixture, data_dict)
+    assert isinstance(df, pl.DataFrame)
+    assert all(c in df.columns for c in utils.COLNAMES["questionnaires"])
+
+
+def test_get_que_table_id(
+    records_fixture: api.Records, data_dict: dict, ppt_id: str | list[str] = None
+):
+    if ppt_id is None:
+        ppt_id = choice(list(records_fixture.participants.records.keys()))
+    df = utils.get_que_table(records_fixture, data_dict, ppt_id=ppt_id)
+    assert isinstance(df, pl.DataFrame)
+    assert all(c in df.columns for c in utils.COLNAMES["questionnaires"])
+
+
+def test_get_que_table_id_list(
+    records_fixture: api.Records, data_dict: dict, ppt_id: str | list[str] = None
+):
+    if ppt_id is None:
+        ppt_id = choices(list(records_fixture.questionnaires.records.keys()), k=100)
+        ppt_id = set([p.split(":")[0] for p in ppt_id])
+    df = utils.get_que_table(records_fixture, data_dict, ppt_id=ppt_id)
+    assert isinstance(df, pl.DataFrame)
+    assert all(c in df.columns for c in utils.COLNAMES["questionnaires"])
+    assert all(p in ppt_id for p in df["record_id"].unique().to_list())
 
 
 def test_is_in_data_dict(data_dict: dict):
