@@ -85,8 +85,5 @@ exclude_lines = [
   "if TYPE_CHECKING:",
 ]
 
-[tool.djlint]
-profile="jinja"
-
 [dependency-groups]
 dev = []
