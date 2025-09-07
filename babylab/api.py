@@ -4,9 +4,9 @@
 Functions to interact with the REDCap API.
 """
 
+import os
 from dataclasses import dataclass
-from os import mkdir, walk, getenv
-from os.path import join, exists, expanduser
+from os.path import join, exists
 from collections import OrderedDict
 from warnings import warn
 from json import loads, dumps, dump
@@ -14,7 +14,7 @@ from zipfile import ZipFile, ZIP_DEFLATED
 from datetime import datetime
 from dateutil.relativedelta import relativedelta as rdelta
 from pytz import UTC as utc
-from dotenv import load_dotenv
+from dotenv import load_dotenv, find_dotenv
 import requests
 import polars as pl
 from babylab.globals import COLNAMES, FIELDS_TO_RENAME, INT_FIELDS
@@ -56,14 +56,14 @@ def get_api_key(path: str = None, name: str = "API_KEY"):
     Raises:
         MissingEnvException: If .en file is not found  in ``path``.
     """  # pylint: disable=line-too-long
-    if getenv("GITHUB_ACTIONS") == "true":
-        t = getenv(name)
+    if name in os.environ or os.getenv("GITHUB_ACTIONS") == "true":
+        t = os.getenv(name)
     else:
-        path = expanduser(join("~", ".env")) if path is None else path
+        path = find_dotenv() if path is None else path
         if not exists(path):
             raise MissingEnvException(f".env file not found in {path}")
         load_dotenv(path, override=True)
-        t = getenv(name)
+        t = os.getenv(name)
     if t is None:
         raise MissingEnvToken(f"No env variable named '{name}' found")
     if not isinstance(t, str) or not t.isalnum():
@@ -571,7 +571,7 @@ def redcap_backup(path: str = "tmp") -> dict:
         dict: A dictionary with the key data and metadata of the project.
     """  # pylint: disable=line-too-long
     if not exists(path):
-        mkdir(path)
+        os.mkdir(path)
     pl = {}
     for k in ["project", "metadata", "instrument"]:
         pl[k] = {"format": "json", "returnFormat": "json", "content": k}
@@ -598,7 +598,7 @@ def redcap_backup(path: str = "tmp") -> dict:
             dump(v, f)
     timestamp = datetime.strftime(datetime.now(), "%Y-%m-%d-%H-%M")
     file = join(path, "backup_" + timestamp + ".zip")
-    for root, _, files in walk(path, topdown=False):
+    for root, _, files in os.walk(path, topdown=False):
         with ZipFile(file, "w", ZIP_DEFLATED) as z:
             for f in files:
                 z.write(join(root, f))
