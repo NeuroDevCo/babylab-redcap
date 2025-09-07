@@ -6,7 +6,7 @@ Functions to interact with the REDCap API.
 
 from dataclasses import dataclass
 from os import mkdir, walk, getenv
-from os.path import join, exists, expanduser
+from os.path import join, exists
 from collections import OrderedDict
 from warnings import warn
 from json import loads, dumps, dump
@@ -14,7 +14,7 @@ from zipfile import ZipFile, ZIP_DEFLATED
 from datetime import datetime
 from dateutil.relativedelta import relativedelta as rdelta
 from pytz import UTC as utc
-from dotenv import load_dotenv
+from dotenv import load_dotenv, find_dotenv
 import requests
 import polars as pl
 from babylab.globals import COLNAMES, FIELDS_TO_RENAME, INT_FIELDS
@@ -59,7 +59,7 @@ def get_api_key(path: str = None, name: str = "API_KEY"):
     if getenv("GITHUB_ACTIONS") == "true":
         t = getenv(name)
     else:
-        path = expanduser(join("~", ".env")) if path is None else path
+        path = find_dotenv() if path is None else path
         if not exists(path):
             raise MissingEnvException(f".env file not found in {path}")
         load_dotenv(path, override=True)
