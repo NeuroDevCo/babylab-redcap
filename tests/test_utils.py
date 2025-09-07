@@ -9,7 +9,13 @@ from babylab import api, utils
 
 
 def test_fmt_labels_dict(data_dict):
-    x = {"source": "1", "sex": "2", "isdropout": "0", "age_now_months": "2"}
+    x = {
+        "source": "1",
+        "sex": "2",
+        "isdropout": "0",
+        "age_now_months": "2",
+        "birth_type": None,
+    }
     o = utils.fmt_labels(x, data_dict)
     assert isinstance(o, dict)
     assert all(k in o for k in x)
@@ -21,11 +27,18 @@ def test_fmt_labels_dict(data_dict):
     assert o["sex"] == "Male"
     assert o["isdropout"] is False
     assert o["age_now_months"] == 2
+    assert o["birth_type"] is None
 
 
 def test_fmt_labels_polars(data_dict):
     x = pl.DataFrame(
-        data={"source": "1", "sex": "2", "isdropout": "0", "age_now_months": "2"},
+        data={
+            "source": "1",
+            "sex": "2",
+            "isdropout": "0",
+            "age_now_months": "2",
+            "birth_type": None,
+        },
     )
     o = utils.fmt_labels(x, data_dict)
     assert isinstance(o, pl.DataFrame)
@@ -34,6 +47,7 @@ def test_fmt_labels_polars(data_dict):
     assert o["sex"][0] == "Male"
     assert not o["isdropout"][0]
     assert o["age_now_months"][0] == 2
+    assert o["birth_type"][0] is None
 
 
 def test_get_ppt_table(records_fixture: api.Records, data_dict: dict):

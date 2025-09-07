@@ -48,7 +48,7 @@ def _(x: dict, data_dict: dict) -> dict:
             if c in k:
                 y[k] = y[c] == "1"
         y[k] = y[k] if y[k] != "" else None
-    y = {k: (int(v) if k in INT_FIELDS else v) for k, v in y.items()}
+    y = {k: (int(v) if v and k in INT_FIELDS else v) for k, v in y.items()}
     return y
 
 
