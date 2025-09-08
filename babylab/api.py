@@ -178,8 +178,8 @@ class Appointment:
             self.date = data["date"]
         self._description = (
             f"Appointment {self.appointment_id}"
-            + f"participant {self.record_id}, "
-            + f"{self.date}, {self.status}"
+            + f", participant {self.record_id} "
+            + f"({self.date})"
         )
 
     def __repr__(self) -> str:
