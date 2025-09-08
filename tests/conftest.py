@@ -205,6 +205,7 @@ def create_finput_apt(is_new: bool = True) -> dict:
         "inputStudy": choice(list(ddict["appointment_study"].keys())),
         "inputStatus": choice(list(ddict["appointment_status"].keys())),
         "inputDate": "2024-12-31 14:09",
+        "inputTransport": choice(list(ddict["appointment_transport"].keys())),
         "inputTaxiAddress": generate_str(),
         "inputComments": ". ".join([generate_str(25) for _ in range(3)]),
     }
@@ -324,6 +325,7 @@ def create_record_apt(is_new: bool = True) -> dict:
         "appointment_date_created": datetime(2024, 12, 12, 14, 9, 0),
         "appointment_date_updated": datetime(2024, 12, 14, 12, 8, 0),
         "appointment_date": datetime(2024, 12, 31, 14, 9, 0),
+        "appointment_transport": choice(list(ddict["appointment_transport"].keys())),
         "appointment_taxi_address": generate_str(),
         "appointment_taxi_isbooked": choice(["0", "1"]),
         "appointment_status": choice(list(ddict["appointment_status"].keys())),
