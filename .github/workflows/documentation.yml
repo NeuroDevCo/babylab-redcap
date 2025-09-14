@@ -6,7 +6,7 @@
 #   https://github.com/coderefinery/sphinx-lesson-template/blob/main/.github/workflows/sphinx.yml
 #  https://raw.githubusercontent.com/coderefinery/sphinx-lesson-template/main/.github/workflows/sphinx.yml
 
-name: Deply Sphonx documentation
+name: Deploy Sphinx documentation
 on: [push, pull_request, workflow_dispatch]
 
 env:
@@ -72,7 +72,7 @@ jobs:
       - name: Build Sphinx docs (html)
         # SPHINXOPTS used via environment variables
         run: |
-          make html
+          docs/make html
           # This fixes broken copy button icons, as explained in
           #   https://github.com/coderefinery/sphinx-lesson/issues/50
           #   https://github.com/executablebooks/sphinx-copybutton/issues/110
