@@ -53,8 +53,9 @@ jobs:
           git init
           touch .nojekyll
           git add -A
+          git config --global init.defaultBranch master
           git config --local user.email "action@github.com"
-          git config --locl user.name "GitHub Action"
+          git config --local user.name "GitHub Action"
           git  commit -m "Deploy"
 
       - name: Force push to destination branch
