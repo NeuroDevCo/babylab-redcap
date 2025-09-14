@@ -56,6 +56,7 @@ jobs:
           git config --global init.defaultBranch master
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
+          git config --global --add safe.directory /github/workspace/docs/_build/html
           git  commit -m "Deploy"
 
       - name: Force push to destination branch
