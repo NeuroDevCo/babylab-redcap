@@ -9,14 +9,6 @@
 name: Deploy Sphinx documentation
 on: [push, pull_request, workflow_dispatch]
 
-env:
-  DEFAULT_BRANCH: "main"
-  # If these SPHINXOPTS are enabled, then be strict about the
-  # builds and fail on any warnings.
-  #SPHINXOPTS: "-W --keep-going -T"
-  GENERATE_SINGLEHTML: true # to enable, must be 'true' lowercase
-  MULTIBRANCH: true # to enable, must be 'true' lowercase
-
 jobs:
   build:
     name: Build
@@ -25,7 +17,6 @@ jobs:
       contents: read
 
     steps:
-      # https://github.com/marketplace/actions/checkout
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
