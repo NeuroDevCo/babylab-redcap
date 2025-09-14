@@ -14,6 +14,11 @@ def test_get_api_key():
     assert token is not None
     assert isinstance(token, str)
 
+    if not IS_GIHTUB_ACTIONS:
+        token = api.get_api_key(path="~/.env")
+        assert token is not None
+        assert isinstance(token, str)
+
 
 def test_redcap_version():
     """Test ``redcap_version``."""
