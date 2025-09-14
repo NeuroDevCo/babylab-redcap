@@ -36,7 +36,7 @@ jobs:
       - name: Install Sphynx
         run: |
           echo "set man-db/auto-update false" | sudo debconf-communicate && sudo dpkg-reconfigure man-db
-          sudo apt-get install python3-sphinx
+          sudo apt-get install python3-sphinx sphinx_book_theme
       - name: Install the project
         run: |
           uv sync --locked --all-extras --dev
