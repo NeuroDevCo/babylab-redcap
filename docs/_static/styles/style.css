@@ -1,0 +1,101 @@
+body {
+    background: url('../img/background.svg') no-repeat center center fixed;
+    background-size: 100% auto;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    font-family: 'Roboto', sans-serif;
+    font-optical-sizing: auto;
+    font-size: 20px;
+    font-style: normal;
+    font-variation-settings:
+        "wdth" 100;
+    width: 100%;
+    word-break: break-word;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+th {
+    font-family: 'Ciutadella Bold', 'Roboto Bold', Fallback, sans-serif;
+}
+
+div.container {
+    width: 100% !important;
+}
+
+
+hr {
+    margin: auto 220px
+}
+
+nav {
+    font-family: 'Roboto', Fallback, sans-serif;
+    font-size: larger;
+    font-weight: 400;
+}
+
+td,
+tr,
+th {
+    background-color: #e6e6e6;
+    vertical-align: middle !important;
+}
+
+tr {
+    height: 60px;
+}
+
+td {
+    user-select: all;
+}
+
+
+option,
+select,
+input,
+textarea {
+    font-size: 18px;
+    font-family: 'Roboto';
+    border-radius: 10px;
+    vertical-align: text-bottom;
+    height: 50px;
+    margin-bottom: 10px;
+    -webkit-hyphens: auto;
+    -moz-hyphens: auto;
+    -ms-hyphens: auto;
+    hyphens: auto;
+}
+
+input,
+label {
+    display: block;
+}
+
+a {
+    text-decoration: none;
+}
+
+tfoot input {
+    width: 50px;
+}
+
+tfoot {
+    display: table-row-group;
+}
+
+label {
+    font-family: 'Ciutadella Bold', 'Roboto Bold', Fallback, sans-serif;
+    margin-top: 0.5em;
+    font-size: medium;
+}
+
+
+.nav-link.active {
+    --bs-nav-pills-link-active-bg: #212529;
+    color: white !important;
+}
