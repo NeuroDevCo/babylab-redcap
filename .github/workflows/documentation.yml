@@ -1,68 +1,18 @@
-# Deploy Sphinx.  This could be shorter, but we also do some extra
-# stuff.
-#
-# License: CC-0.  This is the canonical location of this file, which
-# you may want to link to anyway:
-#   https://github.com/coderefinery/sphinx-lesson-template/blob/main/.github/workflows/sphinx.yml
-#  https://raw.githubusercontent.com/coderefinery/sphinx-lesson-template/main/.github/workflows/sphinx.yml
+name: Deploy Sphinx documentation to Pages
 
-name: Deploy Sphinx documentation
-on: [push, pull_request, workflow_dispatch]
+on:
+  push:
+    branches: [master] # branch to trigger deployment
 
 jobs:
-  build:
-    name: Build
+  pages:
     runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     permissions:
-      contents: read
-
+      pages: write
+      id-token: write
     steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          lfs: true
-
-      - name: Install uv
-        uses: astral-sh/setup-uv@v5
-        with:
-          enable-cache: true
-          cache-dependency-glob: "uv.lock"
-
-      - name: "Set up Python"
-        uses: actions/setup-python@v5
-        with:
-          python-version-file: ".python-version"
-
-      - name: Install Sphynx
-        run: |
-          echo "set man-db/auto-update false" | sudo debconf-communicate && sudo dpkg-reconfigure man-db
-          sudo apt-get install python3-sphinx
-          python3 -m pip install sphinx_book_theme
-      - name: Install the project
-        run: |
-          uv sync --locked --all-extras --dev
-
-      - name: Make Sphinx docs
-        run: |
-          make -C docs clean
-          make -C docs html
-
-      - name: Init new folder and commit generated files
-        run: |
-          cd docs/_build/html/
-          git init
-          touch .nojekyll
-          git add -A
-          git config --global init.defaultBranch master
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-          git config --global --add safe.directory /github/workspace/docs/_build/html
-          git  commit -m "Deploy"
-
-      - name: Force push to destination branch
-        uses: ad-m/github-push-action@v0.5.0
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: gh-pages
-          force: true
-          directory: docs/_build/html
+      - id: deployment
+        uses: sphinx-notes/pages@v3
