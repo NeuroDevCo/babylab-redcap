@@ -1,5 +1,7 @@
 """Global variables."""
 
+URI = "https://apps.sjdhospitalbarcelona.org/redcap/api/"
+
 COLNAMES = {
     "participants": [
         "record_id",
