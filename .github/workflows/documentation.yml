@@ -49,7 +49,7 @@ jobs:
 
       - name: Init new folder and commit generated files
         run: |
-          cd docs/build/html/
+          cd docs/_build/html/
           git init
           touch .nojekyll
           git add -A
