@@ -33,10 +33,11 @@ jobs:
         with:
           python-version-file: ".python-version"
 
+      - name: Install Sphynx
+        run: apt-get install python3-sphinx
       - name: Install the project
         run: |
           uv sync --locked --all-extras --dev
-          uv add sphynx
 
       - name: Make Sphinx docs
         run: |
