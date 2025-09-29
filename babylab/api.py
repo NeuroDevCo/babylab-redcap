@@ -4,9 +4,9 @@
 Functions to interact with the REDCap API.
 """
 
-import os
+from os import getenv, environ
+from pathlib import Path
 from dataclasses import dataclass
-from os.path import join, exists
 from collections import OrderedDict
 from warnings import warn
 from json import loads, dumps, dump
@@ -17,9 +17,7 @@ from pytz import UTC as utc
 from dotenv import load_dotenv, find_dotenv
 import requests
 import polars as pl
-from babylab.globals import COLNAMES, FIELDS_TO_RENAME, INT_FIELDS
-
-URI = "https://apps.sjdhospitalbarcelona.org/redcap/api/"
+from babylab.globals import URI, COLNAMES, FIELDS_TO_RENAME, INT_FIELDS
 
 
 class MissingEnvFile(Exception):
@@ -46,24 +44,25 @@ class BadAgeFormat(Exception):
     """If Age des not follow the right format"""
 
 
-def get_api_key(path: str = None, name: str = "API_KEY"):
+def get_api_key(path: Path | str = None, name: str = "API_KEY"):
     """Retrieve API credentials.
 
     Args:
-        path (str, optional): Path to the .env file with global variables. Defaults to ``expanduser(join("~", ".env"))``.
+        path (Path | str, optional): Path to the .env file with global variables. Defaults to ``Path.home()``.
         name (str, optional): Name of the variable to import. Defaults to "API_KEY".
 
     Raises:
         MissingEnvFile: If .en file is not found  in ``path``.
     """  # pylint: disable=line-too-long
-    if name in os.environ or os.getenv("GITHUB_ACTIONS") == "true":
-        t = os.getenv(name)
+    if name in environ or getenv("GITHUB_ACTIONS") == "true":
+        t = getenv(name)
     else:
         path = find_dotenv() if path is None else path
-        if not exists(path):
+        path = Path(path)
+        if not path.exists():
             raise MissingEnvFile(f".env file not found in {path}")
         load_dotenv(path, override=True)
-        t = os.getenv(name)
+        t = getenv(name)
     if t is None:
         raise MissingEnvToken(f"No env variable named '{name}' found")
     if not isinstance(t, str) or not t.isalnum():
@@ -561,22 +560,26 @@ def warn_missing_record(r: requests.models.Response):
         warn("Record does not exist!")
 
 
-def redcap_backup(path: str = "tmp") -> dict:
+def redcap_backup(path: Path | str = None) -> dict:
     """Download a backup of the REDCap database
 
     Args:
-        path (str, optional): Output directory. Defaults to "tmp".
+        path (Path | str, optional): Output directory. Defaults to ``Path("tmp")``.
 
     Returns:
         dict: A dictionary with the key data and metadata of the project.
     """  # pylint: disable=line-too-long
-    if not exists(path):
-        os.mkdir(path)
+    if path is None:
+        path = Path("tmp")
+    if isinstance(path, str):
+        path = Path(path)
+    if not path.exists():
+        Path.mkdir(exist_ok=True)
     pl = {}
     for k in ["project", "metadata", "instrument"]:
         pl[k] = {"format": "json", "returnFormat": "json", "content": k}
     d = {k: loads(post_request(v).text) for k, v in pl.items()}
-    with open(join(path, "records.csv"), "w+", encoding="utf-8") as f:
+    with open(path / "records.csv", "w+", encoding="utf-8") as f:
         fields = {
             "content": "record",
             "action": "export",
@@ -594,14 +597,14 @@ def redcap_backup(path: str = "tmp") -> dict:
         "fields": d["metadata"],
     }
     for k, v in b.items():
-        with open(join(path, k + ".json"), "w", encoding="utf-8") as f:
+        with open(path / (k + ".json"), "w", encoding="utf-8") as f:
             dump(v, f)
     timestamp = datetime.strftime(datetime.now(), "%Y-%m-%d-%H-%M")
-    file = join(path, "backup_" + timestamp + ".zip")
-    for root, _, files in os.walk(path, topdown=False):
+    file = path / ("backup_" + timestamp + ".zip")
+    for root, _, files in path.walk(top_down=False):
         with ZipFile(file, "w", ZIP_DEFLATED) as z:
             for f in files:
-                z.write(join(root, f))
+                z.write(root / f)
     return file
 
 
