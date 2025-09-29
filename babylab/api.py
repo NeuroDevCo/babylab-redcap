@@ -22,7 +22,7 @@ from babylab.globals import COLNAMES, FIELDS_TO_RENAME, INT_FIELDS
 URI = "https://apps.sjdhospitalbarcelona.org/redcap/api/"
 
 
-class MissingEnvException(Exception):
+class MissingEnvFile(Exception):
     """.env file is not found in user folder"""
 
 
@@ -54,14 +54,14 @@ def get_api_key(path: str = None, name: str = "API_KEY"):
         name (str, optional): Name of the variable to import. Defaults to "API_KEY".
 
     Raises:
-        MissingEnvException: If .en file is not found  in ``path``.
+        MissingEnvFile: If .en file is not found  in ``path``.
     """  # pylint: disable=line-too-long
     if name in os.environ or os.getenv("GITHUB_ACTIONS") == "true":
         t = os.getenv(name)
     else:
         path = find_dotenv() if path is None else path
         if not exists(path):
-            raise MissingEnvException(f".env file not found in {path}")
+            raise MissingEnvFile(f".env file not found in {path}")
         load_dotenv(path, override=True)
         t = os.getenv(name)
     if t is None:
