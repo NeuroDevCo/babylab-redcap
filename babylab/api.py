@@ -20,7 +20,7 @@ import polars as pl
 from babylab.globals import URI, COLNAMES, FIELDS_TO_RENAME, INT_FIELDS
 
 
-class MissingEnvException(Exception):
+class MissingEnvFile(Exception):
     """.env file is not found in user folder"""
 
 
@@ -52,17 +52,15 @@ def get_api_key(path: Path | str = None, name: str = "API_KEY"):
         name (str, optional): Name of the variable to import. Defaults to "API_KEY".
 
     Raises:
-        MissingEnvException: If .env file is not found  in ``path``.
+        MissingEnvFile: If .en file is not found  in ``path``.
     """  # pylint: disable=line-too-long
     if name in environ or getenv("GITHUB_ACTIONS") == "true":
         t = getenv(name)
     else:
-        if path is None:
-            path = Path(find_dotenv())
-        if isinstance(path, str):
-            path = Path(path)
+        path = find_dotenv() if path is None else path
+        path = Path(path)
         if not path.exists():
-            raise MissingEnvException(f".env file not found in {path}")
+            raise MissingEnvFile(f".env file not found in {path}")
         load_dotenv(path, override=True)
         t = getenv(name)
     if t is None:
