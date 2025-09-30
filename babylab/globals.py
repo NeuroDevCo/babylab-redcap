@@ -49,6 +49,7 @@ COLNAMES = {
         "transport",
         "taxi_address",
         "taxi_isbooked",
+        "confirmation_comment",
         "comments",
     ],
     "questionnaires": [
