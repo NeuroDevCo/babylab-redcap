@@ -4,20 +4,22 @@
 Functions to interact with the REDCap API.
 """
 
-from os import getenv, environ
-from pathlib import Path
-from dataclasses import dataclass
 from collections import OrderedDict
-from warnings import warn
-from json import loads, dumps, dump
-from zipfile import ZipFile, ZIP_DEFLATED
+from dataclasses import dataclass
 from datetime import datetime
-from dateutil.relativedelta import relativedelta as rdelta
-from pytz import UTC as utc
-from dotenv import load_dotenv, find_dotenv
-import requests
+from json import dump, dumps, loads
+from os import environ, getenv
+from pathlib import Path
+from warnings import warn
+from zipfile import ZIP_DEFLATED, ZipFile
+
 import polars as pl
-from babylab.globals import URI, COLNAMES, FIELDS_TO_RENAME, INT_FIELDS
+import requests
+from dateutil.relativedelta import relativedelta as rdelta
+from dotenv import find_dotenv, load_dotenv
+from pytz import UTC as utc
+
+from babylab.globals import COLNAMES, FIELDS_TO_RENAME, INT_FIELDS, URI
 
 
 class MissingEnvFile(Exception):
@@ -259,7 +261,7 @@ def get_data_dict() -> dict:
     r = loads(post_request(fields=fields).text)
     items_ordered = [i["field_name"] for i in r]
     dicts = {}
-    for k, v in zip(items_ordered, r):
+    for k, v in zip(items_ordered, r, strict=False):
         options = v["select_choices_or_calculations"].split("|")
         options = [tuple(o.strip().split(", ")) for o in options]
         if k.startswith("language_"):
@@ -557,7 +559,7 @@ def warn_missing_record(r: requests.models.Response):
         r (requests.models.Response): HTTPS response.
     """  # pylint: disable=line-too-long
     if "registros proporcionados no existen" in r.content.decode():
-        warn("Record does not exist!")
+        warn("Record does not exist!", stacklevel=2)
 
 
 def redcap_backup(path: Path | str = None) -> dict:

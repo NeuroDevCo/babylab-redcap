@@ -4,9 +4,11 @@ Fixtures for testing
 
 import os
 from datetime import datetime
-from string import digits, ascii_lowercase
 from random import choice, choices
+from string import ascii_lowercase, digits
+
 import pytest
+
 from babylab import api
 
 IS_GIHTUB_ACTIONS = os.getenv("GITHUB_ACTIONS") == "true"

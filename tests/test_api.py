@@ -2,7 +2,9 @@
 
 import os
 from datetime import datetime
+
 import pytest
+
 from babylab import api
 
 IS_GIHTUB_ACTIONS = os.getenv("GITHUB_ACTIONS") == "true"
@@ -52,16 +54,11 @@ def test_str_to_dt():
     assert result["date_today"] == datetime(2024, 5, 12, 5, 34)
 
 
-def test_get_data_dict(benchmark):
+def test_get_data_dict():
     """Test ``get_records``."""
     data_dict = api.get_data_dict()
     assert isinstance(data_dict, dict)
     assert all(isinstance(v, dict) for v in data_dict.values())
-
-    def _get_data_dict():
-        api.get_data_dict()
-
-    benchmark(_get_data_dict)
 
 
 def test_make_id():
@@ -82,16 +79,11 @@ def test_make_id():
         api.make_id("1:1")
 
 
-def test_get_records(benchmark):
+def test_get_records():
     """Test ``get_records``."""
     records = api.get_records()
     assert isinstance(records, list)
     assert all(isinstance(r, dict) for r in records)
-
-    def _get_records():
-        api.get_records()
-
-    benchmark(_get_records)
 
 
 def test_add_participant(ppt_record):
@@ -184,29 +176,19 @@ def test_delete_questionnaire(que_record):
 
 
 @pytest.mark.skip(reason="Takes too long for now")
-def test_redcap_backup(benchmark, tmp_path) -> dict:
+def test_redcap_backup(tmp_path) -> dict:
     """Test ``redcap_backup``."""
     tmp_dir = tmp_path / "tmp"
     file = api.redcap_backup(path=tmp_dir)
     assert os.path.exists(file)
 
-    def _redcap_backup():
-        api.redcap_backup(path=tmp_dir)
 
-    benchmark(_redcap_backup)
-
-
-def get_next_id(benchmark, records: api.Records = None) -> str:
+def get_next_id(records: api.Records = None) -> str:
     """Test ``get_next_id``."""
     if records is None:
         records = api.Records()
     next_id = api.get_next_id()
     assert next_id not in list(records.participants.records.keys())
-
-    def _get_next_id():
-        api.get_next_id()
-
-    benchmark(_get_next_id)
 
 
 def test_parse_str_date():
@@ -218,7 +200,7 @@ def test_parse_str_date():
     assert api.parse_str_date("2025-05-02 09:10") == hm
 
 
-def test_get_age(benchmark):
+def test_get_age():
     """Test ``get_age``"""
     ts = datetime(2024, 5, 1, 3, 4)
     ts_new = datetime(2025, 1, 4, 1, 2)
@@ -239,8 +221,3 @@ def test_get_age(benchmark):
     assert all(d > 0 for d in api.get_age(age, ts, ts_new))
     with pytest.raises(api.BadAgeFormat):
         api.get_age(age="5, 4", ts=ts)
-
-    def _get_age():
-        api.get_age(age, ts, ts_new)
-
-    benchmark(_get_age)
