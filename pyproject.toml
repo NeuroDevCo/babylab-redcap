@@ -10,6 +10,7 @@ authors = [
   { name = "gongcastro", email = "gongarciacastro@gmail.com" },
 ]
 dependencies = [
+    "dateutils>=0.6.12",
     "polars>=1.33.1",
 ]
 
