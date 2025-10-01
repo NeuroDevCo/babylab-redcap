@@ -574,10 +574,10 @@ def redcap_backup(path: Path | str = None) -> dict:
     if isinstance(path, str):
         path = Path(path)
     if not path.exists():
-        Path.mkdir(exist_ok=True)
-    pl = {}
+        path.mkdir(exist_ok=True)
+    p = {}
     for k in ["project", "metadata", "instrument"]:
-        pl[k] = {"format": "json", "returnFormat": "json", "content": k}
+        p[k] = {"format": "json", "returnFormat": "json", "content": k}
     d = {k: loads(post_request(v).text) for k, v in pl.items()}
     with open(path / "records.csv", "w+", encoding="utf-8") as f:
         fields = {
