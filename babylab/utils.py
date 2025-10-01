@@ -2,10 +2,12 @@
 Util functions for the app.
 """
 
-from datetime import date, timedelta, datetime
-from functools import singledispatch
 from copy import deepcopy
+from datetime import date, datetime, timedelta
+from functools import singledispatch
+
 import polars as pl
+
 from babylab import api
 from babylab.globals import COLNAMES, INT_FIELDS
 
@@ -121,7 +123,7 @@ def get_age_timestamp(
         tuple[str, str]: Age at timestamp in months and days.
     """
     months_new, days_new = [], []
-    for m, d, t in zip(months, days, timestamp):
+    for m, d, t in zip(months, days, timestamp, strict=False):
         age_months, age_days = api.get_age(age=(m, d), ts=t)
         months_new.append(age_months)
         days_new.append(age_days)

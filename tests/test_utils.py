@@ -1,10 +1,12 @@
 """Test util functions"""
 
-from typing import Generator
-from random import choice, choices
 from datetime import date, datetime
+from random import choice, choices
+from typing import Generator
+
 import polars as pl
 import pytest
+
 from babylab import api, utils
 
 
