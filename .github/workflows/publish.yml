@@ -20,7 +20,10 @@ jobs:
         with:
           python-version-file: ".python-version"
       - name: Build
-        run: uv build
+        run: |
+          VERSION=$(uvx dunamai from any --no-metadata --style pep440)
+          uvx --from=toml-cli toml set --toml-path=pyproject.toml project.version $VERSION
+          uv build
       - name: Store the distribution packages
         uses: actions/upload-artifact@v4
         with:
@@ -45,7 +48,7 @@ jobs:
       - name: Publish distribution to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
   pages:
-    name: Build and deploy Sphinx docs
+    name: Deploy Sphinx docs
     runs-on: ubuntu-latest
     environment:
       name: github-pages
