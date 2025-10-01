@@ -9,6 +9,9 @@ keywords = []
 authors = [
   { name = "gongcastro", email = "gongarciacastro@gmail.com" },
 ]
+dependencies = [
+    "polars>=1.33.1",
+]
 
 [build-system]
 requires = ["hatchling", "uv-dynamic-versioning"]
