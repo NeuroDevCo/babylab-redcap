@@ -90,6 +90,6 @@ exclude_lines = [
   "if TYPE_CHECKING:",
 ]
 
-[tool.ruff]
-lint.select = ["I"]
-lint.extend-select = ["B"]
+[tool.ruff.lint]
+select = ["I"]
+extend-select = ["B"]
