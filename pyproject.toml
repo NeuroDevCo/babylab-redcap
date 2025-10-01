@@ -60,6 +60,7 @@ py-modules = []
 extra-dependencies = [
   "mypy>=1.0.0",
 ]
+
 [tool.hatch.envs.types.scripts]
 check = "mypy --install-types --non-interactive {args:babylab tests}"
 

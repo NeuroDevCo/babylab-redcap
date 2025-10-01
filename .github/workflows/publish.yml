@@ -1,4 +1,4 @@
-name: Deploy Sphinx documentation and publish to Pypi
+name: Publish to PyPi and deploy documentation
 
 on:
   push:
@@ -20,10 +20,7 @@ jobs:
         with:
           python-version-file: ".python-version"
       - name: Build
-        run: |
-          VERSION=$(uvx dunamai from any --no-metadata --style pep440)
-          uvx --from=toml-cli toml set --toml-path=pyproject.toml project.version $VERSION
-          uv build
+        run: uv build
       - name: Store the distribution packages
         uses: actions/upload-artifact@v4
         with:
