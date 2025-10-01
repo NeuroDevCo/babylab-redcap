@@ -11,6 +11,7 @@ authors = [
 ]
 dependencies = [
     "dateutils>=0.6.12",
+    "dotenv>=0.9.9",
     "polars>=1.33.1",
 ]
 
