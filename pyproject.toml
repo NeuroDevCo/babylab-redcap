@@ -1,6 +1,6 @@
 [project]
 name = "babylab"
-version = "0.6.9"
+version = "0.6.10"
 description = 'A GUI for the SJD Babylab REDCap database'
 readme = "README.md"
 requires-python = ">=3.10"
@@ -13,6 +13,7 @@ dependencies = [
     "dateutils>=0.6.12",
     "dotenv>=0.9.9",
     "polars>=1.33.1",
+    "requests>=2.32.5",
 ]
 
 [build-system]
@@ -90,6 +91,6 @@ exclude_lines = [
   "if TYPE_CHECKING:",
 ]
 
-[tool.ruff]
-lint.select = ["I"]
-lint.extend-select = ["B"]
+[tool.ruff.lint]
+select = ["I"]
+extend-select = ["B"]
