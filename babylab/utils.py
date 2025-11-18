@@ -4,90 +4,11 @@ Util functions for the app.
 
 from copy import deepcopy
 from datetime import date, datetime, timedelta
-from functools import singledispatch
 
 import polars as pl
 
 from babylab import api
-from babylab.globals import COLNAMES, INT_FIELDS
-
-
-@singledispatch
-def fmt_labels(x: dict | pl.DataFrame, data_dict: dict[str, str]):
-    """Reformat dataframe.
-
-    Args:
-        x (dict | DataFrame): Dataframe to reformat.
-        data_dict (dict): Data dictionary to labels to use, as returned by ``api.get_data_dict``.
-        prefixes (list[str]): List of prefixes to look for in variable names.
-
-    Returns:
-        DataFrame: A reformated Dataframe.
-    """
-    raise TypeError("`x` must be a dict or a DataFrame")
-
-
-@fmt_labels.register(dict)
-def _(x: dict, data_dict: dict) -> dict:
-    """Reformat dictionary.
-
-    Args:
-        x (dict): dictionary to reformat.
-        data_dict (dict): Data dictionary to labels to use, as returned by ``api.get_data_dict``.
-
-    Returns:
-        dict: A reformatted dictionary.
-    """
-    fields = ["participant_", "appointment_", "language_"]
-    y = dict(x)
-
-    for k, v in y.items():
-        for f in fields:
-            if f + k in data_dict and v:
-                y[k] = data_dict[f + k][v]
-
-        if "exp" in k:
-            y[k] = round(float(v), None) if v else None
-
-        for c in ["taxi_isbooked", "isdropout", "isestimated"]:
-            if c in k:
-                y[k] = y[c] == "1"
-
-        y[k] = y[k] if y[k] != "" else None
-
-    y = {k: (int(v) if v and k in INT_FIELDS else v) for k, v in y.items()}
-
-    return y
-
-
-@fmt_labels.register(pl.DataFrame)
-def _(x: pl.DataFrame, data_dict: dict) -> pl.DataFrame:
-    """Reformat DataFrame.
-
-    Args:
-        x (dict): dictionary to reformat.
-        data_dict (dict): Data dictionary to labels to use, as returned by ``api.get_data_dict``.
-
-    Returns:
-        DataFrame: A reformatted DataFrame.
-    """
-    cols = {k.rsplit("_", 1)[1]: v for k, v in data_dict.items()}
-
-    for k, v in {ck: cv for ck, cv in cols.items() if ck in x.columns}.items():
-        x = x.with_columns(pl.col(k).replace_strict(v, default=None))
-
-    for c in ["isestimated", "isdropout"]:
-        if c in x.columns:
-            x = x.with_columns(pl.col(c).eq("1"))
-
-    x = x.with_columns(
-        pl.when(pl.col(pl.String).str.len_chars() == 0)
-        .then(None)
-        .otherwise(pl.col(pl.String))
-        .name.keep()
-    ).cast({c: pl.Int64 for c in [f for f in INT_FIELDS if f in x.columns]})
-
-    return x
+from babylab.globals import COLNAMES
 
 
 def is_in_data_dict(x: list[str] | None, variable: str, data_dict: dict) -> list[str]:
@@ -148,8 +69,6 @@ def get_age_timestamp(
 
 def get_ppt_table(
     records: api.Records,
-    data_dict: dict,
-    relabel: bool = True,
     ppt_id: list[str] | str = None,
     study: list[str] | str = None,
 ) -> pl.DataFrame:
@@ -157,8 +76,6 @@ def get_ppt_table(
 
     Args:
         records (api.Records): REDCap records, as returned by ``api.Records``.
-        data_dict (dict, optional): Data dictionary as returned by ``api.get_data_dictionary``.
-        relabel (bool, optional): Should columns be relabeled? Defaults to True.
         ppt_id (list[str] | str): ID of participant to return. If None (default), all participants are returned.
         study (list[str] | str, optional): Study in which the participant in the records must have participated to be kept. Defaults to None.
 
@@ -174,11 +91,11 @@ def get_ppt_table(
     if isinstance(study, str):
         study = [study]
 
-    df = records.participants.to_df()
+    df = api.to_df(records.participants)
 
     if study:
         ppt_study = (
-            records.appointments.to_df()
+            api.to_df(records.appointments)
             .filter(pl.col("study").is_in(study))
             .unique("record_id")
             .get_column("record_id")
@@ -189,32 +106,23 @@ def get_ppt_table(
     if ppt_id:
         df = df.filter(pl.col("record_id").is_in(ppt_id))
 
-    if relabel:
-        df = fmt_labels(df, data_dict)
-
     return df
 
 
 def get_apt_table(
-    records: api.Records,
-    data_dict: dict = None,
-    ppt_id: list[str] | str = None,
-    study: list[str] | str = None,
-    relabel: bool = True,
+    records: api.Records, ppt_id: list[str] | str = None, study: list[str] | str = None
 ) -> pl.DataFrame:
     """Get appointments table.
 
     Args:
         records (api.Records): REDCap records, as returned by ``api.Records``.
-        data_dict (dict): Data dictionary as returned by ``api.get_data_dictionary``.
         ppt_id (list[str] | str): ID of participant to return. If None (default), all participants are returned.
         study (list[str] | str, optional): Study to filter for. If None (default) all studies are returned.
-        relabel (bool): Reformat labels if True (default).
 
     Returns:
         DataFrame: Table of appointments.
     """
-    df = deepcopy(records.appointments).to_df()
+    df = api.to_df(deepcopy(records.appointments))
 
     if len(df) == 0:
         return pl.DataFrame(schema=COLNAMES["appointments"])
@@ -231,10 +139,7 @@ def get_apt_table(
     if ppt_id:
         df = df.filter(pl.col("record_id").is_in(ppt_id))
 
-    if relabel:
-        df = fmt_labels(df, data_dict)
-
-    ppt_df = records.participants.to_df()
+    ppt_df = api.to_df(records.participants)
 
     df = df.join(
         ppt_df.select(["record_id", "age_now_months", "age_now_days"]), on="record_id"
@@ -248,12 +153,7 @@ def get_apt_table(
     return df
 
 
-def get_que_table(
-    records: api.Records,
-    data_dict: dict,
-    ppt_id: list[str] | str = None,
-    relabel: bool = True,
-) -> pl.DataFrame:
+def get_que_table(records: api.Records, ppt_id: list[str] | str = None) -> pl.DataFrame:
     """Get questionnaires table.
 
     Args:
@@ -265,7 +165,7 @@ def get_que_table(
     Returns:
         DataFrame: A formated Pandas DataFrame.
     """
-    df = deepcopy(records.questionnaires).to_df()
+    df = api.to_df(deepcopy(records.questionnaires))
 
     if len(df) == 0:
         return pl.DataFrame(schema=COLNAMES["questionnaires"])
@@ -275,9 +175,6 @@ def get_que_table(
 
     if ppt_id:
         df = df.filter(pl.col("record_id").is_in(ppt_id))
-
-    if relabel:
-        df = fmt_labels(df, data_dict)
 
     return df
 
@@ -365,6 +262,5 @@ def get_weekly_apts(
     return sum(
         get_week_n(v.data["date_created"]) == get_week_n(datetime.today())
         for v in apts
-        if data_dict["appointment_status"][v.data["status"]] in status
-        and data_dict["appointment_study"][v.data["study"]] in study
+        if v.data["status"] in status and v.data["study"] in study
     )

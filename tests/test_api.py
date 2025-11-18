@@ -6,6 +6,7 @@ from datetime import datetime
 import pytest
 
 from babylab import api
+from tests import conftest
 
 IS_GIHTUB_ACTIONS = os.getenv("GITHUB_ACTIONS") == "true"
 
@@ -86,109 +87,54 @@ def test_get_records():
     assert all(isinstance(r, dict) for r in records)
 
 
-def test_add_participant(ppt_record):
+def test_add_participant():
     """Test adding,modifying, and deleting participants."""
+    ppt_record = conftest.create_record_ppt(is_new=True)
+
     rid = ppt_record["record_id"]
     api.add_participant(ppt_record)
     assert isinstance(api.get_participant(rid), api.Participant)
 
-
-def test_modify_participant(ppt_record):
-    """Test adding,modifying, and deleting participants."""
-    rid = ppt_record["record_id"]
-    assert isinstance(api.get_participant(rid), api.Participant)
     old_val = ppt_record["participant_apgar1"]
-    new_val = str(int(old_val) + 1) if old_val != "10" else "1"
+    new_val = int(old_val) + 1 if old_val != 10 else 1
     ppt_record["participant_apgar1"] = new_val
     api.add_participant(ppt_record, modifying=True)
     new_record = api.get_participant(rid)
     assert new_record.data["apgar1"] == new_val
 
 
-@pytest.mark.xfail(reason="Slow API")
-def test_delete_participant(ppt_record):
-    """Test adding,modifying, and deleting participants."""
-    rid = ppt_record["record_id"]
-    assert isinstance(api.get_participant(rid), api.Participant)
-    api.delete_participant(ppt_record)
-    with pytest.raises(api.MissingRecord):
-        api.get_participant(rid)
-
-
-def test_add_appointment(apt_record):
+def test_add_appointment():
     """Test adding appointments."""
+    apt_record = conftest.create_record_apt(is_new=True)
+
     api.add_appointment(apt_record)
     rid = api.make_id(apt_record["record_id"], apt_record["redcap_repeat_instance"])
     assert isinstance(api.get_appointment(rid), api.Appointment)
 
-
-def test_modify_appointment(apt_record):
-    """Test modifying questionnaires."""
-    api.add_appointment(apt_record)
-    rid = api.make_id(apt_record["record_id"], apt_record["redcap_repeat_instance"])
     old_val = apt_record["appointment_status"]
     new_val = "1" if old_val != "1" else "1"
     apt_record["appointment_status"] = new_val
     api.add_appointment(apt_record)
     new_record = api.get_appointment(rid)
-    assert new_record.data["status"] == new_val
+    new_val_label = conftest.DATA_DICT["appointment_status"][new_val]
+    assert new_record.data["status"] == new_val_label
 
 
-@pytest.mark.xfail(reason="Slow API")
-def test_delete_appointment(apt_record):
-    """Test deleting appointments."""
-    api.add_appointment(apt_record)
-    rid = api.make_id(apt_record["record_id"], apt_record["redcap_repeat_instance"])
-    rid = api.make_id(apt_record["record_id"], apt_record["redcap_repeat_instance"])
-    api.delete_appointment(apt_record)
-    with pytest.raises(api.MissingRecord):
-        api.get_appointment(rid)
-
-
-def test_add_questionnaire(que_record):
+def test_add_questionnaire():
     """Test adding questionnaires."""
-    # add
+    que_record = conftest.create_record_que(is_new=True)
+
     api.add_questionnaire(que_record)
     rid = api.make_id(que_record["record_id"], que_record["redcap_repeat_instance"])
     assert isinstance(api.get_questionnaire(rid), api.Questionnaire)
 
-
-def test_modify_questionnaire(que_record):
-    """Test modifying questionnaires."""
-    rid = api.make_id(que_record["record_id"], que_record["redcap_repeat_instance"])
-    assert isinstance(api.get_questionnaire(rid), api.Questionnaire)
     old_val = que_record["language_lang1"]
     new_val = str(1 if old_val == "0" else 0)
     que_record["language_lang1"] = new_val
     api.add_questionnaire(que_record)
     new_record = api.get_questionnaire(rid)
-    assert new_record.data["lang1"] == new_val
-
-
-@pytest.mark.xfail(reason="Slow API")
-def test_delete_questionnaire(que_record):
-    """Test deleting questionnaires."""
-    rid = api.make_id(que_record["record_id"], que_record["redcap_repeat_instance"])
-    assert isinstance(api.get_questionnaire(rid), api.Questionnaire)
-    api.delete_questionnaire(que_record)
-    with pytest.raises(api.MissingRecord):
-        api.get_questionnaire(rid)
-
-
-@pytest.mark.skip(reason="Takes too long for now")
-def test_redcap_backup(tmp_path) -> dict:
-    """Test ``redcap_backup``."""
-    tmp_dir = tmp_path / "tmp"
-    file = api.redcap_backup(path=tmp_dir)
-    assert os.path.exists(file)
-
-
-def get_next_id(records: api.Records = None) -> str:
-    """Test ``get_next_id``."""
-    if records is None:
-        records = api.Records()
-    next_id = api.get_next_id()
-    assert next_id not in list(records.participants.records.keys())
+    new_val_label = conftest.DATA_DICT["language_lang1"][new_val]
+    assert new_record.data["lang1"] == new_val_label
 
 
 def test_parse_str_date():

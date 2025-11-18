@@ -5,8 +5,9 @@ Functions to interact with the REDCap API.
 """
 
 from collections import OrderedDict
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import datetime
+from functools import singledispatch
 from json import dump, dumps, loads
 from os import environ, getenv
 from pathlib import Path
@@ -19,7 +20,7 @@ from dateutil.relativedelta import relativedelta as rdelta
 from dotenv import find_dotenv, load_dotenv
 from pytz import UTC as utc
 
-from babylab.globals import COLNAMES, FIELDS_TO_RENAME, INT_FIELDS, URI
+from babylab.globals import COLNAMES, FIELDS_TO_RENAME, INT_FIELDS, SCHEMA, URI
 
 
 class MissingEnvFile(Exception):
@@ -31,30 +32,71 @@ class MissingEnvToken(Exception):
 
 
 class MissingRecord(Exception):
-    """Record is not found."""
+    """Record is not found"""
 
 
 class BadToken(Exception):
     """Token is ill-formed"""
 
 
-class BadRecordListKind(Exception):
-    """Bad RecordList kind"""
-
-
 class BadAgeFormat(Exception):
-    """If Age des not follow the right format"""
+    """If age does not follow the right format"""
 
 
-def get_api_key(path: Path | str = None, name: str = "API_KEY"):
+@dataclass
+class Record:
+    ppt_id: str
+    data: dict
+
+
+@dataclass
+class Participant(Record):
+    appointments: list = field(default_factory=list)
+    questionnaires: list = field(default_factory=list)
+
+
+@dataclass
+class Appointment(Record):
+    def __post_init__(self):
+        apt_id = self.data["redcap_repeat_instance"]
+        self.apt_id = make_id(self.ppt_id, apt_id)
+        self.status: str = self.data["status"]
+        self.date: str = parse_str_date(self.data["date"])
+
+
+@dataclass
+class Questionnaire(Record):
+    def __post_init__(self):
+        que_id = self.data["redcap_repeat_instance"]
+        self.que_id = make_id(self.ppt_id, que_id)
+        self.isestimated = self.data["isestimated"]
+
+
+@dataclass
+class RecordList:
+    """List of REDCap records."""
+
+    records: dict = field(default_factory=dict)
+    kind: str | None = None
+
+    def __len__(self) -> int:
+        return len(self.records)
+
+
+def get_api_key(path: Path | str = None, name: str = "API_KEY") -> str:
     """Retrieve API credentials.
 
     Args:
         path (Path | str, optional): Path to the .env file with global variables. Defaults to ``Path.home()``.
         name (str, optional): Name of the variable to import. Defaults to "API_KEY".
 
+    Returns:
+        str: API key token.
+
     Raises:
-        MissingEnvFile: If .en file is not found  in ``path``.
+        MissingEnvFile: If .env file is not found  in ``path``.
+        MissingEnvToken: If requested environmental variable key is not found.
+        BadToken: If token contains any non-alphanumeric character.
     """
     if name in environ or getenv("GITHUB_ACTIONS") == "true":
         token = getenv(name)
@@ -74,159 +116,6 @@ def get_api_key(path: Path | str = None, name: str = "API_KEY"):
         raise BadToken("Token must be str with no non-alphanumeric characters")
 
     return token
-
-
-@dataclass
-class RecordList:
-    """List of REDCap records."""
-
-    records: dict
-    kind: str | None = None
-
-    def __len__(self) -> int:
-        return len(self.records)
-
-    def to_df(self) -> pl.DataFrame:
-        """Transforms a a RecordList to a Pandas DataFrame.
-
-        Returns:
-            DataFrame: Tabular dataset.
-        """
-        recs = [p.data for p in self.records.values()]
-        names = COLNAMES[self.kind]
-
-        if not recs:
-            return pl.DataFrame(schema=names)
-
-        id_lookup = {
-            "participants": "none",
-            "appointments": "appointment_id",
-            "questionnaires": "questionnaire_id",
-        }
-
-        df = (
-            pl.DataFrame(data=recs)
-            .rename({"redcap_repeat_instance": id_lookup[self.kind]}, strict=False)
-            .select(names)
-            .with_columns(
-                pl.when(pl.col(pl.String).str.len_chars() == 0)
-                .then(None)
-                .otherwise(pl.col(pl.String))
-                .name.keep()
-            )
-            .with_columns(
-                pl.col(
-                    [f for f in INT_FIELDS if f in names],
-                ).cast(pl.Int128)
-            )
-        )
-
-        return df
-
-
-def filter_fields(data: dict, prefix: str, fields: list[str]) -> dict:
-    """Filter a data dictionary based on a prefix and field names.
-
-    Args:
-        records (dict): Record data dictionary.
-        prefix (str): Prefix to look for.
-        fields (list[str]): Field names to look for.
-
-    Returns:
-        dict: Filtered records.
-    """
-    return {
-        k.replace(prefix, ""): v
-        for k, v in data.items()
-        if k.startswith(prefix) or k in fields
-    }
-
-
-class Participant:
-    """Participant in database"""
-
-    def __init__(self, data, apt: RecordList = None, que: RecordList = None):
-        if (apt and apt.kind != "appointments") or (
-            que and que.kind != "questionnaires"
-        ):
-            raise BadRecordListKind()
-
-        data = filter_fields(data, "participant_", ["record_id"])
-        age_created = (data["age_created_months"], data["age_created_days"])
-        months, days = get_age(age_created, data["date_created"])
-
-        data["age_now_months"], data["age_now_days"] = months, days
-
-        self.record_id = data["record_id"]
-        self.data = data
-        self.appointments = apt
-        self.questionnaires = que
-
-    def __repr__(self) -> str:
-        n_apt = 0 if not self.appointments else len(self.appointments) > 0
-        n_que = 0 if not self.questionnaires else len(self.questionnaires) > 0
-        return f"Participant {self.record_id}: {str(n_apt)} appointments, {str(n_que)} questionnaires"
-
-    def __str__(self) -> str:
-        n_apt = 0 if self.appointments is None else len(self.appointments)
-        n_que = 0 if self.questionnaires is None else len(self.questionnaires)
-        return f"Participant {self.record_id}: {str(n_apt)} appointments, {str(n_que)} questionnaires"
-
-
-class Appointment:
-    """Appointment in database"""
-
-    def __init__(self, data: dict):
-        data = filter_fields(
-            data, "appointment_", ["record_id", "redcap_repeat_instance"]
-        )
-
-        self.record_id = data["record_id"]
-        self.data = data
-        self.appointment_id = make_id(data["record_id"], data["redcap_repeat_instance"])
-        self.status = data["status"]
-
-        if isinstance(data["date"], str):
-            self.date = parse_str_date(data["date"])
-        else:
-            self.date = data["date"]
-
-        self._description = (
-            f"Appointment {self.appointment_id}"
-            + f", participant {self.record_id} "
-            + f"({self.date})"
-        )
-
-    def __repr__(self) -> str:
-        return self._description
-
-    def __str__(self) -> str:
-        return self._description
-
-
-class Questionnaire:
-    """Language questionnaire in database"""
-
-    def __init__(self, data: dict):
-        data = filter_fields(data, "language_", ["record_id", "redcap_repeat_instance"])
-
-        self.record_id = data["record_id"]
-        self.questionnaire_id = make_id(
-            self.record_id,
-            data["redcap_repeat_instance"],
-        )
-        self.isestimated = data["isestimated"]
-        self.data = data
-
-        for i in range(1, 5):
-            lang = f"lang{i}_exp"
-            self.data[lang] = int(self.data[lang]) if self.data[lang] else 0
-
-    def __repr__(self) -> str:
-        return f"Questionnaire {self.questionnaire_id}, participant {self.record_id}"
-
-    def __str__(self) -> str:
-        return f" Questionnaire {self.questionnaire_id}, participant {self.record_id}"
 
 
 def post_request(fields: dict, timeout: list[int] = (5, 10)) -> dict:
@@ -258,18 +147,6 @@ def post_request(fields: dict, timeout: list[int] = (5, 10)) -> dict:
     return r
 
 
-def get_redcap_version() -> str:
-    """Get REDCap version.
-
-    Returns:
-        str: REDCAp version number.
-    """
-    fields = {"content": "version"}
-    r = post_request(fields=fields)
-
-    return r.content.decode("utf-8")
-
-
 def get_data_dict() -> dict:
     """Get data dictionaries for categorical variables.
 
@@ -295,6 +172,154 @@ def get_data_dict() -> dict:
         dicts[k] = dict(options)
 
     return dicts
+
+
+DATA_DICT: dict = get_data_dict()
+
+
+def get_redcap_version() -> str:
+    """Get REDCap version.
+
+    Returns:
+        str: REDCAp version number.
+    """
+    fields = {"content": "version"}
+    r = post_request(fields=fields)
+
+    return r.content.decode("utf-8")
+
+
+def to_df(x: RecordList) -> pl.DataFrame:
+    """Transforms a RecordList to a Polars DataFrame.
+
+    Returns:
+        pl.DataFrame: Tabular data frame.
+    """
+    recs = [p.data for p in x.records.values()]
+    names = COLNAMES[x.kind]
+
+    if not recs:
+        return pl.DataFrame(schema=names)
+
+    id_lookup = {
+        "participants": "none",
+        "appointments": "apt_id",
+        "questionnaires": "que_id",
+    }
+
+    df = (
+        pl.DataFrame(recs, schema=SCHEMA[x.kind])
+        .rename({"redcap_repeat_instance": id_lookup[x.kind]}, strict=False)
+        .with_columns(
+            pl.when(pl.col(pl.String).str.len_chars() == 0)
+            .then(None)
+            .otherwise(pl.col(pl.String))
+            .name.keep()
+        )
+        .with_columns(
+            pl.col(
+                [f for f in INT_FIELDS if f in names],
+            ).cast(pl.Int128)
+        )
+    )
+
+    return df
+
+
+def filter_fields(data: dict, prefix: str, fields: list[str]) -> dict:
+    """Filter a data dictionary based on a prefix and field names.
+
+    Args:
+        records (dict): Record data dictionary.
+        prefix (str): Prefix to look for.
+        fields (list[str]): Field names to look for.
+
+    Returns:
+        dict: Filtered records.
+    """
+    return {
+        k.replace(prefix, ""): v
+        for k, v in data.items()
+        if k.startswith(prefix) or k in fields
+    }
+
+
+@singledispatch
+def fmt_labels(x: dict | pl.DataFrame, data_dict: dict[str, str]):
+    """Reformat dataframe.
+
+    Args:
+        x (dict | DataFrame): Dataframe to reformat.
+        data_dict (dict): Data dictionary to labels to use, as returned by ``api.get_data_dict``.
+        prefixes (list[str]): List of prefixes to look for in variable names.
+
+    Returns:
+        DataFrame: A reformated Dataframe.
+    """
+    raise TypeError("`x` must be a dict or a DataFrame")
+
+
+@fmt_labels.register(dict)
+def _(x: dict, data_dict: dict) -> dict:
+    """Reformat dictionary.
+
+    Args:
+        x (dict): dictionary to reformat.
+        data_dict (dict): Data dictionary to labels to use, as returned by ``api.get_data_dict``.
+
+    Returns:
+        dict: A reformatted dictionary.
+    """
+    fields = ["participant_", "appointment_", "language_"]
+    y = dict(x)
+
+    for k, v in y.items():
+        for f in fields:
+            if f + k in data_dict and v:
+                y[k] = data_dict[f + k][v]
+
+        if "exp" in k:
+            y[k] = round(float(v), None) if v else None
+
+        for c in ["taxi_isbooked", "isdropout", "isestimated"]:
+            if c in k:
+                y[k] = y[c] == "1"
+
+        y[k] = y[k] if y[k] != "" else None
+
+    y = {k: (int(v) if v and k in INT_FIELDS else v) for k, v in y.items()}
+
+    return y
+
+
+@fmt_labels.register(pl.DataFrame)
+def _(x: pl.DataFrame, data_dict: dict) -> pl.DataFrame:
+    """Reformat DataFrame.
+
+    Args:
+        x (dict): dictionary to reformat.
+        data_dict (dict): Data dictionary to labels to use, as returned by ``api.get_data_dict``.
+
+    Returns:
+        DataFrame: A reformatted DataFrame.
+    """
+    cols = {k.rsplit("_", 1)[1]: v for k, v in data_dict.items()}
+
+    for k, v in {ck: cv for ck, cv in cols.items() if ck in x.columns}.items():
+        x = x.with_columns(pl.col(k).replace_strict(v, default=None))
+
+    for c in ["isestimated", "isdropout"]:
+        if c in x.columns:
+            x = x.with_columns(pl.col(c).eq("1"))
+
+    x = x.with_columns(
+        pl.when(pl.col(pl.String).str.len_chars() == 0)
+        .then(None)
+        .otherwise(pl.col(pl.String))
+        .name.keep()
+    ).cast({c: pl.Int64 for c in [f for f in INT_FIELDS if f in x.columns]})
+
+    return x
 
 
 def str_to_dt(data: dict) -> dict:
@@ -345,25 +370,41 @@ def get_next_id() -> str:
     return str(post_request(fields=fields).json())
 
 
-def get_records(record_id: str | list | None = None) -> dict:
-    """Return records as JSON.
+def prepare_data(x: dict, kind: str = "ppt") -> dict:
+    """Prepare data for class.
 
     Args:
-        record_id  (str): ID of record to retrieve. Defaults to None.
+        x (dict): Participant data retrieved from REDCap.
+        kind (str): Type of data to process. Takes "ppt" (default), "apt" or "que".
 
     Returns:
-        dict: REDCap records in JSON format.
+        dict: Formatted data.
+
+    Raises:
+        ValueError: If ``kind`` is not one of 'ppt', 'apt', or 'que'.
     """
-    fields = {"content": "record", "format": "json", "type": "flat"}
+    if kind not in ["ppt", "apt", "que"]:
+        raise ValueError("`kind` must be one of 'ppt', 'apt', or 'que'")
 
-    if record_id and isinstance(record_id, list):
-        fields["records[0]"] = record_id
-        for r in record_id:
-            fields[f"records[{record_id}]"] = r
+    if kind == "apt":
+        names = ["record_id", "redcap_repeat_instance"]
+        x = filter_fields(x, "appointment_", names)
 
-    records = post_request(fields=fields).json()
+    if kind == "que":
+        names = ["record_id", "redcap_repeat_instance"]
+        x = filter_fields(x, "language_", names)
+        for i in range(1, 5):
+            lang = f"lang{i}_exp"
+            x[lang] = int(x[lang]) if x[lang] else 0
 
-    return [str_to_dt(r) for r in records]
+    if kind == "ppt":
+        names = ["record_id"]
+        x = filter_fields(x, "participant_", names)
+        age_created = (x["age_created_months"], x["age_created_days"])
+        months, days = get_age(age_created, x["date_created"])
+        x["age_now_months"], x["age_now_days"] = months, days
+
+    return fmt_labels(x, DATA_DICT)
 
 
 def make_id(ppt_id: str, repeat_id: str = None) -> str:
@@ -394,6 +435,28 @@ def make_id(ppt_id: str, repeat_id: str = None) -> str:
     return ppt_id + ":" + repeat_id
 
 
+def get_records(record_id: str | list | None = None) -> dict:
+    """Return records as JSON.
+
+    Args:
+        record_id  (str): ID of record to retrieve. Defaults to None.
+
+    Returns:
+        dict: REDCap records in JSON format.
+    """
+    fields = {"content": "record", "format": "json", "type": "flat"}
+
+    if record_id and isinstance(record_id, list):
+        fields["records[0]"] = record_id
+
+        for r in record_id:
+            fields[f"records[{record_id}]"] = r
+
+    records = post_request(fields=fields).json()
+
+    return [str_to_dt(r) for r in records]
+
+
 def get_participant(ppt_id: str) -> Participant:
     """Get participant record.
 
@@ -402,6 +465,9 @@ def get_participant(ppt_id: str) -> Participant:
 
     Returns:
         Participant: Participant object.
+
+    Raises:
+        MissingRecord: If requested recording is missing in the database.
     """
     fields = {
         "content": "record",
@@ -425,19 +491,25 @@ def get_participant(ppt_id: str) -> Participant:
     apt, que = {}, {}
 
     for r in recs:
-        repeat_id = make_id(r["record_id"], r["redcap_repeat_instance"])
+        ppt_id = r["record_id"]
+        repeat_id = make_id(ppt_id, r["redcap_repeat_instance"])
 
         if r["redcap_repeat_instrument"] == "appointments":
-            apt[repeat_id] = Appointment(r)
+            data = prepare_data(r, "apt")
+            apt[repeat_id] = Appointment(ppt_id=ppt_id, data=data)
 
         if r["redcap_repeat_instrument"] == "language":
-            que[repeat_id] = Questionnaire(r)
+            data = prepare_data(r, "que")
+            que[repeat_id] = Questionnaire(ppt_id=ppt_id, data=data)
 
     try:
+        data = prepare_data(recs[0])
+
         return Participant(
-            recs[0],
-            apt=RecordList(apt, kind="appointments"),
-            que=RecordList(que, kind="questionnaires"),
+            ppt_id=data["record_id"],
+            data=data,
+            appointments=RecordList(apt, kind="appointments"),
+            questionnaires=RecordList(que, kind="questionnaires"),
         )
     except IndexError as e:
         raise MissingRecord(f"Record {ppt_id} not found") from e
@@ -451,6 +523,9 @@ def get_appointment(apt_id: str) -> Appointment:
 
     Returns:
         Appointment: Appointment object.
+
+    Raises:
+        MissingRecord: If requested record is missing from database.
     """
     ppt_id, _ = apt_id.split(":")
     ppt = get_participant(ppt_id)
@@ -686,21 +761,26 @@ class Records:
             if repeat_id and r["appointment_status"]:
                 apt_id = make_id(ppt_id, repeat_id)
                 r["appointment_id"] = apt_id
-                apt[apt_id] = Appointment(r)
+                data = prepare_data(r, "apt")
+
+                apt[apt_id] = Appointment(ppt_id=data["record_id"], data=data)
 
             if repeat_id and r["language_lang1"]:
                 que_id = make_id(ppt_id, repeat_id)
                 r["questionnaire_id"] = que_id
-                que[que_id] = Questionnaire(r)
+                data = prepare_data(r, "que")
+
+                que[que_id] = Questionnaire(ppt_id=ppt_id, data=data)
 
             if not r["redcap_repeat_instrument"]:
-                ppt[ppt_id] = Participant(r)
+                data = prepare_data(r)
+                ppt[ppt_id] = Participant(r["record_id"], data)
 
         # add appointments and questionnaires to each participant
         for p, v in ppt.items():
-            apts = {k: v for k, v in apt.items() if v.record_id == p}
+            apts = {k: v for k, v in apt.items() if v.ppt_id == p}
             v.appointments = RecordList(apts, kind="appointments")
-            ques = {k: v for k, v in que.items() if v.record_id == p}
+            ques = {k: v for k, v in que.items() if v.ppt_id == p}
             v.questionnaires = RecordList(ques, kind="questionnaires")
 
         self.participants = RecordList(ppt, kind="participants")
@@ -755,6 +835,9 @@ def parse_str_date(x: str) -> datetime:
     Returns:
         datetime: Parsed datetime.
     """
+    if isinstance(x, datetime):
+        return x
+
     try:
         return datetime.strptime(x, "%Y-%m-%dT%H:%M:%S")
     except ValueError:
@@ -775,7 +858,7 @@ def get_age(age: str | tuple, ts: datetime | str, ts_new: datetime = None):
     Returns:
         tuple: Age in at ``new_timestamp``.
     """
-    ts = parse_str_date(ts) if isinstance(ts, str) else ts
+    ts = parse_str_date(ts)
     ts_new = datetime.now(utc) if ts_new is None else ts_new
 
     if ts.tzinfo is None or ts.tzinfo.utcoffset(ts) is None:
@@ -795,3 +878,7 @@ def get_age(age: str | tuple, ts: datetime | str, ts_new: datetime = None):
         new_age_days %= 30
 
     return new_age_months, new_age_days
+
+
+if __name__ == "__main__":
+    r = Records()
