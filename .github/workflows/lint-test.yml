@@ -5,11 +5,7 @@ on:
 
 jobs:
   build:
-    strategy:
-      fail-fast: true
-      matrix:
-        os: ["windows-latest", "macos-latest"]
-    runs-on: ${{ matrix.os }}
+    runs-on: windows-latest
 
     steps:
       - uses: actions/checkout@v4
