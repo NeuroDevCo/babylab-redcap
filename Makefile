@@ -1,4 +1,4 @@
 test:
 	uv run ruff format
 	uv run ruff check
-	uv run pytest -v -p no:cacheprovider --exitfirst --benchmark-time-unit="s" --benchmark-autosave -rxXs
+	uv run pytest -v --exitfirst
