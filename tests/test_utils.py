@@ -20,7 +20,7 @@ def test_fmt_labels_dict():
         "birth_type": None,
     }
 
-    o = api.fmt_labels(x, conftest.DATA_DICT)
+    o = api.fmt_labels(x)
 
     assert isinstance(o, dict)
     assert all(k in o for k in x)
@@ -47,7 +47,7 @@ def test_fmt_labels_polars():
         },
     )
 
-    o = api.fmt_labels(x, conftest.DATA_DICT)
+    o = api.fmt_labels(x)
 
     assert isinstance(o, pl.DataFrame)
     assert all(k in o for k in x.columns)
@@ -148,38 +148,31 @@ def test_get_que_table_id_list(ppt_id: str | list[str] = None):
 def test_is_in_data_dict():
     """Test is_in_datadict."""
 
-    assert utils.is_in_data_dict(
-        ["Successful"], "appointment_status", conftest.DATA_DICT
-    ) == ["Successful"]
+    assert utils.is_in_data_dict(["Successful"], "appointment_status") == ["Successful"]
+
+    assert utils.is_in_data_dict(["Successful", "Confirmed"], "appointment_status") == [
+        "Successful",
+        "Confirmed",
+    ]
+
+    assert utils.is_in_data_dict("Successful", "appointment_status") == ["Successful"]
+
+    assert utils.is_in_data_dict(["mop_newborns_1_nirs"], "appointment_study") == [
+        "mop_newborns_1_nirs"
+    ]
 
     assert utils.is_in_data_dict(
-        ["Successful", "Confirmed"], "appointment_status", conftest.DATA_DICT
-    ) == ["Successful", "Confirmed"]
-
-    assert utils.is_in_data_dict(
-        "Successful", "appointment_status", conftest.DATA_DICT
-    ) == ["Successful"]
-
-    assert utils.is_in_data_dict(
-        ["mop_newborns_1_nirs"], "appointment_study", conftest.DATA_DICT
-    ) == ["mop_newborns_1_nirs"]
-
-    assert utils.is_in_data_dict(
-        ["mop_newborns_1_nirs", "mop_infants_1_hpp"],
-        "appointment_study",
-        conftest.DATA_DICT,
+        ["mop_newborns_1_nirs", "mop_infants_1_hpp"], "appointment_study"
     ) == ["mop_newborns_1_nirs", "mop_infants_1_hpp"]
 
-    assert utils.is_in_data_dict(
-        "mop_newborns_1_nirs", "appointment_study", conftest.DATA_DICT
-    ) == ["mop_newborns_1_nirs"]
+    assert utils.is_in_data_dict("mop_newborns_1_nirs", "appointment_study") == [
+        "mop_newborns_1_nirs"
+    ]
 
     with raises(ValueError):
-        utils.is_in_data_dict(["Badname"], "appointment_status", conftest.DATA_DICT)
-        utils.is_in_data_dict(
-            ["Badname", "Successful"], "appointment_status", conftest.DATA_DICT
-        )
-        utils.is_in_data_dict("Badname", "appointment_status", conftest.DATA_DICT)
+        utils.is_in_data_dict(["Badname"], "appointment_status")
+        utils.is_in_data_dict(["Badname", "Successful"], "appointment_status")
+        utils.is_in_data_dict("Badname", "appointment_status")
 
 
 def test_get_year_weeks():
@@ -196,29 +189,21 @@ def test_get_week_n():
 def test_get_weekly_apts():
     """Test get_weekly_apts."""
     assert isinstance(
-        utils.get_weekly_apts(data_dict=conftest.DATA_DICT, records=conftest.RECORDS),
+        utils.get_weekly_apts(records=conftest.RECORDS),
+        int,
+    )
+    assert isinstance(
+        utils.get_weekly_apts(records=conftest.RECORDS, study="mop_newborns_1_nirs"),
         int,
     )
     assert isinstance(
         utils.get_weekly_apts(
-            data_dict=conftest.DATA_DICT,
-            records=conftest.RECORDS,
-            study="mop_newborns_1_nirs",
+            records=conftest.RECORDS, study="mop_newborns_1_nirs", status="Successful"
         ),
         int,
     )
     assert isinstance(
         utils.get_weekly_apts(
-            data_dict=conftest.DATA_DICT,
-            records=conftest.RECORDS,
-            study="mop_newborns_1_nirs",
-            status="Successful",
-        ),
-        int,
-    )
-    assert isinstance(
-        utils.get_weekly_apts(
-            data_dict=conftest.DATA_DICT,
             records=conftest.RECORDS,
             study=["mop_newborns_1_nirs", "mop_infants_1_hpp"],
         ),
@@ -226,7 +211,6 @@ def test_get_weekly_apts():
     )
     assert isinstance(
         utils.get_weekly_apts(
-            data_dict=conftest.DATA_DICT,
             records=conftest.RECORDS,
             study=["mop_newborns_1_nirs", "mop_infants_1_hpp"],
             status=["Successful", "Confirmed"],

@@ -245,12 +245,11 @@ def filter_fields(data: dict, prefix: str, fields: list[str]) -> dict:
 
 
 @singledispatch
-def fmt_labels(x: dict | pl.DataFrame, data_dict: dict[str, str]):
+def fmt_labels(x: dict | pl.DataFrame):
     """Reformat dataframe.
 
     Args:
         x (dict | DataFrame): Dataframe to reformat.
-        data_dict (dict): Data dictionary to labels to use, as returned by ``api.get_data_dict``.
         prefixes (list[str]): List of prefixes to look for in variable names.
 
     Returns:
@@ -260,12 +259,11 @@ def fmt_labels(x: dict | pl.DataFrame, data_dict: dict[str, str]):
 
 
 @fmt_labels.register(dict)
-def _(x: dict, data_dict: dict) -> dict:
+def _(x: dict) -> dict:
     """Reformat dictionary.
 
     Args:
         x (dict): dictionary to reformat.
-        data_dict (dict): Data dictionary to labels to use, as returned by ``api.get_data_dict``.
 
     Returns:
         dict: A reformatted dictionary.
@@ -275,8 +273,8 @@ def _(x: dict, data_dict: dict) -> dict:
 
     for k, v in y.items():
         for f in fields:
-            if f + k in data_dict and v:
-                y[k] = data_dict[f + k][v]
+            if f + k in DATA_DICT and v:
+                y[k] = DATA_DICT[f + k][v]
 
         if "exp" in k:
             y[k] = round(float(v), None) if v else None
@@ -293,17 +291,16 @@ def _(x: dict, data_dict: dict) -> dict:
 
 
 @fmt_labels.register(pl.DataFrame)
-def _(x: pl.DataFrame, data_dict: dict) -> pl.DataFrame:
+def _(x: pl.DataFrame) -> pl.DataFrame:
     """Reformat DataFrame.
 
     Args:
         x (dict): dictionary to reformat.
-        data_dict (dict): Data dictionary to labels to use, as returned by ``api.get_data_dict``.
 
     Returns:
         DataFrame: A reformatted DataFrame.
     """
-    cols = {k.rsplit("_", 1)[1]: v for k, v in data_dict.items()}
+    cols = {k.rsplit("_", 1)[1]: v for k, v in DATA_DICT.items()}
 
     for k, v in {ck: cv for ck, cv in cols.items() if ck in x.columns}.items():
         x = x.with_columns(pl.col(k).replace_strict(v, default=None))
@@ -404,7 +401,7 @@ def prepare_data(x: dict, kind: str = "ppt") -> dict:
         months, days = get_age(age_created, x["date_created"])
         x["age_now_months"], x["age_now_days"] = months, days
 
-    return fmt_labels(x, DATA_DICT)
+    return fmt_labels(x)
 
 
 def make_id(ppt_id: str, repeat_id: str = None) -> str:

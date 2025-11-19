@@ -11,13 +11,12 @@ from babylab import api
 from babylab.globals import COLNAMES
 
 
-def is_in_data_dict(x: list[str] | None, variable: str, data_dict: dict) -> list[str]:
+def is_in_data_dict(x: list[str] | None, variable: str) -> list[str]:
     """Check that a value is an element in the data dictionary.
 
     Args:
         x (list[str] | None): Value to look up in the data dictionary.
         variable (str): Key in which to look for.
-        data_dict (dict): Data dictionary as returned by ``api.get_data_dictionary``.
 
     Raises:
         ValueError: If `x` is not an option present in `data_dict`.
@@ -25,7 +24,7 @@ def is_in_data_dict(x: list[str] | None, variable: str, data_dict: dict) -> list
     Returns:
         list[str]: Values in data dict.
     """
-    options = list(data_dict[variable].values())
+    options = list(api.DATA_DICT[variable].values())
 
     if x is None:
         return options
@@ -68,9 +67,7 @@ def get_age_timestamp(
 
 
 def get_ppt_table(
-    records: api.Records,
-    ppt_id: list[str] | str = None,
-    study: list[str] | str = None,
+    records: api.Records, ppt_id: list[str] | str = None, study: list[str] | str = None
 ) -> pl.DataFrame:
     """Get participants table
 
@@ -141,14 +138,13 @@ def get_apt_table(
 
     ppt_df = api.to_df(records.participants)
 
-    df = df.join(
-        ppt_df.select(["record_id", "age_now_months", "age_now_days"]), on="record_id"
-    )
+    cols = ["record_id", "age_now_months", "age_now_days"]
+    df = df.join(ppt_df.select(cols), on="record_id")
+    _, col_1, col_2 = cols
+    months, days = get_age_timestamp(df[col_1], df[col_2], df["date"])
 
-    age_apt = get_age_timestamp(df["age_now_days"], df["age_now_months"], df["date"])
-
-    df.insert_column(-1, pl.Series("age_apt_months", age_apt[0]))
-    df.insert_column(-1, pl.Series("age_apt_days", age_apt[1]))
+    df.insert_column(-1, pl.Series("age_apt_months", months))
+    df.insert_column(-1, pl.Series("age_apt_days", days))
 
     return df
 
@@ -158,7 +154,6 @@ def get_que_table(records: api.Records, ppt_id: list[str] | str = None) -> pl.Da
 
     Args:
         records (api.Records): REDCap records, as returned by ``api.Records``.
-        data_dict (dict): Data dictionary as returned by ``api.get_data_dictionary``.
         ppt_id (list[str] | str): ID of participant to return. If None (default), all participants are returned.
         relabel (bool): Reformat labels if True (default).
 
@@ -213,8 +208,15 @@ def count_col(
     return counts
 
 
-def get_year_weeks(year: int):
-    """Get week numbers of the year"""
+def get_year_weeks(year: int) -> int:
+    """Get week numbers of the year.
+
+    Args:
+        year (int): Year to get weeks for.
+
+    Returns:
+        int: Number of weeks in the year.
+    """
     date_first = date(year, 1, 1)
     date_first += timedelta(days=6 - date_first.weekday())
 
@@ -223,12 +225,19 @@ def get_year_weeks(year: int):
         date_first += timedelta(days=7)
 
 
-def get_week_n(timestamp: date):
-    """Get current week number"""
+def get_week_n(timestamp: date) -> int:
+    """Get current week number in the year.
+
+    Args:
+        timestamp (date): Date to calculate week number for.
+
+    Returns:
+        int: Week number of given date.
+    """
     weeks = {}
 
     for wn, d in enumerate(get_year_weeks(timestamp.year)):
-        weeks[wn + 1] = [(d + timedelta(days=k)).isoformat() for k in range(0, 7)]
+        weeks[wn + 1] = [(d + timedelta(days=k)).isoformat() for k in range(7)]
 
     for k, v in weeks.items():
         if datetime.strftime(timestamp, "%Y-%m-%d") in v:
@@ -236,31 +245,29 @@ def get_week_n(timestamp: date):
 
 
 def get_weekly_apts(
-    records: api.Records,
-    data_dict: dict,
-    study: list | None = None,
-    status: list | None = None,
+    records: api.Records, study: list | None = None, status: list | None = None
 ) -> dict:
     """Get weekly number of appointments.
 
     Args:
         records (api.Records): REDCap records, as returned by ``api.Records``.
-        data_dict (dict): Data dictionary as returned by ``api.get_data_dictionary``.
         study (list | None, optional): Study to filter for. Defaults to None.
         status (list | None, optional): Status to filter for. Defaults to None.
 
-    Raises:
-        ValueError: If `study` or `status` is not available.
-
     Returns:
         dict: Weekly number of appointment with for a given study and/or status.
+
+    Raises:
+        ValueError: If `study` or `status` is not available.
     """
-    study = is_in_data_dict(study, "appointment_study", data_dict)
-    status = is_in_data_dict(status, "appointment_status", data_dict)
+    study = is_in_data_dict(study, "appointment_study")
+    status = is_in_data_dict(status, "appointment_status")
     apts = records.appointments.records.values()
 
+    date = get_week_n(datetime.today())
+
     return sum(
-        get_week_n(v.data["date_created"]) == get_week_n(datetime.today())
+        get_week_n(v.data["date_created"]) == date
         for v in apts
         if v.data["status"] in status and v.data["study"] in study
     )
