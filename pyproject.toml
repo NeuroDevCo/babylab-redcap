@@ -1,7 +1,7 @@
 [project]
 name = "babylab"
-version = "0.7.0"
-description = 'A GUI for the SJD Babylab REDCap database'
+version = "0.7.1"
+description = "A GUI for the SJD Babylab REDCap database"
 readme = "README.md"
 requires-python = ">=3.10"
 license = "MIT"
@@ -13,6 +13,7 @@ dependencies = [
     "dateutils>=0.6.12",
     "dotenv>=0.9.9",
     "polars>=1.33.1",
+    "pyarrow>=22.0.0",
     "requests>=2.32.5",
 ]
 
