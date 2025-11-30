@@ -4,6 +4,7 @@ Util functions for the app.
 
 from copy import deepcopy
 from datetime import date, datetime, timedelta
+from typing import Generator
 
 import polars as pl
 
@@ -208,7 +209,7 @@ def count_col(
     return counts
 
 
-def get_year_weeks(year: int) -> int:
+def get_year_weeks(year: int) -> Generator[int, int, int]:
     """Get week numbers of the year.
 
     Args:
