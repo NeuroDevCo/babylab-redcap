@@ -194,14 +194,14 @@ def count_col(
     return counts
 
 
-def get_year_weeks(year: int) -> Generator[datetime]:
+def get_year_weeks(year: int) -> Generator[datetime, datetime, datetime]:
     """Get week numbers of the year.
 
     Args:
         year (int): Year to get weeks for.
 
     Yields:
-        int: Number of weeks in the year.
+        Generator[datetime, datetime, datetime]: Number of weeks in the year.
     """
     date_first = date(year, 1, 1)
     date_first += timedelta(days=6 - date_first.weekday())

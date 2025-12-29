@@ -119,7 +119,11 @@ def test_get_apt_table_id_list(apt_id: str | Sequence[str] | None = None, k: int
         apt_id = [apt_id]
 
     ppt_id = set(i.split(":")[0] for i in apt_id)
-    df = utils.get_apt_table(conftest.RECORDS, ppt_id=sample(ppt_id, k=k))
+
+    if k > len(ppt_id):
+        k = len(ppt_id)
+
+    df = utils.get_apt_table(conftest.RECORDS, ppt_id=sample(list(ppt_id), k=k))
 
     assert isinstance(df, pl.DataFrame)
     assert all(p in ppt_id for p in df["record_id"].unique().to_list())
@@ -148,7 +152,11 @@ def test_get_que_table_id_list(que_id: str | list[str] | None = None, k: int = 1
         que_id = [que_id]
 
     ppt_id = set(i.split(":")[0] for i in que_id)
-    df = utils.get_apt_table(conftest.RECORDS, ppt_id=sample(ppt_id, k=k))
+
+    if k > len(ppt_id):
+        k = len(ppt_id)
+
+    df = utils.get_apt_table(conftest.RECORDS, ppt_id=sample(list(ppt_id), k=k))
     assert isinstance(df, pl.DataFrame)
     assert all(p in ppt_id for p in df["record_id"].unique().to_list())
 
