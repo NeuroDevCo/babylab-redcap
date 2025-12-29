@@ -6,19 +6,21 @@ Functions to interact with the REDCap API.
 
 from collections import OrderedDict
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import datetime, timezone
 from functools import singledispatch
 from json import dump, dumps, loads
-from os import environ, getenv
+from os import environ, getenv, walk
+from os.path import join
 from pathlib import Path
+from typing import Sequence
 from warnings import warn
 from zipfile import ZIP_DEFLATED, ZipFile
 
 import polars as pl
+import pytz
 import requests
 from dateutil.relativedelta import relativedelta as rdelta
 from dotenv import find_dotenv, load_dotenv
-from pytz import UTC as utc
 
 from babylab.globals import COLNAMES, FIELDS_TO_RENAME, INT_FIELDS, SCHEMA, URI
 
@@ -44,6 +46,17 @@ class BadAgeFormat(Exception):
 
 
 @dataclass
+class RecordList:
+    """List of REDCap records."""
+
+    records: dict = field(default_factory=dict)
+    kind: str | None = None
+
+    def __len__(self) -> int:
+        return len(self.records)
+
+
+@dataclass
 class Record:
     ppt_id: str
     data: dict
@@ -51,8 +64,8 @@ class Record:
 
 @dataclass
 class Participant(Record):
-    appointments: list = field(default_factory=list)
-    questionnaires: list = field(default_factory=list)
+    appointments: RecordList = field(default_factory=list)
+    questionnaires: RecordList = field(default_factory=list)
 
 
 @dataclass
@@ -72,22 +85,11 @@ class Questionnaire(Record):
         self.isestimated = self.data["isestimated"]
 
 
-@dataclass
-class RecordList:
-    """List of REDCap records."""
-
-    records: dict = field(default_factory=dict)
-    kind: str | None = None
-
-    def __len__(self) -> int:
-        return len(self.records)
-
-
-def get_api_key(path: Path | str = None, name: str = "API_KEY") -> str:
+def get_api_key(path: Path | str | None = None, name: str = "API_KEY") -> str:
     """Retrieve API credentials.
 
     Args:
-        path (Path | str, optional): Path to the .env file with global variables. Defaults to ``Path.home()``.
+        path (Path | str | None, optional): Path to the .env file with global variables. Defaults to ``Path.home()``.
         name (str, optional): Name of the variable to import. Defaults to "API_KEY".
 
     Returns:
@@ -118,19 +120,19 @@ def get_api_key(path: Path | str = None, name: str = "API_KEY") -> str:
     return token
 
 
-def post_request(fields: dict, timeout: list[int] = (5, 10)) -> dict:
+def post_request(fields: dict, timeout: Sequence[int] = (5, 10)) -> requests.Response:
     """Make a POST request to the REDCap database.
 
     Args:
         fields (dict): Fields to retrieve.
-        timeout (list[int], optional): Timeout of HTTP request in seconds. Defaults to 10.
+        timeout (Sequence[int], optional): Timeout of HTTP request in seconds. Defaults to 10.
 
     Raises:
         requests.exceptions.HTTPError: If HTTP request fails.
         BadToken: If API token contains non-alphanumeric characters.
 
     Returns:
-        dict: HTTP request response in JSON format.
+        requests.Response: HTTP request response in JSON format.
     """
     t = get_api_key()
 
@@ -404,12 +406,12 @@ def prepare_data(x: dict, kind: str = "ppt") -> dict:
     return fmt_labels(x)
 
 
-def make_id(ppt_id: str, repeat_id: str = None) -> str:
+def make_id(ppt_id: str | int, repeat_id: str | int | None = None) -> str:
     """Make a record ID.
 
     Args:
-        ppt_id (str): Participant ID.
-        repeat_id (str, optional): Appointment or Questionnaire ID, or ``redcap_repeated_id``. Defaults to None.
+        ppt_id (str | int): Participant ID.
+        repeat_id (str | int | None, optional): Appointment or Questionnaire ID, or ``redcap_repeated_id``. Defaults to None.
 
     Returns:
         str: Record ID.
@@ -439,7 +441,7 @@ def get_records(record_id: str | list | None = None) -> dict:
         record_id  (str): ID of record to retrieve. Defaults to None.
 
     Returns:
-        dict: REDCap records in JSON format.
+        list[dict[str, str]]: REDCap records in JSON format.
     """
     fields = {"content": "record", "format": "json", "type": "flat"}
 
@@ -449,9 +451,7 @@ def get_records(record_id: str | list | None = None) -> dict:
         for r in record_id:
             fields[f"records[{record_id}]"] = r
 
-    records = post_request(fields=fields).json()
-
-    return [str_to_dt(r) for r in records]
+    return post_request(fields=fields).json()
 
 
 def get_participant(ppt_id: str) -> Participant:
@@ -687,29 +687,23 @@ def warn_missing_record(r: requests.models.Response):
         warn("Record does not exist!", stacklevel=2)
 
 
-def redcap_backup(path: Path | str = None) -> dict:
+def redcap_backup(path: Path | str = Path("tmp")) -> Path:
     """Download a backup of the REDCap database
 
     Args:
         path (Path | str, optional): Output directory. Defaults to ``Path("tmp")``.
 
     Returns:
-        dict: A dictionary with the key data and metadata of the project.
+        Path: Path to the generated file with data and metadata of the project.
     """
-    if path is None:
-        path = Path("tmp")
-
-    if isinstance(path, str):
-        path = Path(path)
-
-    if not path.exists():
-        path.mkdir(exist_ok=True)
+    path = Path(path)
+    path.mkdir(exist_ok=True)
 
     p = {}
     for k in ["project", "metadata", "instrument"]:
         p[k] = {"format": "json", "returnFormat": "json", "content": k}
 
-    d = {k: loads(post_request(v).text) for k, v in pl.items()}
+    d = {k: loads(post_request(v).text) for k, v in p.items()}
 
     with open(path / "records.csv", "w+", encoding="utf-8") as f:
         fields = {
@@ -736,10 +730,10 @@ def redcap_backup(path: Path | str = None) -> dict:
     timestamp = datetime.strftime(datetime.now(), "%Y-%m-%d-%H-%M")
     file = path / ("backup_" + timestamp + ".zip")
 
-    for root, _, files in path.walk(top_down=False):
+    for root, _, files in walk(str(path), topdown=False):
         with ZipFile(file, "w", ZIP_DEFLATED) as z:
             for f in files:
-                z.write(root / f)
+                z.write(join(root, f))
 
     return file
 
@@ -747,8 +741,9 @@ def redcap_backup(path: Path | str = None) -> dict:
 class Records:
     """REDCap records"""
 
-    def __init__(self, record_id: str | list = None):
+    def __init__(self, record_id: str | list | None = None):
         records = get_records(record_id)
+        records = [str_to_dt(r) for r in records]
         ppt, apt, que = {}, {}, {}
 
         for r in records:
@@ -823,11 +818,11 @@ def parse_age(age: tuple) -> tuple[int, int]:
         raise BadAgeFormat("age must be in (months, age) format") from e
 
 
-def parse_str_date(x: str) -> datetime:
+def parse_str_date(x: str | datetime) -> datetime:
     """Parse string data to datetime.
 
     Args:
-        x (str): String date to parse.
+        x (str | datetime): String date to parse.
 
     Returns:
         datetime: Parsed datetime.
@@ -844,25 +839,23 @@ def parse_str_date(x: str) -> datetime:
             return datetime.strptime(x, "%Y-%m-%d %H:%M")
 
 
-def get_age(age: str | tuple, ts: datetime | str, ts_new: datetime = None):
+def get_age(
+    age: tuple, ts: datetime | str, ts_new: datetime | None = None, tz: str = "UTC"
+):
     """Calculate the age of a person in months and days at a new timestamp.
 
     Args:
         age (tuple): Age in months and days as a tuple of type (months, days).
         ts (datetime | str): Birth date as ``datetime.datetime`` type.
-        ts_new (datetime.datetime, optional): Time for which the age is calculated. Defaults to current date (``datetime.datetime.now()``).
+        ts_new (datetime.datetime | None, optional): Time for which the age is calculated. Defaults to current date (``datetime.datetime.now()``).
 
     Returns:
         tuple: Age in at ``new_timestamp``.
     """
-    ts = parse_str_date(ts)
-    ts_new = datetime.now(utc) if ts_new is None else ts_new
-
-    if ts.tzinfo is None or ts.tzinfo.utcoffset(ts) is None:
-        ts = utc.localize(ts, True)
-
-    if ts_new.tzinfo is None or ts_new.tzinfo.utcoffset(ts_new) is None:
-        ts_new = utc.localize(ts_new, True)
+    tz = pytz.timezone(tz)
+    ts = tz.localize(parse_str_date(ts))
+    ts_new = datetime.now() if ts_new is None else ts_new
+    ts_new = tz.localize(ts_new)
 
     tdiff = rdelta(ts_new, ts)
     months, days = parse_age(age)

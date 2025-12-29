@@ -14,11 +14,11 @@ RECORDS: api.Records = api.Records()
 DATA_DICT: dict = api.get_data_dict()
 
 
-def generate_str(n: str = 7) -> str:
+def generate_str(n: int = 7) -> str:
     """Generate random string of ASCII characters.
 
     Args:
-        nchar (str, optional): Number of characters in the string. Defaults to 7.
+        nchar (int, optional): Number of characters in the string. Defaults to 7.
 
     Returns:
         str: Random string of characters of length ``n``.

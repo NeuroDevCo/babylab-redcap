@@ -2,6 +2,7 @@
 Util functions for the app.
 """
 
+from collections.abc import Sequence
 from copy import deepcopy
 from datetime import date, datetime, timedelta
 from typing import Generator
@@ -12,12 +13,12 @@ from babylab import api
 from babylab.globals import COLNAMES
 
 
-def is_in_data_dict(x: list[str] | None, variable: str) -> list[str]:
+def is_in_data_dict(variable: str, x: Sequence[str] | str | None = None) -> list[str]:
     """Check that a value is an element in the data dictionary.
 
     Args:
-        x (list[str] | None): Value to look up in the data dictionary.
         variable (str): Key in which to look for.
+        x (Sequence[str] | str | None, optional): Value to look up in the data dictionary. Defaults to None (all options are checked for the variable).
 
     Raises:
         ValueError: If `x` is not an option present in `data_dict`.
@@ -29,53 +30,27 @@ def is_in_data_dict(x: list[str] | None, variable: str) -> list[str]:
 
     if x is None:
         return options
-    out = x
 
-    if isinstance(x, str):
-        out = [out]
+    x = [x] if isinstance(x, str) else list(x)
 
-    for o in out:
-        if o not in options:
-            raise ValueError(f"{o} is not an option in {variable}")
+    for xi in x:
+        if xi not in options:
+            raise ValueError(f"{xi} is not an option in {variable}")
 
-    return out
-
-
-def get_age_timestamp(
-    months: int, days: int, timestamp: date | datetime
-) -> tuple[str, str]:
-    """Get age at timestamp in months and days.
-
-    Args:
-        apt_records (dict): Appointment records.
-        ppt_records (dict): Participant records.
-        date_type (str, optional): Timestamp at which to calculate age. Defaults to "date".
-
-    Raises:
-        ValueError: If timestamp is not "date" or "date_created".
-
-    Returns:
-        tuple[str, str]: Age at timestamp in months and days.
-    """
-    months_new, days_new = [], []
-
-    for m, d, t in zip(months, days, timestamp, strict=False):
-        age_months, age_days = api.get_age(age=(m, d), ts=t)
-        months_new.append(age_months)
-        days_new.append(age_days)
-
-    return months_new, days_new
+    return x
 
 
 def get_ppt_table(
-    records: api.Records, ppt_id: list[str] | str = None, study: list[str] | str = None
+    records: api.Records,
+    ppt_id: list[str] | str | None = None,
+    study: list[str] | str | None = None,
 ) -> pl.DataFrame:
     """Get participants table
 
     Args:
         records (api.Records): REDCap records, as returned by ``api.Records``.
-        ppt_id (list[str] | str): ID of participant to return. If None (default), all participants are returned.
-        study (list[str] | str, optional): Study in which the participant in the records must have participated to be kept. Defaults to None.
+        ppt_id (list[str] | str | None): ID of participant to return. If None (default), all participants are returned.
+        study (list[str] | str | None, optional): Study in which the participant in the records must have participated to be kept. Defaults to None.
 
     Returns:
         pl.DataFrame: Table of partcicipants.
@@ -108,14 +83,16 @@ def get_ppt_table(
 
 
 def get_apt_table(
-    records: api.Records, ppt_id: list[str] | str = None, study: list[str] | str = None
+    records: api.Records,
+    ppt_id: list[str] | str | None = None,
+    study: list[str] | str | None = None,
 ) -> pl.DataFrame:
     """Get appointments table.
 
     Args:
         records (api.Records): REDCap records, as returned by ``api.Records``.
-        ppt_id (list[str] | str): ID of participant to return. If None (default), all participants are returned.
-        study (list[str] | str, optional): Study to filter for. If None (default) all studies are returned.
+        ppt_id (list[str] | str | None, optional): ID of participant to return. If None (default), all participants are returned.
+        study (list[str] | str | None, optional): Study to filter for. If None (default) all studies are returned.
 
     Returns:
         DataFrame: Table of appointments.
@@ -142,7 +119,13 @@ def get_apt_table(
     cols = ["record_id", "age_now_months", "age_now_days"]
     df = df.join(ppt_df.select(cols), on="record_id")
     _, col_1, col_2 = cols
-    months, days = get_age_timestamp(df[col_1], df[col_2], df["date"])
+
+    months, days = [], []
+    for rows in df.iter_rows(named=True):
+        t = datetime.now() if rows["date"] is None else rows["date"]
+        m, d = api.get_age(age=(rows[col_1], rows[col_2]), ts=t)
+        months.append(m)
+        days.append(d)
 
     df.insert_column(-1, pl.Series("age_apt_months", months))
     df.insert_column(-1, pl.Series("age_apt_days", days))
@@ -150,12 +133,14 @@ def get_apt_table(
     return df
 
 
-def get_que_table(records: api.Records, ppt_id: list[str] | str = None) -> pl.DataFrame:
+def get_que_table(
+    records: api.Records, ppt_id: list[str] | str | None = None
+) -> pl.DataFrame:
     """Get questionnaires table.
 
     Args:
         records (api.Records): REDCap records, as returned by ``api.Records``.
-        ppt_id (list[str] | str): ID of participant to return. If None (default), all participants are returned.
+        ppt_id (list[str] | str | None, optional): ID of participant to return. If None (default), all participants are returned.
         relabel (bool): Reformat labels if True (default).
 
     Returns:
@@ -209,13 +194,13 @@ def count_col(
     return counts
 
 
-def get_year_weeks(year: int) -> Generator[int, int, int]:
+def get_year_weeks(year: int) -> Generator[datetime]:
     """Get week numbers of the year.
 
     Args:
         year (int): Year to get weeks for.
 
-    Returns:
+    Yields:
         int: Number of weeks in the year.
     """
     date_first = date(year, 1, 1)
@@ -243,11 +228,14 @@ def get_week_n(timestamp: date) -> int:
     for k, v in weeks.items():
         if datetime.strftime(timestamp, "%Y-%m-%d") in v:
             return k
+    return k
 
 
 def get_weekly_apts(
-    records: api.Records, study: list | None = None, status: list | None = None
-) -> dict:
+    records: api.Records,
+    study: Sequence | str | None = None,
+    status: Sequence | str | None = None,
+) -> int:
     """Get weekly number of appointments.
 
     Args:
@@ -256,13 +244,13 @@ def get_weekly_apts(
         status (list | None, optional): Status to filter for. Defaults to None.
 
     Returns:
-        dict: Weekly number of appointment with for a given study and/or status.
+        int: Weekly number of appointment with for a given study and/or status.
 
     Raises:
         ValueError: If `study` or `status` is not available.
     """
-    study = is_in_data_dict(study, "appointment_study")
-    status = is_in_data_dict(status, "appointment_status")
+    study = is_in_data_dict("appointment_study", study)
+    status = is_in_data_dict("appointment_status", status)
     apts = records.appointments.records.values()
 
     date = get_week_n(datetime.today())

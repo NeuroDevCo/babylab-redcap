@@ -1,4 +1,5 @@
 test:
-	uv run ruff format
-	uv run ruff check
-	uv run pytest -v --exitfirst
+	uvx ruff format
+	uvx ruff check --fix .
+	uvx ty check
+	uvx pytest -v --exitfirst
