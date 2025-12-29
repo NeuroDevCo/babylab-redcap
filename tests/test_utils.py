@@ -1,8 +1,8 @@
 """Test util functions"""
 
 from datetime import date, datetime
-from random import choice, choices
-from typing import Generator
+from random import choice, sample
+from typing import Generator, Sequence
 
 import polars as pl
 from pytest import raises
@@ -74,11 +74,14 @@ def test_get_ppt_table_study():
         assert all(c in df.columns for c in utils.COLNAMES["participants"])
 
 
-def test_get_ppt_table_id_list(ppt_id: str | list[str] = None):
+def test_get_ppt_table_id_list(ppt_id: str | list[str] | None = None, k: int = 100):
     if ppt_id is None:
-        ppt_id = choices(list(conftest.RECORDS.participants.records.keys()), k=100)
+        ppt_id = list(conftest.RECORDS.participants.records.keys())
 
-    df = utils.get_ppt_table(conftest.RECORDS, ppt_id=ppt_id)
+    if isinstance(ppt_id, str):
+        ppt_id = [ppt_id]
+
+    df = utils.get_ppt_table(conftest.RECORDS, ppt_id=sample(ppt_id, k=k))
 
     assert isinstance(df, pl.DataFrame)
     assert all(c in df.columns for c in utils.COLNAMES["participants"])
@@ -99,7 +102,7 @@ def test_get_apt_table_study():
         assert all(df["study"] == v)
 
 
-def test_get_apt_table_id(ppt_id: str = None):
+def test_get_apt_table_id(ppt_id: str | None = None):
     if ppt_id is None:
         ppt_id = choice(list(conftest.RECORDS.participants.records.keys()))
 
@@ -108,12 +111,19 @@ def test_get_apt_table_id(ppt_id: str = None):
     assert isinstance(df, pl.DataFrame)
 
 
-def test_get_apt_table_id_list(ppt_id: str | list[str] = None):
-    if ppt_id is None:
-        ppt_id = choices(list(conftest.RECORDS.appointments.records.keys()), k=100)
-        ppt_id = set([p.split(":")[0] for p in ppt_id])
+def test_get_apt_table_id_list(apt_id: str | Sequence[str] | None = None, k: int = 100):
+    if apt_id is None:
+        apt_id = list(conftest.RECORDS.appointments.records.keys())
 
-    df = utils.get_apt_table(conftest.RECORDS, ppt_id=ppt_id)
+    if isinstance(apt_id, str):
+        apt_id = [apt_id]
+
+    ppt_id = set(i.split(":")[0] for i in apt_id)
+
+    if k > len(ppt_id):
+        k = len(ppt_id)
+
+    df = utils.get_apt_table(conftest.RECORDS, ppt_id=sample(list(ppt_id), k=k))
 
     assert isinstance(df, pl.DataFrame)
     assert all(p in ppt_id for p in df["record_id"].unique().to_list())
@@ -125,7 +135,7 @@ def test_get_que_table():
     assert isinstance(df, pl.DataFrame)
 
 
-def test_get_que_table_id(ppt_id: str | list[str] = None):
+def test_get_que_table_id(ppt_id: str | list[str] | None = None):
     if ppt_id is None:
         ppt_id = choice(list(conftest.RECORDS.participants.records.keys()))
 
@@ -134,13 +144,19 @@ def test_get_que_table_id(ppt_id: str | list[str] = None):
     assert isinstance(df, pl.DataFrame)
 
 
-def test_get_que_table_id_list(ppt_id: str | list[str] = None):
-    if ppt_id is None:
-        ppt_id = choices(list(conftest.RECORDS.questionnaires.records.keys()), k=100)
-        ppt_id = set([p.split(":")[0] for p in ppt_id])
+def test_get_que_table_id_list(que_id: str | list[str] | None = None, k: int = 100):
+    if que_id is None:
+        que_id = list(conftest.RECORDS.appointments.records.keys())
 
-    df = utils.get_que_table(conftest.RECORDS, ppt_id=ppt_id)
+    if isinstance(que_id, str):
+        que_id = [que_id]
 
+    ppt_id = set(i.split(":")[0] for i in que_id)
+
+    if k > len(ppt_id):
+        k = len(ppt_id)
+
+    df = utils.get_apt_table(conftest.RECORDS, ppt_id=sample(list(ppt_id), k=k))
     assert isinstance(df, pl.DataFrame)
     assert all(p in ppt_id for p in df["record_id"].unique().to_list())
 
@@ -148,31 +164,34 @@ def test_get_que_table_id_list(ppt_id: str | list[str] = None):
 def test_is_in_data_dict():
     """Test is_in_datadict."""
 
-    assert utils.is_in_data_dict(["Successful"], "appointment_status") == ["Successful"]
+    assert utils.is_in_data_dict("appointment_status", ["Successful"]) == ["Successful"]
 
-    assert utils.is_in_data_dict(["Successful", "Confirmed"], "appointment_status") == [
+    assert utils.is_in_data_dict(
+        "appointment_status",
+        ["Successful", "Confirmed"],
+    ) == [
         "Successful",
         "Confirmed",
     ]
 
-    assert utils.is_in_data_dict("Successful", "appointment_status") == ["Successful"]
+    assert utils.is_in_data_dict("appointment_status", "Successful") == ["Successful"]
 
-    assert utils.is_in_data_dict(["mop_newborns_1_nirs"], "appointment_study") == [
+    assert utils.is_in_data_dict("appointment_study", ["mop_newborns_1_nirs"]) == [
         "mop_newborns_1_nirs"
     ]
 
     assert utils.is_in_data_dict(
-        ["mop_newborns_1_nirs", "mop_infants_1_hpp"], "appointment_study"
+        "appointment_study", ["mop_newborns_1_nirs", "mop_infants_1_hpp"]
     ) == ["mop_newborns_1_nirs", "mop_infants_1_hpp"]
 
-    assert utils.is_in_data_dict("mop_newborns_1_nirs", "appointment_study") == [
+    assert utils.is_in_data_dict("appointment_study", "mop_newborns_1_nirs") == [
         "mop_newborns_1_nirs"
     ]
 
     with raises(ValueError):
-        utils.is_in_data_dict(["Badname"], "appointment_status")
-        utils.is_in_data_dict(["Badname", "Successful"], "appointment_status")
-        utils.is_in_data_dict("Badname", "appointment_status")
+        utils.is_in_data_dict("appointment_status", ["Badname"])
+        utils.is_in_data_dict("appointment_status", ["Badname", "Successful"])
+        utils.is_in_data_dict("appointment_status", "Badname")
 
 
 def test_get_year_weeks():

@@ -166,4 +166,4 @@ def test_get_age():
 
     assert all(d > 0 for d in api.get_age(age, ts, ts_new))
     with pytest.raises(api.BadAgeFormat):
-        api.get_age(age="5, 4", ts=ts)
+        api.get_age(age="5, 4", ts=ts)  # ty: ignore[invalid-argument-type]
