@@ -6,8 +6,8 @@ Functions to interact with the REDCap API.
 
 from collections import OrderedDict
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
-from functools import singledispatch
+from datetime import datetime
+from functools import lru_cache, singledispatch
 from json import dump, dumps, loads
 from os import environ, getenv, walk
 from os.path import join
@@ -149,6 +149,7 @@ def post_request(fields: dict, timeout: Sequence[int] = (5, 10)) -> requests.Res
     return r
 
 
+@lru_cache
 def get_data_dict() -> dict:
     """Get data dictionaries for categorical variables.
 
@@ -174,9 +175,6 @@ def get_data_dict() -> dict:
         dicts[k] = dict(options)
 
     return dicts
-
-
-DATA_DICT: dict = get_data_dict()
 
 
 def get_redcap_version() -> str:
@@ -272,11 +270,12 @@ def _(x: dict) -> dict:
     """
     fields = ["participant_", "appointment_", "language_"]
     y = dict(x)
+    data_dict = get_data_dict()
 
     for k, v in y.items():
         for f in fields:
-            if f + k in DATA_DICT and v:
-                y[k] = DATA_DICT[f + k][v]
+            if f + k in data_dict and v:
+                y[k] = data_dict[f + k][v]
 
         if "exp" in k:
             y[k] = round(float(v), None) if v else None
@@ -302,7 +301,7 @@ def _(x: pl.DataFrame) -> pl.DataFrame:
     Returns:
         DataFrame: A reformatted DataFrame.
     """
-    cols = {k.rsplit("_", 1)[1]: v for k, v in DATA_DICT.items()}
+    cols = {k.rsplit("_", 1)[1]: v for k, v in get_data_dict().items()}
 
     for k, v in {ck: cv for ck, cv in cols.items() if ck in x.columns}.items():
         x = x.with_columns(pl.col(k).replace_strict(v, default=None))

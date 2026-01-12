@@ -13,11 +13,14 @@ from babylab import api
 from babylab.globals import COLNAMES
 
 
-def is_in_data_dict(variable: str, x: Sequence[str] | str | None = None) -> list[str]:
+def is_in_data_dict(
+    variable: str, data_dict: dict, x: Sequence[str] | str | None = None
+) -> list[str]:
     """Check that a value is an element in the data dictionary.
 
     Args:
         variable (str): Key in which to look for.
+        data_dict (dict): Dictionary to check.
         x (Sequence[str] | str | None, optional): Value to look up in the data dictionary. Defaults to None (all options are checked for the variable).
 
     Raises:
@@ -26,7 +29,7 @@ def is_in_data_dict(variable: str, x: Sequence[str] | str | None = None) -> list
     Returns:
         list[str]: Values in data dict.
     """
-    options = list(api.DATA_DICT[variable].values())
+    options = list(data_dict[variable].values())
 
     if x is None:
         return options
@@ -249,8 +252,9 @@ def get_weekly_apts(
     Raises:
         ValueError: If `study` or `status` is not available.
     """
-    study = is_in_data_dict("appointment_study", study)
-    status = is_in_data_dict("appointment_status", status)
+    data_dict = api.get_data_dict()
+    study = is_in_data_dict("appointment_study", data_dict, study)
+    status = is_in_data_dict("appointment_status", data_dict, status)
     apts = records.appointments.records.values()
 
     date = get_week_n(datetime.today())
