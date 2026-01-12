@@ -163,35 +163,40 @@ def test_get_que_table_id_list(que_id: str | list[str] | None = None, k: int = 1
 
 def test_is_in_data_dict():
     """Test is_in_datadict."""
-
-    assert utils.is_in_data_dict("appointment_status", ["Successful"]) == ["Successful"]
+    dd = api.get_data_dict()
+    assert utils.is_in_data_dict("appointment_status", dd, ["Successful"]) == [
+        "Successful"
+    ]
 
     assert utils.is_in_data_dict(
         "appointment_status",
+        dd,
         ["Successful", "Confirmed"],
     ) == [
         "Successful",
         "Confirmed",
     ]
 
-    assert utils.is_in_data_dict("appointment_status", "Successful") == ["Successful"]
+    assert utils.is_in_data_dict("appointment_status", dd, "Successful") == [
+        "Successful"
+    ]
 
-    assert utils.is_in_data_dict("appointment_study", ["mop_newborns_1_nirs"]) == [
+    assert utils.is_in_data_dict("appointment_study", dd, ["mop_newborns_1_nirs"]) == [
         "mop_newborns_1_nirs"
     ]
 
     assert utils.is_in_data_dict(
-        "appointment_study", ["mop_newborns_1_nirs", "mop_infants_1_hpp"]
+        "appointment_study", dd, ["mop_newborns_1_nirs", "mop_infants_1_hpp"]
     ) == ["mop_newborns_1_nirs", "mop_infants_1_hpp"]
 
-    assert utils.is_in_data_dict("appointment_study", "mop_newborns_1_nirs") == [
+    assert utils.is_in_data_dict("appointment_study", dd, "mop_newborns_1_nirs") == [
         "mop_newborns_1_nirs"
     ]
 
     with raises(ValueError):
-        utils.is_in_data_dict("appointment_status", ["Badname"])
-        utils.is_in_data_dict("appointment_status", ["Badname", "Successful"])
-        utils.is_in_data_dict("appointment_status", "Badname")
+        utils.is_in_data_dict("appointment_status", dd, ["Badname"])
+        utils.is_in_data_dict("appointment_status", dd, ["Badname", "Successful"])
+        utils.is_in_data_dict("appointment_status", dd, "Badname")
 
 
 def test_get_year_weeks():
