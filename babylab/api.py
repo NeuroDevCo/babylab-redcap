@@ -50,7 +50,7 @@ class RecordList:
     """List of REDCap records."""
 
     records: dict = field(default_factory=dict)
-    kind: str | None = None
+    kind: str = "ppt"
 
     def __len__(self) -> int:
         return len(self.records)
@@ -74,7 +74,7 @@ class Appointment(Record):
         apt_id = self.data["redcap_repeat_instance"]
         self.apt_id = make_id(self.ppt_id, apt_id)
         self.status: str = self.data["status"]
-        self.date: str = parse_str_date(self.data["date"])
+        self.date: datetime = parse_str_date(self.data["date"])
 
 
 @dataclass
@@ -444,9 +444,10 @@ def get_records(record_id: str | list | None = None) -> dict:
     """
     fields = {"content": "record", "format": "json", "type": "flat"}
 
-    if record_id and isinstance(record_id, list):
-        fields["records[0]"] = record_id
+    if isinstance(record_id, str):
+        record_id = [record_id]
 
+    if record_id:
         for r in record_id:
             fields[f"records[{record_id}]"] = r
 
