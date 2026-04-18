@@ -5,7 +5,7 @@ Util functions for the app.
 from collections.abc import Sequence
 from copy import deepcopy
 from datetime import date, datetime, timedelta
-from typing import Generator
+from typing import Generator, Iterator
 
 import polars as pl
 
@@ -197,7 +197,7 @@ def count_col(
     return counts
 
 
-def get_year_weeks(year: int) -> Generator[datetime, datetime, datetime]:
+def get_year_weeks(year: int) -> Iterator[date]:
     """Get week numbers of the year.
 
     Args:
@@ -212,6 +212,8 @@ def get_year_weeks(year: int) -> Generator[datetime, datetime, datetime]:
     while date_first.year == year:
         yield date_first
         date_first += timedelta(days=7)
+
+    return
 
 
 def get_week_n(timestamp: date) -> int:
