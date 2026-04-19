@@ -50,7 +50,7 @@ def get_ppt_table(
     """Get participants table
 
     Args:
-        records (api.Records): REDCap records, as returned by ``api.Records``.
+        records (api.Records): REDCap records, as returned by `api.Records`.
         ppt_id (list[str] | str | None): ID of participant to return. If None (default), all participants are returned.
         study (list[str] | str | None, optional): Study in which the participant in the records must have participated to be kept. Defaults to None.
 
@@ -92,7 +92,7 @@ def get_apt_table(
     """Get appointments table.
 
     Args:
-        records (api.Records): REDCap records, as returned by ``api.Records``.
+        records (api.Records): REDCap records, as returned by `api.Records`.
         ppt_id (list[str] | str | None, optional): ID of participant to return. If None (default), all participants are returned.
         study (list[str] | str | None, optional): Study to filter for. If None (default) all studies are returned.
 
@@ -141,7 +141,7 @@ def get_que_table(
     """Get questionnaires table.
 
     Args:
-        records (api.Records): REDCap records, as returned by ``api.Records``.
+        records (api.Records): REDCap records, as returned by `api.Records`.
         ppt_id (list[str] | str | None, optional): ID of participant to return. If None (default), all participants are returned.
         relabel (bool): Reformat labels if True (default).
 
@@ -243,7 +243,7 @@ def get_weekly_apts(
     """Get weekly number of appointments.
 
     Args:
-        records (api.Records): REDCap records, as returned by ``api.Records``.
+        records (api.Records): REDCap records, as returned by `api.Records`.
         study (list | None, optional): Study to filter for. Defaults to None.
         status (list | None, optional): Status to filter for. Defaults to None.
 

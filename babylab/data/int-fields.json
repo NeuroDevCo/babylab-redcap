@@ -1,0 +1,12 @@
+[
+    "age_created_months",
+    "age_created_days",
+    "age_now_months",
+    "age_now_days",
+    "gest_weeks",
+    "birth_weight",
+    "head_circumference",
+    "apgar1",
+    "apgar2",
+    "apgar3"
+]

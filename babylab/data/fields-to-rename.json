@@ -1,0 +1,13 @@
+[
+    "participant_sex",
+    "participant_birth_type",
+    "participant_hearing",
+    "participant_source",
+    "appointment_study",
+    "appointment_status",
+    "appointment_transport",
+    "language_lang1",
+    "language_lang2",
+    "language_lang3",
+    "language_lang4"
+]

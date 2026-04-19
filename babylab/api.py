@@ -87,14 +87,14 @@ def get_api_key(path: Path | str | None = None, name: str = "API_KEY") -> str:
     """Retrieve API credentials.
 
     Args:
-        path (Path | str | None, optional): Path to the .env file with global variables. Defaults to ``Path.home()``.
+        path (Path | str | None, optional): Path to the .env file with global variables. Defaults to `Path.home()`.
         name (str, optional): Name of the variable to import. Defaults to "API_KEY".
 
     Returns:
         str: API key token.
 
     Raises:
-        MissingEnvFile: If .env file is not found  in ``path``.
+        MissingEnvFile: If .env file is not found  in `path`.
         MissingEnvToken: If requested environmental variable key is not found.
         BadToken: If token contains any non-alphanumeric character.
     """
@@ -377,7 +377,7 @@ def prepare_data(x: dict, kind: str = "ppt") -> dict:
         dict: Formatted data.
 
     Raises:
-        ValueError: If ``kind`` is not one of 'ppt', 'apt', or 'que'.
+        ValueError: If `kind` is not one of 'ppt', 'apt', or 'que'.
     """
     if kind not in ["ppt", "apt", "que"]:
         raise ValueError("`kind` must be one of 'ppt', 'apt', or 'que'")
@@ -408,7 +408,7 @@ def make_id(ppt_id: str | int, repeat_id: str | int | None = None) -> str:
 
     Args:
         ppt_id (str | int): Participant ID.
-        repeat_id (str | int | None, optional): Appointment or Questionnaire ID, or ``redcap_repeated_id``. Defaults to None.
+        repeat_id (str | int | None, optional): Appointment or Questionnaire ID, or `redcap_repeated_id`. Defaults to None.
 
     Returns:
         str: Record ID.
@@ -416,7 +416,7 @@ def make_id(ppt_id: str | int, repeat_id: str | int | None = None) -> str:
     ppt_id = str(ppt_id)
 
     if not ppt_id.isdigit():
-        raise ValueError(f"`ppt_id`` must be a digit, but '{ppt_id}' was provided")
+        raise ValueError(f"`ppt_id` must be a digit, but '{ppt_id}' was provided")
 
     if not repeat_id:
         return ppt_id
@@ -424,9 +424,7 @@ def make_id(ppt_id: str | int, repeat_id: str | int | None = None) -> str:
     repeat_id = str(repeat_id)
 
     if not repeat_id.isdigit():
-        raise ValueError(
-            f"`repeat_id`` must be a digit, but '{repeat_id}' was provided"
-        )
+        raise ValueError(f"`repeat_id` must be a digit, but '{repeat_id}' was provided")
 
     return ppt_id + ":" + repeat_id
 
@@ -514,7 +512,7 @@ def get_appointment(apt_id: str) -> Appointment:
     """Get appointment record.
 
     Args:
-        apt_id (str): ID of appointment (``redcap_repeated_id``).
+        apt_id (str): ID of appointment (`redcap_repeated_id`).
 
     Returns:
         Appointment: Appointment object.
@@ -535,7 +533,7 @@ def get_questionnaire(que_id: str) -> Questionnaire:
     """Get questionnaire record.
 
     Args:
-        que_id (str): ID of appointment (``redcap_repeated_id``).
+        que_id (str): ID of appointment (`redcap_repeated_id`).
 
     Returns:
         Questionnaire: Appointment object.
@@ -689,7 +687,7 @@ def redcap_backup(path: Path | str = Path("tmp")) -> Path:
     """Download a backup of the REDCap database
 
     Args:
-        path (Path | str, optional): Output directory. Defaults to ``Path("tmp")``.
+        path (Path | str, optional): Output directory. Defaults to `Path("tmp")`.
 
     Returns:
         Path: Path to the generated file with data and metadata of the project.
@@ -798,14 +796,14 @@ def parse_age(age: tuple) -> tuple[int, int]:
     """Validate age string or tuple.
 
     Args:
-        age (tuple): Age of the participant as a tuple in the ``(months, days)`` format.
+        age (tuple): Age of the participant as a tuple in the `(months, days)` format.
 
     Raises:
         ValueError: If age is not str or tuple.
         BadAgeFormat: If age is ill-formatted.
 
     Returns:
-        tuple[int, int]: Age of the participant in the ``(months, days)`` format.
+        tuple[int, int]: Age of the participant in the `(months, days)` format.
     """
     try:
         assert isinstance(age, tuple)
@@ -844,11 +842,11 @@ def get_age(
 
     Args:
         age (tuple): Age in months and days as a tuple of type (months, days).
-        ts (datetime | str): Birth date as ``datetime.datetime`` type.
-        ts_new (datetime.datetime | None, optional): Time for which the age is calculated. Defaults to current date (``datetime.datetime.now()``).
+        ts (datetime | str): Birth date as `datetime.datetime` type.
+        ts_new (datetime.datetime | None, optional): Time for which the age is calculated. Defaults to current date (`datetime.datetime.now()`).
 
     Returns:
-        tuple: Age in at ``new_timestamp``.
+        tuple: Age in at `new_timestamp`.
     """
     tz = pytz.timezone(tz)
     ts = tz.localize(parse_str_date(ts))
