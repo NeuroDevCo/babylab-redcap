@@ -1,105 +1,20 @@
 """Global variables."""
 
+from importlib.resources import files
+from json import load
+
 from polars import Boolean, Datetime, Int64, Schema, String
 
-URI = "https://apps.sjdhospitalbarcelona.org/redcap/api/"
+URI: str = "https://apps.sjdhospitalbarcelona.org/redcap/api/"
 
-COLNAMES = {
-    "participants": [
-        "record_id",
-        "date_created",
-        "date_updated",
-        "source",
-        "name",
-        "age_created_months",
-        "age_created_days",
-        "sex",
-        "twin",
-        "isdropout",
-        "parent1_name",
-        "parent1_surname",
-        "email1",
-        "phone1",
-        "parent2_name",
-        "parent2_surname",
-        "email2",
-        "phone2",
-        "address",
-        "city",
-        "postcode",
-        "birth_type",
-        "gest_weeks",
-        "birth_weight",
-        "head_circumference",
-        "apgar1",
-        "apgar2",
-        "apgar3",
-        "hearing",
-        "diagnoses",
-        "comments",
-        "age_now_months",
-        "age_now_days",
-    ],
-    "appointments": [
-        "record_id",
-        "appointment_id",
-        "study",
-        "status",
-        "date",
-        "date_created",
-        "date_updated",
-        "transport",
-        "taxi_address",
-        "taxi_isbooked",
-        "confirmation_comments",
-        "comments",
-    ],
-    "questionnaires": [
-        "record_id",
-        "questionnaire_id",
-        "date_created",
-        "date_updated",
-        "isestimated",
-        "lang1",
-        "lang1_exp",
-        "lang2",
-        "lang2_exp",
-        "lang3",
-        "lang3_exp",
-        "lang4",
-        "lang4_exp",
-        "comments",
-        "complete",
-    ],
-}
+with files("babylab.data").joinpath("colnames.json").open("r") as f:
+    COLNAMES = load(f)
 
-FIELDS_TO_RENAME = [
-    "participant_sex",
-    "participant_birth_type",
-    "participant_hearing",
-    "participant_source",
-    "appointment_study",
-    "appointment_status",
-    "appointment_transport",
-    "language_lang1",
-    "language_lang2",
-    "language_lang3",
-    "language_lang4",
-]
+with files("babylab.data").joinpath("fields-to-rename.json").open("r") as f:
+    FIELDS_TO_RENAME = load(f)
 
-
-INT_FIELDS = [
-    "age_created_months",
-    "age_created_days",
-    "age_now_months",
-    "age_now_days",
-    "gest_weeks",
-    "birth_weight",
-    "head_circumference",
-    "apgar1",
-    "apgar2",
-    "apgar3",
-]
+with files("babylab.data").joinpath("int-fields.json").open("r") as f:
+    INT_FIELDS = load(f)
 
 SCHEMA = {
     "participants": Schema(
