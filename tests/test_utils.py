@@ -2,7 +2,7 @@
 
 from datetime import date, datetime
 from random import choice, sample
-from typing import Generator, Sequence
+from typing import Generator
 
 import polars as pl
 from pytest import raises
@@ -109,7 +109,7 @@ class TestGetParticipantTable:
         assert isinstance(df, pl.DataFrame)
 
     def test_get_apt_table_id_list(
-        self, apt_id: str | Sequence[str] | None = None, k: int = 100
+        self, apt_id: str | list[str] | None = None, k: int = 100
     ):
         if apt_id is None:
             apt_id = list(conftest.RECORDS.appointments.records.keys())

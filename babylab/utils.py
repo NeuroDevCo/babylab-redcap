@@ -2,7 +2,6 @@
 Util functions for the app.
 """
 
-from collections.abc import Sequence
 from copy import deepcopy
 from datetime import date, datetime, timedelta
 from typing import Generator, Iterator
@@ -14,14 +13,14 @@ from babylab.globals import COLNAMES
 
 
 def is_in_data_dict(
-    variable: str, data_dict: dict, x: Sequence[str] | str | None = None
+    variable: str, data_dict: dict, x: list[str] | str | None = None
 ) -> list[str]:
     """Check that a value is an element in the data dictionary.
 
     Args:
         variable (str): Key in which to look for.
         data_dict (dict): Dictionary to check.
-        x (Sequence[str] | str | None, optional): Value to look up in the data dictionary. Defaults to None (all options are checked for the variable).
+        x (list[str] | str | None, optional): Value to look up in the data dictionary. Defaults to None (all options are checked for the variable).
 
     Raises:
         ValueError: If `x` is not an option present in `data_dict`.
@@ -238,8 +237,8 @@ def get_week_n(timestamp: date) -> int:
 
 def get_weekly_apts(
     records: api.Records,
-    study: Sequence | str | None = None,
-    status: Sequence | str | None = None,
+    study: list[str] | str | None = None,
+    status: list[str] | str | None = None,
 ) -> int:
     """Get weekly number of appointments.
 

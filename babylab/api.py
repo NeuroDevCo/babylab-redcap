@@ -10,9 +10,7 @@ from datetime import datetime
 from functools import lru_cache, singledispatch
 from json import dump, dumps, loads
 from os import environ, getenv, walk
-from os.path import join
 from pathlib import Path
-from typing import Sequence
 from warnings import warn
 from zipfile import ZIP_DEFLATED, ZipFile
 
@@ -120,12 +118,12 @@ def get_api_key(path: Path | str | None = None, name: str = "API_KEY") -> str:
     return token
 
 
-def post_request(fields: dict, timeout: Sequence[int] = (5, 10)) -> requests.Response:
+def post_request(fields: dict, timeout: tuple[int, int] = (5, 10)) -> requests.Response:
     """Make a POST request to the REDCap database.
 
     Args:
         fields (dict): Fields to retrieve.
-        timeout (Sequence[int], optional): Timeout of HTTP request in seconds. Defaults to 10.
+        timeout (tuple[int, int], optional): Timeout of HTTP request in seconds. Defaults to 10.
 
     Raises:
         requests.exceptions.HTTPError: If HTTP request fails.
@@ -733,7 +731,7 @@ def redcap_backup(path: Path | str = Path("tmp")) -> Path:
     for root, _, files in walk(str(path), topdown=False):
         with ZipFile(file, "w", ZIP_DEFLATED) as z:
             for f in files:
-                z.write(join(root, f))
+                z.write(Path(root, f))
 
     return file
 
