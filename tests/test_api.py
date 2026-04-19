@@ -1,14 +1,14 @@
 """Test API."""
 
-import os
 from datetime import datetime
+from os import getenv
 
 import pytest
 
 from babylab import api
 from tests import conftest
 
-IS_GIHTUB_ACTIONS = os.getenv("GITHUB_ACTIONS") == "true"
+IS_GIHTUB_ACTIONS = getenv("GITHUB_ACTIONS") == "true"
 
 
 class TestApiKey:
