@@ -134,9 +134,6 @@ def post_request(fields: dict, timeout: tuple[int, int] = (5, 10)) -> requests.R
     """
     t = get_api_key()
 
-    if t is None:
-        raise MissingEnvToken("No key found in your .env file")
-
     fields = OrderedDict(fields)
     fields["token"] = t
     fields.move_to_end("token", last=False)
