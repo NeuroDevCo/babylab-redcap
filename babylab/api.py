@@ -202,6 +202,8 @@ def to_df(x: RecordList) -> pl.DataFrame:
         "questionnaires": "que_id",
     }
 
+    int_cols = [f for f in INT_FIELDS if f in names]
+
     df = (
         pl.DataFrame(recs, schema=SCHEMA[x.kind])
         .rename({"redcap_repeat_instance": id_lookup[x.kind]}, strict=False)
@@ -211,11 +213,7 @@ def to_df(x: RecordList) -> pl.DataFrame:
             .otherwise(pl.col(pl.String))
             .name.keep()
         )
-        .with_columns(
-            pl.col(
-                [f for f in INT_FIELDS if f in names],
-            ).cast(pl.Int128)
-        )
+        .with_columns(pl.col(int_cols).cast(pl.Int128))
     )
 
     return df
