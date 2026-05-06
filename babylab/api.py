@@ -20,7 +20,9 @@ import requests
 from dateutil.relativedelta import relativedelta as rdelta
 from dotenv import find_dotenv, load_dotenv
 
-from babylab.globals import COLNAMES, FIELDS_TO_RENAME, INT_FIELDS, SCHEMA, URI
+from babylab.globals import COLNAMES, FIELD_TYPES, FIELDS_TO_RENAME, SCHEMA, URI
+
+BASE_FIELDS: dict[str, str] = {"content": "record", "format": "json", "type": "flat"}
 
 
 class MissingEnvFile(Exception):
@@ -202,6 +204,8 @@ def to_df(x: RecordList) -> pl.DataFrame:
         "questionnaires": "que_id",
     }
 
+    int_cols = [f for f in FIELD_TYPES["int"] if f in names]
+
     df = (
         pl.DataFrame(recs, schema=SCHEMA[x.kind])
         .rename({"redcap_repeat_instance": id_lookup[x.kind]}, strict=False)
@@ -211,11 +215,7 @@ def to_df(x: RecordList) -> pl.DataFrame:
             .otherwise(pl.col(pl.String))
             .name.keep()
         )
-        .with_columns(
-            pl.col(
-                [f for f in INT_FIELDS if f in names],
-            ).cast(pl.Int128)
-        )
+        .with_columns(pl.col(int_cols).cast(pl.Int128))
     )
 
     return df
@@ -268,20 +268,25 @@ def _(x: dict) -> dict:
     data_dict = get_data_dict()
 
     for k, v in y.items():
+        # numeric labels to string labels
         for f in fields:
             if f + k in data_dict and v:
                 y[k] = data_dict[f + k][v]
 
+        # if variable is lang_*_exp (language exposure, remove decimals)
         if "exp" in k:
             y[k] = round(float(v), None) if v else None
 
-        for c in ["taxi_isbooked", "isdropout", "isestimated"]:
+        # cast boolean variables from numeric to boolean
+        for c in FIELD_TYPES["bool"]:
             if c in k:
                 y[k] = y[c] == "1"
 
+        # empty strings to None
         y[k] = y[k] if y[k] != "" else None
 
-    y = {k: (int(v) if v and k in INT_FIELDS else v) for k, v in y.items()}
+    # cast int variables to int from text to int
+    y = {k: (int(v) if v and k in FIELD_TYPES["int"] else v) for k, v in y.items()}
 
     return y
 
@@ -301,7 +306,7 @@ def _(x: pl.DataFrame) -> pl.DataFrame:
     for k, v in {ck: cv for ck, cv in cols.items() if ck in x.columns}.items():
         x = x.with_columns(pl.col(k).replace_strict(v, default=None))
 
-    for c in ["isestimated", "isdropout"]:
+    for c in FIELD_TYPES["bool"]:
         if c in x.columns:
             x = x.with_columns(pl.col(c).eq("1"))
 
@@ -310,7 +315,7 @@ def _(x: pl.DataFrame) -> pl.DataFrame:
         .then(None)
         .otherwise(pl.col(pl.String))
         .name.keep()
-    ).cast({c: pl.Int64 for c in [f for f in INT_FIELDS if f in x.columns]})
+    ).cast({c: pl.Int64 for c in [f for f in FIELD_TYPES["int"] if f in x.columns]})
 
     return x
 
@@ -435,16 +440,17 @@ def get_records(record_id: str | list | None = None) -> dict:
     Returns:
         list[dict[str, str]]: REDCap records in JSON format.
     """
-    fields = {"content": "record", "format": "json", "type": "flat"}
 
     if isinstance(record_id, str):
         record_id = [record_id]
 
-    if record_id:
-        for r in record_id:
-            fields[f"records[{record_id}]"] = r
+    fields = BASE_FIELDS.copy()
 
-    return post_request(fields=fields).json()
+    if record_id:
+        ppt_fields = {f"records[{r}]": r for r in record_id}
+        fields.update(ppt_fields)
+
+    return post_request(fields=BASE_FIELDS).json()
 
 
 def get_participant(ppt_id: str) -> Participant:
@@ -459,11 +465,9 @@ def get_participant(ppt_id: str) -> Participant:
     Raises:
         MissingRecord: If requested recording is missing in the database.
     """
-    fields = {
-        "content": "record",
+    fields = BASE_FIELDS.copy()
+    new_fields = {
         "action": "export",
-        "format": "json",
-        "type": "flat",
         "csvDelimiter": "",
         "records[0]": ppt_id,
         "rawOrLabel": "raw",
@@ -473,6 +477,7 @@ def get_participant(ppt_id: str) -> Participant:
         "exportDataAccessGroups": "false",
         "returnFormat": "json",
     }
+    fields.update(new_fields)
 
     for i, f in enumerate(["participants", "appointments", "language"]):
         fields[f"forms[{i}]"] = f
@@ -494,15 +499,15 @@ def get_participant(ppt_id: str) -> Participant:
 
     try:
         data = prepare_data(recs[0])
-
-        return Participant(
-            ppt_id=data["record_id"],
-            data=data,
-            appointments=RecordList(apt, kind="appointments"),
-            questionnaires=RecordList(que, kind="questionnaires"),
-        )
     except IndexError as e:
         raise MissingRecord(f"Record {ppt_id} not found") from e
+
+    return Participant(
+        ppt_id=data["record_id"],
+        data=data,
+        appointments=RecordList(apt, kind="appointments"),
+        questionnaires=RecordList(que, kind="questionnaires"),
+    )
 
 
 def get_appointment(apt_id: str) -> Appointment:
@@ -551,7 +556,8 @@ def add_participant(data: dict, modifying: bool = False):
         data (dict): Participant data.
         modifying (bool, optional): Modifying existent participant?
     """
-    fields = {
+    fields = BASE_FIELDS.copy()
+    new_fields = {
         "content": "record",
         "action": "import",
         "format": "json",
@@ -560,6 +566,7 @@ def add_participant(data: dict, modifying: bool = False):
         "forceAutoNumber": "false" if modifying else "true",
         "data": f"[{dumps(dt_to_str(data))}]",
     }
+    fields.update(new_fields)
 
     return post_request(fields=fields)
 

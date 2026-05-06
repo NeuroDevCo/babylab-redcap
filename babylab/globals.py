@@ -13,8 +13,8 @@ with files("babylab.data").joinpath("colnames.json").open("r") as f:
 with files("babylab.data").joinpath("fields-to-rename.json").open("r") as f:
     FIELDS_TO_RENAME = load(f)
 
-with files("babylab.data").joinpath("int-fields.json").open("r") as f:
-    INT_FIELDS = load(f)
+with files("babylab.data").joinpath("field-types.json").open("r") as f:
+    FIELD_TYPES = load(f)
 
 SCHEMA = {
     "participants": Schema(
