@@ -22,6 +22,8 @@ from dotenv import find_dotenv, load_dotenv
 
 from babylab.globals import COLNAMES, FIELD_TYPES, FIELDS_TO_RENAME, SCHEMA, URI
 
+BASE_FIELDS: dict[str, str] = {"content": "record", "format": "json", "type": "flat"}
+
 
 class MissingEnvFile(Exception):
     """.env file is not found in user folder"""
@@ -438,16 +440,17 @@ def get_records(record_id: str | list | None = None) -> dict:
     Returns:
         list[dict[str, str]]: REDCap records in JSON format.
     """
-    fields = {"content": "record", "format": "json", "type": "flat"}
 
     if isinstance(record_id, str):
         record_id = [record_id]
 
-    if record_id:
-        for r in record_id:
-            fields[f"records[{record_id}]"] = r
+    fields = BASE_FIELDS.copy()
 
-    return post_request(fields=fields).json()
+    if record_id:
+        ppt_fields = {f"records[{r}]": r for r in record_id}
+        fields.update(ppt_fields)
+
+    return post_request(fields=BASE_FIELDS).json()
 
 
 def get_participant(ppt_id: str) -> Participant:
@@ -462,11 +465,9 @@ def get_participant(ppt_id: str) -> Participant:
     Raises:
         MissingRecord: If requested recording is missing in the database.
     """
-    fields = {
-        "content": "record",
+    fields = BASE_FIELDS.copy()
+    new_fields = {
         "action": "export",
-        "format": "json",
-        "type": "flat",
         "csvDelimiter": "",
         "records[0]": ppt_id,
         "rawOrLabel": "raw",
@@ -476,6 +477,7 @@ def get_participant(ppt_id: str) -> Participant:
         "exportDataAccessGroups": "false",
         "returnFormat": "json",
     }
+    fields.update(new_fields)
 
     for i, f in enumerate(["participants", "appointments", "language"]):
         fields[f"forms[{i}]"] = f
@@ -554,7 +556,8 @@ def add_participant(data: dict, modifying: bool = False):
         data (dict): Participant data.
         modifying (bool, optional): Modifying existent participant?
     """
-    fields = {
+    fields = BASE_FIELDS.copy()
+    new_fields = {
         "content": "record",
         "action": "import",
         "format": "json",
@@ -563,6 +566,7 @@ def add_participant(data: dict, modifying: bool = False):
         "forceAutoNumber": "false" if modifying else "true",
         "data": f"[{dumps(dt_to_str(data))}]",
     }
+    fields.update(new_fields)
 
     return post_request(fields=fields)
 
