@@ -20,7 +20,7 @@ import requests
 from dateutil.relativedelta import relativedelta as rdelta
 from dotenv import find_dotenv, load_dotenv
 
-from babylab.globals import COLNAMES, FIELDS_TO_RENAME, INT_FIELDS, SCHEMA, URI
+from babylab.globals import COLNAMES, FIELD_TYPES, FIELDS_TO_RENAME, SCHEMA, URI
 
 
 class MissingEnvFile(Exception):
@@ -202,7 +202,7 @@ def to_df(x: RecordList) -> pl.DataFrame:
         "questionnaires": "que_id",
     }
 
-    int_cols = [f for f in INT_FIELDS if f in names]
+    int_cols = [f for f in FIELD_TYPES["int"] if f in names]
 
     df = (
         pl.DataFrame(recs, schema=SCHEMA[x.kind])
@@ -276,7 +276,7 @@ def _(x: dict) -> dict:
             y[k] = round(float(v), None) if v else None
 
         # cast boolean variables from numeric to boolean
-        for c in ["taxi_isbooked", "isdropout", "isestimated"]:
+        for c in FIELD_TYPES["bool"]:
             if c in k:
                 y[k] = y[c] == "1"
 
@@ -284,7 +284,7 @@ def _(x: dict) -> dict:
         y[k] = y[k] if y[k] != "" else None
 
     # cast int variables to int from text to int
-    y = {k: (int(v) if v and k in INT_FIELDS else v) for k, v in y.items()}
+    y = {k: (int(v) if v and k in FIELD_TYPES["int"] else v) for k, v in y.items()}
 
     return y
 
@@ -304,7 +304,7 @@ def _(x: pl.DataFrame) -> pl.DataFrame:
     for k, v in {ck: cv for ck, cv in cols.items() if ck in x.columns}.items():
         x = x.with_columns(pl.col(k).replace_strict(v, default=None))
 
-    for c in ["isestimated", "isdropout"]:
+    for c in FIELD_TYPES["bool"]:
         if c in x.columns:
             x = x.with_columns(pl.col(c).eq("1"))
 
@@ -313,7 +313,7 @@ def _(x: pl.DataFrame) -> pl.DataFrame:
         .then(None)
         .otherwise(pl.col(pl.String))
         .name.keep()
-    ).cast({c: pl.Int64 for c in [f for f in INT_FIELDS if f in x.columns]})
+    ).cast({c: pl.Int64 for c in [f for f in FIELD_TYPES["int"] if f in x.columns]})
 
     return x
 
