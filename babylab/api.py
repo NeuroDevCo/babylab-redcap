@@ -497,15 +497,15 @@ def get_participant(ppt_id: str) -> Participant:
 
     try:
         data = prepare_data(recs[0])
-
-        return Participant(
-            ppt_id=data["record_id"],
-            data=data,
-            appointments=RecordList(apt, kind="appointments"),
-            questionnaires=RecordList(que, kind="questionnaires"),
-        )
     except IndexError as e:
         raise MissingRecord(f"Record {ppt_id} not found") from e
+
+    return Participant(
+        ppt_id=data["record_id"],
+        data=data,
+        appointments=RecordList(apt, kind="appointments"),
+        questionnaires=RecordList(que, kind="questionnaires"),
+    )
 
 
 def get_appointment(apt_id: str) -> Appointment:
