@@ -266,19 +266,24 @@ def _(x: dict) -> dict:
     data_dict = get_data_dict()
 
     for k, v in y.items():
+        # numeric labels to string labels
         for f in fields:
             if f + k in data_dict and v:
                 y[k] = data_dict[f + k][v]
 
+        # if variable is lang_*_exp (language exposure, remove decimals)
         if "exp" in k:
             y[k] = round(float(v), None) if v else None
 
+        # cast boolean variables from numeric to boolean
         for c in ["taxi_isbooked", "isdropout", "isestimated"]:
             if c in k:
                 y[k] = y[c] == "1"
 
+        # empty strings to None
         y[k] = y[k] if y[k] != "" else None
 
+    # cast int variables to int from text to int
     y = {k: (int(v) if v and k in INT_FIELDS else v) for k, v in y.items()}
 
     return y
