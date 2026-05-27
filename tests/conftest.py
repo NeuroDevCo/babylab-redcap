@@ -10,15 +10,15 @@ from string import ascii_lowercase, digits
 from babylab import api
 
 IS_GIHTUB_ACTIONS = os.getenv("GITHUB_ACTIONS") == "true"
-RECORDS: api.Records = api.Records()
-DATA_DICT: dict = api.get_data_dict()
+RECORDS = api.Records()
+DATA_DICT = api.get_data_dict()
 
 
 def generate_str(n: int = 7) -> str:
     """Generate random string of ASCII characters.
 
     Args:
-        nchar (int, optional): Number of characters in the string. Defaults to 7.
+        n (int, optional): Number of characters in the string. Defaults to 7.
 
     Returns:
         str: Random string of characters of length ``n``.
