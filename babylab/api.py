@@ -20,9 +20,9 @@ import requests
 from dateutil.relativedelta import relativedelta as rdelta
 from dotenv import find_dotenv, load_dotenv
 
-from babylab.globals import COLNAMES, FIELD_TYPES, FIELDS_TO_RENAME, SCHEMA, URI
+from babylab.globals import COLNAMES, FIELD_TYPES, FIELDS_TO_RENAME, SCHEMA
 
-BASE_FIELDS: dict[str, str] = {"content": "record", "format": "json", "type": "flat"}
+BASE_FIELDS = {"content": "record", "format": "json", "type": "flat"}
 
 
 class MissingEnvFile(Exception):
@@ -31,6 +31,10 @@ class MissingEnvFile(Exception):
 
 class MissingEnvToken(Exception):
     """Token is not provided as key in .env"""
+
+
+class MissingEnvURI(Exception):
+    """API_URI is not provided as key in .env"""
 
 
 class MissingRecord(Exception):
@@ -85,7 +89,7 @@ class Questionnaire(Record):
         self.isestimated = self.data["isestimated"]
 
 
-def get_api_key(path: Path | str | None = None, name: str = "API_KEY") -> str:
+def get_api_key(path: Path | str | None = None) -> str:
     """Retrieve API credentials.
 
     Args:
@@ -100,8 +104,9 @@ def get_api_key(path: Path | str | None = None, name: str = "API_KEY") -> str:
         MissingEnvToken: If requested environmental variable key is not found.
         BadToken: If token contains any non-alphanumeric character.
     """
-    if name in environ or getenv("GITHUB_ACTIONS") == "true":
-        token = getenv(name)
+    var = "API_KEY"
+    if var in environ or getenv("GITHUB_ACTIONS") == "true":
+        token = getenv(var)
     else:
         path = Path(find_dotenv()) if not path else Path(path)
 
@@ -109,10 +114,10 @@ def get_api_key(path: Path | str | None = None, name: str = "API_KEY") -> str:
             raise MissingEnvFile(f".env file not found in {path}")
 
         load_dotenv(path, override=True)
-        token = getenv(name)
+        token = getenv(var)
 
     if token is None:
-        raise MissingEnvToken(f"No environment variable named '{name}' found")
+        raise MissingEnvToken(f"No environment variable named '{var}' found")
 
     if not isinstance(token, str) or not token.isalnum():
         raise BadToken("Token must be str with no non-alphanumeric characters")
@@ -140,7 +145,14 @@ def post_request(fields: dict, timeout: tuple[int, int] = (5, 10)) -> requests.R
     fields["token"] = t
     fields.move_to_end("token", last=False)
 
-    r = requests.post(URI, data=fields, timeout=timeout)
+    load_dotenv(find_dotenv(), override=True)
+
+    uri = getenv("API_URI")
+
+    if uri is None:
+        raise MissingEnvURI()
+
+    r = requests.post(uri, data=fields, timeout=timeout)
     r.raise_for_status()
 
     return r
@@ -809,13 +821,10 @@ def parse_age(age: tuple) -> tuple[int, int]:
     Returns:
         tuple[int, int]: Age of the participant in the `(months, days)` format.
     """
-    try:
-        assert isinstance(age, tuple)
-        assert len(age) == 2
+    if not len(age) == 2:
+        raise BadAgeFormat("age must be tuple of length two: (months, age)")
 
-        return int(age[0]), int(age[1])
-    except AssertionError as e:
-        raise BadAgeFormat("age must be in (months, age) format") from e
+    return int(age[0]), int(age[1])
 
 
 def parse_str_date(x: str | datetime) -> datetime:

@@ -34,3 +34,4 @@ jobs:
         run: uv run pytest -v -p no:cacheprovider --exitfirst
         env:
           API_KEY: ${{ secrets.API_KEY }}
+          API_URI: ${{ secrets.API_URI }}
