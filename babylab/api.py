@@ -22,7 +22,7 @@ from dotenv import find_dotenv, load_dotenv
 
 from babylab.globals import COLNAMES, FIELD_TYPES, FIELDS_TO_RENAME, SCHEMA
 
-BASE_FIELDS: dict[str, str] = {"content": "record", "format": "json", "type": "flat"}
+BASE_FIELDS = {"content": "record", "format": "json", "type": "flat"}
 
 
 class MissingEnvFile(Exception):
@@ -85,7 +85,7 @@ class Questionnaire(Record):
         self.isestimated = self.data["isestimated"]
 
 
-def get_api_key(path: Path | str | None = None, name: str = "API_KEY") -> str:
+def get_api_key(path: Path | str | None = None) -> str:
     """Retrieve API credentials.
 
     Args:
@@ -100,8 +100,9 @@ def get_api_key(path: Path | str | None = None, name: str = "API_KEY") -> str:
         MissingEnvToken: If requested environmental variable key is not found.
         BadToken: If token contains any non-alphanumeric character.
     """
-    if name in environ or getenv("GITHUB_ACTIONS") == "true":
-        token = getenv(name)
+    var = "API_KEY"
+    if var in environ or getenv("GITHUB_ACTIONS") == "true":
+        token = getenv(var)
     else:
         path = Path(find_dotenv()) if not path else Path(path)
 
@@ -109,10 +110,10 @@ def get_api_key(path: Path | str | None = None, name: str = "API_KEY") -> str:
             raise MissingEnvFile(f".env file not found in {path}")
 
         load_dotenv(path, override=True)
-        token = getenv(name)
+        token = getenv(var)
 
     if token is None:
-        raise MissingEnvToken(f"No environment variable named '{name}' found")
+        raise MissingEnvToken(f"No environment variable named '{var}' found")
 
     if not isinstance(token, str) or not token.isalnum():
         raise BadToken("Token must be str with no non-alphanumeric characters")
@@ -142,7 +143,7 @@ def post_request(fields: dict, timeout: tuple[int, int] = (5, 10)) -> requests.R
 
     load_dotenv(find_dotenv(), override=True)
 
-    r = requests.post(getenv("URI"), data=fields, timeout=timeout)
+    r = requests.post(getenv("API_URI"), data=fields, timeout=timeout)
     r.raise_for_status()
 
     return r
