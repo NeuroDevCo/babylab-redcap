@@ -33,6 +33,10 @@ class MissingEnvToken(Exception):
     """Token is not provided as key in .env"""
 
 
+class MissingEnvURI(Exception):
+    """API_URI is not provided as key in .env"""
+
+
 class MissingRecord(Exception):
     """Record is not found"""
 
@@ -143,7 +147,12 @@ def post_request(fields: dict, timeout: tuple[int, int] = (5, 10)) -> requests.R
 
     load_dotenv(find_dotenv(), override=True)
 
-    r = requests.post(getenv("API_URI"), data=fields, timeout=timeout)
+    uri = getenv("API_URI")
+
+    if uri is None:
+        raise MissingEnvURI()
+
+    r = requests.post(uri, data=fields, timeout=timeout)
     r.raise_for_status()
 
     return r
@@ -812,13 +821,10 @@ def parse_age(age: tuple) -> tuple[int, int]:
     Returns:
         tuple[int, int]: Age of the participant in the `(months, days)` format.
     """
-    try:
-        assert isinstance(age, tuple)
-        assert len(age) == 2
+    if not len(age) == 2:
+        raise BadAgeFormat("age must be tuple of length two: (months, age)")
 
-        return int(age[0]), int(age[1])
-    except AssertionError as e:
-        raise BadAgeFormat("age must be in (months, age) format") from e
+    return int(age[0]), int(age[1])
 
 
 def parse_str_date(x: str | datetime) -> datetime:
