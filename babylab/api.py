@@ -20,7 +20,7 @@ import requests
 from dateutil.relativedelta import relativedelta as rdelta
 from dotenv import find_dotenv, load_dotenv
 
-from babylab.globals import COLNAMES, FIELD_TYPES, FIELDS_TO_RENAME, SCHEMA, URI
+from babylab.globals import COLNAMES, FIELD_TYPES, FIELDS_TO_RENAME, SCHEMA
 
 BASE_FIELDS: dict[str, str] = {"content": "record", "format": "json", "type": "flat"}
 
@@ -140,7 +140,9 @@ def post_request(fields: dict, timeout: tuple[int, int] = (5, 10)) -> requests.R
     fields["token"] = t
     fields.move_to_end("token", last=False)
 
-    r = requests.post(URI, data=fields, timeout=timeout)
+    load_dotenv(find_dotenv(), override=True)
+
+    r = requests.post(getenv("URI"), data=fields, timeout=timeout)
     r.raise_for_status()
 
     return r

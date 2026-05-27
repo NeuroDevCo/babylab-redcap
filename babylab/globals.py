@@ -5,7 +5,6 @@ from json import load
 
 from polars import Boolean, Datetime, Int64, Schema, String
 
-URI: str = "https://apps.sjdhospitalbarcelona.org/redcap/api/"
 
 with files("babylab.data").joinpath("colnames.json").open("r") as f:
     COLNAMES = load(f)
