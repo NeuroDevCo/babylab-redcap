@@ -18,7 +18,7 @@ def generate_str(n: int = 7) -> str:
     """Generate random string of ASCII characters.
 
     Args:
-        nchar (int, optional): Number of characters in the string. Defaults to 7.
+        n (int, optional): Number of characters in the string. Defaults to 7.
 
     Returns:
         str: Random string of characters of length ``n``.
