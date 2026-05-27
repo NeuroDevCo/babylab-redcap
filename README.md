@@ -2,6 +2,7 @@
 
 ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/NeuroDevComp/babylab-redcap/lint-test.yml)
 ![GitHub Issues or Pull Requests](https://img.shields.io/github/issues/NeuroDevComp/babylab-redcap)
+![Codecov](https://img.shields.io/codecov/c/github/NeuroDevCo/babylab-redcap)
 ![PyPI - License](https://img.shields.io/pypi/l/babylab)
 ![PyPI - Status](https://img.shields.io/pypi/status/babylab)
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/babylab)
