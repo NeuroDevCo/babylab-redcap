@@ -63,6 +63,9 @@ class TestDateParsing:
         assert api.parse_str_date("2025-05-02T09:10:10") == hms
         assert api.parse_str_date("2025-05-02 09:10:10") == hms
         assert api.parse_str_date("2025-05-02 09:10") == hm
+        assert api.parse_str_date("2025/05/02T09:10:10") == hms
+        assert api.parse_str_date("2025/05/02 09:10:10") == hms
+        assert api.parse_str_date("2025/05/02 09:10") == hm
 
 
 class TestDataDict:
