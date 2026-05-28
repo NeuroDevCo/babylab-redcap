@@ -839,6 +839,9 @@ def parse_str_date(x: str | datetime) -> datetime:
     if isinstance(x, datetime):
         return x
 
+    if isinstance(x, str):
+        x = x.replace("/", "-")
+
     try:
         return datetime.strptime(x, "%Y-%m-%dT%H:%M:%S")
     except ValueError:
