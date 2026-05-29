@@ -12,7 +12,6 @@ repos:
     -   id: requirements-txt-fixer
     -   id: detect-private-key
     -   id: pretty-format-json
-        autofix: true
 - repo: https://github.com/astral-sh/ruff-pre-commit
   rev: v0.15.15
   hooks:
