@@ -5,10 +5,14 @@ repos:
     -   id: trailing-whitespace
     -   id: end-of-file-fixer
     -   id: check-yaml
+    -   id: check-toml
     -   id: debug-statements
     -   id: double-quote-string-fixer
     -   id: name-tests-test
     -   id: requirements-txt-fixer
+    -   id: detect-private-key
+    -   id: pretty-format-json
+        autofix: true
 - repo: https://github.com/astral-sh/ruff-pre-commit
   rev: v0.15.15
   hooks:
