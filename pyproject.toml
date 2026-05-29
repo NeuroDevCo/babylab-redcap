@@ -1,6 +1,6 @@
 [project]
 name = "babylab"
-version = "0.9.4"
+version = "0.9.5"
 description = "A GUI for the SJD Babylab REDCap database"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -33,10 +33,10 @@ build-backend = "hatchling.build"
 
 [dependency-groups]
 dev = [
-    "pre-commit>=4.6.0",
-    "pytest>=8.4.2",
-    "pytest-cov>=7.0.0",
-    "ruff>=0.13.2",
+  "pre-commit>=4.6.0",
+  "pytest>=8.4.2",
+  "pytest-cov>=7.0.0",
+  "ruff>=0.13.2",
 ]
 
 [project.urls]
