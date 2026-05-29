@@ -4,4 +4,6 @@ repos:
   hooks:
     - id: ruff-check
       args: [ --fix ]
+      types_or: [ python, pyi, pyproject ]
+
     - id: ruff-format
