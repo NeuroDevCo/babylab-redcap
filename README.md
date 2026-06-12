@@ -16,7 +16,7 @@
 
 ### The app shows a timeout error (408) or indicates invalid credentials (403)
 
-It is possible that your API token is no longer valid. To to your REDCap instance and request a new API token. You should get a new token immediatly. Replace the old tokem with your new token in the .env file. Try to log in again.
+It is possible that your API token is no longer valid. To to your REDCap instance and request a new API token. You should get a new token immediatly. Replace the old token with your new token in the .env file. Try to log in again.
 
 ## Feed-back
 
