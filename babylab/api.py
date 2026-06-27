@@ -94,7 +94,6 @@ def get_api_key(path: Path | str | None = None) -> str:
 
     Args:
         path (Path | str | None, optional): Path to the .env file with global variables. Defaults to `Path.home()`.
-        name (str, optional): Name of the variable to import. Defaults to "API_KEY".
 
     Returns:
         str: API key token.
