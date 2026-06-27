@@ -94,7 +94,6 @@ def get_api_key(path: Path | str | None = None) -> str:
 
     Args:
         path (Path | str | None, optional): Path to the .env file with global variables. Defaults to `Path.home()`.
-        name (str, optional): Name of the variable to import. Defaults to "API_KEY".
 
     Returns:
         str: API key token.
@@ -447,7 +446,7 @@ def get_records(record_id: str | list | None = None) -> dict:
     """Return records as JSON.
 
     Args:
-        record_id  (str): ID of record to retrieve. Defaults to None.
+        record_id  (str | list | None, optional): ID of record to retrieve. Defaults to None.
 
     Returns:
         list[dict[str, str]]: REDCap records in JSON format.
