@@ -446,7 +446,7 @@ def get_records(record_id: str | list | None = None) -> dict:
     """Return records as JSON.
 
     Args:
-        record_id  (str): ID of record to retrieve. Defaults to None.
+        record_id  (str | list | None, optional): ID of record to retrieve. Defaults to None.
 
     Returns:
         list[dict[str, str]]: REDCap records in JSON format.
