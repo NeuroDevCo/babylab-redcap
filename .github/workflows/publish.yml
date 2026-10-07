@@ -1,9 +1,9 @@
 name: Publish to PyPi and deploy documentation
 
 on:
-  push:
-    branches: [main] # branch to trigger deployment
-
+  release:
+    types: [published]
+    
 jobs:
   setup:
     name: Setup Python
