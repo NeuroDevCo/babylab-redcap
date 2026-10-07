@@ -4,6 +4,7 @@ from datetime import datetime
 from os import getenv
 
 import pytest
+from pydantic import SecretStr
 
 from babylab import api
 from tests import conftest
@@ -15,13 +16,13 @@ class TestApiKey:
     def test_get_api_key(self):
         """Test get_api_key."""
         token = api.get_api_key()
-        assert token is not None
-        assert isinstance(token, str)
+        assert token
+        assert isinstance(token, SecretStr)
 
         if not IS_GIHTUB_ACTIONS:
             token = api.get_api_key(path="~/.env")
             assert token is not None
-            assert isinstance(token, str)
+            assert isinstance(token, SecretStr)
 
 
 class TestRedCapVersion:
