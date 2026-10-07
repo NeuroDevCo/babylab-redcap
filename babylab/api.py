@@ -19,6 +19,7 @@ import pytz
 import requests
 from dateutil.relativedelta import relativedelta as rdelta
 from dotenv import find_dotenv, load_dotenv
+from pydantic import BaseModel, HttpUrl, SecretStr
 
 from babylab.globals import COLNAMES, FIELD_TYPES, FIELDS_TO_RENAME, SCHEMA
 
@@ -49,47 +50,50 @@ class BadAgeFormat(Exception):
     """If age does not follow the right format"""
 
 
-@dataclass
-class RecordList:
+class RecordList(BaseModel):
     """List of REDCap records."""
 
-    records: dict = field(default_factory=dict)
+    records: dict
     kind: str = "ppt"
 
     def __len__(self) -> int:
         return len(self.records)
 
 
-@dataclass
-class Record:
+class Participant(BaseModel):
     ppt_id: str
     data: dict
-
-
-@dataclass
-class Participant(Record):
     appointments: RecordList = field(default_factory=list)
     questionnaires: RecordList = field(default_factory=list)
 
 
-@dataclass
-class Appointment(Record):
-    def __post_init__(self):
+class Appointment(BaseModel):
+    ppt_id: str
+    data: dict
+    apt_id: str | None = None
+    status: str | None = None
+    date: datetime | None = None
+
+    def model_post_init(self, __context):
         apt_id = self.data["redcap_repeat_instance"]
         self.apt_id = make_id(self.ppt_id, apt_id)
         self.status: str = self.data["status"]
         self.date: datetime = parse_str_date(self.data["date"])
 
 
-@dataclass
-class Questionnaire(Record):
-    def __post_init__(self):
+class Questionnaire(BaseModel):
+    ppt_id: str
+    data: dict
+    que_id: str | None = None
+    isestimated: bool | None = None
+
+    def model_post_init(self, __context):
         que_id = self.data["redcap_repeat_instance"]
         self.que_id = make_id(self.ppt_id, que_id)
         self.isestimated = self.data["isestimated"]
 
 
-def get_api_key(path: Path | str | None = None) -> str:
+def get_api_key(path: Path | str | None = None) -> SecretStr:
     """Retrieve API credentials.
 
     Args:
@@ -121,7 +125,7 @@ def get_api_key(path: Path | str | None = None) -> str:
     if not isinstance(token, str) or not token.isalnum():
         raise BadToken("Token must be str with no non-alphanumeric characters")
 
-    return token
+    return SecretStr(token)
 
 
 def post_request(fields: dict, timeout: tuple[int, int] = (5, 10)) -> requests.Response:
@@ -141,7 +145,7 @@ def post_request(fields: dict, timeout: tuple[int, int] = (5, 10)) -> requests.R
     t = get_api_key()
 
     fields = OrderedDict(fields)
-    fields["token"] = t
+    fields["token"] = t.get_secret_value()
     fields.move_to_end("token", last=False)
 
     load_dotenv(find_dotenv(), override=True)
@@ -151,7 +155,9 @@ def post_request(fields: dict, timeout: tuple[int, int] = (5, 10)) -> requests.R
     if uri is None:
         raise MissingEnvURI()
 
-    r = requests.post(uri, data=fields, timeout=timeout)
+    uri = HttpUrl(uri)
+
+    r = requests.post(uri.unicode_string(), data=fields, timeout=timeout)
     r.raise_for_status()
 
     return r
@@ -516,8 +522,8 @@ def get_participant(ppt_id: str) -> Participant:
     return Participant(
         ppt_id=data["record_id"],
         data=data,
-        appointments=RecordList(apt, kind="appointments"),
-        questionnaires=RecordList(que, kind="questionnaires"),
+        appointments=RecordList(records=apt, kind="appointments"),
+        questionnaires=RecordList(records=que, kind="questionnaires"),
     )
 
 
@@ -777,18 +783,18 @@ class Records:
 
             if not r["redcap_repeat_instrument"]:
                 data = prepare_data(r)
-                ppt[ppt_id] = Participant(r["record_id"], data)
+                ppt[ppt_id] = Participant(ppt_id=r["record_id"], data=data)
 
         # add appointments and questionnaires to each participant
         for p, v in ppt.items():
             apts = {k: v for k, v in apt.items() if v.ppt_id == p}
-            v.appointments = RecordList(apts, kind="appointments")
+            v.appointments = RecordList(records=apts, kind="appointments")
             ques = {k: v for k, v in que.items() if v.ppt_id == p}
-            v.questionnaires = RecordList(ques, kind="questionnaires")
+            v.questionnaires = RecordList(records=ques, kind="questionnaires")
 
-        self.participants = RecordList(ppt, kind="participants")
-        self.appointments = RecordList(apt, kind="appointments")
-        self.questionnaires = RecordList(que, kind="questionnaires")
+        self.participants = RecordList(records=ppt, kind="participants")
+        self.appointments = RecordList(records=apt, kind="appointments")
+        self.questionnaires = RecordList(records=que, kind="questionnaires")
 
     def __repr__(self) -> str:
         return (

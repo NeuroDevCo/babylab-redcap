@@ -16,7 +16,7 @@ class TestParticipants:
     def test_participant_class(self):
         """Test participant class."""
         data = api.prepare_data(PPT_RECORD)
-        x = api.Participant(data["record_id"], data)
+        x = api.Participant(ppt_id=data["record_id"], data=data)
 
         for att in ["ppt_id", "data"]:
             assert hasattr(x, att)
@@ -29,7 +29,7 @@ class TestAppointment:
     def test_appointment_class(self):
         """Test appointment class."""
         data = api.prepare_data(APT_RECORD, "apt")
-        x = api.Appointment(data["record_id"], data)
+        x = api.Appointment(ppt_id=data["record_id"], data=data)
 
         for att in ["ppt_id", "apt_id", "date", "status", "data"]:
             assert hasattr(x, att)
@@ -45,7 +45,7 @@ class TestQuestionnaireClass:
     def test_questionnaire_class(self):
         """Test questionnaire class."""
         data = api.prepare_data(QUE_RECORD, "que")
-        x = api.Questionnaire(data["record_id"], data)
+        x = api.Questionnaire(ppt_id=data["record_id"], data=data)
 
         for att in ["ppt_id", "que_id", "isestimated", "data"]:
             assert hasattr(x, att)
