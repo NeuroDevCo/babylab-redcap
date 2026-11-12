@@ -116,16 +116,21 @@ def get_apt_table(
     if ppt_id:
         df = df.filter(pl.col("record_id").is_in(ppt_id))
 
-    ppt_df = api.to_df(records.participants)
+    ppt_df = api.to_df(records.participants).rename(
+        {"date_created": "ppt_date_created"}
+    )
 
-    cols = ["record_id", "age_now_months", "age_now_days"]
-    df = df.join(ppt_df.select(cols), on="record_id")
-    _, col_1, col_2 = cols
+    cols = ["record_id", "age_created_months", "age_created_days", "ppt_date_created"]
+    df = df.join(ppt_df.select(cols), on="record_id", how="inner")
+    _, col_1, col_2, _ = cols
 
     months, days = [], []
     for rows in df.iter_rows(named=True):
-        t = datetime.now() if rows["date"] is None else rows["date"]
-        m, d = api.get_age(age=(rows[col_1], rows[col_2]), ts=t)
+        m, d = api.get_age(
+            age=(rows[col_1], rows[col_2]),
+            ts=rows["ppt_date_created"],
+            ts_new=rows["date_created"],
+        )
         months.append(m)
         days.append(d)
 
