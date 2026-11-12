@@ -63,8 +63,8 @@ class RecordList(BaseModel):
 class Participant(BaseModel):
     ppt_id: str
     data: dict
-    appointments: RecordList = field(default_factory=list)
-    questionnaires: RecordList = field(default_factory=list)
+    appointments: RecordList = RecordList(records={}, kind="apt")
+    questionnaires: RecordList = RecordList(records={}, kind="que")
 
 
 class Appointment(BaseModel):
