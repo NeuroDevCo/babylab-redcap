@@ -113,7 +113,6 @@ def get_api_key(path: Path | str | None = None, name: str = "API_KEY") -> Secret
     if not path.exists():
         raise MissingEnvFile(f".env file not found in {path}")
 
-    load_dotenv(path, override=True)
     token = environ.get(name)
 
     if token is None:
