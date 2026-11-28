@@ -105,17 +105,21 @@ def get_api_key(path: Path | str | None = None, name: str = "API_KEY") -> Secret
         MissingEnvToken: If requested environmental variable key is not found.
         BadToken: If token contains any non-alphanumeric character.
     """
-    if path is None:
-        path = find_dotenv()
 
-    path = Path(path)
+    if name in environ or getenv("GITHUB_ACTIONS") == "true":
+        token = getenv(name)
 
-    if getenv("GITHUB_ACTIONS") != "true":
+    else:
+        if path is None:
+            path = find_dotenv()
+
+        path = Path(path)
+
         if not path.exists():
             raise MissingEnvFile(f".env file not found in {path}")
 
-    load_dotenv(path, override=True)
-    token = get_key(path, key_to_get=name)
+        load_dotenv(path, override=True)
+        token = get_key(path, key_to_get=name)
 
     if token is None:
         raise MissingEnvToken(f"No environment variable named '{name}' found")
