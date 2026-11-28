@@ -16,7 +16,7 @@ import polars as pl
 import pytz
 import requests
 from dateutil.relativedelta import relativedelta as rdelta
-from dotenv import dotenv_values, find_dotenv, get_key, load_dotenv
+from dotenv import find_dotenv, get_key, load_dotenv
 from pydantic import BaseModel, HttpUrl, SecretStr
 
 from babylab.globals import COLNAMES, FIELD_TYPES, FIELDS_TO_RENAME, SCHEMA
