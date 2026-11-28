@@ -2,6 +2,7 @@
 
 from datetime import datetime
 from os import getenv
+from pathlib import Path
 
 import pytest
 from pydantic import SecretStr
@@ -19,10 +20,26 @@ class TestApiKey:
         assert token
         assert isinstance(token, SecretStr)
 
-        if not IS_GIHTUB_ACTIONS:
-            token = api.get_api_key(path="~/.env")
-            assert token is not None
-            assert isinstance(token, SecretStr)
+    @pytest.mark.skipif(IS_GIHTUB_ACTIONS, reason="Skip if GitHub Actions")
+    def test_get_api_key_path(self):
+        """Test get_api_key with custom path."""
+        testpath = Path(".testenv")
+        key = "TEST_KEY"
+        test_token = "testkey"
+
+        with testpath.open("w") as f:
+            f.write(f"{key}={test_token}")
+
+        token = api.get_api_key(path=testpath, name=key)
+        assert token is not None
+        assert isinstance(token, SecretStr)
+        assert token.get_secret_value() == "testkey"
+
+        testpath.unlink()
+
+    def test_get_api_key_name(self):
+        token = api.get_api_key(name="TEST_KEY")
+        assert token.get_secret_value() == "testkey"
 
 
 class TestRedCapVersion:
