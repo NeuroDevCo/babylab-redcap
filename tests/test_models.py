@@ -126,3 +126,9 @@ class TestRecordListClass:
         assert isinstance(api.to_df(records), DataFrame)
         assert isinstance(records.kind, str)
         assert records.kind == "questionnaires"
+
+    def test_recordlist_class_len(self):
+        records = conftest.RECORDS.participants
+        n = len(records)
+        assert n
+        assert isinstance(n, int)
