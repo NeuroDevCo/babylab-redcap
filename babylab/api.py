@@ -95,7 +95,7 @@ def get_api_key(path: Path | str | None = None, name: str = "API_KEY") -> Secret
     """Retrieve API credentials.
 
     Args:
-        path (Path | str | None, optional): Path to the .env file with global variables. Defaults to `Path.home()`.
+        path (Path | str | None, optional): Path to the .env file with global variables. Defaults to `find_dotent()`.
 
     Returns:
         str: API key token.
@@ -105,21 +105,18 @@ def get_api_key(path: Path | str | None = None, name: str = "API_KEY") -> Secret
         MissingEnvToken: If requested environmental variable key is not found.
         BadToken: If token contains any non-alphanumeric character.
     """
+    if path is None:
+        path = find_dotenv()
 
-    if name in environ or getenv("GITHUB_ACTIONS") == "true":
-        token = getenv(name)
+    path = Path(path)
 
-    else:
-        if path is None:
-            path = find_dotenv()
+    if not path.exists():
+        raise MissingEnvFile(f".env file not found in {path}")
 
-        path = Path(path)
+    load_dotenv(path, override=True)
 
-        if not path.exists():
-            raise MissingEnvFile(f".env file not found in {path}")
-
-        load_dotenv(path, override=True)
-        token = get_key(path, key_to_get=name)
+    key_exists_or_gh = name in environ or getenv("GITHUB_ACTIONS") == "true"
+    token = getenv(name) if key_exists_or_gh else get_key(path, key_to_get=name)
 
     if token is None:
         raise MissingEnvToken(f"No environment variable named '{name}' found")
