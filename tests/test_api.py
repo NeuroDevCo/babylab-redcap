@@ -1,5 +1,6 @@
 """Test API."""
 
+from cmath import e
 from datetime import datetime
 from os import getenv
 from pathlib import Path
@@ -36,9 +37,33 @@ class TestApiKey:
 
         testpath.unlink()
 
+    def test_get_api_key_path_exception(self):
+        """Test get_api_key with custom path."""
+        with pytest.raises(api.MissingEnvFile):
+            api.get_api_key(path="bad_path")
+
     def test_get_api_key_name(self):
         token = api.get_api_key(name="TEST_KEY")
         assert token.get_secret_value() == "testkey"
+
+    def test_get_api_key_name_exception(self):
+        """Test get_api_key with custom path."""
+
+        with pytest.raises(api.MissingEnvToken):
+            api.get_api_key(name="bad_key")
+
+    def test_get_api_exception(self):
+
+        testpath = Path(".testenv")
+        test_token = "BaD_tOKEN!?@"
+
+        with testpath.open("w") as f:
+            f.write(f"API_KEY={test_token}")
+
+        with pytest.raises(api.BadToken):
+            api.get_api_key(path=testpath)
+
+        testpath.unlink()
 
 
 class TestRedCapVersion:
