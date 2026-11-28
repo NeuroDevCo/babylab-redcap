@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 """
 Functions to interact with the REDCap API.
 """
@@ -18,7 +16,7 @@ import polars as pl
 import pytz
 import requests
 from dateutil.relativedelta import relativedelta as rdelta
-from dotenv import find_dotenv, load_dotenv
+from dotenv import find_dotenv
 from pydantic import BaseModel, HttpUrl, SecretStr
 
 from babylab.globals import COLNAMES, FIELD_TYPES, FIELDS_TO_RENAME, SCHEMA
@@ -93,11 +91,11 @@ class Questionnaire(BaseModel):
         self.isestimated = self.data["isestimated"]
 
 
-def get_api_key(path: Path | str | None = None) -> SecretStr:
+def get_api_key(path: Path | str | None = None, name: str = "API_KEY") -> SecretStr:
     """Retrieve API credentials.
 
     Args:
-        path (Path | str | None, optional): Path to the .env file with global variables. Defaults to `Path.home()`.
+        path (Path | str | None, optional): Path to the .env file with global variables. Defaults to `find_dotent()`.
 
     Returns:
         str: API key token.
@@ -107,20 +105,18 @@ def get_api_key(path: Path | str | None = None) -> SecretStr:
         MissingEnvToken: If requested environmental variable key is not found.
         BadToken: If token contains any non-alphanumeric character.
     """
-    var = "API_KEY"
-    if var in environ or getenv("GITHUB_ACTIONS") == "true":
-        token = getenv(var)
-    else:
-        path = Path(find_dotenv()) if not path else Path(path)
+    if path is None:
+        path = find_dotenv()
 
-        if not path.exists():
-            raise MissingEnvFile(f".env file not found in {path}")
+    path = Path(path)
 
-        load_dotenv(path, override=True)
-        token = getenv(var)
+    if not path.exists():
+        raise MissingEnvFile(f".env file not found in {path}")
+
+    token = environ.get(name)
 
     if token is None:
-        raise MissingEnvToken(f"No environment variable named '{var}' found")
+        raise MissingEnvToken(f"No environment variable named '{name}' found")
 
     if not isinstance(token, str) or not token.isalnum():
         raise BadToken("Token must be str with no non-alphanumeric characters")
@@ -147,8 +143,6 @@ def post_request(fields: dict, timeout: tuple[int, int] = (5, 10)) -> requests.R
     fields = OrderedDict(fields)
     fields["token"] = t.get_secret_value()
     fields.move_to_end("token", last=False)
-
-    load_dotenv(find_dotenv(), override=True)
 
     uri = getenv("API_URI")
 
