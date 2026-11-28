@@ -20,7 +20,6 @@ class TestApiKey:
         assert token
         assert isinstance(token, SecretStr)
 
-    @pytest.mark.skipif(IS_GIHTUB_ACTIONS, reason="Skip if GitHub Actions")
     def test_get_api_key_path(self):
         """Test get_api_key with custom path."""
         testpath = Path(".testenv")
