@@ -144,8 +144,6 @@ def post_request(fields: dict, timeout: tuple[int, int] = (5, 10)) -> requests.R
     fields["token"] = t.get_secret_value()
     fields.move_to_end("token", last=False)
 
-    load_dotenv(find_dotenv(), override=True)
-
     uri = getenv("API_URI")
 
     if uri is None:
