@@ -16,7 +16,7 @@ import polars as pl
 import pytz
 import requests
 from dateutil.relativedelta import relativedelta as rdelta
-from dotenv import find_dotenv, get_key, load_dotenv
+from dotenv import find_dotenv, load_dotenv
 from pydantic import BaseModel, HttpUrl, SecretStr
 
 from babylab.globals import COLNAMES, FIELD_TYPES, FIELDS_TO_RENAME, SCHEMA
@@ -113,7 +113,8 @@ def get_api_key(path: Path | str | None = None, name: str = "API_KEY") -> Secret
     if not path.exists():
         raise MissingEnvFile(f".env file not found in {path}")
 
-    token = get_key(path, key_to_get=name)
+    load_dotenv(path, override=True)
+    token = environ.get(name)
 
     if token is None:
         raise MissingEnvToken(f"No environment variable named '{name}' found")
